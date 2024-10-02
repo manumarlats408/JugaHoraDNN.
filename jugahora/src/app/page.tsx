@@ -25,17 +25,19 @@ export default function PaginaInicioSesion() {
         body: JSON.stringify({ email, password }),
       })
 
+      const datos = await respuesta.json();
+
       if (respuesta.ok) {
-        // Inicio de sesión exitoso
-        router.push('/menu')
+        // Almacenar el token JWT en localStorage
+        localStorage.setItem('token', datos.token);
+        // Redirigir al menú
+        router.push('/menu');
       } else {
-        // Inicio de sesión fallido
-        const datos = await respuesta.json()
-        setError(datos.error || 'Ocurrió un error durante el inicio de sesión')
+        setError(datos.error || 'Ocurrió un error durante el inicio de sesión');
       }
     } catch (error) {
-      console.error('Error de inicio de sesión:', error)
-      setError('Ocurrió un error inesperado. Por favor, intenta de nuevo.')
+      console.error('Error de inicio de sesión:', error);
+      setError('Ocurrió un error inesperado. Por favor, intenta de nuevo.');
     }
   }
 
@@ -74,4 +76,3 @@ export default function PaginaInicioSesion() {
     </div>
   )
 }
-
