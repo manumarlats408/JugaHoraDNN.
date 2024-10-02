@@ -16,7 +16,7 @@ export default function PaginaRegistro() {
 
   const manejarEnvio = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setError('') // Limpiar errores previos
+    setError('')
 
     try {
       const respuesta = await fetch('/api/registro', {
@@ -28,10 +28,9 @@ export default function PaginaRegistro() {
       })
 
       if (respuesta.ok) {
-        // Registro exitoso, redirigir a la página de inicio de sesión o menú
+        // Registro exitoso
         router.push('/login')
       } else {
-        // Registro fallido
         const datos = await respuesta.json()
         setError(datos.error || 'Ocurrió un error durante el registro')
       }
