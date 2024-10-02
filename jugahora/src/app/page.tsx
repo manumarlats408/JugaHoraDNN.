@@ -5,6 +5,7 @@ import Link from "next/link"
 
 export default function HomePage() {
   return (
+    
     <div className="flex flex-col min-h-screen">
       <header className="px-4 lg:px-6 h-14 flex items-center">
         <Link className="flex items-center justify-center" href="/">
@@ -15,7 +16,7 @@ export default function HomePage() {
           <span className="ml-2 text-2xl font-bold text-green-600">JugáHora</span>
         </Link>
         <nav className="ml-auto flex gap-4 sm:gap-6">
-          <Link className="text-sm font-medium hover:underline underline-offset-4" href="/reservar">
+          {/* <Link className="text-sm font-medium hover:underline underline-offset-4" href="/reservar">
             Reservar
           </Link>
           <Link className="text-sm font-medium hover:underline underline-offset-4" href="/unirse">
@@ -23,7 +24,7 @@ export default function HomePage() {
           </Link>
           <Link className="text-sm font-medium hover:underline underline-offset-4" href="/clubes">
             Clubes
-          </Link>
+          </Link> */}
         </nav>
       </header>
       <main className="flex-1">
