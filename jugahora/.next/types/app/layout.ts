@@ -1,4 +1,4 @@
-// File: /Users/bernardo/Documents/GitHub/JugaHoraDNN./jugahora/src/app/layout.tsx
+// File: C:\Users\pgule\Documents\JugaHoraDNN\jugahora\src\app\layout.tsx
 import * as entry from '../../../src/app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

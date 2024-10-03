@@ -1,40 +1,55 @@
-//import jwt_decode from 'jwt-decode'; // Asegúrate de instalar jwt-decode con `npm install jwt-decode`
-//import { useEffect, useState } from 'react';
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { Menu, X } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Menu, X } from 'lucide-react'
+
+const menuItems = [
+  { href: '/menu', label: 'Menu' },
+  { href: '/perfil', label: 'Perfil' },
+  { href: '/reserva', label: 'Reservar' },
+  { href: '/jugar', label: 'Unirme a un partido' },
+]
 
 export default function MenuPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [userName, setUserName] = useState<string | null>(null)
   const menuRef = useRef<HTMLDivElement>(null)
+  const router = useRouter()
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen)
-  }
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsMenuOpen(false)
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch('/api/auth', {
+          method: 'GET',
+          credentials: 'include',
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setUserName(data.user.firstName);
+        } else {
+          // If unauthorized, redirect to login
+          router.push('/login');
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        router.push('/login');
       }
-    }
+    };
 
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [])
+    fetchUserData();
+  }, [router]);
 
-  const menuItems = [
-    { href: '/menu', label: 'Menu' },
-    { href: '/perfil', label: 'Perfil' },
-    { href: '/reserva', label: 'Reservar' },
-    { href: '/jugar', label: 'Unirme a un partido' },
-  ]
+  const handleLogout = () => {
+    // Implement logout logic here
+    alert("Cerrar sesión")
+    setIsMenuOpen(false)
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -59,19 +74,21 @@ export default function MenuPage() {
           ))}
           <button
             className="text-sm font-medium text-gray-600 hover:text-green-600 transition-colors"
-            onClick={() => alert("Cerrar sesión")}
+            onClick={handleLogout}
           >
             Cerrar sesión
           </button>
         </nav>
 
-        <button
+        <Button
+          variant="ghost"
+          size="icon"
+          className="lg:hidden ml-auto text-gray-600 hover:text-green-600"
           onClick={toggleMenu}
-          className="lg:hidden ml-auto text-gray-600 hover:text-green-600 transition-colors focus:outline-none"
           aria-label={isMenuOpen ? "Cerrar menú" : "Abrir menú"}
         >
           {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        </Button>
       </header>
 
       {isMenuOpen && (
@@ -92,10 +109,7 @@ export default function MenuPage() {
             ))}
             <button
               className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-              onClick={() => {
-                alert("Cerrar sesión")
-                setIsMenuOpen(false)
-              }}
+              onClick={handleLogout}
             >
               Cerrar sesión
             </button>
@@ -104,18 +118,20 @@ export default function MenuPage() {
       )}
 
       <main className="flex-1 flex justify-center items-center p-4">
-        <Card className="w-full max-w-md bg-white shadow-lg rounded-lg">
+        <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold">Hola Patricio!</CardTitle>
+            <CardTitle className="text-2xl font-bold">
+              {userName ? `Hola ${userName}!` : 'Hola!'}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="mb-4 text-gray-500">Aprovecha nuestras funcionalidades!</p>
             <div className="space-y-4">
               <Link href="/reserva" className="block">
-                <Button className="w-full bg-green-600 hover:bg-green-700 text-white transition-colors">Reserva tu pista!</Button>
+                <Button className="w-full bg-green-600 hover:bg-green-700 text-white">Reserva tu pista!</Button>
               </Link>
               <Link href="/jugar" className="block">
-                <Button className="w-full bg-green-600 hover:bg-green-700 text-white transition-colors">Juega un partido!</Button>
+                <Button className="w-full bg-green-600 hover:bg-green-700 text-white">Juega un partido!</Button>
               </Link>
             </div>
           </CardContent>
@@ -145,5 +161,3 @@ export default function MenuPage() {
     </div>
   )
 }
-
-

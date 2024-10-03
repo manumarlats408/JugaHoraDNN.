@@ -13,11 +13,13 @@ export default function PaginaInicioSesion() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
   const manejarEnvio = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setError('')
+    setIsLoading(true)
 
     try {
       const respuesta = await fetch('/api/auth', {
@@ -26,19 +28,26 @@ export default function PaginaInicioSesion() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
+        credentials: 'include', // This is important for including cookies
       })
 
-      const datos = await respuesta.json();
-
       if (respuesta.ok) {
-        localStorage.setItem('token', datos.token);
-        router.push('/menu');
+        // Check if we've been redirected to the menu page
+        if (respuesta.url.includes('/menu')) {
+          router.push('/menu')
+        } else {
+          // If not redirected, manually navigate to the menu
+          router.push('/menu')
+        }
       } else {
-        setError(datos.error || 'Ocurrió un error durante el inicio de sesión');
+        const datos = await respuesta.json()
+        setError(datos.error || 'Ocurrió un error durante el inicio de sesión')
       }
     } catch (error) {
-      console.error('Error de inicio de sesión:', error);
-      setError('Ocurrió un error inesperado. Por favor, intenta de nuevo.');
+      console.error('Error de inicio de sesión:', error)
+      setError('Ocurrió un error inesperado. Por favor, intenta de nuevo.')
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -64,6 +73,7 @@ export default function PaginaInicioSesion() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                disabled={isLoading}
               />
             </div>
             <div className="space-y-2">
@@ -75,11 +85,18 @@ export default function PaginaInicioSesion() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                disabled={isLoading}
               />
             </div>
             {error && <p className="text-red-500 text-center">{error}</p>}
-            <Button type="submit" className="w-full">
-              <LogIn className="mr-2 h-4 w-4" /> Iniciar sesión
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? (
+                <>Iniciando sesión...</>
+              ) : (
+                <>
+                  <LogIn className="mr-2 h-4 w-4" /> Iniciar sesión
+                </>
+              )}
             </Button>
           </form>
         </CardContent>
