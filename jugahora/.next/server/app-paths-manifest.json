@@ -1,5 +1,9 @@
 {
+  "/jugar/page": "app/jugar/page.js",
+  "/reserva/page": "app/reserva/page.js",
   "/page": "app/page.js",
+  "/registro/page": "app/registro/page.js",
   "/login/page": "app/login/page.js",
+  "/api/auth/route": "app/api/auth/route.js",
   "/menu/page": "app/menu/page.js"
 }

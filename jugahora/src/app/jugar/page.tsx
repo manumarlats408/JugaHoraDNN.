@@ -5,18 +5,20 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Menu, X } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 const clubs = [
-  'Pasaje del sol - GEBA',
-  'Lasaigues Club - Canning',
-  'Palmeras Club',
-  'World Padel Center - CABA',
-  'Premium APA center',
+  { name: 'Pasaje del sol - GEBA', whatsappLink: 'https://chat.whatsapp.com/C8WKYF8gkPb9yVbKWmJIy6' },
+  { name: 'Lasaigues Club - Canning', whatsappLink: null }, // Puedes agregar los enlaces de WhatsApp aquí si existen
+  { name: 'Palmeras Club', whatsappLink: null },
+  { name: 'World Padel Center - CABA', whatsappLink: null },
+  { name: 'Premium APA center', whatsappLink: null },
 ]
 
 export default function JuegaPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
+  const router = useRouter()
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
@@ -35,12 +37,33 @@ export default function JuegaPage() {
     }
   }, [])
 
+  const handleLogout = async () => {
+    try {
+      // Llama al endpoint de logout
+      await fetch('/api/logout', {
+        method: 'GET',
+        credentials: 'include', // Asegura que las cookies se envíen
+      });
+
+      // Redirige a la página principal después de cerrar sesión
+      router.push('/');
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
+  };
+
   const menuItems = [
     { href: '/menu', label: 'Menu' },
     { href: '/perfil', label: 'Perfil' },
-    { href: '/reservar', label: 'Reservar' },
-    { href: '/unirse', label: 'Unirme a un partido' },
+    { href: '/reserva', label: 'Reservar' },
+    { href: '/jugar', label: 'Unirme a un partido' },
   ]
+
+  const handleClubClick = (whatsappLink: string | null) => {
+    if (whatsappLink) {
+      window.location.href = whatsappLink; // Redirigir al grupo de WhatsApp si hay enlace
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
@@ -63,12 +86,7 @@ export default function JuegaPage() {
               {item.label}
             </Link>
           ))}
-          <button
-            className="text-sm font-medium text-gray-600 hover:text-green-600 transition-colors"
-            onClick={() => alert("Cerrar sesión")}
-          >
-            Cerrar sesión
-          </button>
+          <button onClick={handleLogout}>Cerrar sesión</button>
         </nav>
 
         <button
@@ -118,11 +136,15 @@ export default function JuegaPage() {
             <p className="mb-4">Conecta con gente en el club que desees!</p>
             <div className="space-y-4">
               {clubs.map((club, index) => (
-                <div key={index} className="flex items-center space-x-4 p-2 border rounded-lg">
-                  <Image src="/placeholder.svg" alt={club} width={50} height={50} className="rounded-full" />
+                <div
+                  key={index}
+                  className="flex items-center space-x-4 p-2 border rounded-lg cursor-pointer"
+                  onClick={() => handleClubClick(club.whatsappLink)} // Evento onClick para redirigir al grupo de WhatsApp
+                >
+                  <Image src="/club.svg" alt={club.name} width={50} height={50} className="rounded-full" />
                   <div>
-                    <p className="font-semibold">{club}</p>
-                    <p className="text-sm text-gray-500">Grupo de whatsapp</p>
+                    <p className="font-semibold">{club.name}</p>
+                    <p className="text-sm text-gray-500">{club.whatsappLink ? 'Grupo de WhatsApp' : 'Sin grupo disponible'}</p>
                   </div>
                 </div>
               ))}

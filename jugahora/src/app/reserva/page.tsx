@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Menu, X } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 const clubs = [
   { name: 'Pasaje del sol - GEBA', phone: '+54 9 11 5821-1410' },
@@ -18,6 +19,7 @@ const clubs = [
 export default function ReservaPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
+  const router = useRouter()
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
@@ -36,11 +38,26 @@ export default function ReservaPage() {
     }
   }, [])
 
+  const handleLogout = async () => {
+    try {
+      // Llama al endpoint de logout
+      await fetch('/api/logout', {
+        method: 'GET',
+        credentials: 'include', // Asegura que las cookies se envíen
+      });
+
+      // Redirige a la página principal después de cerrar sesión
+      router.push('/');
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
+  };
+
   const menuItems = [
     { href: '/menu', label: 'Menu' },
     { href: '/perfil', label: 'Perfil' },
-    { href: '/reservar', label: 'Reservar' },
-    { href: '/unirse', label: 'Unirme a un partido' },
+    { href: '/reserva', label: 'Reservar' },
+    { href: '/jugar', label: 'Unirme a un partido' },
   ]
 
   return (
@@ -64,12 +81,7 @@ export default function ReservaPage() {
               {item.label}
             </Link>
           ))}
-          <button
-            className="text-sm font-medium text-gray-600 hover:text-green-600 transition-colors"
-            onClick={() => alert("Cerrar sesión")}
-          >
-            Cerrar sesión
-          </button>
+          <button onClick={handleLogout}>Cerrar sesión</button>
         </nav>
 
         <button
@@ -120,7 +132,7 @@ export default function ReservaPage() {
             <div className="space-y-4">
               {clubs.map((club, index) => (
                 <div key={index} className="flex items-center space-x-4 p-2 border rounded-lg">
-                  <Image src="/placeholder.svg" alt={club.name} width={50} height={50} className="rounded-full" />
+                  <Image src="/club.svg" alt={club.name} width={50} height={50} className="rounded-full" />
                   <div>
                     <p className="font-semibold">{club.name}</p>
                     <p className="text-sm text-gray-500">Número de teléfono: {club.phone}</p>
