@@ -7,12 +7,14 @@ import Link from 'next/link';
 import { Button } from "@/components/ui/button";
 import { Menu } from 'lucide-react';
 
-// Define la interfaz para los datos del usuario
 interface User {
   id: string;
   email: string;
   firstName: string;
   lastName: string;
+  phoneNumber?: string;  // Campo opcional
+  address?: string;      // Campo opcional
+  age?: number;          // Campo opcional
 }
 
 const menuItems = [
@@ -23,7 +25,7 @@ const menuItems = [
 ];
 
 export default function PerfilPage() {
-  const [userData, setUserData] = useState<User | null>(null);  // Cambiamos el tipo de any a User | null
+  const [userData, setUserData] = useState<User | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -36,7 +38,7 @@ export default function PerfilPage() {
 
         if (response.ok) {
           const data = await response.json();
-          setUserData(data.user);  // Usamos la interfaz User en lugar de any
+          setUserData(data.user);
         } else {
           router.push('/login');
         }
@@ -51,21 +53,19 @@ export default function PerfilPage() {
 
   const handleLogout = async () => {
     try {
-      // Llama al endpoint de logout
       await fetch('/api/logout', {
         method: 'GET',
-        credentials: 'include', // Asegura que las cookies se envíen
+        credentials: 'include',
       });
 
-      // Redirige a la página principal después de cerrar sesión
       router.push('/');
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
     }
   };
-  
+
   if (!userData) {
-    return <div>Cargando perfil...</div>;  // Mientras no hay datos, mostramos un mensaje de carga
+    return <div>Cargando perfil...</div>;
   }
 
   return (
@@ -113,6 +113,9 @@ export default function PerfilPage() {
           <CardContent>
             <p><strong>Email:</strong> {userData.email}</p>
             <p><strong>Nombre:</strong> {userData.firstName} {userData.lastName}</p>
+            {userData.phoneNumber && <p><strong>Teléfono:</strong> {userData.phoneNumber}</p>}
+            {userData.address && <p><strong>Dirección:</strong> {userData.address}</p>}
+            {userData.age && <p><strong>Edad:</strong> {userData.age}</p>}
           </CardContent>
         </Card>
       </main>

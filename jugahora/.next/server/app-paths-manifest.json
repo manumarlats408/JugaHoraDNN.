@@ -1,9 +1,11 @@
 {
-  "/jugar/page": "app/jugar/page.js",
-  "/reserva/page": "app/reserva/page.js",
-  "/page": "app/page.js",
   "/registro/page": "app/registro/page.js",
   "/login/page": "app/login/page.js",
+  "/perfil/page": "app/perfil/page.js",
   "/api/auth/route": "app/api/auth/route.js",
-  "/menu/page": "app/menu/page.js"
+  "/menu/page": "app/menu/page.js",
+  "/api/logout/route": "app/api/logout/route.js",
+  "/page": "app/page.js",
+  "/reserva/page": "app/reserva/page.js",
+  "/jugar/page": "app/jugar/page.js"
 }

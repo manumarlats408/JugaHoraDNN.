@@ -14,6 +14,9 @@ export default function PaginaRegistro() {
   const [password, setPassword] = useState('')
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
+  const [phoneNumber, setPhoneNumber] = useState('')  // Nuevo campo
+  const [address, setAddress] = useState('')  // Nuevo campo
+  const [age, setAge] = useState<number | ''>('')  // Nuevo campo
   const [error, setError] = useState('')
   const router = useRouter()
 
@@ -27,7 +30,7 @@ export default function PaginaRegistro() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password, firstName, lastName }),
+        body: JSON.stringify({ email, password, firstName, lastName, phoneNumber, address, age }),  // Incluye los nuevos campos
       })
 
       if (respuesta.ok) {
@@ -101,6 +104,38 @@ export default function PaginaRegistro() {
                 />
               </div>
             </div>
+            {/* Nuevos campos añadidos */}
+            <div className="space-y-2">
+              <Label htmlFor="phoneNumber">Número de teléfono</Label>
+              <Input 
+                id="phoneNumber"
+                type="tel"
+                placeholder="Opcional: +54 9 1234 5678"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="address">Dirección</Label>
+              <Input 
+                id="address"
+                type="text"
+                placeholder="Opcional: Av. Siempreviva 123"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="age">Edad</Label>
+              <Input 
+                id="age"
+                type="number"
+                placeholder="Opcional: 30"
+                value={age}
+                onChange={(e) => setAge(Number(e.target.value))}
+              />
+            </div>
+            {/* Fin de nuevos campos */}
             {error && <p className="text-red-500 text-center">{error}</p>}
             <Button type="submit" className="w-full">
               <UserPlus className="mr-2 h-4 w-4" /> Registrarse

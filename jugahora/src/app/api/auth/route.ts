@@ -1,17 +1,14 @@
-export const runtime = 'nodejs'; // Cambia el runtime a Node.js
-
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken'; // Import JwtPayload
 
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || 'secret-key';
+
 export async function POST(request: Request) {
   try {
-    console.log('Iniciando proceso de autenticación');
     const { email, password } = await request.json();
-    console.log('Email recibido:', email);
 
     const usuario = await prisma.user.findUnique({
       where: { email },
@@ -21,13 +18,13 @@ export async function POST(request: Request) {
         firstName: true,
         lastName: true,
         password: true,
+        phoneNumber: true, // Select these if needed
+        address: true,
+        age: true
       },
     });
 
-    console.log('Usuario encontrado:', usuario ? 'Sí' : 'No');
-
     if (!usuario) {
-      console.log('Usuario no encontrado');
       return NextResponse.json(
         { error: 'Correo electrónico o contraseña inválidos' },
         { status: 401 }
@@ -35,31 +32,31 @@ export async function POST(request: Request) {
     }
 
     const esContraseñaValida = await bcrypt.compare(password, usuario.password);
-    console.log('Contraseña válida:', esContraseñaValida);
 
     if (!esContraseñaValida) {
-      console.log('Contraseña inválida');
       return NextResponse.json(
         { error: 'Correo electrónico o contraseña inválidos' },
         { status: 401 }
       );
     }
 
-    console.log('Autenticación exitosa, generando token');
+    // Generar el token JWT
     const token = jwt.sign(
       {
         id: usuario.id,
         email: usuario.email,
         firstName: usuario.firstName,
         lastName: usuario.lastName,
+        phoneNumber: usuario.phoneNumber,
+        address: usuario.address,
+        age: usuario.age,
       },
       JWT_SECRET,
       { expiresIn: '1h' }
     );
 
-    console.log('Token generado, creando respuesta');
+    // Enviar el token en la cookie
     const response = NextResponse.redirect(new URL('/menu', request.url));
-
     response.cookies.set('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -67,7 +64,6 @@ export async function POST(request: Request) {
       sameSite: 'strict',
     });
 
-    console.log('Respuesta creada, redirigiendo');
     return response;
   } catch (error) {
     console.error('Error de inicio de sesión:', error);
@@ -85,7 +81,13 @@ export async function GET(request: Request) {
   }
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    // Explicitly typing decoded as JwtPayload
+    const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload & { id: string };
+
+    if (!decoded || !decoded.id) {
+      throw new Error('Token inválido');
+    }
+
     return NextResponse.json({ user: decoded });
   } catch (error) {
     console.error('Error al verificar el token:', error);
