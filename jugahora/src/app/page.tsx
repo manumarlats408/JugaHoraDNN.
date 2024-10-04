@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Calendar, MapPin, Users } from "lucide-react"
+import { Calendar, UserPlus, Users } from "lucide-react"
 import Link from "next/link"
 import Image from 'next/image'
 
@@ -71,12 +71,12 @@ export default function HomePage() {
                 </p>
               </div>
               <div className="flex flex-col items-center space-y-4 text-center">
-                <MapPin className="h-12 w-12 text-green-600" />
-                <h3 className="text-xl font-bold">Clubes Asociados</h3>
-                <p className="text-gray-500 dark:text-gray-400">
-                  Accede a una amplia red de clubes de pádel asociados en toda la ciudad.
-                </p>
-              </div>
+              <UserPlus className="h-12 w-12 text-green-600" /> {/* Cambié el icono para algo más representativo */}
+              <h3 className="text-xl font-bold">Conoce Gente Nueva</h3>
+              <p className="text-gray-500 dark:text-gray-400">
+                Únete a partidos y actividades para conocer nuevos jugadores de pádel y hacer amigos mientras te diviertes.
+              </p>
+            </div>
             </div>
           </div>
         </section>

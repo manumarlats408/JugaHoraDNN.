@@ -16,6 +16,9 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: "JugáHora - Reserva y Únete a Partidos de Pádel",
   description: "Reserva canchas de pádel o únete a partidos existentes en tu área con JugáHora. Juega cuando quieras, donde quieras.",
+  icons: {
+    icon: '/favicon.ico', // Ruta al favicon
+  },
 };
 
 export default function RootLayout({
@@ -23,7 +26,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
+  return (  
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
