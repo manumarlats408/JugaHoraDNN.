@@ -55,6 +55,12 @@ export default function ReservaPage() {
     }
   }
 
+  // Función para generar el enlace de WhatsApp
+  const getWhatsAppLink = (phone: string) => {
+    const formattedPhone = phone.replace(/\D/g, '') // Elimina caracteres no numéricos
+    return `https://wa.me/${formattedPhone}`
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <header className="px-4 lg:px-6 h-16 flex items-center relative bg-white shadow-md">
@@ -135,16 +141,23 @@ export default function ReservaPage() {
             <p className="mb-4 text-gray-600">Explora todos los clubes disponibles!</p>
             <div className="space-y-4">
               {clubs.map((club, index) => (
-                <div key={index} className="flex items-center space-x-4 p-4 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300">
-                  <Image src="/club.svg" alt={club.name} width={50} height={50} className="rounded-full" />
-                  <div>
-                    <p className="font-semibold text-gray-800">{club.name}</p>
-                    <p className="text-sm text-gray-500 flex items-center">
-                      <Phone className="w-4 h-4 mr-1" />
-                      {club.phone}
-                    </p>
+                <Link
+                  key={index}
+                  href={getWhatsAppLink(club.phone)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="flex items-center space-x-4 p-4 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300 cursor-pointer">
+                    <Image src="/club.svg" alt={club.name} width={50} height={50} className="rounded-full" />
+                    <div>
+                      <p className="font-semibold text-gray-800">{club.name}</p>
+                      <p className="text-sm text-gray-500 flex items-center">
+                        <Phone className="w-4 h-4 mr-1" />
+                        {club.phone}
+                      </p>
+                    </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </CardContent>

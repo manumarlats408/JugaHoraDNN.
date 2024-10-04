@@ -139,13 +139,13 @@ export default function MenuPage() {
               <Link href="/reserva" className="block">
                 <Button className="w-full bg-green-600 hover:bg-green-700 text-white transition-colors duration-300 flex items-center justify-center">
                   <Calendar className="w-5 h-5 mr-2" />
-                  Reserva tu pista
+                  Reserva tu cancha
                 </Button>
               </Link>
               <Link href="/jugar" className="block">
                 <Button className="w-full bg-green-600 hover:bg-green-700 text-white transition-colors duration-300 flex items-center justify-center">
                   <Users className="w-5 h-5 mr-2" />
-                  Juega un partido
+                  Unite a un partido
                 </Button>
               </Link>
             </div>
