@@ -5,9 +5,12 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Menu, X, Home, User, Calendar, Users, LogOut, Mail, Phone, MapPin, Clock } from 'lucide-react'
+import { Dialog } from "@/components/ui/dialog"
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Menu, X, Home, User, Calendar, Users, LogOut, Mail, Phone, MapPin, Clock, Plus } from 'lucide-react'
 import Image from 'next/image'
-
 
 interface User {
   id: string
@@ -17,6 +20,13 @@ interface User {
   phoneNumber?: string
   address?: string
   age?: number
+}
+
+interface Partido {
+  id: number
+  fecha: string
+  jugadores: string
+  resultado: string
 }
 
 const menuItems = [
@@ -29,6 +39,12 @@ const menuItems = [
 export default function PerfilPage() {
   const [userData, setUserData] = useState<User | null>(null)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [partidos, setPartidos] = useState<Partido[]>([])
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [fecha, setFecha] = useState('')
+  const [jugadores, setJugadores] = useState(['', '', '', ''])
+  const [numSets, setNumSets] = useState('2')
+  const [resultados, setResultados] = useState(['', '', ''])
   const menuRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
@@ -37,14 +53,27 @@ export default function PerfilPage() {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const response = await fetch('/api/auth', {
+        const authResponse = await fetch('/api/auth', {
           method: 'GET',
           credentials: 'include',
         })
 
-        if (response.ok) {
-          const data = await response.json()
-          setUserData(data.user)
+        if (authResponse.ok) {
+          const userData = await authResponse.json()
+          setUserData(userData.user)
+
+          // Obtener los partidos del usuario
+          const partidosResponse = await fetch(`/api/partidos?userId=${userData.user.id}`, {
+            method: 'GET',
+            credentials: 'include',
+          })
+
+          if (partidosResponse.ok) {
+            const partidosData = await partidosResponse.json()
+            setPartidos(partidosData)
+          } else {
+            console.error('Error al obtener los partidos del usuario')
+          }
         } else {
           router.push('/login')
         }
@@ -77,6 +106,41 @@ export default function PerfilPage() {
       router.push('/')
     } catch (error) {
       console.error('Error al cerrar sesión:', error)
+    }
+  }
+
+  const handleAddPartido = async () => {
+    const resultado = resultados.slice(0, parseInt(numSets)).join(' - ')
+    const partidoData = {
+      userId: userData?.id,
+      fecha,
+      jugadores: jugadores.join(', '),
+      resultado
+    }
+
+    try {
+      const response = await fetch('/api/partidos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(partidoData),
+      })
+
+      if (response.ok) {
+        const newPartido = await response.json()
+        setPartidos([newPartido, ...partidos])
+        // Limpiar el formulario
+        setFecha('')
+        setJugadores(['', '', '', ''])
+        setNumSets('2')
+        setResultados(['', '', ''])
+        setIsDialogOpen(false)
+      } else {
+        console.error('Error al añadir el partido')
+      }
+    } catch (error) {
+      console.error('Error al añadir el partido:', error)
     }
   }
 
@@ -156,8 +220,8 @@ export default function PerfilPage() {
         </div>
       )}
 
-      <main className="flex-1 flex justify-center items-center p-4 bg-gradient-to-b from-green-50 to-white">
-        <Card className="w-full max-w-lg shadow-lg border-green-100">
+      <main className="flex-1 flex flex-col items-center p-4 bg-gradient-to-b from-green-50 to-white">
+        <Card className="w-full max-w-lg shadow-lg border-green-100 mb-6">
           <CardHeader className="bg-green-50 border-b border-green-100">
             <CardTitle className="text-2xl font-bold text-green-800 flex items-center">
               <User className="w-6 h-6 mr-2" />
@@ -199,7 +263,96 @@ export default function PerfilPage() {
             </Button>
           </CardContent>
         </Card>
+
+        <Card className="w-full max-w-lg shadow-lg border-green-100">
+          <CardHeader className="bg-green-50 border-b border-green-100">
+            <CardTitle className="text-2xl font-bold text-green-800 flex items-center justify-between">
+              <span>Historial de Partidos</span>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setIsDialogOpen(true)}
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6 space-y-4">
+            {partidos.length > 0 ? (
+              partidos.map((partido) => (
+                <div key={partido.id} className="border-b border-gray-200 pb-2">
+                  <p><strong>Fecha:</strong> {new Date(partido.fecha).toLocaleDateString()}</p>
+                  <p><strong>Jugadores:</strong> {partido.jugadores}</p>
+                  <p><strong>Resultado:</strong> {partido.resultado}</p>
+                </div>
+              ))
+            ) : (
+              <p>No hay partidos registrados aún.</p>
+            )}
+          </CardContent>
+        </Card>
       </main>
+
+      <Dialog
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        title="Añadir Nuevo Partido"
+      >
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor="fecha">Fecha</Label>
+            <Input
+              id="fecha"
+              type="date"
+              value={fecha}
+              onChange={(e) => setFecha(e.target.value)}
+            />
+          </div>
+          {jugadores.map((jugador, index) => (
+            <div key={index}>
+              <Label htmlFor={`jugador${index + 1}`}>Jugador {index + 1}</Label>
+              <Input
+                id={`jugador${index + 1}`}
+                value={jugador}
+                onChange={(e) => {
+                  const newJugadores = [...jugadores]
+                  newJugadores[index] = e.target.value
+                  setJugadores(newJugadores)
+                }}
+                placeholder={index === 0 ? userData.firstName : `Jugador ${index + 1}`}
+              />
+            </div>
+          ))}
+          <div>
+            <Label htmlFor="numSets">Número de Sets</Label>
+            <Select value={numSets} onValueChange={setNumSets}>
+              <SelectTrigger>
+                <SelectValue placeholder="Seleccionar número de sets" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="2">2 Sets</SelectItem>
+                <SelectItem value="3">3 Sets</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          {resultados.slice(0, parseInt(numSets)).map((resultado, index) => (
+            <div key={index}>
+              <Label htmlFor={`resultado${index + 1}`}>Resultado Set {index + 1}</Label>
+              <Input
+                id={`resultado${index + 1}`}
+                value={resultado}
+                onChange={(e) => {
+                  const newResultados = [...resultados]
+                  newResultados[index] = e.target.value
+                  setResultados(newResultados)
+                }}
+                placeholder="6-4"
+              />
+            </div>
+          ))}
+          <Button onClick={handleAddPartido} className="w-full">Añadir Partido</Button>
+        </div>
+      </Dialog>
 
       <footer className="py-6 px-4 md:px-6 bg-white border-t border-gray-200">
         <div className="container mx-auto flex flex-col sm:flex-row justify-between items-center">

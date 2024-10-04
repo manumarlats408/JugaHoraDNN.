@@ -1,7 +1,6 @@
 {
-  "/jugar/page": "app/jugar/page.js",
-  "/reserva/page": "app/reserva/page.js",
-  "/page": "app/page.js",
-  "/registro/page": "app/registro/page.js",
-  "/login/page": "app/login/page.js"
+  "/perfil/page": "app/perfil/page.js",
+  "/api/partidos/route": "app/api/partidos/route.js",
+  "/api/auth/route": "app/api/auth/route.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js"
 }
