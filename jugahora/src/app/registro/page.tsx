@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { UserPlus } from 'lucide-react'
+import Image from 'next/image'
+
 
 export default function PaginaRegistro() {
   const [email, setEmail] = useState('')
@@ -47,8 +49,8 @@ export default function PaginaRegistro() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-green-100 p-4">
-      <Link href="/" className="mb-8 text-2xl font-bold text-green-600 flex items-center">
-        <span className="h-8 w-8 rounded-full bg-green-600 flex items-center justify-center text-white mr-2">JH</span>
+      <Link href="/" className="mb-8 text-2xl font-bold flex items-center">
+        <Image src='/logo.svg' alt="JugáHora Logo" width={32} height={32} /> 
         JugáHora
       </Link>
       <Card className="w-full max-w-md shadow-lg">

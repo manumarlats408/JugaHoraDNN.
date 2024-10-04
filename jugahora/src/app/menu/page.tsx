@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation'
 import { Menu, X, Home, User, Calendar, Users, LogOut } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import Image from 'next/image'
+
 
 const menuItems = [
   { href: '/menu', label: 'Inicio', icon: Home },
@@ -61,10 +63,8 @@ export default function MenuPage() {
       <header className="px-4 lg:px-6 h-16 flex items-center relative bg-white shadow-md">
         <Link className="flex items-center justify-center" href="/menu">
           <span className="sr-only">JugáHora</span>
-          <span className="h-8 w-8 rounded-full bg-green-600 flex items-center justify-center text-white font-bold text-lg">
-            JH
-          </span>
-          <span className="ml-2 text-2xl font-bold text-green-600">JugáHora</span>
+          <Image src='/logo.svg' alt="JugáHora Logo" width={32} height={32} />
+          <span className="ml-2 text-2xl font-bold">JugáHora</span>
         </Link>
 
         <nav className="hidden lg:flex ml-auto gap-6">
