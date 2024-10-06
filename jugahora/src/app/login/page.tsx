@@ -29,13 +29,13 @@ export default function PaginaInicioSesion() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
-        credentials: 'include', // This is important for including cookies
+        credentials: 'include',
       })
 
       if (respuesta.ok) {
         const datos = await respuesta.json();
         if (datos.message === 'Login exitoso') {
-          router.push('/menu');
+          router.push('/menu'); // Esto hará un GET a la ruta /menu
         }
       } else {
         const datos = await respuesta.json()
