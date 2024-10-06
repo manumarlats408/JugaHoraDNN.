@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
-import jwt, { JwtPayload } from 'jsonwebtoken'; // Import JwtPayload
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'secret-key';
 
 export async function POST(request: Request) {
-  const prisma = new PrismaClient();  // Inicia Prisma aquí
+  const prisma = new PrismaClient();
 
   try {
     const { email, password } = await request.json();
@@ -19,9 +19,9 @@ export async function POST(request: Request) {
         firstName: true,
         lastName: true,
         password: true,
-        phoneNumber: true, // Select these if needed
+        phoneNumber: true,
         address: true,
-        age: true
+        age: true,
       },
     });
 
@@ -41,7 +41,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Generar el token JWT
     const token = jwt.sign(
       {
         id: usuario.id,
@@ -57,7 +56,7 @@ export async function POST(request: Request) {
     );
 
     // Enviar el token en la cookie
-    const response = NextResponse.redirect(new URL('/menu', request.url));
+    const response = NextResponse.json({ message: 'Login exitoso' });
     response.cookies.set('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -70,9 +69,11 @@ export async function POST(request: Request) {
     console.error('Error de inicio de sesión:', error);
     return NextResponse.json({ error: 'Ocurrió un error inesperado' }, { status: 500 });
   } finally {
-    await prisma.$disconnect();  // Desconectar Prisma
+    await prisma.$disconnect();
   }
 }
+
+
 
 export async function GET(request: Request) {
   const prisma = new PrismaClient();  // Inicia Prisma aquí

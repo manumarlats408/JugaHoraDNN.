@@ -10,7 +10,6 @@ import { Label } from "@/components/ui/label"
 import { LogIn } from 'lucide-react'
 import Image from 'next/image'
 
-
 export default function PaginaInicioSesion() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -34,12 +33,9 @@ export default function PaginaInicioSesion() {
       })
 
       if (respuesta.ok) {
-        // Check if we've been redirected to the menu page
-        if (respuesta.url.includes('/menu')) {
-          router.push('/menu')
-        } else {
-          // If not redirected, manually navigate to the menu
-          router.push('/menu')
+        const datos = await respuesta.json();
+        if (datos.message === 'Login exitoso') {
+          router.push('/menu');
         }
       } else {
         const datos = await respuesta.json()
