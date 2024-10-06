@@ -29,23 +29,25 @@ export default function PaginaInicioSesion() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
-        credentials: 'include', // Importante para incluir cookies
-      })
-
+        credentials: 'include',
+      });
+    
+      const datos = await respuesta.json();
+    
       if (respuesta.ok) {
-        const datos = await respuesta.json();
         if (datos.message === 'Login exitoso') {
-          // Asegura que estás redirigiendo correctamente
-          router.push('/menu') // Redirige al menú
+          router.push('/menu');
         }
       } else {
-        const datos = await respuesta.json()
-        setError(datos.error || 'Ocurrió un error durante el inicio de sesión')
+        setError(datos.error || 'Ocurrió un error durante el inicio de sesión');
+        console.error('Respuesta del servidor:', datos);
       }
     } catch (error) {
-      console.error('Error de inicio de sesión:', error)
-      setError('Ocurrió un error inesperado. Por favor, intenta de nuevo.')
-    } finally {
+      console.error('Error de inicio de sesión:', error);
+      setError('Ocurrió un error inesperado. Por favor, intenta de nuevo.');
+    }
+    
+      finally {
       setIsLoading(false)
     }
   }
