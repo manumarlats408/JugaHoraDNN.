@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useState, FormEvent } from 'react'
+import { useState, FormEvent, useEffect } from 'react'
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,6 +10,8 @@ import { Label } from "@/components/ui/label"
 import { LogIn } from 'lucide-react'
 import Image from 'next/image'
 
+console.log('Login component file loaded');
+
 export default function PaginaInicioSesion() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -17,12 +19,18 @@ export default function PaginaInicioSesion() {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
+  useEffect(() => {
+    console.log('Componente de inicio de sesión montado')
+  }, [])
+
   const manejarEnvio = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setError('')
     setIsLoading(true)
+    console.log('Iniciando proceso de inicio de sesión')
 
     try {
+      console.log('Enviando solicitud a /api/auth')
       const respuesta = await fetch('/api/auth', {
         method: 'POST',
         headers: {
@@ -32,14 +40,24 @@ export default function PaginaInicioSesion() {
         credentials: 'include',
       })
 
-      const datos = await respuesta.json()
+      console.log('Respuesta recibida:', respuesta.status)
+      const contentType = respuesta.headers.get("content-type")
+      console.log('Tipo de contenido:', contentType)
 
-      if (respuesta.ok) {
-        console.log('Login exitoso, intentando redirigir...');
-        router.push('/menu');
-        console.log('Redirección solicitada');
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+        const datos = await respuesta.json()
+        console.log('Datos recibidos:', datos)
+
+        if (respuesta.ok) {
+          console.log('Login exitoso, redirigiendo...')
+          router.push('/menu')
+        } else {
+          console.error('Error en la autenticación:', datos.error)
+          setError(datos.error || 'Error en la autenticación')
+        }
       } else {
-        setError(datos.error || 'Error en la autenticación')
+        console.error('Respuesta no JSON:', await respuesta.text())
+        setError('Error en la respuesta del servidor')
       }
     } catch (error) {
       console.error('Error de inicio de sesión:', error)
