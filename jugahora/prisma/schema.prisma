@@ -3,33 +3,31 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlserver"
+  provider = "postgresql"   // Cambiamos el proveedor a PostgreSQL
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id          Int      @id @default(autoincrement())
-  email       String   @unique
-  password    String
-  firstName   String
-  lastName    String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  phoneNumber String?  @db.NVarChar(255)
-  address     String?  @db.NVarChar(255)
-  age         Int?
+  id          Int      @id @default(autoincrement())  // Autoincrement para PostgreSQL
+  email       String   @unique                       // Correo electrónico único
+  password    String                                 // Contraseña
+  firstName   String                                 // Primer nombre
+  lastName    String                                 // Apellido
+  createdAt   DateTime @default(now())               // Timestamp de creación
+  updatedAt   DateTime @updatedAt                    // Timestamp que se actualiza automáticamente
+  phoneNumber String?                                // Teléfono opcional
+  address     String?                                // Dirección opcional
+  age         Int?                                   // Edad opcional
   
-  // Relación inversa
-  Partidos    Partidos[]
+  Partidos    Partidos[]                             // Relación con la tabla Partidos
 }
 
-
 model Partidos {
-  id        Int      @id @default(autoincrement())
-  userId    Int      // Cambiamos el tipo a Int para que coincida con User.id
-  fecha     DateTime @default(now())
-  jugadores String
-  resultado String
+  id        Int      @id @default(autoincrement())   // Autoincrement para PostgreSQL
+  userId    Int                                      // Clave foránea a la tabla Users
+  fecha     DateTime @default(now())                 // Fecha del partido con valor por defecto
+  jugadores String                                   // Lista de jugadores
+  resultado String                                   // Resultado del partido
 
-  User      User     @relation(fields: [userId], references: [id])
+  User      User     @relation(fields: [userId], references: [id])  // Relación con la tabla Users
 }
