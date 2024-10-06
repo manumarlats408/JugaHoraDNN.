@@ -17,6 +17,7 @@ const menuItems = [
 ]
 
 export default function MenuPage() {
+  console.log('Página de menú cargada');
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [userName, setUserName] = useState<string | null>(null)
   const menuRef = useRef<HTMLDivElement>(null)

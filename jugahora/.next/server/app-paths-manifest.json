@@ -1,5 +1,15 @@
 {
-  "/login/page": "app/login/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/logout/route": "app/api/logout/route.js",
   "/api/auth/route": "app/api/auth/route.js",
-  "/menu/page": "app/menu/page.js"
+  "/api/partidos/route": "app/api/partidos/route.js",
+  "/api/test/route": "app/api/test/route.js",
+  "/api/registro/route": "app/api/registro/route.js",
+  "/jugar/page": "app/jugar/page.js",
+  "/login/page": "app/login/page.js",
+  "/page": "app/page.js",
+  "/menu/page": "app/menu/page.js",
+  "/perfil/page": "app/perfil/page.js",
+  "/registro/page": "app/registro/page.js",
+  "/reserva/page": "app/reserva/page.js"
 }

@@ -35,8 +35,9 @@ export default function PaginaInicioSesion() {
       const datos = await respuesta.json()
 
       if (respuesta.ok) {
-        console.log('Login exitoso, redirigiendo...')
-        router.push('/menu')
+        console.log('Login exitoso, intentando redirigir...');
+        router.push('/menu');
+        console.log('Redirección solicitada');
       } else {
         setError(datos.error || 'Error en la autenticación')
       }
