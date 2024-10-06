@@ -21,7 +21,7 @@ export default function PaginaInicioSesion() {
     e.preventDefault()
     setError('')
     setIsLoading(true)
-  
+
     try {
       const respuesta = await fetch('/api/auth', {
         method: 'POST',
@@ -31,7 +31,7 @@ export default function PaginaInicioSesion() {
         body: JSON.stringify({ email, password }),
         credentials: 'include',
       })
-  
+
       const contentType = respuesta.headers.get("content-type");
       if (contentType && contentType.indexOf("application/json") !== -1) {
         const datos = await respuesta.json();
