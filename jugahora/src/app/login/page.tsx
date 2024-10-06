@@ -29,13 +29,14 @@ export default function PaginaInicioSesion() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
-        credentials: 'include',
+        credentials: 'include', // Importante para incluir cookies
       })
 
       if (respuesta.ok) {
         const datos = await respuesta.json();
         if (datos.message === 'Login exitoso') {
-          router.push('/menu'); // Esto hará un GET a la ruta /menu
+          // Asegura que estás redirigiendo correctamente
+          router.push('/menu') // Redirige al menú
         }
       } else {
         const datos = await respuesta.json()
