@@ -21,7 +21,7 @@ export default function PaginaInicioSesion() {
     e.preventDefault()
     setError('')
     setIsLoading(true)
-
+  
     try {
       const respuesta = await fetch('/api/auth', {
         method: 'POST',
@@ -30,24 +30,28 @@ export default function PaginaInicioSesion() {
         },
         body: JSON.stringify({ email, password }),
         credentials: 'include',
-      });
-    
-      const datos = await respuesta.json();
-    
-      if (respuesta.ok) {
-        if (datos.message === 'Login exitoso') {
-          router.push('/menu');
+      })
+  
+      const contentType = respuesta.headers.get("content-type");
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+        const datos = await respuesta.json();
+        if (respuesta.ok) {
+          if (datos.message === 'Login exitoso') {
+            router.push('/menu')
+          } else {
+            setError(datos.error || 'Respuesta inesperada del servidor')
+          }
+        } else {
+          setError(datos.error || 'Error en la autenticación')
         }
       } else {
-        setError(datos.error || 'Ocurrió un error durante el inicio de sesión');
-        console.error('Respuesta del servidor:', datos);
+        console.error('Respuesta no JSON:', await respuesta.text());
+        setError('Error en la respuesta del servidor')
       }
     } catch (error) {
-      console.error('Error de inicio de sesión:', error);
-      setError('Ocurrió un error inesperado. Por favor, intenta de nuevo.');
-    }
-    
-      finally {
+      console.error('Error de inicio de sesión:', error)
+      setError('Ocurrió un error inesperado. Por favor, intenta de nuevo.')
+    } finally {
       setIsLoading(false)
     }
   }

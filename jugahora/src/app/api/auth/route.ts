@@ -30,19 +30,13 @@ export async function POST(request: Request) {
     console.log('Usuario encontrado:', usuario ? 'Sí' : 'No');
 
     if (!usuario) {
-      return NextResponse.json(
-        { error: 'Correo electrónico o contraseña inválidos' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Correo electrónico o contraseña inválidos' }, { status: 401 });
     }
 
     const esContraseñaValida = await bcrypt.compare(password, usuario.password);
 
     if (!esContraseñaValida) {
-      return NextResponse.json(
-        { error: 'Correo electrónico o contraseña inválidos' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Correo electrónico o contraseña inválidos' }, { status: 401 });
     }
 
     const token = jwt.sign(
@@ -59,14 +53,13 @@ export async function POST(request: Request) {
       { expiresIn: '1h' }
     );
 
-    // Enviar el token en la cookie
     const response = NextResponse.json({ message: 'Login exitoso' });
     response.cookies.set('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: 3600,
-      sameSite: 'lax', // Cambia 'strict' a 'lax'
-      path: '/', // Asegúrate de que la cookie esté disponible en todo el sitio
+      sameSite: 'lax',
+      path: '/',
     });
 
     console.log('Login exitoso, token generado');
