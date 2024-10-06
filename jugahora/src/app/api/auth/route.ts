@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'secret-key';
-const prisma = new PrismaClient();
 
 export async function POST(request: Request) {
   console.log('Iniciando proceso de login');
+  const prisma = new PrismaClient();
 
   try {
     const { email, password } = await request.json();
@@ -67,20 +67,33 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Error detallado de inicio de sesión:', error);
     return NextResponse.json({ error: 'Ocurrió un error inesperado'}, { status: 500 });
+  } finally {
+    await prisma.$disconnect();
   }
 }
 
-export async function GET() {
-  return NextResponse.json({ message: 'Método GET no permitido' }, { status: 405 });
-}
+export async function GET(request: Request) {
+  const prisma = new PrismaClient();  // Inicia Prisma aquí
 
-export async function OPTIONS() {
-  return new NextResponse(null, {
-    status: 200,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    },
-  });
+  const token = request.headers.get('Cookie')?.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+
+  if (!token) {
+    return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+  }
+
+  try {
+    // Explicitly typing decoded as JwtPayload
+    const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload & { id: string };
+
+    if (!decoded || !decoded.id) {
+      throw new Error('Token inválido');
+    }
+
+    return NextResponse.json({ user: decoded });
+  } catch (error) {
+    console.error('Error al verificar el token:', error);
+    return NextResponse.json({ error: 'Token inválido' }, { status: 401 });
+  } finally {
+    await prisma.$disconnect();  // Desconectar Prisma
+  }
 }

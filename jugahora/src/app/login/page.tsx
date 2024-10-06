@@ -32,21 +32,13 @@ export default function PaginaInicioSesion() {
         credentials: 'include',
       })
 
-      const contentType = respuesta.headers.get("content-type");
-      if (contentType && contentType.indexOf("application/json") !== -1) {
-        const datos = await respuesta.json();
-        if (respuesta.ok) {
-          if (datos.message === 'Login exitoso') {
-            router.push('/menu')
-          } else {
-            setError(datos.error || 'Respuesta inesperada del servidor')
-          }
-        } else {
-          setError(datos.error || 'Error en la autenticación')
-        }
+      const datos = await respuesta.json()
+
+      if (respuesta.ok) {
+        console.log('Login exitoso, redirigiendo...')
+        router.push('/menu')
       } else {
-        console.error('Respuesta no JSON:', await respuesta.text());
-        setError('Error en la respuesta del servidor')
+        setError(datos.error || 'Error en la autenticación')
       }
     } catch (error) {
       console.error('Error de inicio de sesión:', error)
