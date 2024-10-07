@@ -61,3 +61,37 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Ocurrió un error durante el inicio de sesión' }, { status: 500 });
   }
 }
+
+export async function GET(request: Request) {
+  try {
+    const token = request.headers.get('Cookie')?.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+
+    if (!token) {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+    }
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    
+    if (typeof decoded !== 'object' || !decoded) {
+      throw new Error('Token inválido');
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.userId },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        phoneNumber: true,
+        address: true,
+        age: true,
+      },
+    });
+
+    return NextResponse.json({ user });
+  } catch (error) {
+    console.error('Error en la verificación del token:', error);
+    return NextResponse.json({ error: 'Token inválido' }, { status: 401 });
+  }
+}
