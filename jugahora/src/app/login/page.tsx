@@ -37,7 +37,7 @@ export default function PaginaInicioSesion() {
 
       if (respuesta.ok) {
         console.log('Login exitoso, redirigiendo...');
-        router.push('/menu')
+        router.replace('/menu')
       } else {
         const datos = await respuesta.json()
         console.error('Error en la autenticación:', datos.error);
