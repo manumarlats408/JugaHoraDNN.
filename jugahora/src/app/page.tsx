@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Calendar, UserPlus, Users } from "lucide-react"
 import Link from "next/link"
 import Image from 'next/image'
+import { ReactNode } from 'react'
 
 export default function HomePage() {
   return (
@@ -84,7 +85,13 @@ export default function HomePage() {
   )
 }
 
-function FeatureCard({ icon, title, description }) {
+interface FeatureCardProps {
+  icon: ReactNode;
+  title: string;
+  description: string;
+}
+
+function FeatureCard({ icon, title, description }: FeatureCardProps) {
   return (
     <div className="flex flex-col items-center space-y-2 border border-gray-200 p-4 rounded-lg">
       {icon}
