@@ -5,24 +5,17 @@ import Image from 'next/image'
 
 export default function HomePage() {
   return (
-    
     <div className="flex flex-col min-h-screen">
-      <header className="px-4 lg:px-6 h-14 flex items-center">
+      <header className="px-4 lg:px-6 h-16 flex items-center justify-between">
         <Link className="flex items-center justify-center" href="/">
           <span className="sr-only">JugáHora</span>
           <Image src='/logo.svg' alt="JugáHora Logo" width={32} height={32} /> 
-          <span className="ml-2 text-2xl font-bold">JugáHora</span>
+          <span className="ml-2 text-xl font-bold">JugáHora</span>
         </Link>
-        <nav className="ml-auto flex gap-4 sm:gap-6">
-          {/* <Link className="text-sm font-medium hover:underline underline-offset-4" href="/reservar">
-            Reservar
+        <nav className="flex gap-4">
+          <Link className="text-sm font-medium hover:underline underline-offset-4" href="/login">
+            Iniciar Sesión
           </Link>
-          <Link className="text-sm font-medium hover:underline underline-offset-4" href="/unirse">
-            Unirse
-          </Link>
-          <Link className="text-sm font-medium hover:underline underline-offset-4" href="/clubes">
-            Clubes
-          </Link> */}
         </nav>
       </header>
       <main className="flex-1">
@@ -38,12 +31,12 @@ export default function HomePage() {
                   quieras.
                 </p>
               </div>
-              <div className="space-x-4">
-                <Link href="/registro">
-                  <Button>Registrarse</Button>
+              <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                <Link href="/registro" className="w-full sm:w-auto">
+                  <Button className="w-full">Registrarse</Button>
                 </Link>
-                <Link href="/login">
-                  <Button variant="outline">Iniciar Sesión</Button>
+                <Link href="/login" className="w-full sm:w-auto">
+                  <Button variant="outline" className="w-full">Iniciar Sesión</Button>
                 </Link>
               </div>
             </div>
@@ -51,40 +44,34 @@ export default function HomePage() {
         </section>
         <section className="w-full py-12 md:py-24 lg:py-32 bg-white">
           <div className="container px-4 md:px-6">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12">
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-8 sm:mb-12">
               ¿Por qué elegir JugáHora?
             </h2>
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-12">
-              <div className="flex flex-col items-center space-y-4 text-center">
-                <Calendar className="h-12 w-12 text-green-600" />
-                <h3 className="text-xl font-bold">Reserva Fácil</h3>
-                <p className="text-gray-500 dark:text-gray-400">
-                  Reserva canchas de pádel en los mejores clubes con solo unos clics.
-                </p>
-              </div>
-              <div className="flex flex-col items-center space-y-4 text-center">
-                <Users className="h-12 w-12 text-green-600" />
-                <h3 className="text-xl font-bold">Únete a Partidos</h3>
-                <p className="text-gray-500 dark:text-gray-400">
-                  Encuentra y únete a partidos organizados por otros jugadores en tu área.
-                </p>
-              </div>
-              <div className="flex flex-col items-center space-y-4 text-center">
-              <UserPlus className="h-12 w-12 text-green-600" /> {/* Cambié el icono para algo más representativo */}
-              <h3 className="text-xl font-bold">Conoce Gente Nueva</h3>
-              <p className="text-gray-500 dark:text-gray-400">
-                Únete a partidos y actividades para conocer nuevos jugadores de pádel y hacer amigos mientras te diviertes.
-              </p>
-            </div>
+            <div className="grid grid-cols-1 gap-8 sm:gap-12 md:grid-cols-3">
+              <FeatureCard
+                icon={<Calendar className="h-10 w-10 sm:h-12 sm:w-12 text-green-600" />}
+                title="Reserva Fácil"
+                description="Reserva canchas de pádel en los mejores clubes con solo unos clics."
+              />
+              <FeatureCard
+                icon={<Users className="h-10 w-10 sm:h-12 sm:w-12 text-green-600" />}
+                title="Únete a Partidos"
+                description="Encuentra y únete a partidos organizados por otros jugadores en tu área."
+              />
+              <FeatureCard
+                icon={<UserPlus className="h-10 w-10 sm:h-12 sm:w-12 text-green-600" />}
+                title="Conoce Gente Nueva"
+                description="Únete a partidos y actividades para conocer nuevos jugadores de pádel y hacer amigos mientras te diviertes."
+              />
             </div>
           </div>
         </section>
       </main>
-      <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
-        <p className="text-xs text-gray-500 dark:text-gray-400">
+      <footer className="flex flex-col gap-4 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
+        <p className="text-xs text-center sm:text-left text-gray-500 dark:text-gray-400">
           © 2024 JugáHora. Todos los derechos reservados.
         </p>
-        <nav className="sm:ml-auto flex gap-4 sm:gap-6">
+        <nav className="flex gap-4 sm:gap-6 sm:ml-auto justify-center sm:justify-start">
           <Link className="text-xs hover:underline underline-offset-4" href="/terminos">
             Términos de Servicio
           </Link>
@@ -93,6 +80,18 @@ export default function HomePage() {
           </Link>
         </nav>
       </footer>
+    </div>
+  )
+}
+
+function FeatureCard({ icon, title, description }) {
+  return (
+    <div className="flex flex-col items-center space-y-2 border border-gray-200 p-4 rounded-lg">
+      {icon}
+      <h3 className="text-xl font-bold">{title}</h3>
+      <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
+        {description}
+      </p>
     </div>
   )
 }
