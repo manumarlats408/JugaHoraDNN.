@@ -32,11 +32,12 @@ export async function PUT(request: Request) {
       address: updatedData.address,
       age: updatedData.age,
     })
-    .eq('id', user.id)
+    .eq('email', user.email)
 
-  if (updateError) {
-    return NextResponse.json({ error: 'Error al actualizar el perfil' }, { status: 500 })
-  }
+    if (updateError) {
+        console.error('Error al actualizar el perfil:', updateError.message);
+        return NextResponse.json({ error: 'Error al actualizar el perfil' }, { status: 500 });
+    }
 
   return NextResponse.json({ message: 'Perfil actualizado con éxito', updatedUser: data })
 }
