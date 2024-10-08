@@ -11,6 +11,27 @@ const nextConfig = {
             { key: 'Access-Control-Allow-Headers', value: 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version' },
           ],
         },
+        {
+          source: "/(.*)", // Aplica las cabeceras a todas las rutas
+          headers: [
+            {
+              key: "Content-Security-Policy",
+              value: "default-src 'self'; script-src 'self'; object-src 'none';", // CSP básico
+            },
+            {
+              key: "X-Frame-Options",
+              value: "DENY", // Previene ataques de clickjacking
+            },
+            {
+              key: "X-Content-Type-Options",
+              value: "nosniff", // Evita la adivinación del tipo de contenido
+            },
+            {
+              key: "Referrer-Policy",
+              value: "no-referrer", // Controla la información enviada en el header Referer
+            },
+          ],
+        },
       ]
     },
   };
