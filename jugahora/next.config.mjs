@@ -16,7 +16,7 @@ const nextConfig = {
         headers: [
           {
             key: "Content-Security-Policy",
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; object-src 'none';", // CSP ajustado
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' https://vercel.live; style-src 'self' 'unsafe-inline'; object-src 'none';", // CSP ajustada
           },
           {
             key: "X-Frame-Options",
