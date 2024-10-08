@@ -9,11 +9,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Menu, X, Home, User, Calendar, Users, LogOut, MessageCircle } from 'lucide-react'
 
 const clubs = [
-  { name: 'Pasaje del sol - GEBA', whatsappLink: 'https://chat.whatsapp.com/C8WKYF8gkPb9yVbKWmJIy6' },
+  { name: 'Lasaigues Club - Martinez', whatsappLink: null },
   { name: 'Lasaigues Club - Canning', whatsappLink: null },
-  { name: 'Palmeras Club', whatsappLink: null },
-  { name: 'World Padel Center - CABA', whatsappLink: null },
-  { name: 'Premium APA center', whatsappLink: null },
+  { name: 'Lasaigues Club - Retiro', whatsappLink: null },
+  { name: 'Lasaigues Club - Saavedra', whatsappLink: null },
+  { name: 'Lasaigues Club - Caballito', whatsappLink: null },
+  { name: 'Lasaigues Club - Nordelta', whatsappLink: null },
+  { name: 'Lasaigues Club - Santa Bárbara', whatsappLink: null },
+  { name: 'Lasaigues Club - Tigre', whatsappLink: null },
+  { name: 'Lasaigues Club - Parque Leloir', whatsappLink: null },
+
 ]
 
 const menuItems = [

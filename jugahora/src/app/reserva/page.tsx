@@ -9,11 +9,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Menu, X, Home, User, Calendar, Users, LogOut, Phone } from 'lucide-react'
 
 const clubs = [
-  { name: 'Pasaje del sol - GEBA', phone: '+54 9 11 5821-1410' },
-  { name: 'Lasaigues Club - Canning', phone: '+54 9 11 6052-0467' },
-  { name: 'Palmeras Club', phone: '+54 9 11 2494-6877' },
-  { name: 'World Padel Center - CABA', phone: '+54 9 11 2334-0784' },
-  { name: 'Premium APA center', phone: '+54 9 11 6350-6965' },
+  { name: 'Lasaigues Club - Martinez', phone: '+54 9 11 3013-0664' },
+  { name: 'Lasaigues Club - Canning', phone: '+ 54 9 11 6052-0467' },
+  { name: 'Lasaigues Club - Retiro', phone: '+54 9 11 6567-7240' },
+  { name: 'Lasaigues Club - Saavedra', phone: '+54 9 11 5980-8262' },
+  { name: 'Lasaigues Club - Caballito', phone: '+54 9 11 3016-3584' },
+  { name: 'Lasaigues Club - Nordelta', phone: '+54 9 11 6175-7025' },
+  { name: 'Lasaigues Club - Santa Bárbara', phone: '+54 9 11 6567-7240' },
+  { name: 'Lasaigues Club - Tigre', phone: '+54 9 11 6688-0953' },
+  { name: 'Lasaigues Club - Parque Leloir', phone: '+54 9 11 3435-2020' },
+
 ]
 
 const menuItems = [
