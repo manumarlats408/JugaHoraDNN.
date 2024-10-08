@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 
-export async function GET() {
+export async function GET(request: Request) {
   // Crear la respuesta y borrar la cookie estableciéndola con maxAge = 0 y expirando la cookie
-  const response = NextResponse.redirect(new URL('/')); // Redirige a la página principal
+  const response = NextResponse.redirect(new URL('/', request.url )); // Redirige a la página principal
 
   response.cookies.set('token', '', {
     httpOnly: true,
