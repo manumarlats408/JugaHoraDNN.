@@ -51,28 +51,31 @@ export default function EditarPerfilPage() {
   }, [router])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    if (!userData) return
+    e.preventDefault();
+    console.log('Enviando solicitud PUT'); // Agrega este log para verificar que se llame
+
+    if (!userData) return;
 
     try {
-      const response = await fetch('/api/user', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userData),
-        credentials: 'include',
-      })
+        const response = await fetch('/api/user', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userData),
+            credentials: 'include',
+        });
 
-      if (response.ok) {
-        router.push('/perfil')
-      } else {
-        console.error('Error al actualizar el perfil')
-      }
+        if (response.ok) {
+            router.push('/perfil');
+        } else {
+            console.error('Error al actualizar el perfil');
+        }
     } catch (error) {
-      console.error('Error al actualizar el perfil:', error)
+        console.error('Error al actualizar el perfil:', error);
     }
-  }
+};
+
 
   if (isLoading) {
     return (
