@@ -56,6 +56,9 @@ export default function EditarPerfilPage() {
 
     if (!userData) return;
 
+    // Agrego log para verificar que se envíe la data correcta
+    console.log('Data a enviar:', userData);
+
     try {
         const response = await fetch('/api/user', {
             method: 'PUT',
