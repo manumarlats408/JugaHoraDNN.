@@ -3,49 +3,59 @@ import { cookies } from 'next/headers';
 import { createClient } from '@supabase/supabase-js';
 
 export async function PUT(request: Request) {
-    // Create Supabase client
-    //creo log
-    console.log('URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
-    console.log('Service Role Key:', process.env.SUPABASE_SERVICE_ROLE_KEY);
-    console.log('Creando cliente de Supabase...');
+    // Crear cliente de Supabase y loguear información relevante
+    console.log('Iniciando actualización del perfil');
+    console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
+    console.log('Supabase Service Role Key:', process.env.SUPABASE_SERVICE_ROLE_KEY);
+    
     const supabase = createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
 
-    // Log the Supabase client
-    console.log('Supabase client:', supabase);
-
-    // Get the authentication cookie
+    // Obtener la cookie de autenticación
     const cookieStore = cookies();
     const token = cookieStore.get('token');
-    console.log('Token received:', token?.value);
+    console.log('Token obtenido:', token?.value);
 
-    // Check if token exists
+    // Comprobar si el token existe
     if (!token) {
-        console.error('Token not found');
+        console.error('Token no encontrado');
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     try {
-        // Decode the token to get the email (assumes the token contains the email)
+        // Decodificar el token para obtener el correo electrónico del usuario
         const payload = JSON.parse(Buffer.from(token.value.split('.')[1], 'base64').toString());
         const userEmail = payload.email;
-        console.log('Email extracted from token:', userEmail);
+        console.log('Correo electrónico extraído del token:', userEmail);
 
-        // If no email found, return unauthorized
+        // Verificar si el correo electrónico se obtuvo correctamente
         if (!userEmail) {
-            console.error('Email not found in token payload');
+            console.error('Correo electrónico no encontrado en el token');
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        // Parse the request body for update data
+        // Parsear el cuerpo de la solicitud para obtener los datos a actualizar
         const updatedData = await request.json();
-        console.log('Data to update:', updatedData);
+        console.log('Datos a actualizar:', updatedData);
 
-        // Try to update the user's profile in public.User table
+        // Verificar si el usuario existe antes de actualizar
+        const { data: userExists, error: selectError } = await supabase
+            .from('User')
+            .select('*')
+            .eq('email', userEmail)
+            .single();
+        console.log('Resultado de búsqueda de usuario:', userExists);
+        
+        if (selectError || !userExists) {
+            console.error('Usuario no encontrado o error en la búsqueda:', selectError);
+            return NextResponse.json({ error: 'User not found' }, { status: 404 });
+        }
+
+        // Intentar actualizar el perfil del usuario en la tabla 'User'
         const { data, error: updateError } = await supabase
-            .from('User') // Make sure this matches the actual table name
+            .from('User')
             .update({
                 firstName: updatedData.firstName,
                 lastName: updatedData.lastName,
@@ -53,20 +63,21 @@ export async function PUT(request: Request) {
                 address: updatedData.address,
                 age: updatedData.age,
             })
-            .eq('email', userEmail); // Use email from token
+            .eq('email', userEmail);
 
-        // Log the update response
-        console.log('Update result:', data);
+        console.log('Resultado de actualización:', data);
+
         if (updateError) {
-            console.error('Error updating profile:', updateError.message);
+            console.error('Error al actualizar el perfil:', updateError);
             return NextResponse.json({ error: 'Error updating profile' }, { status: 500 });
         }
 
-        // Successful response
+        // Respuesta exitosa
+        console.log('Perfil actualizado con éxito');
         return NextResponse.json({ message: 'Profile updated successfully', updatedUser: data });
 
     } catch (error) {
-        console.error('Unexpected error:', error);
+        console.error('Error inesperado:', error);
         return NextResponse.json({ error: 'An unexpected error occurred' }, { status: 500 });
     }
 }
