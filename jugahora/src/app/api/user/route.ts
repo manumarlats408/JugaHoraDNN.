@@ -4,10 +4,15 @@ import { createClient } from '@supabase/supabase-js';
 
 export async function PUT(request: Request) {
     // Create Supabase client
+    //creo log
+    console.log('Creando cliente de Supabase...');
     const supabase = createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
+
+    // Log the Supabase client
+    console.log('Supabase client:', supabase);
 
     // Get the authentication cookie
     const cookieStore = cookies();
