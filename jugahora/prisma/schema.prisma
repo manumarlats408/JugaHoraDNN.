@@ -20,7 +20,8 @@ model User {
   phoneNumber String?                                // Teléfono opcional
   address     String?                                // Dirección opcional
   age         Int?                                   // Edad opcional
-  
+  resetToken       String?
+  resetTokenExpiry DateTime?
   Partidos    Partidos[]                             // Relación con la tabla Partidos
 }
 
