@@ -1,11 +1,8 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../../../prisma';
 import { compare } from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-const prisma = new PrismaClient({
-  log: ['query', 'info', 'warn', 'error'], // Agrega los tipos de logs que deseas
-});
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 export async function POST(request: Request) {
