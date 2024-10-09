@@ -20,8 +20,8 @@ model User {
   phoneNumber String?                                // Teléfono opcional
   address     String?                                // Dirección opcional
   age         Int?                                   // Edad opcional
-  resetToken       String?
-  resetTokenExpiry DateTime?
+  resetToken       String?   @map("resettoken") // Especifica en minúsculas
+  resetTokenExpiry DateTime? @map("resettokenexpiry") // Especifica en minúsculas
   Partidos    Partidos[]                             // Relación con la tabla Partidos
 }
 
