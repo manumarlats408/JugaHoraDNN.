@@ -30,12 +30,18 @@ export async function PUT(request: Request) {
     try {
         // Decode the token to get the email (assumes the token contains the email)
         const payload = JSON.parse(Buffer.from(token.value.split('.')[1], 'base64').toString());
-        const userEmail = payload.email;
-        console.log('Email extracted from token:', userEmail);
+        //const userEmail = payload.email;
+        const userId = payload.id;
+        console.log('Email extracted from token:', userId);
 
         // If no email found, return unauthorized
-        if (!userEmail) {
-            console.error('Email not found in token payload');
+        // if (!userEmail) {
+        //     console.error('Email not found in token payload');
+        //     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        // }
+
+        if (!userId) {
+            console.error('Id not found in token payload');
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
@@ -53,7 +59,8 @@ export async function PUT(request: Request) {
                 address: updatedData.address,
                 age: updatedData.age,
             })
-            .eq('email', userEmail); // Use email from token
+            //.eq('email', userEmail); // Use email from token
+            .eq('id', userId); // Use id from token
 
         // Log the update response
         console.log('Update result:', data);
