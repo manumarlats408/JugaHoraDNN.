@@ -44,7 +44,7 @@ export async function PUT(request: Request) {
         const { data: userExists, error: selectError } = await supabase
             .from('User')
             .select('*')
-            .eq('email', userEmail)
+            .ilike('email', userEmail)
             .single();
         console.log('Resultado de búsqueda de usuario:', userExists);
         console.log('manu',selectError)
