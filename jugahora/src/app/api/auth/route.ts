@@ -4,7 +4,7 @@ import { compare } from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 const prisma = new PrismaClient({
-  log: ['query','info','warn','error']
+  log: ['query', 'info', 'warn', 'error'], // Agrega los tipos de logs que deseas
 });
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
