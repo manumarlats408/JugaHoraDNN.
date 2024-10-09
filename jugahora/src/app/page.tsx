@@ -68,10 +68,10 @@ export default function HomePage() {
           © 2024 JugáHora. Todos los derechos reservados.
         </p>
         <nav className="flex gap-4 sm:gap-6 sm:ml-auto justify-center sm:justify-start">
-          <Link className="text-xs hover:underline underline-offset-4" href="/terminos">
+          <Link className="text-xs hover:underline underline-offset-4" href="/">
             Términos de Servicio
           </Link>
-          <Link className="text-xs hover:underline underline-offset-4" href="/privacidad">
+          <Link className="text-xs hover:underline underline-offset-4" href="/">
             Privacidad
           </Link>
         </nav>
