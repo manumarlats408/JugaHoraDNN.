@@ -47,9 +47,9 @@ export async function PUT(request: Request) {
         const { data, error: updateError } = await supabase
             .from('User') // Make sure this matches the actual table name
             .update({
-                first_name: updatedData.firstName,
-                last_name: updatedData.lastName,
-                phone_number: updatedData.phoneNumber,
+                firstName: updatedData.firstName,
+                lastName: updatedData.lastName,
+                phoneNumber: updatedData.phoneNumber,
                 address: updatedData.address,
                 age: updatedData.age,
             })
