@@ -67,12 +67,13 @@ export default function EditarPerfilPage() {
             },
             body: JSON.stringify(userData),
             credentials: 'include',
+            
         });
 
         if (response.ok) {
             router.push('/perfil');
         } else {
-            console.error('Error al actualizar el perfil');
+            console.error('Error al actualizar el perfil...');
         }
     } catch (error) {
         console.error('Error al actualizar el perfil:', error);
