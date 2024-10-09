@@ -22,7 +22,7 @@ export default function RecuperarContrasena() {
     setIsLoading(true)
 
     try {
-      const response = await fetch('/api/auth/reset-password', {
+      const response = await fetch('/api/auth/request-reset', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -33,7 +33,7 @@ export default function RecuperarContrasena() {
       const data = await response.json()
 
       if (response.ok) {
-        setSuccess('Se ha enviado un enlace de recuperación a tu correo electrónico.')
+        setSuccess(data.message)
       } else {
         setError(data.error || 'Ocurrió un error al procesar tu solicitud.')
       }
