@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "vercel-build": "prisma generate && next build",
+    "vercel-build": "NODE_OPTIONS='--max_old_space_size=4096' npx prisma generate && next build",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

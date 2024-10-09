@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, FormEvent } from 'react'
+import { useState, FormEvent, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { LockIcon } from 'lucide-react'
 import Image from 'next/image'
 
-export default function RestablecerContrasena() {
+function ResetPasswordForm() {
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
@@ -62,56 +62,64 @@ export default function RestablecerContrasena() {
   }
 
   return (
+    <Card className="w-full max-w-md shadow-lg">
+      <CardHeader className="space-y-1">
+        <CardTitle className="text-2xl font-bold text-center">Restablecer contraseña</CardTitle>
+        <p className="text-center text-gray-500">Ingresa tu nueva contraseña</p>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="newPassword">Nueva contraseña</Label>
+            <Input 
+              id="newPassword"
+              type="password" 
+              placeholder="••••••••"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              required
+              disabled={isLoading}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="confirmPassword">Confirmar contraseña</Label>
+            <Input 
+              id="confirmPassword"
+              type="password" 
+              placeholder="••••••••"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              disabled={isLoading}
+            />
+          </div>
+          {error && <p className="text-red-500 text-center">{error}</p>}
+          {success && <p className="text-green-500 text-center">{success}</p>}
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? (
+              <>Restableciendo...</>
+            ) : (
+              <>
+                <LockIcon className="mr-2 h-4 w-4" /> Restablecer contraseña
+              </>
+            )}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
+  )
+}
+
+export default function RestablecerContrasena() {
+  return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-green-100 p-4">
       <Link href="/" className="mb-8 text-2xl font-bold flex items-center">
         <Image src='/logo.svg' alt="JugáHora Logo" width={32} height={32} />
         JugáHora
       </Link>
-      <Card className="w-full max-w-md shadow-lg">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Restablecer contraseña</CardTitle>
-          <p className="text-center text-gray-500">Ingresa tu nueva contraseña</p>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="newPassword">Nueva contraseña</Label>
-              <Input 
-                id="newPassword"
-                type="password" 
-                placeholder="••••••••"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                required
-                disabled={isLoading}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirmar contraseña</Label>
-              <Input 
-                id="confirmPassword"
-                type="password" 
-                placeholder="••••••••"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-                disabled={isLoading}
-              />
-            </div>
-            {error && <p className="text-red-500 text-center">{error}</p>}
-            {success && <p className="text-green-500 text-center">{success}</p>}
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? (
-                <>Restableciendo...</>
-              ) : (
-                <>
-                  <LockIcon className="mr-2 h-4 w-4" /> Restablecer contraseña
-                </>
-              )}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+      <Suspense fallback={<div>Cargando...</div>}>
+        <ResetPasswordForm />
+      </Suspense>
     </div>
   )
 }
