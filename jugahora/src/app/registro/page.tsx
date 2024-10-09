@@ -147,8 +147,8 @@ export default function PaginaRegistro() {
         <CardFooter className="flex flex-col space-y-2">
           <p className="text-sm text-gray-500 text-center">
             Al registrarte, aceptas nuestros 
-            <Link href="/terminos" className="text-green-600 hover:underline"> términos de servicio</Link> y 
-            <Link href="/privacidad" className="text-green-600 hover:underline"> política de privacidad</Link>.
+            <Link href="/registro" className="text-green-600 hover:underline"> términos de servicio</Link> y 
+            <Link href="/registro" className="text-green-600 hover:underline"> política de privacidad</Link>.
           </p>
           <p className="text-sm text-gray-500 text-center">
             ¿Ya tienes una cuenta? 

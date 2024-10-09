@@ -360,10 +360,10 @@ export default function PerfilPage() {
             © 2024 JugáHora. Todos los derechos reservados.
           </p>
           <nav className="flex gap-4">
-            <Link className="text-xs text-gray-500 hover:text-green-600 transition-colors" href="/terminos">
+            <Link className="text-xs text-gray-500 hover:text-green-600 transition-colors" href="/perfil">
               Términos de Servicio
             </Link>
-            <Link className="text-xs text-gray-500 hover:text-green-600 transition-colors" href="/privacidad">
+            <Link className="text-xs text-gray-500 hover:text-green-600 transition-colors" href="/perfil">
               Privacidad
             </Link>
           </nav>
