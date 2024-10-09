@@ -47,6 +47,7 @@ export async function PUT(request: Request) {
             .eq('email', userEmail)
             .single();
         console.log('Resultado de búsqueda de usuario:', userExists);
+        console.log('manu',selectError)
         
         if (selectError || !userExists) {
             console.error('Usuario no encontrado o error en la búsqueda:', selectError);
