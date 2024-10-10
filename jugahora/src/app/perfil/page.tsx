@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Dialog } from "@/components/ui/dialog"
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -62,7 +62,6 @@ export default function PerfilPage() {
           const userData = await authResponse.json()
           setUserData(userData.user)
 
-          // Obtener los partidos del usuario
           const partidosResponse = await fetch(`/api/partidos?userId=${userData.user.id}`, {
             method: 'GET',
             credentials: 'include',
@@ -130,7 +129,6 @@ export default function PerfilPage() {
       if (response.ok) {
         const newPartido = await response.json()
         setPartidos([newPartido, ...partidos])
-        // Limpiar el formulario
         setFecha('')
         setJugadores(['', '', '', ''])
         setNumSets('2')
@@ -268,20 +266,95 @@ export default function PerfilPage() {
           <CardHeader className="bg-green-50 border-b border-green-100">
             <CardTitle className="text-2xl font-bold text-green-800 flex items-center justify-between">
               <span>Historial de Partidos</span>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setIsDialogOpen(true)}
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="icon">
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Añadir Nuevo Partido</DialogTitle>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="fecha" className="text-right">
+                        Fecha
+                      </Label>
+                      <Input
+                        id="fecha"
+                        type="date"
+                        value={fecha}
+                        onChange={(e) => setFecha(e.target.value)}
+                        className="col-span-3"
+                      />
+                    </div>
+                    {jugadores.map((jugador, index) => (
+                      <div key={index} className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor={`jugador${index + 1}`} className="text-right">
+                          Jugador {index + 1}
+                        </Label>
+                        <Input
+                          id={`jugador${index + 1}`}
+                          value={jugador}
+                          onChange={(e) => {
+                            const newJugadores = [...jugadores]
+                            newJugadores[index] = e.target.value
+                            setJugadores(newJugadores)
+                          }}
+                          placeholder={index === 0 ? userData.firstName : `Jugador ${index + 1}`}
+                          className="col-span-3"
+                        />
+                      </div>
+                    ))}
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="numSets" className="text-right">
+                        Número de Sets
+                      </Label>
+                      <Select value={numSets} onValueChange={setNumSets}>
+                        <SelectTrigger className="col-span-3">
+                          <SelectValue placeholder="Seleccionar número de sets" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="2">2 Sets</SelectItem>
+                          <SelectItem value="3">3 Sets</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {resultados.slice(0, parseInt(numSets)).map((resultado, index) => (
+                      <div key={index} className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor={`resultado${index + 1}`} className="text-right">
+                          Set {index + 1}
+                        </Label>
+                        <Input
+                          id={`resultado${index + 1}`}
+                          value={resultado}
+                          onChange={(e) => {
+                            const newResultados = [...resultados]
+                            newResultados[index] = e.target.value
+                            setResultados(newResultados)
+                          }}
+                          placeholder="6-4"
+                          className="col-span-3"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <Button onClick={handleAddPartido} className="w-full">Añadir Partido</Button>
+                  <DialogClose asChild>
+                    <button className="absolute top-2 right-2 inline-flex items-center justify-center rounded-full p-2 focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75">
+                      <X className="h-4 w-4 text-gray-500 hover:text-gray-700" />
+                    </button>
+                  </DialogClose>
+                </DialogContent>
+              </Dialog>
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6 space-y-4">
             {partidos.length > 0 ? (
               partidos.map((partido) => (
                 <div key={partido.id} className="border-b border-gray-200 pb-2">
-                  <p><strong>Fecha:</strong> {new Date(partido.fecha).toLocaleDateString()}</p>
+                  <p><strong>Fecha:</strong> {new  Date(partido.fecha).toLocaleDateString()}</p>
                   <p><strong>Jugadores:</strong> {partido.jugadores}</p>
                   <p><strong>Resultado:</strong> {partido.resultado}</p>
                 </div>
@@ -292,82 +365,6 @@ export default function PerfilPage() {
           </CardContent>
         </Card>
       </main>
-
-      <Dialog
-        isOpen={isDialogOpen}
-        onClose={() => setIsDialogOpen(false)}
-        title="Añadir Nuevo Partido"
-      >
-        <div className="space-y-4 p-4 max-w-md mx-auto">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="fecha" className="text-right">
-              Fecha
-            </Label>
-            <Input
-              id="fecha"
-              type="date"
-              value={fecha}
-              onChange={(e) => setFecha(e.target.value)}
-              className="col-span-3"
-            />
-          </div>
-          {jugadores.map((jugador, index) => (
-            <div key={index} className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor={`jugador${index + 1}`} className="text-right">
-                Jugador {index + 1}
-              </Label>
-              <Input
-                id={`jugador${index + 1}`}
-                value={jugador}
-                onChange={(e) => {
-                  const newJugadores = [...jugadores]
-                  newJugadores[index] = e.target.value
-                  setJugadores(newJugadores)
-                }}
-                placeholder={index === 0 ? userData.firstName : `Jugador ${index + 1}`}
-                className="col-span-3"
-              />
-            </div>
-          ))}
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="numSets" className="text-right">
-              Número de Sets
-            </Label>
-            <Select
-            value={numSets}
-            onValueChange={(value) => {
-              setNumSets(value);
-            }}>
-              <SelectTrigger className="col-span-3">
-                <SelectValue placeholder="Seleccionar número de sets" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="2">2 Sets</SelectItem>
-                <SelectItem value="3">3 Sets</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          {resultados.slice(0, parseInt(numSets)).map((resultado, index) => (
-            <div key={index} className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor={`resultado${index + 1}`} className="text-right">
-                Set {index + 1}
-              </Label>
-              <Input
-                id={`resultado${index + 1}`}
-                value={resultado}
-                onChange={(e) => {
-                  const newResultados = [...resultados]
-                  newResultados[index] = e.target.value
-                  setResultados(newResultados)
-                }}
-                placeholder="6-4"
-                className="col-span-3"
-              />
-            </div>
-          ))}
-          <Button onClick={handleAddPartido} className="w-full mt-4">Añadir Partido</Button>
-        </div>
-      </Dialog>
 
       <footer className="py-6 px-4 md:px-6 bg-white border-t border-gray-200">
         <div className="container mx-auto flex flex-col sm:flex-row justify-between items-center">
