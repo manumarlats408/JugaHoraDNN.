@@ -10,7 +10,7 @@ import Image from 'next/image'
 
 
 const menuItems = [
-  { href: '/menu', label: 'Inicio', icon: Home },
+  { href: '/menu', label: 'Menu', icon: Home },
   { href: '/perfil', label: 'Perfil', icon: User },
   { href: '/reserva', label: 'Reservar', icon: Calendar },
   { href: '/jugar', label: 'Unirme a un partido', icon: Users },
