@@ -116,10 +116,8 @@ export default function PerfilPage() {
 
   const handleScoreClick = (setIndex: number, teamIndex: number) => {
     const newScores = [...scores]
-    if (newScores[setIndex][teamIndex] < 7) {
-      newScores[setIndex][teamIndex] += 1
-      setScores(newScores)
-    }
+    newScores[setIndex][teamIndex] = (newScores[setIndex][teamIndex] + 1) % 8
+    setScores(newScores)
   }
 
   const handleAddPartido = async () => {
@@ -347,28 +345,26 @@ export default function PerfilPage() {
                         <div key={setIndex} className="flex flex-col gap-2">
                           <span className="text-sm font-medium">Set {setIndex + 1}</span>
                           <div className="flex justify-between items-center">
+                            <span className="text-xs">{jugadores[0]} / {jugadores[1]}</span>
                             <div className="flex items-center gap-2">
-                              <span className="text-xs">{jugadores[0]} / {jugadores[1]}</span>
                               <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => handleScoreClick(setIndex,   0)}
-                                disabled={set[0] >= 7}
+                                onClick={() => handleScoreClick(setIndex, 0)}
                               >
+                                
                                 {set[0]}
                               </Button>
-                            </div>
-                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-medium">-</span>
                               <Button
                                 variant="outline"
                                 size="sm"
                                 onClick={() => handleScoreClick(setIndex, 1)}
-                                disabled={set[1] >= 7}
                               >
                                 {set[1]}
                               </Button>
-                              <span className="text-xs">{jugadores[2]} / {jugadores[3]}</span>
                             </div>
+                            <span className="text-xs">{jugadores[2]} / {jugadores[3]}</span>
                           </div>
                         </div>
                       ))}
