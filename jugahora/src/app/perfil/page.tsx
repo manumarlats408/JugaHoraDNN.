@@ -364,23 +364,22 @@ export default function Component() {
             ) : (
               <p>No hay partidos registrados aún.</p>
             )}
+          
           </CardContent>
         </Card>
       </main>
 
-      {isDialogOpen && (
-        <Dialog
-          isOpen={isDialogOpen}
-          onClose={() =>   setIsDialogOpen(false)}
-          title="Añadir Nuevo Partido"
-        >
-          <AddPartidoForm
-            onSubmit={handleAddPartido}
-            onClose={() => setIsDialogOpen(false)}
-            userData={userData}
-          />
-        </Dialog>
-      )}
+      <Dialog
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        title="Añadir Nuevo Partido"
+      >
+        <AddPartidoForm
+          onSubmit={handleAddPartido}
+          onClose={() => setIsDialogOpen(false)}
+          userData={userData}
+        />
+      </Dialog>
 
       <footer className="py-6 px-4 md:px-6 bg-white border-t border-gray-200">
         <div className="container mx-auto flex flex-col sm:flex-row justify-between items-center">
