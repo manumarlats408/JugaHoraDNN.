@@ -306,6 +306,24 @@ export default function PerfilPage() {
                         className="col-span-3"
                       />
                     </div>
+                    {jugadores.map((jugador, index) => (
+                      <div key={index} className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor={`jugador${index + 1}`} className="text-right">
+                          Jugador {index + 1}
+                        </Label>
+                        <Input
+                          id={`jugador${index + 1}`}
+                          value={jugador}
+                          onChange={(e) => {
+                            const newJugadores = [...jugadores]
+                            newJugadores[index] = e.target.value
+                            setJugadores(newJugadores)
+                          }}
+                          placeholder={index === 0 ? userData.firstName : `Jugador ${index + 1}`}
+                          className="col-span-3"
+                        />
+                      </div>
+                    ))}
                     <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="numSets" className="text-right">
                         Número de Sets
@@ -332,6 +350,7 @@ export default function PerfilPage() {
                                 variant="outline"
                                 size="sm"
                                 onClick={() => handleScoreClick(setIndex, 0)}
+                
                               >
                                 {set[0]}
                               </Button>
@@ -354,7 +373,6 @@ export default function PerfilPage() {
                     onClick={handleAddPartido} 
                     className="w-full" 
                     disabled={isAddingPartido}
-                  
                   >
                     {isAddingPartido ? (
                       <>
