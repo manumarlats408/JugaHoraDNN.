@@ -16,6 +16,9 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: "JugáHora - Reserva y Únete a Partidos de Pádel",
   description: "Reserva canchas de pádel o únete a partidos existentes en tu área con JugáHora. Juega cuando quieras, donde quieras.",
+  verification: {
+    google: '1Cq72fol-031V-8akJf5Q5y93beVuAV4l-zxyXXZzk0',
+  },
   icons: {
     icon: '/favicon.ico',  // Ruta al favicon en la carpeta 'public'
   },
