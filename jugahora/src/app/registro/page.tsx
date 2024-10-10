@@ -9,16 +9,21 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Label } from "@/components/ui/label"
 import { UserPlus } from 'lucide-react'
 import Image from 'next/image'
-
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 export default function PaginaRegistro() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
-  const [phoneNumber, setPhoneNumber] = useState('')  // Nuevo campo
-  const [address, setAddress] = useState('')  // Nuevo campo
-  const [age, setAge] = useState<number | ''>('')  // Nuevo campo
+  const [phoneNumber, setPhoneNumber] = useState('')
+  const [address, setAddress] = useState('')
+  const [age, setAge] = useState<number | ''>('')
   const [error, setError] = useState('')
   const router = useRouter()
 
@@ -32,7 +37,7 @@ export default function PaginaRegistro() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password, firstName, lastName, phoneNumber, address, age }),  // Incluye los nuevos campos
+        body: JSON.stringify({ email, password, firstName, lastName, phoneNumber, address, age }),
       })
 
       if (respuesta.ok) {
@@ -46,6 +51,19 @@ export default function PaginaRegistro() {
       setError('Ocurrió un error inesperado. Por favor, intenta de nuevo.')
     }
   }
+
+  const RequiredFieldTooltip = () => (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger>
+          <span className="text-red-500 ml-1">*</span>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Este campo es obligatorio</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  )
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-green-100 p-4">
@@ -61,7 +79,9 @@ export default function PaginaRegistro() {
         <CardContent>
           <form onSubmit={manejarEnvio} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Correo electrónico</Label>
+              <Label htmlFor="email" className="flex items-center">
+                Correo electrónico <RequiredFieldTooltip />
+              </Label>
               <Input 
                 id="email"
                 type="email" 
@@ -72,7 +92,9 @@ export default function PaginaRegistro() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Contraseña</Label>
+              <Label htmlFor="password" className="flex items-center">
+                Contraseña <RequiredFieldTooltip />
+              </Label>
               <Input 
                 id="password"
                 type="password" 
@@ -84,7 +106,9 @@ export default function PaginaRegistro() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="firstName">Nombre</Label>
+                <Label htmlFor="firstName" className="flex items-center">
+                  Nombre <RequiredFieldTooltip />
+                </Label>
                 <Input 
                   id="firstName"
                   type="text" 
@@ -95,7 +119,9 @@ export default function PaginaRegistro() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lastName">Apellido</Label>
+                <Label htmlFor="lastName" className="flex items-center">
+                  Apellido <RequiredFieldTooltip />
+                </Label>
                 <Input 
                   id="lastName"
                   type="text" 
@@ -106,7 +132,6 @@ export default function PaginaRegistro() {
                 />
               </div>
             </div>
-            {/* Nuevos campos añadidos */}
             <div className="space-y-2">
               <Label htmlFor="phoneNumber">Número de teléfono</Label>
               <Input 
@@ -137,7 +162,6 @@ export default function PaginaRegistro() {
                 onChange={(e) => setAge(Number(e.target.value))}
               />
             </div>
-            {/* Fin de nuevos campos */}
             {error && <p className="text-red-500 text-center">{error}</p>}
             <Button type="submit" className="w-full">
               <UserPlus className="mr-2 h-4 w-4" /> Registrarse
@@ -147,8 +171,8 @@ export default function PaginaRegistro() {
         <CardFooter className="flex flex-col space-y-2">
           <p className="text-sm text-gray-500 text-center">
             Al registrarte, aceptas nuestros 
-            <Link href="/registro" className="text-green-600 hover:underline"> términos de servicio</Link> y 
-            <Link href="/registro" className="text-green-600 hover:underline"> política de privacidad</Link>.
+            <Link href="/terminos" className="text-green-600 hover:underline"> términos de servicio</Link> y 
+            <Link href="/privacidad" className="text-green-600 hover:underline"> política de privacidad</Link>.
           </p>
           <p className="text-sm text-gray-500 text-center">
             ¿Ya tienes una cuenta? 
