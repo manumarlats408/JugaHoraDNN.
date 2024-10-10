@@ -6,7 +6,7 @@ declare global {
 }
 
 // Inicializa el cliente de Prisma solo una vez
-const prisma = global.prisma || new PrismaClient({
+const prisma: PrismaClient = global.prisma || new PrismaClient({
   log: ['query', 'info', 'warn', 'error'], // Manteniendo los logs
 });
 
