@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://www.jugahora.com.ar
+
+# Sitemaps
+Sitemap: https://www.jugahora.com.ar/sitemap.xml
