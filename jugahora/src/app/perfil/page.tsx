@@ -298,19 +298,24 @@ export default function PerfilPage() {
         onClose={() => setIsDialogOpen(false)}
         title="Añadir Nuevo Partido"
       >
-        <div className="space-y-4">
-          <div>
-            <Label htmlFor="fecha">Fecha</Label>
+        <div className="space-y-4 p-4 max-w-md mx-auto">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="fecha" className="text-right">
+              Fecha
+            </Label>
             <Input
               id="fecha"
               type="date"
               value={fecha}
               onChange={(e) => setFecha(e.target.value)}
+              className="col-span-3"
             />
           </div>
           {jugadores.map((jugador, index) => (
-            <div key={index}>
-              <Label htmlFor={`jugador${index + 1}`}>Jugador {index + 1}</Label>
+            <div key={index} className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor={`jugador${index + 1}`} className="text-right">
+                Jugador {index + 1}
+              </Label>
               <Input
                 id={`jugador${index + 1}`}
                 value={jugador}
@@ -320,13 +325,16 @@ export default function PerfilPage() {
                   setJugadores(newJugadores)
                 }}
                 placeholder={index === 0 ? userData.firstName : `Jugador ${index + 1}`}
+                className="col-span-3"
               />
             </div>
           ))}
-          <div>
-            <Label htmlFor="numSets">Número de Sets</Label>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="numSets" className="text-right">
+              Número de Sets
+            </Label>
             <Select value={numSets} onValueChange={setNumSets}>
-              <SelectTrigger>
+              <SelectTrigger className="col-span-3">
                 <SelectValue placeholder="Seleccionar número de sets" />
               </SelectTrigger>
               <SelectContent>
@@ -336,8 +344,10 @@ export default function PerfilPage() {
             </Select>
           </div>
           {resultados.slice(0, parseInt(numSets)).map((resultado, index) => (
-            <div key={index}>
-              <Label htmlFor={`resultado${index + 1}`}>Resultado Set {index + 1}</Label>
+            <div key={index} className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor={`resultado${index + 1}`} className="text-right">
+                Set {index + 1}
+              </Label>
               <Input
                 id={`resultado${index + 1}`}
                 value={resultado}
@@ -347,10 +357,11 @@ export default function PerfilPage() {
                   setResultados(newResultados)
                 }}
                 placeholder="6-4"
+                className="col-span-3"
               />
             </div>
           ))}
-          <Button onClick={handleAddPartido} className="w-full">Añadir Partido</Button>
+          <Button onClick={handleAddPartido} className="w-full mt-4">Añadir Partido</Button>
         </div>
       </Dialog>
 
