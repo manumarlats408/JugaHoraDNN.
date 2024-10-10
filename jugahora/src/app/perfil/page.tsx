@@ -44,10 +44,15 @@ export default function PerfilPage() {
   const [fecha, setFecha] = useState('')
   const [jugadores, setJugadores] = useState(['', '', '', ''])
   const [numSets, setNumSets] = useState('2')
-  const [resultados, setResultados] = useState(['', '', ''])
   const [isAddingPartido, setIsAddingPartido] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
+
+  const [scores, setScores] = useState([
+    [0, 0],
+    [0, 0],
+    [0, 0]
+  ])
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
 
@@ -109,9 +114,18 @@ export default function PerfilPage() {
     }
   }
 
+  const handleScoreClick = (setIndex: number, teamIndex: number) => {
+    const newScores = [...scores]
+    newScores[setIndex][teamIndex] += 1
+    setScores(newScores)
+  }
+
   const handleAddPartido = async () => {
     setIsAddingPartido(true)
-    const resultado = resultados.slice(0, parseInt(numSets)).join(' - ')
+    const resultado = scores
+      .slice(0, parseInt(numSets))
+      .map(set => set.join('-'))
+      .join(' - ')
     const partidoData = {
       userId: userData?.id,
       fecha,
@@ -134,7 +148,7 @@ export default function PerfilPage() {
         setFecha('')
         setJugadores(['', '', '', ''])
         setNumSets('2')
-        setResultados(['', '', ''])
+        setScores([[0, 0], [0, 0], [0, 0]])
         setIsDialogOpen(false)
       } else {
         console.error('Error al añadir el partido')
@@ -325,24 +339,28 @@ export default function PerfilPage() {
                         </SelectContent>
                       </Select>
                     </div>
-                    {resultados.slice(0, parseInt(numSets)).map((resultado, index) => (
-                      <div key={index} className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor={`resultado${index + 1}`} className="text-right">
-                          Set {index + 1}
-                        </Label>
-                        <Input
-                          id={`resultado${index + 1}`}
-                          value={resultado}
-                          onChange={(e) => {
-                            const newResultados = [...resultados]
-                            newResultados[index] = e.target.value
-                            setResultados(newResultados)
-                          }}
-                          placeholder="6-4"
-                          className="col-span-3"
-                        />
-                      </div>
-                    ))}
+                    <div className="grid gap-2">
+                      <Label className="text-center">Puntuación</Label>
+                      {scores.slice(0, parseInt(numSets)).map((set, setIndex) => (
+                        <div key={setIndex} className="flex justify-between items-center">
+                          <span>Set {setIndex + 1}</span>
+                          <div className="flex gap-2">
+                            <div className="flex gap-1">
+                              {set.map((score, teamIndex) => (
+                                <Button
+                                  key={teamIndex}
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleScoreClick(setIndex, teamIndex)}
+                                >
+                                  {score}
+                                </Button>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                   <Button 
                     onClick={handleAddPartido} 
@@ -351,7 +369,7 @@ export default function PerfilPage() {
                   >
                     {isAddingPartido ? (
                       <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        <Loader2  className="mr-2 h-4 w-4 animate-spin" />
                         Añadiendo...
                       </>
                     ) : (
@@ -365,7 +383,6 @@ export default function PerfilPage() {
                   </DialogClose>
                 </DialogContent>
               </Dialog>
-            
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6 space-y-4">
