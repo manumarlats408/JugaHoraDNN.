@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { UserPlus } from 'lucide-react'
+import { UserPlus, Loader2 } from 'lucide-react'
 import Image from 'next/image'
 import {
   Tooltip,
@@ -25,11 +25,13 @@ export default function PaginaRegistro() {
   const [address, setAddress] = useState('')
   const [age, setAge] = useState<number | ''>('')
   const [error, setError] = useState('')
+  const [isRegistering, setIsRegistering] = useState(false)
   const router = useRouter()
 
   const manejarEnvio = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setError('')
+    setIsRegistering(true)
 
     try {
       const respuesta = await fetch('/api/registro', {
@@ -49,6 +51,8 @@ export default function PaginaRegistro() {
     } catch (error) {
       console.error('Error de registro:', error)
       setError('Ocurrió un error inesperado. Por favor, intenta de nuevo.')
+    } finally {
+      setIsRegistering(false)
     }
   }
 
@@ -163,8 +167,17 @@ export default function PaginaRegistro() {
               />
             </div>
             {error && <p className="text-red-500 text-center">{error}</p>}
-            <Button type="submit" className="w-full">
-              <UserPlus className="mr-2 h-4 w-4" /> Registrarse
+            <Button type="submit" className="w-full" disabled={isRegistering}>
+              {isRegistering ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Registrando...
+                </>
+              ) : (
+                <>
+                  <UserPlus className="mr-2 h-4 w-4" /> Registrarse
+                </>
+              )}
             </Button>
           </form>
         </CardContent>
