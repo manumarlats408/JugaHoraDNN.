@@ -7,8 +7,7 @@
     "vercel-build": "NODE_OPTIONS='--max_old_space_size=4096' npx prisma generate && next build",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "postbuild": "node scripts/generate-sitemap.js"
+    "lint": "next lint"
   },
   "dependencies": {
     "@radix-ui/react-select": "^2.1.2",
@@ -17,7 +16,6 @@
     "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "globby": "^14.0.2",
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
