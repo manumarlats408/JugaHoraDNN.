@@ -9,7 +9,7 @@ import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, Dialog
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Menu, X, Home, User, Calendar, Users, LogOut, Mail, Phone, MapPin, Clock, Plus } from 'lucide-react'
+import { Menu, X, Home, User, Calendar, Users, LogOut, Mail, Phone, MapPin, Clock, Plus, Loader2 } from 'lucide-react'
 import Image from 'next/image'
 
 interface User {
@@ -45,6 +45,7 @@ export default function PerfilPage() {
   const [jugadores, setJugadores] = useState(['', '', '', ''])
   const [numSets, setNumSets] = useState('2')
   const [resultados, setResultados] = useState(['', '', ''])
+  const [isAddingPartido, setIsAddingPartido] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
@@ -109,6 +110,7 @@ export default function PerfilPage() {
   }
 
   const handleAddPartido = async () => {
+    setIsAddingPartido(true)
     const resultado = resultados.slice(0, parseInt(numSets)).join(' - ')
     const partidoData = {
       userId: userData?.id,
@@ -139,6 +141,8 @@ export default function PerfilPage() {
       }
     } catch (error) {
       console.error('Error al añadir el partido:', error)
+    } finally {
+      setIsAddingPartido(false)
     }
   }
 
@@ -340,7 +344,20 @@ export default function PerfilPage() {
                       </div>
                     ))}
                   </div>
-                  <Button onClick={handleAddPartido} className="w-full">Añadir Partido</Button>
+                  <Button 
+                    onClick={handleAddPartido} 
+                    className="w-full" 
+                    disabled={isAddingPartido}
+                  >
+                    {isAddingPartido ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Añadiendo...
+                      </>
+                    ) : (
+                      'Añadir Partido'
+                    )}
+                  </Button>
                   <DialogClose asChild>
                     <button className="absolute top-2 right-2 inline-flex items-center justify-center rounded-full p-2 focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75">
                       <X className="h-4 w-4 text-gray-500 hover:text-gray-700" />
@@ -348,13 +365,14 @@ export default function PerfilPage() {
                   </DialogClose>
                 </DialogContent>
               </Dialog>
+            
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6 space-y-4">
             {partidos.length > 0 ? (
               partidos.map((partido) => (
                 <div key={partido.id} className="border-b border-gray-200 pb-2">
-                  <p><strong>Fecha:</strong> {new  Date(partido.fecha).toLocaleDateString()}</p>
+                  <p><strong>Fecha:</strong> {new Date(partido.fecha).toLocaleDateString()}</p>
                   <p><strong>Jugadores:</strong> {partido.jugadores}</p>
                   <p><strong>Resultado:</strong> {partido.resultado}</p>
                 </div>
