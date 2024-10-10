@@ -333,7 +333,11 @@ export default function PerfilPage() {
             <Label htmlFor="numSets" className="text-right">
               Número de Sets
             </Label>
-            <Select value={numSets} onValueChange={setNumSets}>
+            <Select
+            value={numSets}
+            onValueChange={(value) => {
+              setNumSets(value);
+            }}>
               <SelectTrigger className="col-span-3">
                 <SelectValue placeholder="Seleccionar número de sets" />
               </SelectTrigger>
