@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useRef, FormEvent } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
@@ -46,8 +46,6 @@ export default function PerfilPage() {
   const [numSets, setNumSets] = useState('2')
   const [resultados, setResultados] = useState(['', '', ''])
   const [isAddingPartido, setIsAddingPartido] = useState(false)
-  const [isEditingProfile, setIsEditingProfile] = useState(false)
-  const [isSavingProfile, setIsSavingProfile] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
@@ -148,31 +146,6 @@ export default function PerfilPage() {
     }
   }
 
-  const handleSaveProfile = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setIsSavingProfile(true)
-
-    try {
-      const response = await fetch('/api/actualizar-perfil', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userData),
-      })
-
-      if (response.ok) {
-        setIsEditingProfile(false)
-      } else {
-        console.error('Error al actualizar el perfil')
-      }
-    } catch (error) {
-      console.error('Error al actualizar el perfil:', error)
-    } finally {
-      setIsSavingProfile(false)
-    }
-  }
-
   if (!userData) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gray-50">
@@ -258,116 +231,38 @@ export default function PerfilPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6 space-y-4">
-            {isEditingProfile ? (
-              <form onSubmit={handleSaveProfile} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Correo electrónico</Label>
-                  <Input 
-                    id="email"
-                    type="email" 
-                    value={userData.email}
-                    onChange={(e) => setUserData({...userData, email: e.target.value})}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="firstName">Nombre</Label>
-                  <Input 
-                    id="firstName"
-                    type="text" 
-                    value={userData.firstName}
-                    onChange={(e) => setUserData({...userData, firstName: e.target.value})}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lastName">Apellido</Label>
-                  <Input 
-                    id="lastName"
-                    type="text" 
-                    value={userData.lastName}
-                    onChange={(e) => setUserData({...userData, lastName: e.target.value})}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phoneNumber">Número de teléfono</Label>
-                  <Input 
-                    id="phoneNumber"
-                    type="tel"
-                    value={userData.phoneNumber || ''}
-                    onChange={(e) => setUserData({...userData, phoneNumber: e.target.value})}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="address">Dirección</Label>
-                  <Input 
-                    id="address"
-                    type="text"
-                    value={userData.address || ''}
-                    onChange={(e) => setUserData({...userData, address: e.target.value})}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="age">Edad</Label>
-                  <Input 
-                    id="age"
-                    type="number"
-                    value={userData.age || ''}
-                    onChange={(e) => setUserData({...userData, age: Number(e.target.value)})}
-                  />
-                </div>
-                <Button 
-                  type="submit" 
-                  className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white transition-colors duration-300"
-                  disabled={isSavingProfile}
-                >
-                  {isSavingProfile ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Guardando cambios...
-                    </>
-                  ) : (
-                    'Guardar cambios'
-                  )}
-                </Button>
-              </form>
-            ) : (
-              <>
-                <div className="flex items-center">
-                  <Mail className="w-5 h-5 mr-2 text-gray-500" />
-                  <p><strong>Email:</strong> {userData.email}</p>
-                </div>
-                <div className="flex items-center">
-                  <User className="w-5 h-5 mr-2 text-gray-500" />
-                  <p><strong>Nombre completo:</strong> {userData.firstName} {userData.lastName}</p>
-                </div>
-                {userData.phoneNumber && (
-                  <div className="flex items-center">
-                    <Phone className="w-5 h-5 mr-2 text-gray-500" />
-                    <p><strong>Teléfono:</strong> {userData.phoneNumber}</p>
-                  </div>
-                )}
-                {userData.address && (
-                  <div className="flex items-center">
-                    <MapPin className="w-5 h-5 mr-2 text-gray-500" />
-                    <p><strong>Dirección:</strong> {userData.address}</p>
-                  </div>
-                )}
-                {userData.age && (
-                  <div className="flex items-center">
-                    <Clock className="w-5 h-5 mr-2 text-gray-500" />
-                    <p><strong>Edad:</strong> {userData.age}</p>
-                  </div>
-                )}
-                <Button
-                  className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white transition-colors duration-300"
-                  onClick={() => setIsEditingProfile(true)}
-                >
-                  Editar perfil
-                </Button>
-              </>
+            <div className="flex items-center">
+              <Mail className="w-5 h-5 mr-2 text-gray-500" />
+              <p><strong>Email:</strong> {userData.email}</p>
+            </div>
+            <div className="flex items-center">
+              <User className="w-5 h-5 mr-2 text-gray-500" />
+              <p><strong>Nombre completo:</strong> {userData.firstName} {userData.lastName}</p>
+            </div>
+            {userData.phoneNumber && (
+              <div className="flex items-center">
+                <Phone className="w-5 h-5 mr-2 text-gray-500" />
+                <p><strong>Teléfono:</strong> {userData.phoneNumber}</p>
+              </div>
             )}
+            {userData.address && (
+              <div className="flex items-center">
+                <MapPin className="w-5 h-5 mr-2 text-gray-500" />
+                <p><strong>Dirección:</strong> {userData.address}</p>
+              </div>
+            )}
+            {userData.age && (
+              <div className="flex items-center">
+                <Clock className="w-5 h-5 mr-2 text-gray-500" />
+                <p><strong>Edad:</strong> {userData.age}</p>
+              </div>
+            )}
+            <Button
+              className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white transition-colors duration-300"
+              onClick={() => router.push('/editar-perfil')}
+            >
+              Editar perfil
+            </Button>
           </CardContent>
         </Card>
 
@@ -379,7 +274,6 @@ export default function PerfilPage() {
                 <DialogTrigger asChild>
                   <Button variant="outline" size="icon">
                     <Plus className="h-4 w-4" />
-                  
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
@@ -471,6 +365,7 @@ export default function PerfilPage() {
                   </DialogClose>
                 </DialogContent>
               </Dialog>
+            
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6 space-y-4">
