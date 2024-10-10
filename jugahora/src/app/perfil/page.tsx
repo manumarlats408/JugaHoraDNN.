@@ -42,7 +42,7 @@ export default function PerfilPage() {
   const [partidos, setPartidos] = useState<Partido[]>([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [fecha, setFecha] = useState('')
-  const [jugadores, setJugadores] = useState(['', '', '', ''])
+  const [jugadores, setJugadores] = useState<string[]>([])
   const [numSets, setNumSets] = useState('2')
   const [isAddingPartido, setIsAddingPartido] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
@@ -67,6 +67,7 @@ export default function PerfilPage() {
         if (authResponse.ok) {
           const userData = await authResponse.json()
           setUserData(userData.user)
+          setJugadores([userData.user.firstName, 'Jugador 2', 'Jugador 3', 'Jugador 4'])
 
           const partidosResponse = await fetch(`/api/partidos?userId=${userData.user.id}`, {
             method: 'GET',
@@ -146,8 +147,6 @@ export default function PerfilPage() {
         const newPartido = await response.json()
         setPartidos([newPartido, ...partidos])
         setFecha('')
-        setJugadores(['', '', '', ''])
-        setNumSets('2')
         setScores([[0, 0], [0, 0], [0, 0]])
         setIsDialogOpen(false)
       } else {
@@ -307,24 +306,6 @@ export default function PerfilPage() {
                         className="col-span-3"
                       />
                     </div>
-                    {jugadores.map((jugador, index) => (
-                      <div key={index} className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor={`jugador${index + 1}`} className="text-right">
-                          Jugador {index + 1}
-                        </Label>
-                        <Input
-                          id={`jugador${index + 1}`}
-                          value={jugador}
-                          onChange={(e) => {
-                            const newJugadores = [...jugadores]
-                            newJugadores[index] = e.target.value
-                            setJugadores(newJugadores)
-                          }}
-                          placeholder={index === 0 ? userData.firstName : `Jugador ${index + 1}`}
-                          className="col-span-3"
-                        />
-                      </div>
-                    ))}
                     <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="numSets" className="text-right">
                         Número de Sets
@@ -352,7 +333,6 @@ export default function PerfilPage() {
                                 size="sm"
                                 onClick={() => handleScoreClick(setIndex, 0)}
                               >
-                                
                                 {set[0]}
                               </Button>
                               <span className="text-sm font-medium">-</span>
@@ -374,6 +354,7 @@ export default function PerfilPage() {
                     onClick={handleAddPartido} 
                     className="w-full" 
                     disabled={isAddingPartido}
+                  
                   >
                     {isAddingPartido ? (
                       <>
