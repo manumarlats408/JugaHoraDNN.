@@ -36,15 +36,104 @@ const menuItems = [
   { href: '/jugar', label: 'Unirme a un partido', icon: Users },
 ]
 
-export default function PerfilPage() {
-  const [userData, setUserData] = useState<User | null>(null)
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [partidos, setPartidos] = useState<Partido[]>([])
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
+interface AddPartidoFormProps {
+  onSubmit: (partidoData: Omit<Partido, 'id'>) => void
+  onClose: () => void
+  userData: User
+}
+
+function AddPartidoForm({ onSubmit, onClose, userData }: AddPartidoFormProps) {
   const [fecha, setFecha] = useState('')
   const [jugadores, setJugadores] = useState(['', '', '', ''])
   const [numSets, setNumSets] = useState('2')
   const [resultados, setResultados] = useState(['', '', ''])
+
+  const handleSubmit = () => {
+    const resultado = resultados.slice(0, parseInt(numSets)).join(' - ')
+    onSubmit({
+      fecha,
+      jugadores: jugadores.join(', '),
+      resultado
+    })
+  }
+
+  return (
+    <div className="space-y-4 p-4 max-w-md mx-auto">
+      <div className="grid grid-cols-4 items-center gap-4">
+        <Label htmlFor="fecha" className="text-right">
+          Fecha
+        </Label>
+        <Input
+          id="fecha"
+          type="date"
+          value={fecha}
+          onChange={(e) => setFecha(e.target.value)}
+          className="col-span-3"
+        />
+      </div>
+      {jugadores.map((jugador, index) => (
+        <div key={index} className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor={`jugador${index + 1}`} className="text-right">
+            Jugador {index + 1}
+          </Label>
+          <Input
+            id={`jugador${index + 1}`}
+            value={jugador}
+            onChange={(e) => {
+              const newJugadores = [...jugadores]
+              newJugadores[index] = e.target.value
+              setJugadores(newJugadores)
+            }}
+            placeholder={index === 0 ? userData.firstName : `Jugador ${index + 1}`}
+            className="col-span-3"
+          />
+        </div>
+      ))}
+      <div className="grid grid-cols-4 items-center gap-4">
+        <Label htmlFor="numSets" className="text-right">
+          Número de Sets
+        </Label>
+        <Select value={numSets} onValueChange={setNumSets}>
+          <SelectTrigger className="col-span-3">
+            <SelectValue placeholder="Seleccionar número de sets" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="2">2 Sets</SelectItem>
+            <SelectItem value="3">3 Sets</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      {resultados.slice(0, parseInt(numSets)).map((resultado, index) => (
+        <div key={index} className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor={`resultado${index + 1}`} className="text-right">
+            Set {index + 1}
+          </Label>
+          <Input
+            id={`resultado${index + 1}`}
+            value={resultado}
+            onChange={(e) => {
+              const newResultados = [...resultados]
+              newResultados[index] = e.target.value
+              setResultados(newResultados)
+            }}
+            placeholder="6-4"
+            className="col-span-3"
+          />
+        </div>
+      ))}
+      <div className="flex justify-end space-x-4 mt-4">
+        <Button onClick={onClose} variant="outline">Cancelar</Button>
+        <Button onClick={handleSubmit}>Añadir Partido</Button>
+      </div>
+    </div>
+  )
+}
+
+export default function Component() {
+  const [userData, setUserData] = useState<User | null>(null)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [partidos, setPartidos] = useState<Partido[]>([])
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
@@ -62,7 +151,6 @@ export default function PerfilPage() {
           const userData = await authResponse.json()
           setUserData(userData.user)
 
-          // Obtener los partidos del usuario
           const partidosResponse = await fetch(`/api/partidos?userId=${userData.user.id}`, {
             method: 'GET',
             credentials: 'include',
@@ -109,32 +197,19 @@ export default function PerfilPage() {
     }
   }
 
-  const handleAddPartido = async () => {
-    const resultado = resultados.slice(0, parseInt(numSets)).join(' - ')
-    const partidoData = {
-      userId: userData?.id,
-      fecha,
-      jugadores: jugadores.join(', '),
-      resultado
-    }
-
+  const handleAddPartido = async (partidoData: Omit<Partido, 'id'>) => {
     try {
       const response = await fetch('/api/partidos', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(partidoData),
+        body: JSON.stringify({ ...partidoData, userId: userData?.id }),
       })
 
       if (response.ok) {
         const newPartido = await response.json()
         setPartidos([newPartido, ...partidos])
-        // Limpiar el formulario
-        setFecha('')
-        setJugadores(['', '', '', ''])
-        setNumSets('2')
-        setResultados(['', '', ''])
         setIsDialogOpen(false)
       } else {
         console.error('Error al añadir el partido')
@@ -289,6 +364,7 @@ export default function PerfilPage() {
             ) : (
               <p>No hay partidos registrados aún.</p>
             )}
+          
           </CardContent>
         </Card>
       </main>
@@ -298,71 +374,11 @@ export default function PerfilPage() {
         onClose={() => setIsDialogOpen(false)}
         title="Añadir Nuevo Partido"
       >
-        <div className="space-y-4 p-4 max-w-md mx-auto">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="fecha" className="text-right">
-              Fecha
-            </Label>
-            <Input
-              id="fecha"
-              type="date"
-              value={fecha}
-              onChange={(e) => setFecha(e.target.value)}
-              className="col-span-3"
-            />
-          </div>
-          {jugadores.map((jugador, index) => (
-            <div key={index} className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor={`jugador${index + 1}`} className="text-right">
-                Jugador {index + 1}
-              </Label>
-              <Input
-                id={`jugador${index + 1}`}
-                value={jugador}
-                onChange={(e) => {
-                  const newJugadores = [...jugadores]
-                  newJugadores[index] = e.target.value
-                  setJugadores(newJugadores)
-                }}
-                placeholder={index === 0 ? userData.firstName : `Jugador ${index + 1}`}
-                className="col-span-3"
-              />
-            </div>
-          ))}
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="numSets" className="text-right">
-              Número de Sets
-            </Label>
-            <Select value={numSets} onValueChange={setNumSets}>
-              <SelectTrigger className="col-span-3">
-                <SelectValue placeholder="Seleccionar número de sets" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="2">2 Sets</SelectItem>
-                <SelectItem value="3">3 Sets</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          {resultados.slice(0, parseInt(numSets)).map((resultado, index) => (
-            <div key={index} className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor={`resultado${index + 1}`} className="text-right">
-                Set {index + 1}
-              </Label>
-              <Input
-                id={`resultado${index + 1}`}
-                value={resultado}
-                onChange={(e) => {
-                  const newResultados = [...resultados]
-                  newResultados[index] = e.target.value
-                  setResultados(newResultados)
-                }}
-                placeholder="6-4"
-                className="col-span-3"
-              />
-            </div>
-          ))}
-          <Button onClick={handleAddPartido} className="w-full mt-4">Añadir Partido</Button>
-        </div>
+        <AddPartidoForm
+          onSubmit={handleAddPartido}
+          onClose={() => setIsDialogOpen(false)}
+          userData={userData}
+        />
       </Dialog>
 
       <footer className="py-6 px-4 md:px-6 bg-white border-t border-gray-200">
