@@ -116,8 +116,10 @@ export default function PerfilPage() {
 
   const handleScoreClick = (setIndex: number, teamIndex: number) => {
     const newScores = [...scores]
-    newScores[setIndex][teamIndex] += 1
-    setScores(newScores)
+    if (newScores[setIndex][teamIndex] < 7) {
+      newScores[setIndex][teamIndex] += 1
+      setScores(newScores)
+    }
   }
 
   const handleAddPartido = async () => {
@@ -342,20 +344,30 @@ export default function PerfilPage() {
                     <div className="grid gap-2">
                       <Label className="text-center">Puntuación</Label>
                       {scores.slice(0, parseInt(numSets)).map((set, setIndex) => (
-                        <div key={setIndex} className="flex justify-between items-center">
-                          <span>Set {setIndex + 1}</span>
-                          <div className="flex gap-2">
-                            <div className="flex gap-1">
-                              {set.map((score, teamIndex) => (
-                                <Button
-                                  key={teamIndex}
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => handleScoreClick(setIndex, teamIndex)}
-                                >
-                                  {score}
-                                </Button>
-                              ))}
+                        <div key={setIndex} className="flex flex-col gap-2">
+                          <span className="text-sm font-medium">Set {setIndex + 1}</span>
+                          <div className="flex justify-between items-center">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs">{jugadores[0]} / {jugadores[1]}</span>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleScoreClick(setIndex,   0)}
+                                disabled={set[0] >= 7}
+                              >
+                                {set[0]}
+                              </Button>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleScoreClick(setIndex, 1)}
+                                disabled={set[1] >= 7}
+                              >
+                                {set[1]}
+                              </Button>
+                              <span className="text-xs">{jugadores[2]} / {jugadores[3]}</span>
                             </div>
                           </div>
                         </div>
@@ -369,7 +381,7 @@ export default function PerfilPage() {
                   >
                     {isAddingPartido ? (
                       <>
-                        <Loader2  className="mr-2 h-4 w-4 animate-spin" />
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Añadiendo...
                       </>
                     ) : (
