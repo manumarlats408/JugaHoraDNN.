@@ -15,8 +15,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { Switch } from "@/components/ui/switch"
 
 export default function PaginaRegistro() {
+  const [isClub, setIsClub] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [firstName, setFirstName] = useState('')
@@ -24,6 +26,7 @@ export default function PaginaRegistro() {
   const [phoneNumber, setPhoneNumber] = useState('')
   const [address, setAddress] = useState('')
   const [age, setAge] = useState<number | ''>('')
+  const [clubName, setClubName] = useState('')
   const [error, setError] = useState('')
   const [isRegistering, setIsRegistering] = useState(false)
   const router = useRouter()
@@ -39,7 +42,16 @@ export default function PaginaRegistro() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password, firstName, lastName, phoneNumber, address, age }),
+        body: JSON.stringify({ 
+          isClub,
+          email, 
+          password, 
+          firstName: isClub ? clubName : firstName, 
+          lastName: isClub ? '' : lastName, 
+          phoneNumber, 
+          address, 
+          age: isClub ? null : age 
+        }),
       })
 
       if (respuesta.ok) {
@@ -82,6 +94,14 @@ export default function PaginaRegistro() {
         </CardHeader>
         <CardContent>
           <form onSubmit={manejarEnvio} className="space-y-4">
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="club-mode"
+                checked={isClub}
+                onCheckedChange={setIsClub}
+              />
+              <Label htmlFor="club-mode">Registrarse como club</Label>
+            </div>
             <div className="space-y-2">
               <Label htmlFor="email" className="flex items-center">
                 Correo electrónico <RequiredFieldTooltip />
@@ -108,62 +128,86 @@ export default function PaginaRegistro() {
                 required
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            {isClub ? (
               <div className="space-y-2">
-                <Label htmlFor="firstName" className="flex items-center">
-                  Nombre <RequiredFieldTooltip />
+                <Label htmlFor="clubName" className="flex items-center">
+                  Nombre del Club <RequiredFieldTooltip />
                 </Label>
                 <Input 
-                  id="firstName"
+                  id="clubName"
                   type="text" 
-                  placeholder="Juan"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
+                  placeholder="Nombre del Club"
+                  value={clubName}
+                  onChange={(e) => setClubName(e.target.value)}
                   required
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="lastName" className="flex items-center">
-                  Apellido <RequiredFieldTooltip />
-                </Label>
-                <Input 
-                  id="lastName"
-                  type="text" 
-                  placeholder="Pérez"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  required
-                />
-              </div>
-            </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="firstName" className="flex items-center">
+                      Nombre <RequiredFieldTooltip />
+                    </Label>
+                    <Input 
+                      id="firstName"
+                      type="text" 
+                      placeholder="Juan"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="lastName" className="flex items-center">
+                      Apellido <RequiredFieldTooltip />
+                    </Label>
+                    <Input 
+                      id="lastName"
+                      type="text" 
+                      placeholder="Pérez"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="age">Edad</Label>
+                  <Input 
+                    id="age"
+                    type="number"
+                    placeholder="Opcional: 30"
+                    value={age}
+                    onChange={(e) => setAge(Number(e.target.value))}
+                  />
+                </div>
+              </>
+            )}
             <div className="space-y-2">
-              <Label htmlFor="phoneNumber">Número de teléfono</Label>
+              <Label htmlFor="phoneNumber" className="flex items-center">
+                Número de teléfono {isClub && <RequiredFieldTooltip />}
+              </Label>
               <Input 
                 id="phoneNumber"
                 type="tel"
-                placeholder="Opcional: +54 9 1234 5678"
+                placeholder={isClub ? "+54 9 1234 5678" : "Opcional: +54 9 1234 5678"}
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
+                required={isClub}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="address">Dirección</Label>
+              <Label htmlFor="address" className="flex items-center">
+                Dirección {isClub && <RequiredFieldTooltip />}
+              </Label>
               <Input 
                 id="address"
                 type="text"
-                placeholder="Opcional: Av. Siempreviva 123"
+                placeholder={isClub ? "Av. Siempreviva 123" : "Opcional: Av. Siempreviva 123"}
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="age">Edad</Label>
-              <Input 
-                id="age"
-                type="number"
-                placeholder="Opcional: 30"
-                value={age}
-                onChange={(e) => setAge(Number(e.target.value))}
+                required={isClub}
               />
             </div>
             {error && <p className="text-red-500 text-center">{error}</p>}
@@ -184,8 +228,8 @@ export default function PaginaRegistro() {
         <CardFooter className="flex flex-col space-y-2">
           <p className="text-sm text-gray-500 text-center">
             Al registrarte, aceptas nuestros 
-            <Link href="/registro" className="text-green-600 hover:underline"> términos de servicio</Link> y 
-            <Link href="/registro" className="text-green-600 hover:underline"> política de privacidad</Link>.
+            <Link href="/terminos" className="text-green-600 hover:underline"> términos de servicio</Link> y 
+            <Link href="/privacidad" className="text-green-600 hover:underline"> política de privacidad</Link>.
           </p>
           <p className="text-sm text-gray-500 text-center">
             ¿Ya tienes una cuenta? 
