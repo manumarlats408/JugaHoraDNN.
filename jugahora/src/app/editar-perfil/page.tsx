@@ -10,18 +10,20 @@ import { Label } from "@/components/ui/label"
 import { User, ArrowLeft } from 'lucide-react'
 import Image from 'next/image'
 
-interface User {
+interface UserData {
   id: string
   email: string
-  firstName: string
-  lastName: string
+  firstName?: string
+  lastName?: string
+  name?: string
   phoneNumber?: string
   address?: string
   age?: number
+  isClub?: boolean
 }
 
 export default function EditarPerfilPage() {
-  const [userData, setUserData] = useState<User | null>(null)
+  const [userData, setUserData] = useState<UserData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
 
@@ -35,9 +37,12 @@ export default function EditarPerfilPage() {
 
         if (response.ok) {
           const data = await response.json()
-          setUserData(data.user)
+          setUserData({
+            ...data.entity,
+            isClub: data.isClub
+          })
         } else {
-          router.push('/login')
+          throw new Error('Failed to fetch user data')
         }
       } catch (error) {
         console.error('Error al obtener el perfil del usuario:', error)
@@ -51,35 +56,32 @@ export default function EditarPerfilPage() {
   }, [router])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log('Enviando solicitud PUT'); // Agrega este log para verificar que se llame
+    e.preventDefault()
+    console.log('Enviando solicitud PUT')
 
-    if (!userData) return;
+    if (!userData) return
 
-    // Agrego log para verificar que se envíe la data correcta
-    console.log('Data a enviar:', userData);
+    console.log('Data a enviar:', userData)
 
     try {
-        const response = await fetch('/api/user', {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(userData),
-            credentials: 'include',
-            
-        });
+      const response = await fetch('/api/user', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+        credentials: 'include',
+      })
 
-        if (response.ok) {
-            router.push('/perfil');
-        } else {
-            console.error('Error al actualizar el perfil...');
-        }
+      if (response.ok) {
+        router.push('/perfil')
+      } else {
+        console.error('Error al actualizar el perfil...')
+      }
     } catch (error) {
-        console.error('Error al actualizar el perfil:', error);
+      console.error('Error al actualizar el perfil:', error)
     }
-};
-
+  }
 
   if (isLoading) {
     return (
@@ -126,24 +128,38 @@ export default function EditarPerfilPage() {
                   required
                 />
               </div>
-              <div>
-                <Label htmlFor="firstName">Nombre</Label>
-                <Input
-                  id="firstName"
-                  value={userData.firstName}
-                  onChange={(e) => setUserData({ ...userData, firstName: e.target.value })}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="lastName">Apellido</Label>
-                <Input
-                  id="lastName"
-                  value={userData.lastName}
-                  onChange={(e) => setUserData({ ...userData, lastName: e.target.value })}
-                  required
-                />
-              </div>
+              {userData.isClub ? (
+                <div>
+                  <Label htmlFor="name">Nombre del Club</Label>
+                  <Input
+                    id="name"
+                    value={userData.name || ''}
+                    onChange={(e) => setUserData({ ...userData, name: e.target.value })}
+                    required
+                  />
+                </div>
+              ) : (
+                <>
+                  <div>
+                    <Label htmlFor="firstName">Nombre</Label>
+                    <Input
+                      id="firstName"
+                      value={userData.firstName || ''}
+                      onChange={(e) => setUserData({ ...userData, firstName: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="lastName">Apellido</Label>
+                    <Input
+                      id="lastName"
+                      value={userData.lastName || ''}
+                      onChange={(e) => setUserData({ ...userData, lastName: e.target.value })}
+                      required
+                    />
+                  </div>
+                </>
+              )}
               <div>
                 <Label htmlFor="phoneNumber">Teléfono</Label>
                 <Input
@@ -160,15 +176,17 @@ export default function EditarPerfilPage() {
                   onChange={(e) => setUserData({ ...userData, address: e.target.value })}
                 />
               </div>
-              <div>
-                <Label htmlFor="age">Edad</Label>
-                <Input
-                  id="age"
-                  type="number"
-                  value={userData.age || ''}
-                  onChange={(e) => setUserData({ ...userData, age: parseInt(e.target.value) || undefined })}
-                />
-              </div>
+              {!userData.isClub && (
+                <div>
+                  <Label htmlFor="age">Edad</Label>
+                  <Input
+                    id="age"
+                    type="number"
+                    value={userData.age || ''}
+                    onChange={(e) => setUserData({ ...userData, age: parseInt(e.target.value) || undefined })}
+                  />
+                </div>
+              )}
               <div className="flex justify-between">
                 <Button type="button" variant="outline" onClick={() => router.push('/perfil')}>
                   <ArrowLeft className="w-4 h-4 mr-2" />
