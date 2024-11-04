@@ -3,7 +3,41 @@ import prisma from '@/lib/prisma';
 import { compare } from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+const JWT_SECRET = process.env.JWT_SECRET || 'jfeofslnveiapfsajs';
+
+// Type definitions
+type User = {
+  id: number;
+  email: string;
+  password?: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string | null;
+  address: string | null;
+  age: number | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+type Club = {
+  id: number;
+  email: string;
+  password?: string;
+  name: string;
+  phoneNumber: string | null;
+  address: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+// Type guards
+function isClub(entity: User | Club): entity is Club {
+  return 'name' in entity && typeof entity.name === 'string';
+}
+
+function isUser(entity: User | Club): entity is User {
+  return 'firstName' in entity && typeof entity.firstName === 'string';
+}
 
 export async function POST(request: Request) {
   console.log('Iniciando proceso de login (POST)');
@@ -51,12 +85,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Usuario o club no encontrado' }, { status: 401 });
     }
 
-    console.log('Entidad devuelta:', entity); // Verifica que `firstName` esté aquí
-
-
     console.log('Entidad encontrada, verificando contraseña');
     // Verificar la contraseña
-    const passwordValid = await compare(password, entity.password);
+    const passwordValid = await compare(password, entity.password || '');
     if (!passwordValid) {
       console.log('Contraseña incorrecta');
       return NextResponse.json({ error: 'Contraseña incorrecta' }, { status: 401 });
@@ -71,7 +102,7 @@ export async function POST(request: Request) {
     );
 
     console.log('JWT generado, creando respuesta');
-    // Crear la respuesta con todos los datos
+    // Crear la respuesta con todos los datos y displayName
     const response = NextResponse.json(
       {
         message: 'Login exitoso',
@@ -79,6 +110,7 @@ export async function POST(request: Request) {
         entity: {
           ...entity, // Incluye todos los datos del usuario o club en la respuesta
           password: undefined, // Excluye la contraseña de la respuesta
+          displayName: isClub(entity) ? entity.name : isUser(entity) ? entity.firstName : undefined, // Asigna displayName según el tipo de entidad
         },
       },
       { status: 200 }
@@ -98,7 +130,6 @@ export async function POST(request: Request) {
     return response;
   } catch (error) {
     console.error('Error detallado en el inicio de sesión:', error);
-    console.error('Stack trace:', error instanceof Error ? error.stack : 'No stack trace available');
     return NextResponse.json({ error: `Error interno del servidor: ${error instanceof Error ? error.message : 'Error desconocido'}` }, { status: 500 });
   }
 }
@@ -149,20 +180,21 @@ export async function GET(request: Request) {
           },
         });
 
-
-    console.log('Entidad devuelta:', entity); // Verifica que `firstName` esté aquí
-
-
     if (!entity) {
       console.log('Entidad no encontrada en la base de datos');
       return NextResponse.json({ error: 'Entidad no encontrada' }, { status: 404 });
     }
 
+    // Añadir `displayName` en la respuesta para facilitar el acceso en el frontend
+    const responseEntity = {
+      ...entity,
+      displayName: isClub(entity) ? entity.name : isUser(entity) ? entity.firstName : undefined,
+    };
+
     console.log('Entidad encontrada, enviando respuesta');
-    return NextResponse.json({ entity, isClub: decoded.isClub });
+    return NextResponse.json({ entity: responseEntity, isClub: decoded.isClub });
   } catch (error) {
     console.error('Error detallado en la verificación del token:', error);
-    console.error('Stack trace:', error instanceof Error ? error.stack : 'No stack trace available');
     return NextResponse.json({ error: `Error interno del servidor: ${error instanceof Error ? error.message : 'Error desconocido'}` }, { status: 500 });
   }
 }
