@@ -5,6 +5,32 @@ import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
+type UserWithPassword = {
+  id: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  password: string;
+  phoneNumber: string | null;
+  address: string | null;
+  age: number | null;
+};
+
+type ClubWithPassword = {
+  id: number;
+  email: string;
+  name: string;
+  password: string;
+  phoneNumber: string | null;
+  address: string | null;
+};
+
+type EntityWithPassword = UserWithPassword | ClubWithPassword;
+
+type User = Omit<UserWithPassword, 'password'>;
+type Club = Omit<ClubWithPassword, 'password'>;
+type Entity = User | Club;
+
 export async function POST(request: Request) {
   console.log('Iniciando proceso de login (POST)');
   try {
@@ -25,6 +51,9 @@ export async function POST(request: Request) {
         address: true,
         age: true,
       },
+    }).catch(error => {
+      console.error('Error al buscar usuario en la base de datos:', error);
+      throw new Error('Error de base de datos al buscar usuario');
     });
 
     const club = await prisma.club.findUnique({
@@ -37,6 +66,9 @@ export async function POST(request: Request) {
         phoneNumber: true,
         address: true,
       },
+    }).catch(error => {
+      console.error('Error al buscar club en la base de datos:', error);
+      throw new Error('Error de base de datos al buscar club');
     });
 
     if (!user && !club) {
@@ -44,16 +76,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Usuario o club no encontrado' }, { status: 401 });
     }
 
-    const entity = user || club;
-    if (!entity) {
-      console.log('Entidad no encontrada');
-      return NextResponse.json({ error: 'Entidad no encontrada' }, { status: 401 });
-    }
-
+    const entity: EntityWithPassword = (user || club) as EntityWithPassword;
     console.log('Entidad encontrada, verificando contraseña');
 
     // Verify password
-    const passwordValid = await compare(password, entity.password);
+    const passwordValid = await compare(password, entity.password).catch(error => {
+      console.error('Error al comparar contraseñas:', error);
+      throw new Error('Error al verificar la contraseña');
+    });
 
     if (!passwordValid) {
       console.log('Contraseña incorrecta');
@@ -63,7 +93,7 @@ export async function POST(request: Request) {
     console.log('Contraseña válida, generando JWT');
     // Generate JWT
     const token = jwt.sign(
-      { id: entity.id, email: entity.email, isClub: !!club },
+      { id: entity.id, email: entity.email, isClub: 'name' in entity },
       JWT_SECRET,
       { expiresIn: '1h' }
     );
@@ -72,7 +102,7 @@ export async function POST(request: Request) {
     // Create the response
     const response = NextResponse.json({ 
       message: 'Login exitoso',
-      isClub: !!club
+      isClub: 'name' in entity
     }, { status: 200 });
 
     console.log('Configurando cookie con el token');
@@ -113,7 +143,7 @@ export async function GET(request: Request) {
     }
 
     console.log('Token válido, buscando usuario o club en la base de datos');
-    let entity;
+    let entity: Entity | null;
     if (decoded.isClub) {
       entity = await prisma.club.findUnique({
         where: { id: decoded.id },
@@ -146,7 +176,11 @@ export async function GET(request: Request) {
     }
 
     console.log('Entidad encontrada, enviando respuesta');
-    return NextResponse.json({ entity, isClub: decoded.isClub });
+    return NextResponse.json({ 
+      entity, 
+      isClub: decoded.isClub,
+      name: 'name' in entity ? entity.name : entity.firstName
+    });
   } catch (error) {
     console.error('Error detallado en la verificación del token:', error);
     console.error('Stack trace:', error instanceof Error ? error.stack : 'No stack trace available');
