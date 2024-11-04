@@ -51,9 +51,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Usuario o club no encontrado' }, { status: 401 });
     }
 
-    console.log('Entidad devuelta:', entity); // Verifica que `firstName` esté aquí
-
-
     console.log('Entidad encontrada, verificando contraseña');
     // Verificar la contraseña
     const passwordValid = await compare(password, entity.password);
@@ -148,10 +145,6 @@ export async function GET(request: Request) {
             updatedAt: true,
           },
         });
-
-
-    console.log('Entidad devuelta:', entity); // Verifica que `firstName` esté aquí
-
 
     if (!entity) {
       console.log('Entidad no encontrada en la base de datos');
