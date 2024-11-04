@@ -11,65 +11,66 @@ export async function POST(request: Request) {
     const { email, password } = await request.json();
     console.log(`Email recibido: ${email}`);
 
-    // Find the user or club
-    console.log('Buscando usuario o club en la base de datos');
-    const user = await prisma.user.findUnique({ 
+    // Find the user
+    console.log('Buscando usuario en la base de datos');
+    const user = await prisma.user.findUnique({
       where: { email },
-      select: { id: true, email: true, password: true }
-    });
-    const club = await prisma.club.findUnique({ 
-      where: { email },
-      select: { id: true, email: true, password: true }
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        password: true,
+        phoneNumber: true,
+        address: true,
+        age: true,
+      },
+    }).catch(error => {
+      console.error('Error al buscar usuario en la base de datos:', error);
+      throw new Error('Error de base de datos al buscar usuario');
     });
 
-    const entity = user || club;
-
-    if (!entity) {
-      console.log('Entidad no encontrada');
-      return NextResponse.json({ error: 'Usuario o club no encontrado' }, { status: 401 });
+    if (!user) {
+      console.log('Usuario no encontrado');
+      return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 401 });
     }
 
-    console.log('Entidad encontrada, verificando contraseña');
+    console.log('Usuario encontrado, verificando contraseña');
     // Verify password
-    if ('password' in entity) {
-      const passwordValid = await compare(password, entity.password);
+    const passwordValid = await compare(password, user.password).catch(error => {
+      console.error('Error al comparar contraseñas:', error);
+      throw new Error('Error al verificar la contraseña');
+    });
 
-      if (!passwordValid) {
-        console.log('Contraseña incorrecta');
-        return NextResponse.json({ error: 'Contraseña incorrecta' }, { status: 401 });
-      }
-
-      console.log('Contraseña válida, generando JWT');
-      // Generate JWT
-      const token = jwt.sign(
-        { id: entity.id.toString(), email: entity.email, isClub: !!club },
-        JWT_SECRET,
-        { expiresIn: '1h' }
-      );
-
-      console.log('JWT generado, creando respuesta');
-      // Create the response
-      const response = NextResponse.json({ 
-        message: 'Login exitoso',
-        isClub: !!club
-      }, { status: 200 });
-
-      console.log('Configurando cookie con el token');
-      // Set the token as an HTTP-only cookie
-      response.cookies.set('token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 3600, // 1 hour
-        path: '/',
-      });
-
-      console.log('Proceso de login completado exitosamente');
-      return response;
-    } else {
-      console.log('Error: La entidad no tiene una propiedad password');
-      return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });
+    if (!passwordValid) {
+      console.log('Contraseña incorrecta');
+      return NextResponse.json({ error: 'Contraseña incorrecta' }, { status: 401 });
     }
+
+    console.log('Contraseña válida, generando JWT');
+    // Generate JWT
+    const token = jwt.sign(
+      { userId: user.id, email: user.email },
+      JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    console.log('JWT generado, creando respuesta');
+    // Create the response
+    const response = NextResponse.json({ message: 'Login exitoso' }, { status: 200 });
+
+    console.log('Configurando cookie con el token');
+    // Set the token as an HTTP-only cookie
+    response.cookies.set('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'none',
+      maxAge: 3600, // 1 hour
+      path: '/',
+    });
+
+    console.log('Proceso de login completado exitosamente');
+    return response;
   } catch (error) {
     console.error('Error detallado en el inicio de sesión:', error);
     console.error('Stack trace:', error instanceof Error ? error.stack : 'No stack trace available');
@@ -88,20 +89,37 @@ export async function GET(request: Request) {
     }
 
     console.log('Token encontrado, verificando...');
-    const decoded = jwt.verify(token, JWT_SECRET) as { id: string, email: string, isClub: boolean };
+    const decoded = jwt.verify(token, JWT_SECRET);
     
-    console.log('Token válido, buscando entidad en la base de datos');
-    const entity = decoded.isClub
-      ? await prisma.club.findUnique({ where: { id: parseInt(decoded.id, 10) } })
-      : await prisma.user.findUnique({ where: { id: parseInt(decoded.id, 10) } });
-
-    if (!entity) {
-      console.log('Entidad no encontrada en la base de datos');
-      return NextResponse.json({ error: 'Entidad no encontrada' }, { status: 404 });
+    if (typeof decoded !== 'object' || !decoded) {
+      console.log('Token inválido');
+      throw new Error('Token inválido');
     }
 
-    console.log('Entidad encontrada, enviando respuesta');
-    return NextResponse.json({ entity, isClub: decoded.isClub });
+    console.log('Token válido, buscando usuario en la base de datos');
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.userId },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        phoneNumber: true,
+        address: true,
+        age: true,
+      },
+    }).catch(error => {
+      console.error('Error al buscar usuario en la base de datos:', error);
+      throw new Error('Error de base de datos al buscar usuario');
+    });
+
+    if (!user) {
+      console.log('Usuario no encontrado en la base de datos');
+      return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
+    }
+
+    console.log('Usuario encontrado, enviando respuesta');
+    return NextResponse.json({ user });
   } catch (error) {
     console.error('Error detallado en la verificación del token:', error);
     console.error('Stack trace:', error instanceof Error ? error.stack : 'No stack trace available');
