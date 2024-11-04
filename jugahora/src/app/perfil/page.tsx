@@ -15,8 +15,9 @@ import Image from 'next/image'
 interface User {
   id: string
   email: string
-  firstName: string
-  lastName: string
+  firstName?: string
+  lastName?: string
+  name?: string
   phoneNumber?: string
   address?: string
   age?: number
@@ -45,6 +46,7 @@ export default function PerfilPage() {
   const [jugadores, setJugadores] = useState<string[]>([])
   const [numSets, setNumSets] = useState('2')
   const [isAddingPartido, setIsAddingPartido] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const menuRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
@@ -59,17 +61,19 @@ export default function PerfilPage() {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
+        setIsLoading(true)
         const authResponse = await fetch('/api/auth', {
           method: 'GET',
           credentials: 'include',
         })
 
         if (authResponse.ok) {
-          const userData = await authResponse.json()
-          setUserData(userData.user)
-          setJugadores([userData.user.firstName, 'Jugador 2', 'Jugador 3', 'Jugador 4'])
+          const data = await authResponse.json()
+          const user = data.entity
+          setUserData(user)
+          setJugadores([user.firstName || user.name || 'Jugador 1', 'Jugador 2', 'Jugador 3', 'Jugador 4'])
 
-          const partidosResponse = await fetch(`/api/partidos?userId=${userData.user.id}`, {
+          const partidosResponse = await fetch(`/api/partidos?userId=${user.id}`, {
             method: 'GET',
             credentials: 'include',
           })
@@ -81,11 +85,13 @@ export default function PerfilPage() {
             console.error('Error al obtener los partidos del usuario')
           }
         } else {
-          router.push('/login')
+          throw new Error('Failed to fetch user data')
         }
       } catch (error) {
         console.error('Error al obtener el perfil del usuario:', error)
         router.push('/login')
+      } finally {
+        setIsLoading(false)
       }
     }
 
@@ -159,10 +165,18 @@ export default function PerfilPage() {
     }
   }
 
-  if (!userData) {
+  if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gray-50">
         <p className="text-lg text-gray-600">Cargando perfil...</p>
+      </div>
+    )
+  }
+
+  if (!userData) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+        <p className="text-lg text-gray-600">No se pudo cargar el perfil. Por favor, inténtalo de nuevo.</p>
       </div>
     )
   }
@@ -240,7 +254,7 @@ export default function PerfilPage() {
           <CardHeader className="bg-green-50 border-b border-green-100">
             <CardTitle className="text-2xl font-bold text-green-800 flex items-center">
               <User className="w-6 h-6 mr-2" />
-              Perfil de {userData.firstName}
+              Perfil de {userData.firstName || userData.name}
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6 space-y-4">
@@ -250,7 +264,7 @@ export default function PerfilPage() {
             </div>
             <div className="flex items-center">
               <User className="w-5 h-5 mr-2 text-gray-500" />
-              <p><strong>Nombre completo:</strong> {userData.firstName} {userData.lastName}</p>
+              <p><strong>Nombre completo:</strong> {userData.firstName || userData.name} {userData.lastName || ''}</p>
             </div>
             {userData.phoneNumber && (
               <div className="flex items-center">
@@ -406,23 +420,23 @@ export default function PerfilPage() {
             )}
           </CardContent>
         </Card>
-      </main>
+        </main>
 
-      <footer className="py-6 px-4 md:px-6 bg-white border-t border-gray-200">
-        <div className="container mx-auto flex flex-col sm:flex-row justify-between items-center">
-          <p className="text-xs text-gray-500 mb-2 sm:mb-0">
-            © 2024 JugáHora. Todos los derechos reservados.
-          </p>
-          <nav className="flex gap-4">
-            <Link className="text-xs text-gray-500 hover:text-green-600 transition-colors" href="/perfil">
-              Términos de Servicio
-            </Link>
-            <Link className="text-xs text-gray-500 hover:text-green-600 transition-colors" href="/perfil">
-              Privacidad
-            </Link>
-          </nav>
+        <footer className="py-6 px-4 md:px-6 bg-white border-t border-gray-200">
+          <div className="container mx-auto flex flex-col sm:flex-row justify-between items-center">
+            <p className="text-xs text-gray-500 mb-2 sm:mb-0">
+              © 2024 JugáHora. Todos los derechos reservados.
+            </p>
+            <nav className="flex gap-4">
+              <Link className="text-xs text-gray-500 hover:text-green-600 transition-colors" href="/perfil">
+                Términos de Servicio
+              </Link>
+              <Link className="text-xs text-gray-500 hover:text-green-600 transition-colors" href="/perfil">
+                Privacidad
+              </Link>
+            </nav>
+          </div>
+        </footer>
         </div>
-      </footer>
-    </div>
-  )
-}
+        )
+        }
