@@ -44,3 +44,13 @@ model Partidos {
 
   User User @relation(fields: [userId], references: [id]) // Relación con la tabla Users
 }
+
+model Partidos_club {
+  id        Int      @id @default(autoincrement())
+  date      DateTime
+  time      String
+  court     String
+  players   Int      @default(0) // Número de jugadores actualmente unidos
+  maxPlayers Int     @default(4) // Número máximo de jugadores permitidos
+}
+

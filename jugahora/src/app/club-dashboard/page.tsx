@@ -1,20 +1,20 @@
-'use client'
+'use client';
 
-import { Button } from "@/components/ui/button"
-import { CalendarIcon, Plus, Trash2, Edit, Users, Clock, MapPin, Bell } from "lucide-react"
-import Link from "next/link"
-import Image from 'next/image'
-import { useState } from 'react'
-import Calendar from 'react-calendar'
-import 'react-calendar/dist/Calendar.css'
-import { useRouter } from 'next/navigation'
+import { Button } from "@/components/ui/button";
+import { CalendarIcon, Plus, Trash2, Edit, Users, Clock, MapPin, Bell } from "lucide-react";
+import Link from "next/link";
+import Image from 'next/image';
+import { useState } from 'react';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
+import { useRouter } from 'next/navigation';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -23,39 +23,64 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { DropdownMenu, DropdownMenuItem } from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { DropdownMenu, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
 type ValuePiece = Date | null;
-
 type Value = ValuePiece | [ValuePiece, ValuePiece];
 
 export default function ClubDashboard() {
-  const [currentDate, setCurrentDate] = useState<Date>(new Date())
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [matches, setMatches] = useState([
     { id: 1, date: '2024-03-15', time: '18:00', court: 'Cancha 1', players: 2 },
     { id: 2, date: '2024-03-16', time: '20:00', court: 'Cancha 2', players: 4 },
     { id: 3, date: '2024-03-17', time: '19:30', court: 'Cancha 3', players: 3 },
-  ])
-  const router = useRouter()
+  ]);
+  const [newMatch, setNewMatch] = useState({ date: '', time: '', court: '' });
+  const router = useRouter();
 
   const handleLogout = async () => {
     try {
       await fetch('/api/logout', {
         method: 'GET',
         credentials: 'include',
-      })
-      router.push('/')
+      });
+      router.push('/');
     } catch (error) {
-      console.error('Error al cerrar sesión:', error)
+      console.error('Error al cerrar sesión:', error);
     }
-  }
+  };
+
+  const handleCreateMatch = async () => {
+    try {
+      const response = await fetch('/api/matches', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newMatch),
+      });
+
+      if (response.ok) {
+        const createdMatch = await response.json();
+        setMatches([...matches, createdMatch]); // Añadimos el nuevo partido a la lista
+        setNewMatch({ date: '', time: '', court: '' }); // Limpiamos el formulario
+      } else {
+        console.error('Error al crear el partido:', await response.text());
+      }
+    } catch (error) {
+      console.error('Error al conectar con la API para crear el partido:', error);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setNewMatch((prev) => ({ ...prev, [id]: value }));
+  };
 
   const handleDeleteMatch = (id: number) => {
-    setMatches(matches.filter(match => match.id !== id))
-  }
+    setMatches(matches.filter(match => match.id !== id));
+  };
 
   const handleDateChange = (value: Value) => {
     if (value instanceof Date) {
@@ -67,10 +92,10 @@ export default function ClubDashboard() {
 
   const tileClassName = ({ date, view }: { date: Date; view: string }) => {
     if (view === 'month') {
-      const matchDate = matches.find(match => new Date(match.date).toDateString() === date.toDateString())
-      return matchDate ? 'bg-green-200' : null
+      const matchDate = matches.find(match => new Date(match.date).toDateString() === date.toDateString());
+      return matchDate ? 'bg-green-200' : null;
     }
-  }
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -116,7 +141,7 @@ export default function ClubDashboard() {
             onClick={handleLogout}
           >
             Cerrar Sesión
-            </button>
+          </button>
         </nav>
       </header>
       <main className="flex-1 p-4 md:p-6 space-y-8">
@@ -135,26 +160,20 @@ export default function ClubDashboard() {
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="date" className="text-right">
-                    Fecha
-                  </Label>
-                  <Input id="date" type="date" className="col-span-3" />
+                  <Label htmlFor="date" className="text-right">Fecha</Label>
+                  <Input id="date" type="date" className="col-span-3" value={newMatch.date} onChange={handleInputChange} />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="time" className="text-right">
-                    Hora
-                  </Label>
-                  <Input id="time" type="time" className="col-span-3" />
+                  <Label htmlFor="time" className="text-right">Hora</Label>
+                  <Input id="time" type="time" className="col-span-3" value={newMatch.time} onChange={handleInputChange} />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="court" className="text-right">
-                    Cancha
-                  </Label>
-                  <Input id="court" className="col-span-3" />
+                  <Label htmlFor="court" className="text-right">Cancha</Label>
+                  <Input id="court" className="col-span-3" value={newMatch.court} onChange={handleInputChange} />
                 </div>
               </div>
               <DialogFooter>
-                <Button type="submit">Guardar Partido</Button>
+                <Button onClick={handleCreateMatch}>Guardar Partido</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
