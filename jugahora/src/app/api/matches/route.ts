@@ -4,12 +4,9 @@ import prisma from '@/lib/prisma';
 export async function POST(request: Request) {
   try {
     const { date, time, court } = await request.json();
-    
+
     // Verifica si los datos están llegando correctamente
     console.log("Datos recibidos:", { date, time, court });
-
-    // Verifica si la conexión a Prisma es correcta
-    console.log("Prisma Client conectado:", prisma);
 
     // Verificación de datos
     if (!date || !time || !court) {
@@ -20,10 +17,14 @@ export async function POST(request: Request) {
       );
     }
 
-    // Intento de creación de partido
+    // Intenta crear un objeto `Date` explícitamente a partir del campo `date`
+    const formattedDate = new Date(date);
+    console.log("Fecha formateada:", formattedDate);
+
+    // Intenta crear el partido con la fecha formateada
     const newMatch = await prisma.partidos_club.create({
       data: {
-        date: new Date(date),
+        date: formattedDate,
         time,
         court,
         players: 0,
