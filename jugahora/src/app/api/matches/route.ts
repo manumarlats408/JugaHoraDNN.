@@ -14,10 +14,19 @@ export async function POST(request: Request) {
       );
     }
 
+    // Validar formato de fecha y hora
+    const formattedDate = new Date(date);
+    if (isNaN(formattedDate.getTime())) {
+      return NextResponse.json(
+        { error: 'Formato de fecha no válido. Asegúrate de que el campo "date" sea una fecha válida.' },
+        { status: 400 }
+      );
+    }
+
     // Intento de creación de partido
     const newMatch = await prisma.partidos_club.create({
       data: {
-        date: new Date(date),
+        date: formattedDate,
         time,
         court,
         players: 0,
