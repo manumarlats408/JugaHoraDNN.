@@ -8,7 +8,7 @@ interface DropdownMenuProps {
 export const DropdownMenu: React.FC<DropdownMenuProps> = ({ trigger, children }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
+ 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -43,7 +43,9 @@ export const DropdownMenuItem: React.FC<{ children: React.ReactNode; onClick?: (
     role="menuitem"
     onClick={(e) => {
       e.preventDefault();
-      onClick && onClick();
+      if (onClick) {
+        onClick();
+      }
     }}
   >
     {children}
