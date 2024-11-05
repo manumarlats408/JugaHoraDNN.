@@ -7,6 +7,7 @@ import Image from 'next/image'
 import { useState } from 'react'
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
+import { useRouter } from 'next/navigation'
 import {
   Card,
   CardContent,
@@ -38,6 +39,19 @@ export default function ClubDashboard() {
     { id: 2, date: '2024-03-16', time: '20:00', court: 'Cancha 2', players: 4 },
     { id: 3, date: '2024-03-17', time: '19:30', court: 'Cancha 3', players: 3 },
   ])
+  const router = useRouter()
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/logout', {
+        method: 'GET',
+        credentials: 'include',
+      })
+      router.push('/')
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error)
+    }
+  }
 
   const handleDeleteMatch = (id: number) => {
     setMatches(matches.filter(match => match.id !== id))
@@ -97,9 +111,12 @@ export default function ClubDashboard() {
               </div>
             </DropdownMenuItem>
           </DropdownMenu>
-          <Link className="text-sm font-medium hover:underline underline-offset-4" href="#">
+          <button
+            className="text-sm font-medium hover:underline underline-offset-4"
+            onClick={handleLogout}
+          >
             Cerrar Sesión
-          </Link>
+            </button>
         </nav>
       </header>
       <main className="flex-1 p-4 md:p-6 space-y-8">
