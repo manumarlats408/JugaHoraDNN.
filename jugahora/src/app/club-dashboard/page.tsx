@@ -25,20 +25,13 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuItem } from "@/components/ui/dropdown-menu"
 
 type ValuePiece = Date | null;
 
 type Value = ValuePiece | [ValuePiece, ValuePiece];
 
-export default function Component() {
+export default function ClubDashboard() {
   const [currentDate, setCurrentDate] = useState<Date>(new Date())
   const [matches, setMatches] = useState([
     { id: 1, date: '2024-03-15', time: '18:00', court: 'Cancha 1', players: 2 },
@@ -82,28 +75,27 @@ export default function Component() {
               </Button>
             }
           >
-            <DropdownMenuContent>
-              <DropdownMenuLabel>Notificaciones</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <div className="flex flex-col">
-                  <span className="font-medium">Nuevo partido creado</span>
-                  <span className="text-sm text-gray-500">Cancha 1, hoy a las 18:00</span>
-                </div>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <div className="flex flex-col">
-                  <span className="font-medium">Recordatorio: Mantenimiento</span>
-                  <span className="text-sm text-gray-500">Cancha 3, mañana a las 10:00</span>
-                </div>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <div className="flex flex-col">
-                  <span className="font-medium">Partido cancelado</span>
-                  <span className="text-sm text-gray-500">Cancha 2, 20/03 a las 19:00</span>
-                </div>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
+            <div className="px-4 py-3 text-sm text-gray-900 dark:text-white">
+              <div className="font-medium">Notificaciones</div>
+            </div>
+            <DropdownMenuItem>
+              <div className="flex flex-col">
+                <span className="font-medium">Nuevo partido creado</span>
+                <span className="text-sm text-gray-500">Cancha 1, hoy a las 18:00</span>
+              </div>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <div className="flex flex-col">
+                <span className="font-medium">Recordatorio: Mantenimiento</span>
+                <span className="text-sm text-gray-500">Cancha 3, mañana a las 10:00</span>
+              </div>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <div className="flex flex-col">
+                <span className="font-medium">Partido cancelado</span>
+                <span className="text-sm text-gray-500">Cancha 2, 20/03 a las 19:00</span>
+              </div>
+            </DropdownMenuItem>
           </DropdownMenu>
           <Link className="text-sm font-medium hover:underline underline-offset-4" href="#">
             Cerrar Sesión
