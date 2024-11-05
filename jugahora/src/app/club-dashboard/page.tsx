@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from "@/components/ui/button"
-import { CalendarIcon, Plus, Trash2, Edit, Users, Clock, MapPin } from "lucide-react"
+import { CalendarIcon, Plus, Trash2, Edit, Users, Clock, MapPin, Bell } from "lucide-react"
 import Link from "next/link"
 import Image from 'next/image'
 import { useState } from 'react'
@@ -25,12 +25,20 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 type ValuePiece = Date | null;
 
 type Value = ValuePiece | [ValuePiece, ValuePiece];
 
-export default function DashboardClub() {
+export default function Component() {
   const [currentDate, setCurrentDate] = useState<Date>(new Date())
   const [matches, setMatches] = useState([
     { id: 1, date: '2024-03-15', time: '18:00', court: 'Cancha 1', players: 2 },
@@ -64,10 +72,39 @@ export default function DashboardClub() {
           <Image src='/logo.svg' alt="JugáHora Logo" width={32} height={32} /> 
           <span className="ml-2 text-xl font-bold">JugáHora</span>
         </Link>
-        <nav className="flex gap-4 sm:gap-6">
-          <Link className="text-sm font-medium hover:underline underline-offset-4" href="#">
-            Perfil del Club
-          </Link>
+        <nav className="flex gap-4 sm:gap-6 items-center">
+          <DropdownMenu
+            trigger={
+              <Button variant="ghost" size="icon" className="relative">
+                <Bell className="h-5 w-5" />
+                <span className="sr-only">Notificaciones</span>
+                <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-600"></span>
+              </Button>
+            }
+          >
+            <DropdownMenuContent>
+              <DropdownMenuLabel>Notificaciones</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <div className="flex flex-col">
+                  <span className="font-medium">Nuevo partido creado</span>
+                  <span className="text-sm text-gray-500">Cancha 1, hoy a las 18:00</span>
+                </div>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <div className="flex flex-col">
+                  <span className="font-medium">Recordatorio: Mantenimiento</span>
+                  <span className="text-sm text-gray-500">Cancha 3, mañana a las 10:00</span>
+                </div>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <div className="flex flex-col">
+                  <span className="font-medium">Partido cancelado</span>
+                  <span className="text-sm text-gray-500">Cancha 2, 20/03 a las 19:00</span>
+                </div>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Link className="text-sm font-medium hover:underline underline-offset-4" href="#">
             Cerrar Sesión
           </Link>
