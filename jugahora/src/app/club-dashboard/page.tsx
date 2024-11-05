@@ -5,6 +5,8 @@ import { CalendarIcon, Plus, Trash2, Edit, Users, Clock, MapPin } from "lucide-r
 import Link from "next/link"
 import Image from 'next/image'
 import { useState } from 'react'
+import Calendar from 'react-calendar'
+import 'react-calendar/dist/Calendar.css'
 import {
   Card,
   CardContent,
@@ -24,8 +26,12 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
+type ValuePiece = Date | null;
+
+type Value = ValuePiece | [ValuePiece, ValuePiece];
+
 export default function DashboardClub() {
-  const [currentDate, setCurrentDate] = useState(new Date())
+  const [currentDate, setCurrentDate] = useState<Date>(new Date())
   const [matches, setMatches] = useState([
     { id: 1, date: '2024-03-15', time: '18:00', court: 'Cancha 1', players: 2 },
     { id: 2, date: '2024-03-16', time: '20:00', court: 'Cancha 2', players: 4 },
@@ -36,21 +42,19 @@ export default function DashboardClub() {
     setMatches(matches.filter(match => match.id !== id))
   }
 
-  const getDaysInMonth = (date: Date) => {
-    const year = date.getFullYear()
-    const month = date.getMonth()
-    const days = new Date(year, month + 1, 0).getDate()
-    return Array.from({ length: days }, (_, i) => new Date(year, month, i + 1))
-  }
+  const handleDateChange = (value: Value) => {
+    if (value instanceof Date) {
+      setCurrentDate(value);
+    } else if (Array.isArray(value) && value[0] instanceof Date) {
+      setCurrentDate(value[0]);
+    }
+  };
 
-  const daysInMonth = getDaysInMonth(currentDate)
-
-  const handlePrevMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))
-  }
-
-  const handleNextMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1))
+  const tileClassName = ({ date, view }: { date: Date; view: string }) => {
+    if (view === 'month') {
+      const matchDate = matches.find(match => new Date(match.date).toDateString() === date.toDateString())
+      return matchDate ? 'bg-green-200' : null
+    }
   }
 
   return (
@@ -116,36 +120,11 @@ export default function DashboardClub() {
               <CardDescription>Vista mensual de los partidos programados</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex justify-between items-center mb-4">
-                <Button onClick={handlePrevMonth} variant="outline" size="sm">&lt;</Button>
-                <h2 className="text-lg font-semibold">
-                  {currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
-                </h2>
-                <Button onClick={handleNextMonth} variant="outline" size="sm">&gt;</Button>
-              </div>
-              <div className="grid grid-cols-7 gap-1">
-                {['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].map(day => (
-                  <div key={day} className="text-center font-medium text-sm p-2">
-                    {day}
-                  </div>
-                ))}
-                {daysInMonth.map((date, index) => (
-                  <div
-                    key={index}
-                    className={`text-center p-2 ${
-                      date.getMonth() === currentDate.getMonth()
-                        ? 'bg-gray-100'
-                        : 'bg-gray-50 text-gray-400'
-                    } ${
-                      matches.some(match => new Date(match.date).toDateString() === date.toDateString())
-                        ? 'bg-green-100'
-                        : ''
-                    }`}
-                  >
-                    {date.getDate()}
-                  </div>
-                ))}
-              </div>
+              <Calendar
+                value={currentDate}
+                onChange={handleDateChange}
+                tileClassName={tileClassName}
+              />
             </CardContent>
           </Card>
           <Card className="md:col-span-2">
