@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Menu, X, Home, User, Calendar, Users, LogOut, Clock, MapPin } from 'lucide-react'
-import { match } from 'assert'
+
 
 type Match = {
   id: number
