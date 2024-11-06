@@ -48,6 +48,7 @@ export default function ClubDashboard() {
   ]);
   const [newMatch, setNewMatch] = useState({ date: '', time: '', court: '' });
   const [editMatch, setEditMatch] = useState<Match | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -99,6 +100,7 @@ export default function ClubDashboard() {
 
   const handleEditMatch = (match: Match) => {
     setEditMatch(match);
+    setIsEditModalOpen(true); // Abre el modal de edición
   };
 
   const handleSaveEdit = async () => {
@@ -115,6 +117,7 @@ export default function ClubDashboard() {
         const updatedMatch = await response.json();
         setMatches(matches.map(match => (match.id === updatedMatch.id ? updatedMatch : match)));
         setEditMatch(null);
+        setIsEditModalOpen(false); // Cierra el modal de edición
       } else {
         console.error('Error al actualizar el partido:', await response.text());
       }
@@ -123,9 +126,9 @@ export default function ClubDashboard() {
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, isEdit: boolean = false) => {
     const { id, value } = e.target;
-    if (editMatch) {
+    if (isEdit && editMatch) {
       setEditMatch((prev) => (prev ? { ...prev, [id]: value } : prev));
     } else {
       setNewMatch((prev) => ({ ...prev, [id]: value }));
@@ -199,35 +202,67 @@ export default function ClubDashboard() {
           <h1 className="text-3xl font-bold">Dashboard del Club</h1>
           <Dialog>
             <DialogTrigger asChild>
-              <Button><Plus className="mr-2 h-4 w-4" /> {editMatch ? "Editar Partido" : "Crear Partido"}</Button>
+              <Button><Plus className="mr-2 h-4 w-4" /> Crear Partido</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
-                <DialogTitle>{editMatch ? "Editar Partido" : "Crear Nuevo Partido"}</DialogTitle>
+                <DialogTitle>Crear Nuevo Partido</DialogTitle>
                 <DialogDescription>
-                  Ingresa los detalles del partido aquí. Haz clic en guardar cuando hayas terminado.
+                  Ingresa los detalles del nuevo partido aquí. Haz clic en guardar cuando hayas terminado.
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="date" className="text-right">Fecha</Label>
-                  <Input id="date" type="date" className="col-span-3" value={editMatch ? editMatch.date : newMatch.date} onChange={handleInputChange} />
+                  <Input id="date" type="date" className="col-span-3" value={newMatch.date} onChange={(e) => handleInputChange(e)} />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="time" className="text-right">Hora</Label>
-                  <Input id="time" type="time" className="col-span-3" value={editMatch ? editMatch.time : newMatch.time} onChange={handleInputChange} />
+                  <Input id="time" type="time" className="col-span-3" value={newMatch.time} onChange={(e) => handleInputChange(e)} />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="court" className="text-right">Cancha</Label>
-                  <Input id="court" className="col-span-3" value={editMatch ? editMatch.court : newMatch.court} onChange={handleInputChange} />
+                  <Input id="court" className="col-span-3" value={newMatch.court} onChange={(e) => handleInputChange(e)} />
                 </div>
               </div>
               <DialogFooter>
-                <Button onClick={editMatch ? handleSaveEdit : handleCreateMatch}>{editMatch ? "Guardar Cambios" : "Guardar Partido"}</Button>
+                <Button onClick={handleCreateMatch}>Guardar Partido</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
         </div>
+
+        {/* Modal para Editar Partido */}
+        {editMatch && (
+          <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Editar Partido</DialogTitle>
+                <DialogDescription>
+                  Modifica los detalles del partido aquí. Haz clic en guardar cuando hayas terminado.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="date" className="text-right">Fecha</Label>
+                  <Input id="date" type="date" className="col-span-3" value={editMatch.date} onChange={(e) => handleInputChange(e, true)} />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="time" className="text-right">Hora</Label>
+                  <Input id="time" type="time" className="col-span-3" value={editMatch.time} onChange={(e) => handleInputChange(e, true)} />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="court" className="text-right">Cancha</Label>
+                  <Input id="court" className="col-span-3" value={editMatch.court} onChange={(e) => handleInputChange(e, true)} />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button onClick={handleSaveEdit}>Guardar Cambios</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
+
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <Card>
             <CardHeader>
