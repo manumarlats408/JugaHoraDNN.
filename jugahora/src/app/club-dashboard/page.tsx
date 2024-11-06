@@ -31,14 +31,23 @@ import { DropdownMenu, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
 
+type Match = {
+  id: number;
+  date: string;
+  time: string;
+  court: string;
+  players: number;
+};
+
 export default function ClubDashboard() {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
-  const [matches, setMatches] = useState([
+  const [matches, setMatches] = useState<Match[]>([
     { id: 1, date: '2024-03-15', time: '18:00', court: 'Cancha 1', players: 2 },
     { id: 2, date: '2024-03-16', time: '20:00', court: 'Cancha 2', players: 4 },
     { id: 3, date: '2024-03-17', time: '19:30', court: 'Cancha 3', players: 3 },
   ]);
   const [newMatch, setNewMatch] = useState({ date: '', time: '', court: '' });
+  const [editMatch, setEditMatch] = useState<Match | null>(null);
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -63,8 +72,8 @@ export default function ClubDashboard() {
 
       if (response.ok) {
         const createdMatch = await response.json();
-        setMatches([...matches, createdMatch]); // Añadimos el nuevo partido a la lista
-        setNewMatch({ date: '', time: '', court: '' }); // Limpiamos el formulario
+        setMatches([...matches, createdMatch]);
+        setNewMatch({ date: '', time: '', court: '' });
       } else {
         console.error('Error al crear el partido:', await response.text());
       }
@@ -73,13 +82,54 @@ export default function ClubDashboard() {
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-    setNewMatch((prev) => ({ ...prev, [id]: value }));
+  const handleDeleteMatch = async (id: number) => {
+    try {
+      const response = await fetch(`/api/matches/${id}`, {
+        method: 'DELETE',
+      });
+      if (response.ok) {
+        setMatches(matches.filter(match => match.id !== id));
+      } else {
+        console.error('Error al eliminar el partido:', await response.text());
+      }
+    } catch (error) {
+      console.error('Error al conectar con la API para eliminar el partido:', error);
+    }
   };
 
-  const handleDeleteMatch = (id: number) => {
-    setMatches(matches.filter(match => match.id !== id));
+  const handleEditMatch = (match: Match) => {
+    setEditMatch(match);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editMatch) return;
+
+    try {
+      const response = await fetch(`/api/matches/${editMatch.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editMatch),
+      });
+
+      if (response.ok) {
+        const updatedMatch = await response.json();
+        setMatches(matches.map(match => (match.id === updatedMatch.id ? updatedMatch : match)));
+        setEditMatch(null);
+      } else {
+        console.error('Error al actualizar el partido:', await response.text());
+      }
+    } catch (error) {
+      console.error('Error al conectar con la API para actualizar el partido:', error);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    if (editMatch) {
+      setEditMatch((prev) => (prev ? { ...prev, [id]: value } : prev));
+    } else {
+      setNewMatch((prev) => ({ ...prev, [id]: value }));
+    }
   };
 
   const handleDateChange = (value: Value) => {
@@ -149,31 +199,31 @@ export default function ClubDashboard() {
           <h1 className="text-3xl font-bold">Dashboard del Club</h1>
           <Dialog>
             <DialogTrigger asChild>
-              <Button><Plus className="mr-2 h-4 w-4" /> Crear Partido</Button>
+              <Button><Plus className="mr-2 h-4 w-4" /> {editMatch ? "Editar Partido" : "Crear Partido"}</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
-                <DialogTitle>Crear Nuevo Partido</DialogTitle>
+                <DialogTitle>{editMatch ? "Editar Partido" : "Crear Nuevo Partido"}</DialogTitle>
                 <DialogDescription>
-                  Ingresa los detalles del nuevo partido aquí. Haz clic en guardar cuando hayas terminado.
+                  Ingresa los detalles del partido aquí. Haz clic en guardar cuando hayas terminado.
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="date" className="text-right">Fecha</Label>
-                  <Input id="date" type="date" className="col-span-3" value={newMatch.date} onChange={handleInputChange} />
+                  <Input id="date" type="date" className="col-span-3" value={editMatch ? editMatch.date : newMatch.date} onChange={handleInputChange} />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="time" className="text-right">Hora</Label>
-                  <Input id="time" type="time" className="col-span-3" value={newMatch.time} onChange={handleInputChange} />
+                  <Input id="time" type="time" className="col-span-3" value={editMatch ? editMatch.time : newMatch.time} onChange={handleInputChange} />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="court" className="text-right">Cancha</Label>
-                  <Input id="court" className="col-span-3" value={newMatch.court} onChange={handleInputChange} />
+                  <Input id="court" className="col-span-3" value={editMatch ? editMatch.court : newMatch.court} onChange={handleInputChange} />
                 </div>
               </div>
               <DialogFooter>
-                <Button onClick={handleCreateMatch}>Guardar Partido</Button>
+                <Button onClick={editMatch ? handleSaveEdit : handleCreateMatch}>{editMatch ? "Guardar Cambios" : "Guardar Partido"}</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -216,7 +266,7 @@ export default function ClubDashboard() {
                       </div>
                     </div>
                     <div className="flex space-x-2">
-                      <Button variant="outline" size="icon">
+                      <Button variant="outline" size="icon" onClick={() => handleEditMatch(match)}>
                         <Edit className="h-4 w-4" />
                       </Button>
                       <Button variant="outline" size="icon" onClick={() => handleDeleteMatch(match.id)}>
@@ -229,28 +279,6 @@ export default function ClubDashboard() {
             </CardContent>
           </Card>
         </div>
-        <Card>
-          <CardHeader>
-            <CardTitle>Estadísticas del Club</CardTitle>
-            <CardDescription>Resumen de la actividad del club</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-4 md:grid-cols-3">
-              <div className="flex flex-col items-center p-4 border rounded-lg">
-                <h3 className="text-2xl font-bold">24</h3>
-                <p className="text-sm text-gray-500">Partidos esta semana</p>
-              </div>
-              <div className="flex flex-col items-center p-4 border rounded-lg">
-                <h3 className="text-2xl font-bold">87%</h3>
-                <p className="text-sm text-gray-500">Ocupación de canchas</p>
-              </div>
-              <div className="flex flex-col items-center p-4 border rounded-lg">
-                <h3 className="text-2xl font-bold">152</h3>
-                <p className="text-sm text-gray-500">Jugadores activos</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </main>
       <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
         <p className="text-xs text-center text-gray-500 dark:text-gray-400">
@@ -258,5 +286,5 @@ export default function ClubDashboard() {
         </p>
       </footer>
     </div>
-  )
+  );
 }
