@@ -43,9 +43,7 @@ export default function PaginaJuega() {
   const [matches, setMatches] = useState<Match[]>([])
   const referenciaMenu = useRef<HTMLDivElement>(null)
   const router = useRouter()
-  const [userData] = useState<User | null>(null);
-  
-
+  const [userData, setUserData] = useState<User | null>(null);
 
   const alternarMenu = () => setMenuAbierto(!menuAbierto)
 
@@ -61,8 +59,6 @@ export default function PaginaJuega() {
       document.removeEventListener('mousedown', manejarClicFuera)
     }
   }, [])
-
-  
 
   useEffect(() => {
     const obtenerPartidos = async () => {
