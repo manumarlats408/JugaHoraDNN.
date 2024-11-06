@@ -1,20 +1,20 @@
-'use client';
+'use client'
 
-import { Button } from "@/components/ui/button";
-import { CalendarIcon, Plus, Trash2, Edit, Users, Clock, MapPin, Bell } from "lucide-react";
-import Link from "next/link";
-import Image from 'next/image';
-import { useState } from 'react';
-import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { Button } from "@/components/ui/button"
+import { CalendarIcon, Plus, Trash2, Edit, Users, Clock, MapPin, Bell} from "lucide-react"
+import Image from 'next/image'
+import Calendar from 'react-calendar'
+import 'react-calendar/dist/Calendar.css'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/ui/card"
 import {
   Dialog,
   DialogContent,
@@ -23,88 +23,134 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { DropdownMenu, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { DropdownMenu, DropdownMenuItem } from "@/components/ui/dropdown-menu"
 
-type ValuePiece = Date | null;
-type Value = ValuePiece | [ValuePiece, ValuePiece];
+type ValuePiece = Date | null
+type Value = ValuePiece | [ValuePiece, ValuePiece]
 
 type Match = {
-  id: number;
-  date: string;
-  time: string;
-  court: string;
-  players: number;
-};
+  id: number
+  date: string
+  time: string
+  court: string
+  players: number
+}
+
+type Club = {
+  id: string
+  name: string
+  email: string
+  phoneNumber?: string
+  address?: string
+}
 
 export default function ClubDashboard() {
-  const [currentDate, setCurrentDate] = useState<Date>(new Date());
-  const [matches, setMatches] = useState<Match[]>([
-    { id: 1, date: '2024-03-15', time: '18:00', court: 'Cancha 1', players: 2 },
-    { id: 2, date: '2024-03-16', time: '20:00', court: 'Cancha 2', players: 4 },
-    { id: 3, date: '2024-03-17', time: '19:30', court: 'Cancha 3', players: 3 },
-  ]);
-  const [newMatch, setNewMatch] = useState({ date: '', time: '', court: '' });
-  const [editMatch, setEditMatch] = useState<Match | null>(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const router = useRouter();
+  const [currentDate, setCurrentDate] = useState<Date>(new Date())
+  const [matches, setMatches] = useState<Match[]>([])
+  const [newMatch, setNewMatch] = useState({ date: '', time: '', court: '' })
+  const [editMatch, setEditMatch] = useState<Match | null>(null)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [clubData, setClubData] = useState<Club | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const router = useRouter()
+
+  useEffect(() => {
+    const fetchClubProfile = async () => {
+      try {
+        setIsLoading(true)
+        const authResponse = await fetch('/api/auth', {
+          method: 'GET',
+          credentials: 'include',
+        })
+
+        if (authResponse.ok) {
+          const data = await authResponse.json()
+          const club = data.entity
+          setClubData(club)
+
+          const matchesResponse = await fetch(`/api/matches?clubId=${club.id}`, {
+            method: 'GET',
+            credentials: 'include',
+          })
+
+          if (matchesResponse.ok) {
+            const matchesData = await matchesResponse.json()
+            setMatches(matchesData)
+          } else {
+            console.error('Error al obtener los partidos del club')
+          }
+        } else {
+          throw new Error('Failed to fetch club data')
+        }
+      } catch (error) {
+        console.error('Error al obtener el perfil del club:', error)
+        router.push('/login')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchClubProfile()
+  }, [router])
 
   const handleLogout = async () => {
     try {
       await fetch('/api/logout', {
         method: 'GET',
         credentials: 'include',
-      });
-      router.push('/');
+      })
+      router.push('/')
     } catch (error) {
-      console.error('Error al cerrar sesión:', error);
+      console.error('Error al cerrar sesión:', error)
     }
-  };
+  }
 
   const handleCreateMatch = async () => {
+    if (!clubData) return
     try {
       const response = await fetch('/api/matches', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newMatch),
-      });
+        body: JSON.stringify({ ...newMatch, clubId: clubData.id }),
+      })
 
       if (response.ok) {
-        const createdMatch = await response.json();
-        setMatches([...matches, createdMatch]);
-        setNewMatch({ date: '', time: '', court: '' });
+        const createdMatch = await response.json()
+        setMatches([...matches, createdMatch])
+        setNewMatch({ date: '', time: '', court: '' })
       } else {
-        console.error('Error al crear el partido:', await response.text());
+        console.error('Error al crear el partido:', await response.text())
       }
     } catch (error) {
-      console.error('Error al conectar con la API para crear el partido:', error);
+      console.error('Error al conectar con la API para crear el partido:', error)
     }
-  };
+  }
 
   const handleDeleteMatch = async (id: number) => {
     try {
       const response = await fetch(`/api/matches/${id}`, {
         method: 'DELETE',
-      });
+      })
       if (response.ok) {
-        setMatches(matches.filter(match => match.id !== id));
+        setMatches(matches.filter(match => match.id !== id))
       } else {
-        console.error('Error al eliminar el partido:', await response.text());
+        console.error('Error al eliminar el partido:', await response.text())
       }
     } catch (error) {
-      console.error('Error al conectar con la API para eliminar el partido:', error);
+      console.error('Error al conectar con la API para eliminar el partido:', error)
     }
-  };
+  }
 
   const handleEditMatch = (match: Match) => {
-    setEditMatch(match);
-    setIsEditModalOpen(true); // Abre el modal de edición
-  };
+    setEditMatch(match)
+    setIsEditModalOpen(true)
+  }
 
   const handleSaveEdit = async () => {
-    if (!editMatch) return;
+    if (!editMatch) return
   
     try {
       const response = await fetch(`/api/matches/${editMatch.id}`, {
@@ -115,45 +161,60 @@ export default function ClubDashboard() {
           time: editMatch.time,
           court: editMatch.court,
         }),
-      });
+      })
   
       if (response.ok) {
-        const updatedMatch = await response.json();
-        setMatches(matches.map(match => (match.id === updatedMatch.id ? updatedMatch : match)));
-        setEditMatch(null);
-        setIsEditModalOpen(false); // Cierra el modal de edición
+        const updatedMatch = await response.json()
+        setMatches(matches.map(match => (match.id === updatedMatch.id ? updatedMatch : match)))
+        setEditMatch(null)
+        setIsEditModalOpen(false)
       } else {
-        console.error('Error al actualizar el partido:', await response.text());
+        console.error('Error al actualizar el partido:', await response.text())
       }
     } catch (error) {
-      console.error('Error al conectar con la API para actualizar el partido:', error);
+      console.error('Error al conectar con la API para actualizar el partido:', error)
     }
-  };
-  
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, isEdit: boolean = false) => {
-    const { id, value } = e.target;
+    const { id, value } = e.target
     if (isEdit && editMatch) {
-      setEditMatch((prev) => (prev ? { ...prev, [id]: value } : prev));
+      setEditMatch((prev) => (prev ? { ...prev, [id]: value } : prev))
     } else {
-      setNewMatch((prev) => ({ ...prev, [id]: value }));
+      setNewMatch((prev) => ({ ...prev, [id]: value }))
     }
-  };
+  }
 
   const handleDateChange = (value: Value) => {
     if (value instanceof Date) {
-      setCurrentDate(value);
+      setCurrentDate(value)
     } else if (Array.isArray(value) && value[0] instanceof Date) {
-      setCurrentDate(value[0]);
+      setCurrentDate(value[0])
     }
-  };
+  }
 
   const tileClassName = ({ date, view }: { date: Date; view: string }) => {
     if (view === 'month') {
-      const matchDate = matches.find(match => new Date(match.date).toDateString() === date.toDateString());
-      return matchDate ? 'bg-green-200' : null;
+      const matchDate = matches.find(match => new Date(match.date).toDateString() === date.toDateString())
+      return matchDate ? 'bg-green-200' : null
     }
-  };
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+        <p className="text-lg text-gray-600">Cargando dashboard del club...</p>
+      </div>
+    )
+  }
+
+  if (!clubData) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+        <p className="text-lg text-gray-600">No se pudo cargar el dashboard del club. Por favor, inténtalo de nuevo.</p>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -204,7 +265,7 @@ export default function ClubDashboard() {
       </header>
       <main className="flex-1 p-4 md:p-6 space-y-8">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Dashboard del Club</h1>
+          <h1 className="text-3xl font-bold">Dashboard del Club {clubData.name}</h1>
           <Dialog>
             <DialogTrigger asChild>
               <Button><Plus className="mr-2 h-4 w-4" /> Crear Partido</Button>
@@ -237,7 +298,6 @@ export default function ClubDashboard() {
           </Dialog>
         </div>
 
-        {/* Modal para Editar Partido */}
         {editMatch && (
           <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
             <DialogContent className="sm:max-w-[425px]">
@@ -300,7 +360,7 @@ export default function ClubDashboard() {
                     <div className="flex items-center space-x-4">
                       <CalendarIcon className="h-6 w-6 text-gray-400" />
                       <div>
-                        <p className="font-medium">{match.date}</p>
+                <p className="font-medium">{match.date}</p>
                         <div className="flex items-center text-sm text-gray-500">
                           <Clock className="mr-1 h-4 w-4" />
                           {match.time}
@@ -332,5 +392,5 @@ export default function ClubDashboard() {
         </p>
       </footer>
     </div>
-  );
+  )
 }
