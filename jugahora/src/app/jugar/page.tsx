@@ -7,14 +7,15 @@ import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Menu, X, Home, User, Calendar, Users, LogOut, Clock, MapPin } from 'lucide-react'
+import { match } from 'assert'
 
-type Partido = {
+type Match = {
   id: number
   fecha: string
   hora: string
   cancha: string
-  jugadores: number
-  maxJugadores: number
+  players: number
+  maxPlayers: number
   nombreClub: string
 }
 
@@ -27,7 +28,7 @@ const elementosMenu = [
 
 export default function PaginaJuega() {
   const [menuAbierto, setMenuAbierto] = useState(false)
-  const [partidos, setPartidos] = useState<Partido[]>([])
+  const [matches, setMatches] = useState<Match[]>([])
   const referenciaMenu = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
@@ -54,8 +55,8 @@ export default function PaginaJuega() {
           credentials: 'include',
         })
         if (respuesta.ok) {
-          const datosPartidos = await respuesta.json()
-          setPartidos(datosPartidos)
+          const matchesData = await respuesta.json()
+          setMatches(matchesData)
         } else {
           console.error('Error al obtener los partidos:', await respuesta.text())
         }
@@ -86,10 +87,10 @@ export default function PaginaJuega() {
         credentials: 'include',
       })
       if (respuesta.ok) {
-        setPartidos(partidos.map(partido => 
-          partido.id === idPartido 
-            ? { ...partido, jugadores: partido.jugadores + 1 } 
-            : partido
+        setMatches(matches.map(match => 
+          match.id === idPartido
+            ? { ...match, players: match.players + 1 } 
+            : match
         ))
       } else {
         console.error('Error al unirse al partido:', await respuesta.text())
@@ -178,35 +179,35 @@ export default function PaginaJuega() {
           <CardContent className="pt-6">
             <p className="mb-4 text-gray-600">Elige un partido y únete para jugar!</p>
             <div className="space-y-4">
-              {partidos.map((partido) => (
+              {matches.map((match) => (
                 <div
-                  key={partido.id}
+                  key={match.id}
                   className="flex items-center justify-between p-4 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300"
                 >
                   <div>
-                    <p className="font-semibold text-gray-800">{partido.nombreClub}</p>
+                    <p className="font-semibold text-gray-800">{match.nombreClub}</p>
                     <p className="text-sm text-gray-500 flex items-center">
                       <Calendar className="w-4 h-4 mr-1" />
-                      {new Date(partido.fecha).toLocaleDateString()}
+                      {new Date(match.fecha).toLocaleDateString()}
                     </p>
                     <p className="text-sm text-gray-500 flex items-center">
                       <Clock className="w-4 h-4 mr-1" />
-                      {partido.hora}
+                      {match.hora}
                     </p>
                     <p className="text-sm text-gray-500 flex items-center">
                       <MapPin className="w-4 h-4 mr-1" />
-                      {partido.cancha}
+                      {match.cancha}
                     </p>
                     <p className="text-sm text-gray-500 flex items-center">
                       <Users className="w-4 h-4 mr-1" />
-                      {partido.jugadores}/{partido.maxJugadores} jugadores
+                      {match.players}/{match.maxPlayers} jugadores
                     </p>
                   </div>
                   <Button
-                    onClick={() => manejarUnirsePartido(partido.id)}
-                    disabled={partido.jugadores >= partido.maxJugadores}
+                    onClick={() => manejarUnirsePartido(match.id)}
+                    disabled={match.players >= match.maxPlayers}
                   >
-                    {partido.jugadores >= partido.maxJugadores ? 'Completo' : 'Unirse'}
+                    {match.players >= match.maxPlayers ? 'Completo' : 'Unirse'}
                   </Button>
                 </div>
               ))}
