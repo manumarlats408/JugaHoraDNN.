@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Menu, X, Home, User, Calendar, Users, LogOut, MessageCircle, Clock, MapPin } from 'lucide-react'
+import { Menu, X, Home, User, Calendar, Users, LogOut, Clock, MapPin } from 'lucide-react'
 
 type Partido = {
   id: number
