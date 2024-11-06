@@ -11,9 +11,9 @@ import { Menu, X, Home, User, Calendar, Users, LogOut, Clock, MapPin } from 'luc
 
 type Match = {
   id: number
-  fecha: string
-  hora: string
-  cancha: string
+  date: string
+  time: string
+  court: string
   players: number
   maxPlayers: number
   nombreClub: string
@@ -188,15 +188,15 @@ export default function PaginaJuega() {
                     <p className="font-semibold text-gray-800">{match.nombreClub}</p>
                     <p className="text-sm text-gray-500 flex items-center">
                       <Calendar className="w-4 h-4 mr-1" />
-                      {new Date(match.fecha).toLocaleDateString()}
+                      {new Date(match.date).toLocaleDateString()}
                     </p>
                     <p className="text-sm text-gray-500 flex items-center">
                       <Clock className="w-4 h-4 mr-1" />
-                      {match.hora}
+                      {match.time}
                     </p>
                     <p className="text-sm text-gray-500 flex items-center">
                       <MapPin className="w-4 h-4 mr-1" />
-                      {match.cancha}
+                      {match.court}
                     </p>
                     <p className="text-sm text-gray-500 flex items-center">
                       <Users className="w-4 h-4 mr-1" />
