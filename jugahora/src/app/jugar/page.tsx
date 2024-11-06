@@ -82,23 +82,45 @@ export default function PaginaJuega() {
 
   const manejarUnirsePartido = async (idPartido: number) => {
     try {
+      // Obtener el ID del usuario autenticado
+      const authResponse = await fetch('/api/auth', {
+        method: 'GET',
+        credentials: 'include',
+      });
+  
+      if (!authResponse.ok) {
+        console.error('No se pudo obtener los datos del usuario');
+        return;
+      }
+  
+      const authData = await authResponse.json();
+      const userId = authData.user.id;  // Suponiendo que el ID del usuario está en `authData.user.id`
+  
+      // Hacer la solicitud para unirse al partido
       const respuesta = await fetch(`/api/matches/${idPartido}/join`, {
         method: 'POST',
         credentials: 'include',
-      })
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId }),  // Enviar el userId en el cuerpo de la solicitud
+      });
+  
       if (respuesta.ok) {
-        setMatches(matches.map(match => 
+        const updatedMatch = await respuesta.json();
+        setMatches(matches.map(match =>
           match.id === idPartido
-            ? { ...match, players: match.players + 1 } 
+            ? { ...match, players: match.players + 1 }
             : match
-        ))
+        ));
       } else {
-        console.error('Error al unirse al partido:', await respuesta.text())
+        console.error('Error al unirse al partido:', await respuesta.text());
       }
     } catch (error) {
-      console.error('Error al conectar con la API para unirse al partido:', error)
+      console.error('Error al conectar con la API para unirse al partido:', error);
     }
-  }
+  };
+  
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
