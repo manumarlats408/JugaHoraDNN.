@@ -6,51 +6,70 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Menu, X, Home, User, Calendar, Users, LogOut, MessageCircle } from 'lucide-react'
+import { Menu, X, Home, User, Calendar, Users, LogOut, MessageCircle, Clock, MapPin } from 'lucide-react'
 
-const clubs = [
-  { name: 'Lasaigues Club - Martinez', whatsappLink: null },
-  { name: 'Lasaigues Club - Canning', whatsappLink: null },
-  { name: 'Lasaigues Club - Retiro', whatsappLink: null },
-  { name: 'Lasaigues Club - Saavedra', whatsappLink: null },
-  { name: 'Lasaigues Club - Caballito', whatsappLink: null },
-  { name: 'Lasaigues Club - Nordelta', whatsappLink: null },
-  { name: 'Lasaigues Club - Santa Bárbara', whatsappLink: null },
-  { name: 'Lasaigues Club - Tigre', whatsappLink: null },
-  { name: 'Lasaigues Club - Parque Leloir', whatsappLink: null },
+type Partido = {
+  id: number
+  fecha: string
+  hora: string
+  cancha: string
+  jugadores: number
+  maxJugadores: number
+  nombreClub: string
+}
 
+const elementosMenu = [
+  { href: '/menu', etiqueta: 'Menú', icono: Home },
+  { href: '/perfil', etiqueta: 'Perfil', icono: User },
+  { href: '/reserva', etiqueta: 'Reservar', icono: Calendar },
+  { href: '/jugar', etiqueta: 'Unirme a un partido', icono: Users },
 ]
 
-const menuItems = [
-  { href: '/menu', label: 'Menu', icon: Home },
-  { href: '/perfil', label: 'Perfil', icon: User },
-  { href: '/reserva', label: 'Reservar', icon: Calendar },
-  { href: '/jugar', label: 'Unirme a un partido', icon: Users },
-]
-
-export default function JuegaPage() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const menuRef = useRef<HTMLDivElement>(null)
+export default function PaginaJuega() {
+  const [menuAbierto, setMenuAbierto] = useState(false)
+  const [partidos, setPartidos] = useState<Partido[]>([])
+  const referenciaMenu = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
+  const alternarMenu = () => setMenuAbierto(!menuAbierto)
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsMenuOpen(false)
+    const manejarClicFuera = (evento: MouseEvent) => {
+      if (referenciaMenu.current && !referenciaMenu.current.contains(evento.target as Node)) {
+        setMenuAbierto(false)
       }
     }
 
-    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('mousedown', manejarClicFuera)
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('mousedown', manejarClicFuera)
     }
   }, [])
 
-  const handleLogout = async () => {
+  useEffect(() => {
+    const obtenerPartidos = async () => {
+      try {
+        const respuesta = await fetch('/api/partidos', {
+          method: 'GET',
+          credentials: 'include',
+        })
+        if (respuesta.ok) {
+          const datosPartidos = await respuesta.json()
+          setPartidos(datosPartidos)
+        } else {
+          console.error('Error al obtener los partidos:', await respuesta.text())
+        }
+      } catch (error) {
+        console.error('Error al conectar con la API para obtener los partidos:', error)
+      }
+    }
+
+    obtenerPartidos()
+  }, [])
+
+  const manejarCierreSesion = async () => {
     try {
-      await fetch('/api/logout', {
+      await fetch('/api/cerrar-sesion', {
         method: 'GET',
         credentials: 'include',
       })
@@ -60,9 +79,23 @@ export default function JuegaPage() {
     }
   }
 
-  const handleClubClick = (whatsappLink: string | null) => {
-    if (whatsappLink) {
-      window.location.href = whatsappLink
+  const manejarUnirsePartido = async (idPartido: number) => {
+    try {
+      const respuesta = await fetch(`/api/partidos/${idPartido}/unirse`, {
+        method: 'POST',
+        credentials: 'include',
+      })
+      if (respuesta.ok) {
+        setPartidos(partidos.map(partido => 
+          partido.id === idPartido 
+            ? { ...partido, jugadores: partido.jugadores + 1 } 
+            : partido
+        ))
+      } else {
+        console.error('Error al unirse al partido:', await respuesta.text())
+      }
+    } catch (error) {
+      console.error('Error al conectar con la API para unirse al partido:', error)
     }
   }
 
@@ -71,24 +104,24 @@ export default function JuegaPage() {
       <header className="px-4 lg:px-6 h-16 flex items-center relative bg-white shadow-md">
         <Link className="flex items-center justify-center" href="/menu">
           <span className="sr-only">JugáHora</span>
-          <Image src='/logo.svg' alt="JugáHora Logo" width={32} height={32} /> 
+          <Image src='/logo.svg' alt="Logo de JugáHora" width={32} height={32} /> 
           <span className="ml-2 text-2xl font-bold">JugáHora</span>
         </Link>
 
         <nav className="hidden lg:flex ml-auto gap-6">
-          {menuItems.map((item) => (
+          {elementosMenu.map((elemento) => (
             <Link
-              key={item.href}
+              key={elemento.href}
               className="flex items-center text-sm font-medium text-gray-600 hover:text-green-600 transition-colors"
-              href={item.href}
+              href={elemento.href}
             >
-              <item.icon className="w-4 h-4 mr-2" />
-              {item.label}
+              <elemento.icono className="w-4 h-4 mr-2" />
+              {elemento.etiqueta}
             </Link>
           ))}
           <button
             className="flex items-center text-sm font-medium text-gray-600 hover:text-green-600 transition-colors"
-            onClick={handleLogout}
+            onClick={manejarCierreSesion}
           >
             <LogOut className="w-4 h-4 mr-2" />
             Cerrar sesión
@@ -99,32 +132,32 @@ export default function JuegaPage() {
           variant="ghost"
           size="icon"
           className="lg:hidden ml-auto text-gray-600 hover:text-green-600"
-          onClick={toggleMenu}
-          aria-label={isMenuOpen ? "Cerrar menú" : "Abrir menú"}
+          onClick={alternarMenu}
+          aria-label={menuAbierto ? "Cerrar menú" : "Abrir menú"}
         >
-          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          {menuAbierto ? <X size={24} /> : <Menu size={24} />}
         </Button>
       </header>
 
-      {isMenuOpen && (
+      {menuAbierto && (
         <div
-          ref={menuRef}
+          ref={referenciaMenu}
           className="lg:hidden absolute top-16 right-0 left-0 bg-white shadow-md z-10 transition-all duration-300 ease-in-out"
         >
           <nav className="py-2">
-            {menuItems.map((item) => (
+            {elementosMenu.map((elemento) => (
               <Link
-                key={item.href}
-                href={item.href}
+                key={elemento.href}
+                href={elemento.href}
                 className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={() => setMenuAbierto(false)}
               >
-                <item.icon className="w-4 h-4 mr-2" />
-                {item.label}
+                <elemento.icono className="w-4 h-4 mr-2" />
+                {elemento.etiqueta}
               </Link>
             ))}
             <button 
-              onClick={handleLogout}
+              onClick={manejarCierreSesion}
               className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
             >
               <LogOut className="w-4 h-4 mr-2" />
@@ -139,26 +172,42 @@ export default function JuegaPage() {
           <CardHeader className="bg-green-50 border-b border-green-100">
             <CardTitle className="text-2xl font-bold text-green-800 flex items-center">
               <Users className="w-6 h-6 mr-2" />
-              Juega un partido
+              Unirse a un partido
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6">
-            <p className="mb-4 text-gray-600">Conecta con gente en el club que desees!</p>
+            <p className="mb-4 text-gray-600">Elige un partido y únete para jugar!</p>
             <div className="space-y-4">
-              {clubs.map((club, index) => (
+              {partidos.map((partido) => (
                 <div
-                  key={index}
-                  className="flex items-center space-x-4 p-4 border border-green-100 rounded-lg cursor-pointer hover:bg-green-50 transition-colors duration-300"
-                  onClick={() => handleClubClick(club.whatsappLink)}
+                  key={partido.id}
+                  className="flex items-center justify-between p-4 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300"
                 >
-                  <Image src="/club.svg" alt={club.name} width={50} height={50} className="rounded-full" />
                   <div>
-                    <p className="font-semibold text-gray-800">{club.name}</p>
+                    <p className="font-semibold text-gray-800">{partido.nombreClub}</p>
                     <p className="text-sm text-gray-500 flex items-center">
-                      <MessageCircle className="w-4 h-4 mr-1" />
-                      {club.whatsappLink ? 'Grupo de WhatsApp disponible' : 'Sin grupo disponible'}
+                      <Calendar className="w-4 h-4 mr-1" />
+                      {new Date(partido.fecha).toLocaleDateString()}
+                    </p>
+                    <p className="text-sm text-gray-500 flex items-center">
+                      <Clock className="w-4 h-4 mr-1" />
+                      {partido.hora}
+                    </p>
+                    <p className="text-sm text-gray-500 flex items-center">
+                      <MapPin className="w-4 h-4 mr-1" />
+                      {partido.cancha}
+                    </p>
+                    <p className="text-sm text-gray-500 flex items-center">
+                      <Users className="w-4 h-4 mr-1" />
+                      {partido.jugadores}/{partido.maxJugadores} jugadores
                     </p>
                   </div>
+                  <Button
+                    onClick={() => manejarUnirsePartido(partido.id)}
+                    disabled={partido.jugadores >= partido.maxJugadores}
+                  >
+                    {partido.jugadores >= partido.maxJugadores ? 'Completo' : 'Unirse'}
+                  </Button>
                 </div>
               ))}
             </div>
@@ -179,10 +228,10 @@ export default function JuegaPage() {
             © 2024 JugáHora. Todos los derechos reservados.
           </p>
           <nav className="flex gap-4">
-            <Link className="text-xs text-gray-500 hover:text-green-600 transition-colors" href="/jugar">
+            <Link className="text-xs text-gray-500 hover:text-green-600 transition-colors" href="/terminos">
               Términos de Servicio
             </Link>
-            <Link className="text-xs text-gray-500 hover:text-green-600 transition-colors" href="/jugar">
+            <Link className="text-xs text-gray-500 hover:text-green-600 transition-colors" href="/privacidad">
               Privacidad
             </Link>
           </nav>

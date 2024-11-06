@@ -22,6 +22,7 @@ model User {
   resetToken       String?    @map("resettoken") // Especifica en minúsculas
   resetTokenExpiry DateTime?  @map("resettokenexpiry") // Especifica en minúsculas
   Partidos         Partidos[] // Relación con la tabla Partidos
+  PartidosUnidos   Partidos_club[]
 }
 
 model Club {
@@ -55,7 +56,7 @@ model Partidos_club {
   players   Int      @default(0) // Número de jugadores actualmente unidos
   maxPlayers Int     @default(4) // Número máximo de jugadores permitidos
   clubId     Int   // Add this line
-
   Club       Club     @relation(fields: [clubId], references: [id]) // Add this line
+  Usuarios   User[] 
 }
 

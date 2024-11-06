@@ -3,9 +3,28 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
+// Definir el tipo del objeto "match"
+interface Match {
+  id: number;
+  date: Date;
+  time: string;
+  court: string;
+  players: number;
+  maxPlayers: number;
+  clubId: number;
+  Club: {
+    name: string;
+  };
+}
+
 export async function POST(request: Request) {
   try {
     const { date, time, court, clubId } = await request.json();
+
+    // Validar que los datos requeridos estén presentes
+    if (!date || !time || !court || !clubId) {
+      return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
+    }
 
     const newMatch = await prisma.partidos_club.create({
       data: {
@@ -14,7 +33,7 @@ export async function POST(request: Request) {
         court,
         players: 0,
         maxPlayers: 4,
-        clubId: parseInt(clubId), // Now this should work correctly
+        clubId: parseInt(clubId),
       },
     });
 
@@ -26,24 +45,27 @@ export async function POST(request: Request) {
 }
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const clubId = searchParams.get('clubId');
-
-  if (!clubId) {
-    return NextResponse.json({ error: 'Club ID is required' }, { status: 400 });
-  }
-
   try {
     const matches = await prisma.partidos_club.findMany({
-      where: {
-        clubId: parseInt(clubId),
+      include: {
+        Club: {
+          select: {
+            name: true,
+          },
+        },
       },
       orderBy: {
         date: 'asc',
       },
     });
 
-    return NextResponse.json(matches);
+    // Indicar el tipo explícito de "match" en la función map
+    const formattedMatches = matches.map((match: Match) => ({
+      ...match,
+      nombreClub: match.Club.name,
+    }));
+
+    return NextResponse.json(formattedMatches);
   } catch (error) {
     console.error('Error fetching matches:', error);
     return NextResponse.json({ error: 'Error fetching matches' }, { status: 500 });
