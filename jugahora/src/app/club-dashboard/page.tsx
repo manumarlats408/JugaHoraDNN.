@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
@@ -57,6 +57,24 @@ export default function ClubDashboard() {
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
 
+  const fetchMatches = useCallback(async () => {
+    if (!clubData) return;
+    try {
+      const response = await fetch(`/api/matches?clubId=${clubData.id}`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      if (response.ok) {
+        const matchesData = await response.json();
+        setMatches(matchesData);
+      } else {
+        console.error('Error al obtener los partidos del club:', await response.text());
+      }
+    } catch (error) {
+      console.error('Error al conectar con la API para obtener los partidos:', error);
+    }
+  }, [clubData]);
+
   useEffect(() => {
     const fetchClubProfile = async () => {
       try {
@@ -71,17 +89,7 @@ export default function ClubDashboard() {
           const club = data.entity
           setClubData(club)
 
-          const matchesResponse = await fetch(`/api/matches?clubId=${club.id}`, {
-            method: 'GET',
-            credentials: 'include',
-          })
 
-          if (matchesResponse.ok) {
-            const matchesData = await matchesResponse.json()
-            setMatches(matchesData)
-          } else {
-            console.error('Error al obtener los partidos del club')
-          }
         } else {
           throw new Error('Failed to fetch club data')
         }
@@ -96,6 +104,12 @@ export default function ClubDashboard() {
     fetchClubProfile()
   }, [router])
 
+  useEffect(() => {
+    if (clubData) {
+      fetchMatches();
+    }
+  }, [clubData, fetchMatches]);
+
   const handleLogout = async () => {
     try {
       await fetch('/api/logout', {
@@ -109,25 +123,25 @@ export default function ClubDashboard() {
   }
 
   const handleCreateMatch = async () => {
-    if (!clubData) return
+    if (!clubData) return;
     try {
       const response = await fetch('/api/matches', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...newMatch, clubId: clubData.id }),
-      })
+        body: JSON.stringify({ ...newMatch, clubId: clubData.id.toString() }),
+      });
 
       if (response.ok) {
-        const createdMatch = await response.json()
-        setMatches([...matches, createdMatch])
-        setNewMatch({ date: '', time: '', court: '' })
+        const createdMatch = await response.json();
+        setMatches([...matches, createdMatch]);
+        setNewMatch({ date: '', time: '', court: '' });
       } else {
-        console.error('Error al crear el partido:', await response.text())
+        console.error('Error al crear el partido:', await response.text());
       }
     } catch (error) {
-      console.error('Error al conectar con la API para crear el partido:', error)
+      console.error('Error al conectar con la API para crear el partido:', error);
     }
-  }
+  };
 
   const handleDeleteMatch = async (id: number) => {
     try {
