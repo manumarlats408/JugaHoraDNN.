@@ -1,41 +1,86 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
-  const matchId = parseInt(params.id);
-
+export async function POST(request: Request) {
   try {
-    await prisma.partidos_club.delete({
-      where: { id: matchId },
-    });
-    return NextResponse.json({ message: 'Partido eliminado correctamente' });
-  } catch (error) {
-    console.error('Error al eliminar el partido:', error);
-    return NextResponse.json({ error: 'Error al eliminar el partido' }, { status: 500 });
-  }
-}
+    const { date, time, court, clubId } = await request.json();
 
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
-  const matchId = parseInt(params.id);
+    console.log("Datos recibidos:", { date, time, court, clubId });
 
-  try {
-    const { date, time, court } = await request.json();
+    if (!date || !time || !court || !clubId) {
+      console.log("Faltan campos requeridos");
+      return NextResponse.json(
+        { error: 'Por favor, proporciona todos los campos requeridos: date, time, court, clubId.' },
+        { status: 400 }
+      );
+    }
 
-    console.log("Datos recibidos para actualización:", { date, time, court });
+    await prisma.$connect();
+    console.log("Conexión establecida");
 
-    const updatedMatch = await prisma.partidos_club.update({
-      where: { id: matchId },
+    const newMatch = await prisma.partidos_club.create({
       data: {
         date: new Date(date),
         time,
         court,
+        players: 0,
+        maxPlayers: 4,
+        clubId: parseInt(clubId), // Asignar el clubId al partido
       },
     });
 
-    console.log("Partido actualizado:", updatedMatch);
-    return NextResponse.json(updatedMatch);
-  } catch (error) {
-    console.error('Error al actualizar el partido:', error);
-    return NextResponse.json({ error: 'Error al actualizar el partido' }, { status: 500 });
+    console.log("Partido creado:", newMatch);
+    await prisma.$disconnect();
+
+    return NextResponse.json(newMatch);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('Error al crear el partido:', error.message);
+      return NextResponse.json(
+        { error: `Error al crear el partido: ${error.message}` },
+        { status: 500 }
+      );
+    }
+
+    console.error('Error desconocido al crear el partido:', error);
+    return NextResponse.json(
+      { error: 'Error al crear el partido. Revisa la configuración y los datos ingresados.' },
+      { status: 500 }
+    );
   }
 }
+
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const clubId = parseInt(searchParams.get('clubId') || '', 10);
+
+  if (!clubId) {
+    return NextResponse.json({ error: 'clubId es requerido' }, { status: 400 });
+  }
+
+  try {
+    const matches = await prisma.partidos_club.findMany({
+      where: {
+        clubId: clubId,
+        players: { lt: 4 }, // Partidos con espacio disponible
+      },
+      orderBy: { date: 'asc' },
+    });
+
+    return NextResponse.json(matches);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('Error al obtener partidos:', error.message);
+      return NextResponse.json(
+        { error: `Error al obtener los partidos: ${error.message}` },
+        { status: 500 }
+      );
+    }
+    console.error('Error al obtener partidos:', error);
+    return NextResponse.json(
+      { error: 'Error al obtener los partidos disponibles.' },
+      { status: 500 }
+    );
+  }
+}
+
