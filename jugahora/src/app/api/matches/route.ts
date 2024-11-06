@@ -14,7 +14,7 @@ export async function POST(request: Request) {
         court,
         players: 0,
         maxPlayers: 4,
-        clubId: clubId, // Now this should work correctly
+        clubId: parseInt(clubId), // Now this should work correctly
       },
     });
 
@@ -36,7 +36,7 @@ export async function GET(request: Request) {
   try {
     const matches = await prisma.partidos_club.findMany({
       where: {
-        clubId: clubId,
+        clubId: parseInt(clubId),
       },
       orderBy: {
         date: 'asc',
