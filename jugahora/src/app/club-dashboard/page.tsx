@@ -105,14 +105,18 @@ export default function ClubDashboard() {
 
   const handleSaveEdit = async () => {
     if (!editMatch) return;
-
+  
     try {
       const response = await fetch(`/api/matches/${editMatch.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editMatch),
+        body: JSON.stringify({
+          date: editMatch.date,
+          time: editMatch.time,
+          court: editMatch.court,
+        }),
       });
-
+  
       if (response.ok) {
         const updatedMatch = await response.json();
         setMatches(matches.map(match => (match.id === updatedMatch.id ? updatedMatch : match)));
@@ -125,6 +129,7 @@ export default function ClubDashboard() {
       console.error('Error al conectar con la API para actualizar el partido:', error);
     }
   };
+  
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, isEdit: boolean = false) => {
     const { id, value } = e.target;
@@ -245,7 +250,13 @@ export default function ClubDashboard() {
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="date" className="text-right">Fecha</Label>
-                  <Input id="date" type="date" className="col-span-3" value={editMatch.date} onChange={(e) => handleInputChange(e, true)} />
+                  <Input
+                    id="date"
+                    type="date"
+                    className="col-span-3"
+                    value={editMatch ? new Date(editMatch.date).toISOString().split('T')[0] : ""}
+                    onChange={(e) => handleInputChange(e, true)}
+                  />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="time" className="text-right">Hora</Label>
