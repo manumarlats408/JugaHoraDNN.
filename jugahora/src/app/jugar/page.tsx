@@ -82,7 +82,7 @@ export default function PaginaJuega() {
 
   const manejarUnirsePartido = async (idPartido: number) => {
     try {
-      const respuesta = await fetch(`/api/matches/${idPartido}/unirse`, {
+      const respuesta = await fetch(`/api/matches/${idPartido}/join`, {
         method: 'POST',
         credentials: 'include',
       })
