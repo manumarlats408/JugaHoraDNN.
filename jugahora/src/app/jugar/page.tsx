@@ -94,7 +94,7 @@ export default function PaginaJuega() {
       }
   
       const authData = await authResponse.json();
-      const userId = authData.user.id;  // Suponiendo que el ID del usuario está en `authData.user.id`
+      const userId = authData.user.id;
   
       // Hacer la solicitud para unirse al partido
       const respuesta = await fetch(`/api/matches/${idPartido}/join`, {
@@ -103,14 +103,14 @@ export default function PaginaJuega() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ userId }),  // Enviar el userId en el cuerpo de la solicitud
+        body: JSON.stringify({ userId }),
       });
   
       if (respuesta.ok) {
         const updatedMatch = await respuesta.json();
         setMatches(matches.map(match =>
           match.id === idPartido
-            ? { ...match, players: match.players + 1 }
+            ? { ...match, players: updatedMatch.players }  // Actualizamos el estado con los nuevos jugadores
             : match
         ));
       } else {
@@ -120,6 +120,7 @@ export default function PaginaJuega() {
       console.error('Error al conectar con la API para unirse al partido:', error);
     }
   };
+  
   
 
   return (
