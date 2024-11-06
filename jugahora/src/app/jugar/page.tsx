@@ -49,7 +49,7 @@ export default function PaginaJuega() {
   useEffect(() => {
     const obtenerPartidos = async () => {
       try {
-        const respuesta = await fetch('/api/partidos', {
+        const respuesta = await fetch('/api/matches', {
           method: 'GET',
           credentials: 'include',
         })
@@ -81,7 +81,7 @@ export default function PaginaJuega() {
 
   const manejarUnirsePartido = async (idPartido: number) => {
     try {
-      const respuesta = await fetch(`/api/partidos/${idPartido}/unirse`, {
+      const respuesta = await fetch(`/api/matches/${idPartido}/unirse`, {
         method: 'POST',
         credentials: 'include',
       })
