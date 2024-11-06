@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { CalendarIcon, Plus, Trash2, Edit, Users, Clock, MapPin, Bell } from "lucide-react";
 import Link from "next/link";
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { useRouter } from 'next/navigation';
@@ -47,21 +47,9 @@ export default function ClubDashboard() {
     { id: 3, date: '2024-03-17', time: '19:30', court: 'Cancha 3', players: 3 },
   ]);
   const [newMatch, setNewMatch] = useState({ date: '', time: '', court: '' });
-  const clubId = 1; // Reemplazar con el `clubId` del club autenticado
   const [editMatch, setEditMatch] = useState<Match | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const router = useRouter();
-
-  // Obtener los partidos de la base de datos
-  useEffect(() => {
-    const fetchMatches = async () => {
-      const response = await fetch(`/api/matches?clubId=${clubId}`);
-      const data = await response.json();
-      setMatches(data);
-    };
-
-    fetchMatches();
-  }, [clubId]);
 
   const handleLogout = async () => {
     try {
@@ -80,7 +68,7 @@ export default function ClubDashboard() {
       const response = await fetch('/api/matches', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...newMatch, clubId }),
+        body: JSON.stringify(newMatch),
       });
 
       if (response.ok) {
