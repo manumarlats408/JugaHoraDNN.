@@ -19,6 +19,18 @@ type Match = {
   nombreClub: string
 }
 
+interface User {
+  id: string;
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  name?: string;
+  phoneNumber?: string;
+  address?: string;
+  age?: number;
+}
+
+
 const elementosMenu = [
   { href: '/menu', etiqueta: 'Menú', icono: Home },
   { href: '/perfil', etiqueta: 'Perfil', icono: User },
@@ -31,6 +43,7 @@ export default function PaginaJuega() {
   const [matches, setMatches] = useState<Match[]>([])
   const referenciaMenu = useRef<HTMLDivElement>(null)
   const router = useRouter()
+  const [userData, setUserData] = useState<User | null>(null);
 
   const alternarMenu = () => setMenuAbierto(!menuAbierto)
 
@@ -68,6 +81,8 @@ export default function PaginaJuega() {
     obtenerPartidos()
   }, [])
 
+  
+
   const manejarCierreSesion = async () => {
     try {
       await fetch('/api/cerrar-sesion', {
@@ -82,10 +97,20 @@ export default function PaginaJuega() {
 
   const manejarUnirsePartido = async (idPartido: number) => {
     try {
+
+       if (!userData) {
+      console.error('Usuario no autenticado');
+      return;
+    }
+
+    const userId = userData.id;
+
       const respuesta = await fetch(`/api/matches/${idPartido}/join`, {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId }), // Asegúrate de enviar el userId aquí
         credentials: 'include',
-      })
+      });
       if (respuesta.ok) {
         setMatches(matches.map(match => 
           match.id === idPartido
