@@ -99,24 +99,22 @@ export default function PaginaJuega() {
       });
   
       if (!authResponse.ok) {
-        console.error('No se pudo obtener los datos del usuario');
+        console.error('No se pudo obtener los datos de autenticación');
         return;
       }
   
       const authData = await authResponse.json();
-
+  
       // Imprimir los datos de autenticación para verificar que se están recibiendo correctamente
-    console.log('Datos de autenticación:', authData);
+      console.log('Datos de autenticación:', authData);
   
-      // Verificar que la respuesta contiene los datos esperados
-      const user: User | null = authData?.user || null;
-  
-      if (!user || !user.id) {
+      // Verificar si authData tiene la propiedad 'entity' y si 'entity' tiene la propiedad 'id'
+      if (!authData || !authData.entity || !authData.entity.id) {
         console.error('ID de usuario no disponible en la respuesta de autenticación');
         return;
       }
   
-      const userId = user.id;
+      const userId = authData.entity.id;
   
       // Hacer la solicitud para unirse al partido
       const respuesta = await fetch(`/api/matches/${idPartido}/join`, {
@@ -142,6 +140,7 @@ export default function PaginaJuega() {
       console.error('Error al conectar con la API para unirse al partido:', error);
     }
   };
+  
   
   
   
