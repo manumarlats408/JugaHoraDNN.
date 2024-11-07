@@ -104,6 +104,9 @@ export default function PaginaJuega() {
       }
   
       const authData = await authResponse.json();
+
+      // Imprimir los datos de autenticación para verificar que se están recibiendo correctamente
+    console.log('Datos de autenticación:', authData);
   
       // Verificar que la respuesta contiene los datos esperados
       const user: User | null = authData?.user || null;
