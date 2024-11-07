@@ -8,6 +8,16 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Menu, X, Home, User, Calendar, Users, LogOut, Clock, MapPin } from 'lucide-react'
 
+interface User {
+  id: string
+  email: string
+  firstName?: string
+  lastName?: string
+  name?: string
+  phoneNumber?: string
+  address?: string
+  age?: number
+}
 
 type Match = {
   id: number
