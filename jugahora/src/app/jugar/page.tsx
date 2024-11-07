@@ -8,16 +8,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Menu, X, Home, User, Calendar, Users, LogOut, Clock, MapPin } from 'lucide-react'
 
-interface User {
-  id: string
-  email: string
-  firstName?: string
-  lastName?: string
-  name?: string
-  phoneNumber?: string
-  address?: string
-  age?: number
-}
 
 type Match = {
   id: number
@@ -92,59 +82,23 @@ export default function PaginaJuega() {
 
   const manejarUnirsePartido = async (idPartido: number) => {
     try {
-      // Obtener el ID del usuario autenticado
-      const authResponse = await fetch('/api/auth', {
-        method: 'GET',
-        credentials: 'include',
-      });
-  
-      if (!authResponse.ok) {
-        console.error('No se pudo obtener los datos de autenticación');
-        return;
-      }
-  
-      const authData = await authResponse.json();
-  
-      // Imprimir los datos de autenticación para verificar que se están recibiendo correctamente
-      console.log('Datos de autenticación:', authData);
-  
-      // Verificar si authData tiene la propiedad 'entity' y si 'entity' tiene la propiedad 'id'
-      if (!authData || !authData.entity || !authData.entity.id) {
-        console.error('ID de usuario no disponible en la respuesta de autenticación');
-        return;
-      }
-  
-      const userId = authData.entity.id;
-  
-      // Hacer la solicitud para unirse al partido
       const respuesta = await fetch(`/api/matches/${idPartido}/join`, {
         method: 'POST',
         credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userId }),
-      });
-  
+      })
       if (respuesta.ok) {
-        const updatedMatch = await respuesta.json();
-        setMatches(matches.map(match =>
+        setMatches(matches.map(match => 
           match.id === idPartido
-            ? { ...match, players: updatedMatch.players }
+            ? { ...match, players: match.players + 1 } 
             : match
-        ));
+        ))
       } else {
-        console.error('Error al unirse al partido:', await respuesta.text());
+        console.error('Error al unirse al partido:', await respuesta.text())
       }
     } catch (error) {
-      console.error('Error al conectar con la API para unirse al partido:', error);
+      console.error('Error al conectar con la API para unirse al partido:', error)
     }
-  };
-  
-  
-  
-  
-  
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
