@@ -94,6 +94,13 @@ export default function PaginaJuega() {
       }
   
       const authData = await authResponse.json();
+  
+      // Verificar si authData tiene la propiedad 'user' y si 'user' tiene la propiedad 'id'
+      if (!authData || !authData.user || !authData.user.id) {
+        console.error('ID de usuario no disponible');
+        return;
+      }
+  
       const userId = authData.user.id;
   
       // Hacer la solicitud para unirse al partido
@@ -110,7 +117,7 @@ export default function PaginaJuega() {
         const updatedMatch = await respuesta.json();
         setMatches(matches.map(match =>
           match.id === idPartido
-            ? { ...match, players: updatedMatch.players }  // Actualizamos el estado con los nuevos jugadores
+            ? { ...match, players: updatedMatch.players }
             : match
         ));
       } else {
@@ -120,6 +127,7 @@ export default function PaginaJuega() {
       console.error('Error al conectar con la API para unirse al partido:', error);
     }
   };
+  
   
   
 
