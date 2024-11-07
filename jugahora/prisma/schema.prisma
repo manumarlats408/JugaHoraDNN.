@@ -22,7 +22,7 @@ model User {
   resetToken       String?    @map("resettoken") // Especifica en minúsculas
   resetTokenExpiry DateTime?  @map("resettokenexpiry") // Especifica en minúsculas
   Partidos         Partidos[] // Relación con la tabla Partidos
-  PartidosUnidos   Partidos_club[] @relation("Partidos_clubToUser", fields: [id], references: [id])
+  PartidosUnidos   Partidos_clubToUser[]
 }
 
 model Club {
@@ -57,6 +57,15 @@ model Partidos_club {
   maxPlayers Int     @default(4) // Número máximo de jugadores permitidos
   clubId     Int   // Add this line
   Club       Club     @relation(fields: [clubId], references: [id]) // Add this line
-  Usuarios   User[] @relation("Partidos_clubToUser", fields: [id], references: [id])
+  Usuarios   Partidos_clubToUser[]
 }
 
+model Partidos_clubToUser {
+  partidos_club_id Int
+  usuario_id       Int
+
+  Partidos_club    Partidos_club @relation(fields: [partidos_club_id], references: [id])
+  User             User          @relation(fields: [usuario_id], references: [id])
+
+  @@id([partidos_club_id, usuario_id])  // Define la clave primaria compuesta
+}
