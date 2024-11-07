@@ -7,6 +7,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
   try {
     // Obtener el userId desde el cuerpo de la solicitud
     const { userId } = await request.json();
+    console.log('UserId recibido:', userId);
 
     if (!userId) {
       return NextResponse.json({ error: 'Se requiere el ID del usuario' }, { status: 400 });
@@ -16,6 +17,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
     const match = await prisma.partidos_club.findUnique({
       where: { id: matchId },
     });
+    console.log('Partido encontrado:', match);
 
     if (!match) {
       return NextResponse.json({ error: 'Partido no encontrado' }, { status: 404 });
@@ -35,6 +37,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
         },
       },
     });
+    console.log('Partido actualizado:', updatedMatch);
 
     return NextResponse.json(updatedMatch);
   } catch (error) {
