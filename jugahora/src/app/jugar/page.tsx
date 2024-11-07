@@ -80,25 +80,25 @@ export default function PaginaJuega() {
     }
   }
 
-  const manejarUnirsePartido = async (idPartido: number) => {
-    try {
-      const respuesta = await fetch(`/api/matches/${idPartido}/join`, {
-        method: 'POST',
-        credentials: 'include',
-      })
-      if (respuesta.ok) {
-        setMatches(matches.map(match => 
-          match.id === idPartido
-            ? { ...match, players: match.players + 1 } 
-            : match
-        ))
-      } else {
-        console.error('Error al unirse al partido:', await respuesta.text())
-      }
-    } catch (error) {
-      console.error('Error al conectar con la API para unirse al partido:', error)
-    }
-  }
+  // const manejarUnirsePartido = async (idPartido: number) => {
+  //   try {
+  //     const respuesta = await fetch(`/api/matches/${idPartido}/join`, {
+  //       method: 'POST',
+  //       credentials: 'include',
+  //     })
+  //     if (respuesta.ok) {
+  //       setMatches(matches.map(match => 
+  //         match.id === idPartido
+  //           ? { ...match, players: match.players + 1 } 
+  //           : match
+  //       ))
+  //     } else {
+  //       console.error('Error al unirse al partido:', await respuesta.text())
+  //     }
+  //   } catch (error) {
+  //     console.error('Error al conectar con la API para unirse al partido:', error)
+  //   }
+  // }
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
@@ -204,7 +204,7 @@ export default function PaginaJuega() {
                     </p>
                   </div>
                   <Button
-                    onClick={() => manejarUnirsePartido(match.id)}
+                    //onClick={() => manejarUnirsePartido(match.id)}
                     disabled={match.players >= match.maxPlayers}
                   >
                     {match.players >= match.maxPlayers ? 'Completo' : 'Unirse'}
