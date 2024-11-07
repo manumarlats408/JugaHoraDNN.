@@ -37,26 +37,30 @@ export async function POST(request: Request, { params }: { params: { id: string 
     });
     
     if (!userExists || !matchExists) {
-      throw new Error('Usuario o partido no encontrado');
+      throw new Error('El usuario o el partido no existen');
     }
-
     
-    // Actualizar el partido y conectar el usuario
     const updatedMatch = await prisma.partidos_club.update({
-      where: { id: matchId },  // Asegúrate de que matchId sea el id correcto del partido
+      where: { id: matchId },
       data: {
-        players: match.players + 1,  // Incrementa el número de jugadores
+        players: match.players + 1, // Incrementa el número de jugadores
         Usuarios: {
-          connect: {
-            // Aquí conectamos ambos valores correctamente usando la tabla intermedia
-            partidos_club_id_usuario_id: {
-              partidos_club_id: matchId,  // El id del partido
-              usuario_id: userId          // El id del usuario
+          connectOrCreate: {
+            where: {
+              partidos_club_id_usuario_id: {
+                partidos_club_id: matchId,
+                usuario_id: userId
+              }
+            },
+            create: {
+              partidos_club_id: matchId,
+              usuario_id: userId
             }
           }
         }
       }
     });
+    
     
     console.log('Partido actualizado:', updatedMatch);
 
