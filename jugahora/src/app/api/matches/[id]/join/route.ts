@@ -53,17 +53,14 @@ export async function POST(request: Request, { params }: { params: { id: string 
               }
             },
             create: {
-              partidos_club: {  // Relación correcta con el nombre en minúscula
-                connect: { id: matchId }
-              },
-              user: {  // Relación correcta con el nombre en minúscula
-                connect: { id: userId }
-              }
+              partidos_club_id: matchId,  // Referencia a la relación con partidos_club
+              usuario_id: userId          // Referencia a la relación con User
             }
           }
         }
       }
     });
+    
     
     
     
