@@ -105,13 +105,15 @@ export default function PaginaJuega() {
   
       const authData = await authResponse.json();
   
-      // Verificar si authData tiene la propiedad 'user' y si 'user' tiene la propiedad 'id'
-      if (!authData || !authData.user || !authData.user.id) {
-        console.error('ID de usuario no disponible');
+      // Verificar que la respuesta contiene los datos esperados
+      const user: User | null = authData?.user || null;
+  
+      if (!user || !user.id) {
+        console.error('ID de usuario no disponible en la respuesta de autenticación');
         return;
       }
   
-      const userId = authData.user.id;
+      const userId = user.id;
   
       // Hacer la solicitud para unirse al partido
       const respuesta = await fetch(`/api/matches/${idPartido}/join`, {
@@ -137,6 +139,7 @@ export default function PaginaJuega() {
       console.error('Error al conectar con la API para unirse al partido:', error);
     }
   };
+  
   
   
   
