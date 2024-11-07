@@ -43,7 +43,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
     const updatedMatch = await prisma.partidos_club.update({
       where: { id: matchId },
       data: {
-        players: match.players + 1, // Incrementa el número de jugadores
+        players: match.players + 1,  // Incrementar el número de jugadores
         Usuarios: {
           connectOrCreate: {
             where: {
@@ -53,13 +53,18 @@ export async function POST(request: Request, { params }: { params: { id: string 
               }
             },
             create: {
-              partidos_club_id: matchId,
-              usuario_id: userId
+              Partidos_club: {
+                connect: { id: matchId }  // Conectar el partido
+              },
+              User: {
+                connect: { id: userId }  // Conectar el usuario
+              }
             }
           }
         }
       }
     });
+    
     
     
     console.log('Partido actualizado:', updatedMatch);
