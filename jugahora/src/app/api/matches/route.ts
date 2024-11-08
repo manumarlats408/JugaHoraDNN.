@@ -44,28 +44,45 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const clubId = searchParams.get('clubId');
+
   try {
-    const matches = await prisma.partidos_club.findMany({
-      include: {
-        Club: {
-          select: {
-            name: true,
+    if (clubId) {
+      // Si se proporciona el clubId, devolver solo los partidos asociados a ese club
+      const matches = await prisma.partidos_club.findMany({
+        where: {
+          clubId: parseInt(clubId),
+        },
+        orderBy: {
+          date: 'asc',
+        },
+      });
+      return NextResponse.json(matches);
+    } else {
+      // Si no se proporciona clubId, devolver todos los partidos con el nombre del club incluido
+      const matches = await prisma.partidos_club.findMany({
+        include: {
+          Club: {
+            select: {
+              name: true,
+            },
           },
         },
-      },
-      orderBy: {
-        date: 'asc',
-      },
-    });
+        orderBy: {
+          date: 'asc',
+        },
+      });
 
-    // Indicar el tipo explícito de "match" en la función map
-    const formattedMatches = matches.map((match: Match) => ({
-      ...match,
-      nombreClub: match.Club.name,
-    }));
+      // Formatear los partidos para incluir `nombreClub` directamente
+      const formattedMatches = matches.map((match: Match) => ({
+        ...match,
+        nombreClub: match.Club.name,
+      }));
 
-    return NextResponse.json(formattedMatches);
+      return NextResponse.json(formattedMatches);
+    }
   } catch (error) {
     console.error('Error fetching matches:', error);
     return NextResponse.json({ error: 'Error fetching matches' }, { status: 500 });
