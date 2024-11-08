@@ -12,12 +12,9 @@ export async function POST(
 
     // Verificar la autenticación del usuario
     const userId = await verifyAuth(cookies())
-    if (!userId) {
+    if (userId === null) {
       return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
     }
-
-    // Convertir userId a número si es necesario
-    const userIdNumber = typeof userId === 'string' ? parseInt(userId) : userId
 
     // Iniciar una transacción
     const result = await prisma.$transaction(async (prisma) => {
@@ -35,7 +32,7 @@ export async function POST(
         throw new Error('El partido está completo')
       }
 
-      if (match.Usuarios.some(user => user.id === userIdNumber)) {
+      if (match.Usuarios.some(user => user.id === userId)) {
         throw new Error('Ya estás unido a este partido')
       }
 
@@ -45,7 +42,7 @@ export async function POST(
         data: {
           players: match.players + 1,
           Usuarios: {
-            connect: { id: userIdNumber }
+            connect: { id: userId }
           }
         },
         include: { Usuarios: true }
