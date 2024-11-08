@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Menu, X, Home, User, Calendar, Users, LogOut, Clock, MapPin } from 'lucide-react'
-
+import { toast } from 'react-hot-toast'
 
 type Match = {
   id: number
@@ -17,6 +17,14 @@ type Match = {
   players: number
   maxPlayers: number
   nombreClub: string
+}
+
+type User = {
+  id: string
+  email: string
+  firstName?: string
+  lastName?: string
+  name?: string
 }
 
 const elementosMenu = [
@@ -29,12 +37,52 @@ const elementosMenu = [
 export default function PaginaJuega() {
   const [menuAbierto, setMenuAbierto] = useState(false)
   const [matches, setMatches] = useState<Match[]>([])
+  const [user, setUser] = useState<User | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
   const referenciaMenu = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
   const alternarMenu = () => setMenuAbierto(!menuAbierto)
 
   useEffect(() => {
+    const fetchUserAndMatches = async () => {
+      try {
+        setIsLoading(true)
+        const authResponse = await fetch('/api/auth', {
+          method: 'GET',
+          credentials: 'include',
+        })
+
+        if (authResponse.ok) {
+          const userData = await authResponse.json()
+          setUser(userData.entity)
+
+          const matchesResponse = await fetch('/api/matches', {
+            method: 'GET',
+            credentials: 'include',
+          })
+
+          if (matchesResponse.ok) {
+            const matchesData = await matchesResponse.json()
+            setMatches(matchesData)
+          } else {
+            console.error('Error al obtener los partidos')
+            toast.error('No se pudieron cargar los partidos')
+          }
+        } else {
+          throw new Error('Failed to fetch user data')
+        }
+      } catch (error) {
+        console.error('Error al obtener el perfil del usuario:', error)
+        toast.error('Error de autenticación')
+        router.push('/login')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchUserAndMatches()
+
     const manejarClicFuera = (evento: MouseEvent) => {
       if (referenciaMenu.current && !referenciaMenu.current.contains(evento.target as Node)) {
         setMenuAbierto(false)
@@ -45,60 +93,58 @@ export default function PaginaJuega() {
     return () => {
       document.removeEventListener('mousedown', manejarClicFuera)
     }
-  }, [])
-
-  useEffect(() => {
-    const obtenerPartidos = async () => {
-      try {
-        const respuesta = await fetch('/api/matches', {
-          method: 'GET',
-          credentials: 'include',
-        })
-        if (respuesta.ok) {
-          const matchesData = await respuesta.json()
-          setMatches(matchesData)
-        } else {
-          console.error('Error al obtener los partidos:', await respuesta.text())
-        }
-      } catch (error) {
-        console.error('Error al conectar con la API para obtener los partidos:', error)
-      }
-    }
-
-    obtenerPartidos()
-  }, [])
+  }, [router])
 
   const manejarCierreSesion = async () => {
     try {
-      await fetch('/api/cerrar-sesion', {
+      await fetch('/api/logout', {
         method: 'GET',
         credentials: 'include',
       })
       router.push('/')
     } catch (error) {
       console.error('Error al cerrar sesión:', error)
+      toast.error('Error al cerrar sesión')
     }
   }
 
-  // const manejarUnirsePartido = async (idPartido: number) => {
-  //   try {
-  //     const respuesta = await fetch(`/api/matches/${idPartido}/join`, {
-  //       method: 'POST',
-  //       credentials: 'include',
-  //     })
-  //     if (respuesta.ok) {
-  //       setMatches(matches.map(match => 
-  //         match.id === idPartido
-  //           ? { ...match, players: match.players + 1 } 
-  //           : match
-  //       ))
-  //     } else {
-  //       console.error('Error al unirse al partido:', await respuesta.text())
-  //     }
-  //   } catch (error) {
-  //     console.error('Error al conectar con la API para unirse al partido:', error)
-  //   }
-  // }
+  const manejarUnirsePartido = async (idPartido: number) => {
+    try {
+      const respuesta = await fetch(`/api/matches/${idPartido}/join`, {
+        method: 'POST',
+        credentials: 'include',
+      })
+      if (respuesta.ok) {
+        const updatedMatch = await respuesta.json()
+        setMatches(matches.map(match => 
+          match.id === idPartido ? { ...match, players: updatedMatch.players } : match
+        ))
+        toast.success('Te has unido al partido exitosamente!')
+      } else {
+        const errorData = await respuesta.json()
+        toast.error(errorData.error || 'Error al unirse al partido')
+      }
+    } catch (error) {
+      console.error('Error al conectar con la API para unirse al partido:', error)
+      toast.error('Error al conectar con el servidor')
+    }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+        <p className="text-lg text-gray-600">Cargando partidos...</p>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+        <p className="text-lg text-gray-600">No se pudo cargar la información del usuario. Por favor, inténtalo de nuevo.</p>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
@@ -177,7 +223,7 @@ export default function PaginaJuega() {
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6">
-            <p className="mb-4 text-gray-600">Elige un partido y únete para jugar!</p>
+            <p className="mb-4 text-gray-600">Bienvenido, {user.firstName || user.name}. Elige un partido y únete para jugar!</p>
             <div className="space-y-4">
               {matches.map((match) => (
                 <div
@@ -204,7 +250,7 @@ export default function PaginaJuega() {
                     </p>
                   </div>
                   <Button
-                    //onClick={() => manejarUnirsePartido(match.id)}
+                    onClick={() => manejarUnirsePartido(match.id)}
                     disabled={match.players >= match.maxPlayers}
                   >
                     {match.players >= match.maxPlayers ? 'Completo' : 'Unirse'}
