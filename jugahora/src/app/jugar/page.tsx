@@ -109,26 +109,34 @@ export default function PaginaJuega() {
   }
 
   const manejarUnirsePartido = async (idPartido: number) => {
+    console.log('Iniciando manejarUnirsePartido para el partido:', idPartido)
     if (!user) {
+      console.log('Usuario no autenticado, redirigiendo a login')
       toast.error('Debes iniciar sesión para unirte a un partido')
       router.push('/login')
       return
     }
-
+  
     try {
+      console.log('Enviando solicitud para unirse al partido')
       const respuesta = await fetch(`/api/matches/${idPartido}/join`, {
         method: 'POST',
         credentials: 'include',
       })
+      console.log('Respuesta recibida, status:', respuesta.status)
+      
       if (respuesta.ok) {
         const updatedMatch = await respuesta.json()
+        console.log('Partido actualizado:', updatedMatch)
         setMatches(matches.map(match => 
           match.id === idPartido ? { ...match, players: updatedMatch.players } : match
         ))
         toast.success('Te has unido al partido exitosamente!')
       } else {
         const errorData = await respuesta.json()
+        console.error('Error al unirse al partido:', errorData)
         if (respuesta.status === 401) {
+          console.log('Error de autenticación, redirigiendo a login')
           toast.error('Sesión expirada. Por favor, inicia sesión nuevamente.')
           router.push('/login')
         } else {
