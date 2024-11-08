@@ -109,6 +109,12 @@ export default function PaginaJuega() {
   }
 
   const manejarUnirsePartido = async (idPartido: number) => {
+    if (!user) {
+      toast.error('Debes iniciar sesión para unirte a un partido')
+      router.push('/login')
+      return
+    }
+
     try {
       const respuesta = await fetch(`/api/matches/${idPartido}/join`, {
         method: 'POST',
@@ -122,7 +128,12 @@ export default function PaginaJuega() {
         toast.success('Te has unido al partido exitosamente!')
       } else {
         const errorData = await respuesta.json()
-        toast.error(errorData.error || 'Error al unirse al partido')
+        if (respuesta.status === 401) {
+          toast.error('Sesión expirada. Por favor, inicia sesión nuevamente.')
+          router.push('/login')
+        } else {
+          toast.error(errorData.error || 'Error al unirse al partido')
+        }
       }
     } catch (error) {
       console.error('Error al conectar con la API para unirse al partido:', error)
