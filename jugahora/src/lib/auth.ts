@@ -11,10 +11,10 @@ export async function verifyAuth(token: string | undefined): Promise<number | nu
   }
 
   try {
-    console.log('Verificando token con JWT_SECRET:', process.env.JWT_SECRET?.slice(0, 5)); // Log the first 5 chars for privacy
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: number };
-    console.log('Token verificado exitosamente, userId:', decoded.userId);
-    return decoded.userId;
+    console.log('Verificando token con JWT_SECRET:', process.env.JWT_SECRET?.slice(0, 5));
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { id: number };
+    console.log('Token decodificado:', decoded); // Confirm the payload structure
+    return decoded.id; // Use `id` instead of `userId`
   } catch (error) {
     console.error('Error al verificar token:', error);
     return null;
