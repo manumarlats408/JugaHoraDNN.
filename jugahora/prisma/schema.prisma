@@ -1,63 +1,52 @@
-datasource db {
-  provider = "postgresql" // Cambiamos el proveedor a PostgreSQL
-  url      = env("DATABASE_URL")
-}
-
-generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["referentialIntegrity"]
-}
-
 model User {
-  id               Int        @id @default(autoincrement()) // Autoincrement para PostgreSQL
-  email            String     @unique // Correo electrónico único
-  password         String // Contraseña
-  firstName        String // Primer nombre
-  lastName         String // Apellido
-  createdAt        DateTime   @default(now()) // Timestamp de creación
-  updatedAt        DateTime   @updatedAt // Timestamp que se actualiza automáticamente
-  phoneNumber      String? // Teléfono opcional
-  address          String? // Dirección opcional
-  age              Int? // Edad opcional
-  resetToken       String?    @map("resettoken") // Especifica en minúsculas
-  resetTokenExpiry DateTime?  @map("resettokenexpiry") // Especifica en minúsculas
-  
-  PartidosUnidos   Partidos_club[]
-  Partidos         Partidos[] // Relación con la tabla Partidos
+  id               Int             @id @default(autoincrement())
+  email            String          @unique
+  password         String
+  firstName        String
+  lastName         String
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  phoneNumber      String?
+  address          String?
+  age              Int?
+  resetToken       String?         @map("resettoken")
+  resetTokenExpiry DateTime?       @map("resettokenexpiry")
+
+  partidosUnidos   Int[]           // Array of IDs of Partidos_club
+  Partidos         Partidos[]      // Relación con la tabla Partidos
 }
 
 model Club {
-  id          Int      @id @default(autoincrement())
-  name        String
-  email       String   @unique
-  password    String
-  phoneNumber String?
-  address     String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  Partidos_club Partidos_club[] // Add this line
-
+  id              Int             @id @default(autoincrement())
+  name            String
+  email           String          @unique
+  password        String
+  phoneNumber     String?
+  address         String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  Partidos_club   Partidos_club[] // Relación con Partidos_club
 }
 
 model Partidos {
-  id        Int      @id @default(autoincrement()) // Autoincrement para PostgreSQL
-  userId    Int // Clave foránea a la tabla Users
-  fecha     DateTime @default(now()) // Fecha del partido con valor por defecto
-  jugadores String // Lista de jugadores
-  resultado String // Resultado del partido
+  id         Int      @id @default(autoincrement())
+  userId     Int      // Foreign key to Users
+  fecha      DateTime @default(now())
+  jugadores  String
+  resultado  String
 
-  User User @relation(fields: [userId], references: [id]) // Relación con la tabla Users
+  User       User @relation(fields: [userId], references: [id])
 }
 
 model Partidos_club {
-  id        Int      @id @default(autoincrement())
-  date      DateTime
-  time      String
-  court     String
-  players   Int      @default(0) // Número de jugadores actualmente unidos
-  maxPlayers Int     @default(4) // Número máximo de jugadores permitidos
-  clubId     Int   // Add this line
+  id          Int      @id @default(autoincrement())
+  date        DateTime
+  time        String
+  court       String
+  players     Int      @default(0)
+  maxPlayers  Int      @default(4)
+  clubId      Int      // Foreign key to Club
 
-  Usuarios   User[] 
-  Club       Club     @relation(fields: [clubId], references: [id]) // Add this line
+  usuarios    Int[]    // Array of User IDs
+  Club        Club     @relation(fields: [clubId], references: [id])
 }
