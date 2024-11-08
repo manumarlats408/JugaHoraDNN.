@@ -1,4 +1,4 @@
-// app/api/matches/[id]/route.ts
+// app/api/matches/[id]/join/route.ts
 
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
@@ -15,7 +15,7 @@ export async function POST(
     console.log('ID del partido:', matchId);
 
     // Extraemos el valor del token de las cookies
-    const token = cookies().get('auth_token')?.value;
+    const token = cookies().get('token')?.value; // Cambiado a 'token'
     const userId = await verifyAuth(token); // Pasamos solo el token a verifyAuth
 
     if (userId === null) {
