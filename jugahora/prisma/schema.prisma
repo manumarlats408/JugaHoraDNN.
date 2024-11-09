@@ -49,14 +49,16 @@ model Partidos {
 }
 
 model Partidos_club {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   date        DateTime
-  time        String
+  startTime   String    // Hora de inicio
+  endTime     String    // Hora de fin
   court       String
-  players     Int      @default(0)
-  maxPlayers  Int      @default(4)
-  clubId      Int      // Foreign key to Club
+  players     Int       @default(0)
+  maxPlayers  Int       @default(4)
+  clubId      Int       // Foreign key to Club
+  price       Float    // Precio, que puede ser null inicialmente
 
-  usuarios    Int[]    // Array of User IDs
-  Club        Club     @relation(fields: [clubId], references: [id])
+  usuarios    Int[]     // Array of User IDs
+  Club        Club      @relation(fields: [clubId], references: [id])
 }

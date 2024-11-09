@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
-import { CalendarIcon, Plus, Trash2, Edit, Users, Clock, MapPin, Bell} from "lucide-react"
+import { CalendarIcon, Plus, Trash2, Edit, Users, Clock, MapPin, Bell } from "lucide-react"
 import Image from 'next/image'
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
@@ -35,9 +35,11 @@ type Value = ValuePiece | [ValuePiece, ValuePiece]
 type Match = {
   id: number
   date: string
-  time: string
+  startTime: string
+  endTime: string
   court: string
   players: number
+  price: number
 }
 
 type Club = {
@@ -51,7 +53,7 @@ type Club = {
 export default function ClubDashboard() {
   const [currentDate, setCurrentDate] = useState<Date>(new Date())
   const [matches, setMatches] = useState<Match[]>([])
-  const [newMatch, setNewMatch] = useState({ date: '', time: '', court: '' })
+  const [newMatch, setNewMatch] = useState({ date: '', startTime: '', endTime: '', court: '', price: 0 })
   const [editMatch, setEditMatch] = useState<Match | null>(null)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [clubData, setClubData] = useState<Club | null>(null)
@@ -135,7 +137,7 @@ export default function ClubDashboard() {
       if (response.ok) {
         const createdMatch = await response.json();
         setMatches([...matches, createdMatch]);
-        setNewMatch({ date: '', time: '', court: '' });
+        setNewMatch({ date: '', startTime: '', endTime: '', court: '', price: 0 });
       } else {
         console.error('Error al crear el partido:', await response.text());
       }
@@ -173,8 +175,10 @@ export default function ClubDashboard() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           date: editMatch.date,
-          time: editMatch.time,
+          startTime: editMatch.startTime,
+          endTime: editMatch.endTime,
           court: editMatch.court,
+          price: editMatch.price,
         }),
       })
   
@@ -298,12 +302,20 @@ export default function ClubDashboard() {
                   <Input id="date" type="date" className="col-span-3" value={newMatch.date} onChange={(e) => handleInputChange(e)} />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="time" className="text-right">Hora</Label>
-                  <Input id="time" type="time" className="col-span-3" value={newMatch.time} onChange={(e) => handleInputChange(e)} />
+                  <Label htmlFor="startTime" className="text-right">Hora de Inicio</Label>
+                  <Input id="startTime" type="time" className="col-span-3" value={newMatch.startTime} onChange={(e) => handleInputChange(e)} />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="endTime" className="text-right">Hora de Fin</Label>
+                  <Input id="endTime" type="time" className="col-span-3" value={newMatch.endTime} onChange={(e) => handleInputChange(e)} />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="court" className="text-right">Cancha</Label>
                   <Input id="court" className="col-span-3" value={newMatch.court} onChange={(e) => handleInputChange(e)} />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="price" className="text-right">Precio</Label>
+                  <Input id="price" type="number" className="col-span-3" value={newMatch.price} onChange={(e) => handleInputChange(e)} />
                 </div>
               </div>
               <DialogFooter>
@@ -334,12 +346,20 @@ export default function ClubDashboard() {
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="time" className="text-right">Hora</Label>
-                  <Input id="time" type="time" className="col-span-3" value={editMatch.time} onChange={(e) => handleInputChange(e, true)} />
+                  <Label htmlFor="startTime" className="text-right">Hora de Inicio</Label>
+                  <Input id="startTime" type="time" className="col-span-3" value={editMatch?.startTime || ''} onChange={(e) => handleInputChange(e, true)} />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="endTime" className="text-right">Hora de Fin</Label>
+                  <Input id="endTime" type="time" className="col-span-3" value={editMatch?.endTime || ''} onChange={(e) => handleInputChange(e, true)} />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="court" className="text-right">Cancha</Label>
                   <Input id="court" className="col-span-3" value={editMatch.court} onChange={(e) => handleInputChange(e, true)} />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="price" className="text-right">Precio</Label>
+                  <Input id="price" type="number" className="col-span-3" value={editMatch?.price || 0} onChange={(e) => handleInputChange(e, true)} />
                 </div>
               </div>
               <DialogFooter>
@@ -375,14 +395,15 @@ export default function ClubDashboard() {
                     <div className="flex items-center space-x-4">
                       <CalendarIcon className="h-6 w-6 text-gray-400" />
                       <div>
-                      <p className="font-medium">{format(new Date(match.date), 'yyyy-MM-dd')}</p>
+                        <p className="font-medium">{format(new Date(match.date), 'yyyy-MM-dd')}</p>
                         <div className="flex items-center text-sm text-gray-500">
                           <Clock className="mr-1 h-4 w-4" />
-                          {match.time}
+                          {match.startTime} - {match.endTime}
                           <MapPin className="ml-2 mr-1 h-4 w-4" />
                           {match.court}
                           <Users className="ml-2 mr-1 h-4 w-4" />
                           {match.players}/4
+                          <span className="ml-4 font-semibold">${match.price}</span>
                         </div>
                       </div>
                     </div>

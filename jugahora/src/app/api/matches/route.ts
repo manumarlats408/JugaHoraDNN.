@@ -3,14 +3,16 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-// Definir el tipo del objeto "match"
+// Define the interface to include the new fields
 interface Match {
   id: number;
   date: Date;
-  time: string;
+  startTime: string;  // Updated to startTime
+  endTime: string;    // Added endTime
   court: string;
   players: number;
   maxPlayers: number;
+  price: number;      // Added price
   clubId: number;
   Club: {
     name: string;
@@ -18,23 +20,26 @@ interface Match {
   };
 }
 
+// POST: Create a new match
 export async function POST(request: Request) {
   try {
-    const { date, time, court, clubId } = await request.json();
+    const { date, startTime, endTime, court, clubId } = await request.json();
 
-    // Validar que los datos requeridos estén presentes
-    if (!date || !time || !court || !clubId) {
+    // Validate required fields
+    if (!date || !startTime || !endTime || !court || !clubId) {
       return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
     }
 
     const newMatch = await prisma.partidos_club.create({
       data: {
         date: new Date(date),
-        time,
+        startTime,
+        endTime,
         court,
         players: 0,
         maxPlayers: 4,
         clubId: parseInt(clubId),
+        price: 0, // Default price to 0; update when filled
       },
     });
 
@@ -45,13 +50,13 @@ export async function POST(request: Request) {
   }
 }
 
+// GET: Retrieve matches
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const clubId = searchParams.get('clubId');
 
   try {
     if (clubId) {
-      // Si se proporciona el clubId, devolver solo los partidos asociados a ese club
       const matches = await prisma.partidos_club.findMany({
         where: {
           clubId: parseInt(clubId),
@@ -62,7 +67,6 @@ export async function GET(request: Request) {
       });
       return NextResponse.json(matches);
     } else {
-      // Si no se proporciona clubId, devolver todos los partidos con el nombre del club incluido
       const matches = await prisma.partidos_club.findMany({
         include: {
           Club: {
@@ -77,7 +81,6 @@ export async function GET(request: Request) {
         },
       });
 
-      // Formatear los partidos para incluir `nombreClub` directamente
       const formattedMatches = matches.map((match: Match) => ({
         ...match,
         nombreClub: match.Club.name,
