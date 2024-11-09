@@ -38,20 +38,23 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
     return NextResponse.json({ error: 'Error al eliminar el partido' }, { status: 500 });
   }
 }
+
 export async function PATCH(request: Request, { params }: { params: { id: string } }) {
   const matchId = parseInt(params.id);
 
   try {
-    const { date, time, court } = await request.json();
+    const { date, startTime, endTime, court, price } = await request.json();
 
-    console.log("Datos recibidos para actualización:", { date, time, court });
+    console.log("Datos recibidos para actualización:", { date, startTime, endTime, court, price });
 
     const updatedMatch = await prisma.partidos_club.update({
       where: { id: matchId },
       data: {
         date: new Date(date),
-        time,
+        startTime,
+        endTime,
         court,
+        price,
       },
     });
 
