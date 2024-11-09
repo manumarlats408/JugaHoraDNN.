@@ -27,6 +27,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { DropdownMenu, DropdownMenuItem } from "@/components/ui/dropdown-menu"
+import { format } from 'date-fns';
 
 type ValuePiece = Date | null
 type Value = ValuePiece | [ValuePiece, ValuePiece]
@@ -374,7 +375,7 @@ export default function ClubDashboard() {
                     <div className="flex items-center space-x-4">
                       <CalendarIcon className="h-6 w-6 text-gray-400" />
                       <div>
-                <p className="font-medium">{match.date}</p>
+                      <p className="font-medium">{format(new Date(match.date), 'yyyy-MM-dd')}</p>
                         <div className="flex items-center text-sm text-gray-500">
                           <Clock className="mr-1 h-4 w-4" />
                           {match.time}
