@@ -7,12 +7,12 @@ import prisma from '@/lib/prisma';
 interface Match {
   id: number;
   date: Date;
-  startTime: string;  // Updated to startTime
-  endTime: string;    // Added endTime
+  startTime: string;
+  endTime: string;
   court: string;
   players: number;
   maxPlayers: number;
-  price: number;      // Added price
+  price: number;
   clubId: number;
   Club: {
     name: string;
@@ -23,12 +23,15 @@ interface Match {
 // POST: Create a new match
 export async function POST(request: Request) {
   try {
-    const { date, startTime, endTime, court, clubId } = await request.json();
+    const { date, startTime, endTime, court, clubId, price } = await request.json();
 
     // Validate required fields
     if (!date || !startTime || !endTime || !court || !clubId) {
       return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
     }
+
+    // Ensure that price is defined and defaults to 0 if not provided
+    const matchPrice = price !== undefined ? price : 0;
 
     const newMatch = await prisma.partidos_club.create({
       data: {
@@ -39,7 +42,7 @@ export async function POST(request: Request) {
         players: 0,
         maxPlayers: 4,
         clubId: parseInt(clubId),
-        price: 0, // Default price to 0; update when filled
+        price: matchPrice,  // Set the price here
       },
     });
 
