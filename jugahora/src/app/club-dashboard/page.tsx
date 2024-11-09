@@ -53,7 +53,7 @@ type Club = {
 export default function ClubDashboard() {
   const [currentDate, setCurrentDate] = useState<Date>(new Date())
   const [matches, setMatches] = useState<Match[]>([])
-  const [newMatch, setNewMatch] = useState({ date: '', startTime: '', endTime: '', court: '', price: 0 })
+  const [newMatch, setNewMatch] = useState({ date: '', startTime: '', endTime: '', court: '', price: '' })
   const [editMatch, setEditMatch] = useState<Match | null>(null)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [clubData, setClubData] = useState<Club | null>(null)
@@ -131,13 +131,15 @@ export default function ClubDashboard() {
       const response = await fetch('/api/matches', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...newMatch, clubId: clubData.id.toString() }),
+        body: JSON.stringify({ ...newMatch, clubId: clubData.id.toString(),
+        price: parseFloat(newMatch.price),
+        }),
       });
 
       if (response.ok) {
         const createdMatch = await response.json();
         setMatches([...matches, createdMatch]);
-        setNewMatch({ date: '', startTime: '', endTime: '', court: '', price: 0 });
+        setNewMatch({ date: '', startTime: '', endTime: '', court: '', price: '' });
       } else {
         console.error('Error al crear el partido:', await response.text());
       }
