@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Menu, X, Home, User, Calendar, Users, LogOut, Clock, MapPin } from 'lucide-react'
+import { Menu, X, Home, User, Calendar, Users, LogOut, Clock, MapPin, Hash } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 
 type Match = {
@@ -17,6 +17,8 @@ type Match = {
   players: number
   maxPlayers: number
   nombreClub: string
+  direccionClub: string; // make sure address is included in the fetched data
+
 }
 
 type User = {
@@ -261,6 +263,10 @@ export default function PaginaJuega() {
                     </p>
                     <p className="text-sm text-gray-500 flex items-center">
                       <MapPin className="w-4 h-4 mr-1" />
+                      {match.direccionClub}
+                    </p>
+                    <p className="text-sm text-gray-500 flex items-center">
+                      <Hash className="w-4 h-4 mr-1" />
                       {match.court}
                     </p>
                     <p className="text-sm text-gray-500 flex items-center">

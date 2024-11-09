@@ -14,6 +14,7 @@ interface Match {
   clubId: number;
   Club: {
     name: string;
+    address: string | null;
   };
 }
 
@@ -67,6 +68,7 @@ export async function GET(request: Request) {
           Club: {
             select: {
               name: true,
+              address: true,
             },
           },
         },
@@ -79,6 +81,7 @@ export async function GET(request: Request) {
       const formattedMatches = matches.map((match: Match) => ({
         ...match,
         nombreClub: match.Club.name,
+        direccionClub: match.Club.address,
       }));
 
       return NextResponse.json(formattedMatches);
