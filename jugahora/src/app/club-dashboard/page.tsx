@@ -326,7 +326,17 @@ export default function ClubDashboard() {
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="price" className="text-right">Precio</Label>
-                  <Input id="price" type="number" className="col-span-3" value={newMatch.price} onChange={(e) => handleInputChange(e)} />
+                  <Input
+                    id="price"
+                    type="text" // Cambiado de "number" a "text" para quitar las flechas
+                    className="col-span-3"
+                    value={newMatch.price} // Permitir que se muestre vacío si es 0
+                    onChange={(e) => handleInputChange(e)}
+                    onInput={(e) => {
+                      // Permitir solo números
+                      e.currentTarget.value = e.currentTarget.value.replace(/\D/g, '');
+                    }}
+                  />
                 </div>
               </div>
               <DialogFooter>
@@ -370,7 +380,17 @@ export default function ClubDashboard() {
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="price" className="text-right">Precio</Label>
-                  <Input id="price" type="number" className="col-span-3" value={editMatch?.price || 0} onChange={(e) => handleInputChange(e, true)} />
+                  <Input
+                    id="price"
+                    type="text" // Cambiado de "number" a "text" para quitar las flechas
+                    className="col-span-3"
+                    value={editMatch?.price === 0 ? '' : editMatch?.price} // Permitir que se muestre vacío si es 0
+                    onChange={(e) => handleInputChange(e, true)}
+                    onInput={(e) => {
+                      // Permitir solo números
+                      e.currentTarget.value = e.currentTarget.value.replace(/\D/g, '');
+                    }}
+                  />
                 </div>
               </div>
               <DialogFooter>
