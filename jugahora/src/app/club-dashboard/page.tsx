@@ -198,13 +198,22 @@ export default function ClubDashboard() {
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, isEdit: boolean = false) => {
-    const { id, value } = e.target
+    const { id, value } = e.target;
+    
     if (isEdit && editMatch) {
-      setEditMatch((prev) => (prev ? { ...prev, [id]: value } : prev))
+      setEditMatch((prev) => {
+        if (!prev) return prev;
+        // Si el campo es `price`, permite que el valor sea vacío temporalmente
+        const updatedValue = id === 'price' ? (value === '' ? '' : parseFloat(value)) : value;
+        return { ...prev, [id]: updatedValue };
+      });
     } else {
-      setNewMatch((prev) => ({ ...prev, [id]: value }))
+      setNewMatch((prev) => ({
+        ...prev,
+        [id]: id === 'price' ? (value === '' ? '' : parseFloat(value)) : value,
+      }));
     }
-  }
+  };
 
   const handleDateChange = (value: Value) => {
     if (value instanceof Date) {
