@@ -178,13 +178,14 @@ export default function ClubDashboard() {
 
   const handleSaveEdit = async () => {
     if (!editMatch) return
+    const formattedDate = format(new Date(editMatch.date), 'yyyy-MM-dd');
   
     try {
       const response = await fetch(`/api/matches/${editMatch.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          date: editMatch.date,
+          date: formattedDate,
           startTime: editMatch.startTime,
           endTime: editMatch.endTime,
           court: editMatch.court,
@@ -370,9 +371,10 @@ export default function ClubDashboard() {
                     id="date"
                     type="date"
                     className="col-span-3"
-                    value={editMatch ? new Date(editMatch.date).toISOString().split('T')[0] : ""}
+                    value={editMatch ? format(new Date(editMatch.date), 'dd/MM/yyyy') : ""}
                     onChange={(e) => handleInputChange(e, true)}
                   />
+
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="startTime" className="text-right">Hora de Inicio</Label>
