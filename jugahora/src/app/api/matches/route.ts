@@ -35,13 +35,10 @@ export async function POST(request: Request) {
     // Ensure that price is defined and defaults to 0 if not provided
     const matchPrice = price !== undefined ? price : 0;
 
-    // Create a new Date object and adjust for timezone
-    const matchDate = new Date(date);
-    matchDate.setMinutes(matchDate.getMinutes() - matchDate.getTimezoneOffset());
-
+  
     const newMatch = await prisma.partidos_club.create({
       data: {
-        date: matchDate.toISOString().split('T')[0], // Store only the date part
+        date: new Date(date),
         startTime,
         endTime,
         court,
