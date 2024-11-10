@@ -35,16 +35,21 @@ export async function POST(request: Request) {
     // Ensure that price is defined and defaults to 0 if not provided
     const matchPrice = price !== undefined ? price : 0;
 
-    // Parse date and time strings into numbers
+    // Parse date and time strings
     const [year, month, day] = date.split('-').map(Number);
     const [hours, minutes] = startTime.split(':').map(Number);
 
-    // Create a Date object using UTC to avoid timezone issues
-    const matchDateTime = new Date(Date.UTC(year, month - 1, day, hours, minutes));
+    // Create a Date object using local time
+    const matchDateTime = new Date(year, month - 1, day, hours, minutes);
+
+    // Validate the created date
+    if (isNaN(matchDateTime.getTime())) {
+      return NextResponse.json({ error: 'Invalid date or time' }, { status: 400 });
+    }
 
     const newMatch = await prisma.partidos_club.create({
       data: {
-        date: matchDateTime.toISOString(), // Store as full ISO DateTime
+        date: matchDateTime,
         startTime,
         endTime,
         court,

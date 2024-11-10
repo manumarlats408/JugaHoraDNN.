@@ -130,8 +130,13 @@ export default function ClubDashboard() {
     try {
       const [year, month, day] = newMatch.date.split('-').map(Number);
       const [hours, minutes] = newMatch.startTime.split(':').map(Number);
-      const matchDateTime = new Date(Date.UTC(year, month - 1, day, hours, minutes));
-
+      const matchDateTime = new Date(year, month - 1, day, hours, minutes);
+  
+      if (isNaN(matchDateTime.getTime())) {
+        console.error('Invalid date or time');
+        return;
+      }
+  
       const response = await fetch('/api/matches', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -142,13 +147,14 @@ export default function ClubDashboard() {
           price: parseFloat(newMatch.price),
         }),
       });
-
+  
       if (response.ok) {
         const createdMatch = await response.json();
         setMatches([...matches, createdMatch]);
         setNewMatch({ date: '', startTime: '', endTime: '', court: '', price: '' });
       } else {
-        console.error('Error al crear el partido:', await response.text());
+        const errorData = await response.json();
+        console.error('Error al crear el partido:', errorData.error);
       }
     } catch (error) {
       console.error('Error al conectar con la API para crear el partido:', error);
