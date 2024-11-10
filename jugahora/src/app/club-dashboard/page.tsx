@@ -60,7 +60,8 @@ export default function ClubDashboard() {
   const [clubData, setClubData] = useState<Club | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
-  
+  const formattedDate = editMatch ? format(toZonedTime(new Date(editMatch.date), 'America/Argentina/Buenos_Aires'), 'dd/MM/yyyy') : "";
+
 
   
 
@@ -366,12 +367,18 @@ export default function ClubDashboard() {
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="date" className="text-right">Fecha</Label>
+                    <p className="col-span-3">
+                      {editMatch ? format(toZonedTime(new Date(editMatch.date), 'America/Argentina/Buenos_Aires'), 'dd/MM/yyyy') : ""}
+                    </p>
                   <Input
                     id="date"
                     type="date"
                     className="col-span-3"
                     value={editMatch ? new Date(editMatch.date).toISOString().split('T')[0] : ""}
-                    onChange={(e) => handleInputChange(e, true)}
+                    onChange={(e) => {
+                      const updatedDate = e.target.value; // Formato yyyy-MM-dd
+                      handleInputChange({ ...e, target: { ...e.target, value: updatedDate } }, true);
+                    }}
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
