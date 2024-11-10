@@ -59,7 +59,7 @@ export default function ClubDashboard() {
   const [clubData, setClubData] = useState<Club | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
-  const timeZone = 'America/Argentina/Buenos_Aires';
+
   
 
   const fetchMatches = useCallback(async () => {
