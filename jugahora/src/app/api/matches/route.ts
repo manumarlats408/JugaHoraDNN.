@@ -29,22 +29,18 @@ export async function POST(request: Request) {
 
     // Validate required fields
     if (!date || !startTime || !endTime || !court || !clubId) {
-      return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
+      return NextResponse.json({ error: 'Todos los campos son requeridos' }, { status: 400 });
     }
 
     // Ensure that price is defined and defaults to 0 if not provided
-    const matchPrice = price !== undefined ? price : 0;
+    const matchPrice = price !== undefined ? parseFloat(price) : 0;
 
-    // Parse date and time strings
-    const [year, month, day] = date.split('-').map(Number);
-    const [hours, minutes] = startTime.split(':').map(Number);
+    // Parse the ISO date string
+    const matchDateTime = new Date(date);
 
-    // Create a Date object using local time
-    const matchDateTime = new Date(year, month - 1, day, hours, minutes);
-
-    // Validate the created date
+    // Check if the date is valid
     if (isNaN(matchDateTime.getTime())) {
-      return NextResponse.json({ error: 'Invalid date or time' }, { status: 400 });
+      return NextResponse.json({ error: 'Fecha u hora inválida' }, { status: 400 });
     }
 
     const newMatch = await prisma.partidos_club.create({
@@ -63,9 +59,10 @@ export async function POST(request: Request) {
     return NextResponse.json(newMatch);
   } catch (error) {
     console.error('Error creating match:', error);
-    return NextResponse.json({ error: 'Error creating match' }, { status: 500 });
+    return NextResponse.json({ error: 'Error al crear el partido' }, { status: 500 });
   }
 }
+
 
 // GET: Retrieve matches
 export async function GET(request: Request) {
