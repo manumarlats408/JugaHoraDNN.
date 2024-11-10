@@ -60,7 +60,7 @@ export default function ClubDashboard() {
   const [clubData, setClubData] = useState<Club | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
-  
+  const formattedDate = editMatch ? format(toZonedTime(new Date(editMatch.date), 'America/Argentina/Buenos_Aires'), 'dd/MM/yyyy') : "";
 
 
   
