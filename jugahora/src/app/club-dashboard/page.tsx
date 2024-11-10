@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
-import { CalendarIcon, Plus, Trash2, Edit, Users, Clock, Bell, Hash } from "lucide-react"
+import { CalendarIcon, Plus, Trash2, Edit, Users, Clock, MapPin, Bell } from "lucide-react"
 import Image from 'next/image'
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
@@ -27,7 +27,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { DropdownMenu, DropdownMenuItem } from "@/components/ui/dropdown-menu"
-import { formatInTimeZone } from 'date-fns-tz';
+import { format } from 'date-fns';
 
 type ValuePiece = Date | null
 type Value = ValuePiece | [ValuePiece, ValuePiece]
@@ -59,7 +59,6 @@ export default function ClubDashboard() {
   const [clubData, setClubData] = useState<Club | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
-  const timeZone = 'America/Argentina/Buenos_Aires';
 
   const fetchMatches = useCallback(async () => {
     if (!clubData) return;
@@ -427,11 +426,11 @@ export default function ClubDashboard() {
                     <div className="flex items-center space-x-4">
                       <CalendarIcon className="h-6 w-6 text-gray-400" />
                       <div>
-                        <p className="font-medium"> {formatInTimeZone(new Date(match.date), timeZone, 'yyyy-MM-dd')}</p>
+                        <p className="font-medium">{format(new Date(match.date), 'yyyy-MM-dd')}</p>
                         <div className="flex items-center text-sm text-gray-500">
                           <Clock className="mr-1 h-4 w-4" />
                           {match.startTime} - {match.endTime}
-                          <Hash className="ml-2 mr-1 h-4 w-4" />
+                          <MapPin className="ml-2 mr-1 h-4 w-4" />
                           {match.court}
                           <Users className="ml-2 mr-1 h-4 w-4" />
                           {match.players}/4
