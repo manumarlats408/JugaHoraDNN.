@@ -27,7 +27,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { DropdownMenu, DropdownMenuItem } from "@/components/ui/dropdown-menu"
-import { format } from 'date-fns';
+
 
 type ValuePiece = Date | null
 type Value = ValuePiece | [ValuePiece, ValuePiece]
@@ -59,6 +59,8 @@ export default function ClubDashboard() {
   const [clubData, setClubData] = useState<Club | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
+  const timeZone = 'America/Argentina/Buenos_Aires';
+  
 
   const fetchMatches = useCallback(async () => {
     if (!clubData) return;
@@ -245,7 +247,7 @@ export default function ClubDashboard() {
       </div>
     )
   }
-
+  
   return (
     <div className="flex flex-col min-h-screen">
       <header className="px-4 lg:px-6 h-16 flex items-center justify-between border-b">
@@ -345,7 +347,7 @@ export default function ClubDashboard() {
             </DialogContent>
           </Dialog>
         </div>
-
+                    
         {editMatch && (
           <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
             <DialogContent className="sm:max-w-[425px]">
@@ -426,7 +428,7 @@ export default function ClubDashboard() {
                     <div className="flex items-center space-x-4">
                       <CalendarIcon className="h-6 w-6 text-gray-400" />
                       <div>
-                        <p className="font-medium">{format(new Date(match.date), 'yyyy-MM-dd')}</p>
+                        <p className="font-medium">{match.date}</p>
                         <div className="flex items-center text-sm text-gray-500">
                           <Clock className="mr-1 h-4 w-4" />
                           {match.startTime} - {match.endTime}
