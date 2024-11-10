@@ -20,6 +20,8 @@ interface Match {
   };
 }
 
+// ... (previous imports)
+
 // POST: Create a new match
 export async function POST(request: Request) {
   try {
@@ -33,16 +35,20 @@ export async function POST(request: Request) {
     // Ensure that price is defined and defaults to 0 if not provided
     const matchPrice = price !== undefined ? price : 0;
 
+    // Create a new Date object and adjust for timezone
+    const matchDate = new Date(date);
+    matchDate.setMinutes(matchDate.getMinutes() - matchDate.getTimezoneOffset());
+
     const newMatch = await prisma.partidos_club.create({
       data: {
-        date: new Date(date),
+        date: matchDate.toISOString().split('T')[0], // Store only the date part
         startTime,
         endTime,
         court,
         players: 0,
         maxPlayers: 4,
         clubId: parseInt(clubId),
-        price: matchPrice,  // Set the price here
+        price: matchPrice,
       },
     });
 
@@ -52,6 +58,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Error creating match' }, { status: 500 });
   }
 }
+
+// ... (rest of the code remains the same)
 
 // GET: Retrieve matches
 export async function GET(request: Request) {

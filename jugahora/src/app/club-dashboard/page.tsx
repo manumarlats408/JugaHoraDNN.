@@ -8,7 +8,6 @@ import { CalendarIcon, Plus, Trash2, Edit, Users, Clock, MapPin, Bell } from "lu
 import Image from 'next/image'
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
-import { format, toZonedTime } from 'date-fns-tz'
 import {
   Card,
   CardContent,
@@ -28,7 +27,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { DropdownMenu, DropdownMenuItem } from "@/components/ui/dropdown-menu"
-
+import { format } from 'date-fns';
 
 type ValuePiece = Date | null
 type Value = ValuePiece | [ValuePiece, ValuePiece]
@@ -61,9 +60,6 @@ export default function ClubDashboard() {
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
 
-
-  
-
   const fetchMatches = useCallback(async () => {
     if (!clubData) return;
     try {
@@ -73,11 +69,7 @@ export default function ClubDashboard() {
       });
       if (response.ok) {
         const matchesData = await response.json();
-        const formattedMatches = matchesData.map((match:Match) => ({
-          ...match,
-          date: format(toZonedTime(match.date, 'America/Argentina/Buenos_Aires'), 'dd/MM/yyyy'),
-        }))
-        setMatches(formattedMatches)
+        setMatches(matchesData);
       } else {
         console.error('Error al obtener los partidos del club:', await response.text());
       }
@@ -170,7 +162,7 @@ export default function ClubDashboard() {
       console.error('Error al conectar con la API para eliminar el partido:', error)
     }
   }
-  
+
   const handleEditMatch = (match: Match) => {
     setEditMatch(match)
     setIsEditModalOpen(true)
@@ -253,7 +245,7 @@ export default function ClubDashboard() {
       </div>
     )
   }
-  
+
   return (
     <div className="flex flex-col min-h-screen">
       <header className="px-4 lg:px-6 h-16 flex items-center justify-between border-b">
@@ -353,7 +345,7 @@ export default function ClubDashboard() {
             </DialogContent>
           </Dialog>
         </div>
-                    
+
         {editMatch && (
           <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
             <DialogContent className="sm:max-w-[425px]">
@@ -429,12 +421,12 @@ export default function ClubDashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {matches.map((match:Match) => (
+                {matches.map(match => (
                   <div key={match.id} className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="flex items-center space-x-4">
                       <CalendarIcon className="h-6 w-6 text-gray-400" />
                       <div>
-                        <p className="font-medium">{match.date}</p>
+                        <p className="font-medium">{format(new Date(match.date), 'yyyy-MM-dd')}</p>
                         <div className="flex items-center text-sm text-gray-500">
                           <Clock className="mr-1 h-4 w-4" />
                           {match.startTime} - {match.endTime}
