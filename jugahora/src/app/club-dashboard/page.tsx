@@ -184,14 +184,13 @@ export default function ClubDashboard() {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          date: format(toZonedTime(editMatch.date, 'America/Argentina/Buenos_Aires'), 'dd/MM/yyyy'),
+          date: editMatch.date,
           startTime: editMatch.startTime,
           endTime: editMatch.endTime,
           court: editMatch.court,
           price: editMatch.price,
         }),
       })
-      
   
       if (response.ok) {
         const updatedMatch = await response.json()
