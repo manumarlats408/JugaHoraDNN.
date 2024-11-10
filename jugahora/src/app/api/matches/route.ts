@@ -35,13 +35,16 @@ export async function POST(request: Request) {
     // Ensure that price is defined and defaults to 0 if not provided
     const matchPrice = price !== undefined ? price : 0;
 
-    // Create a new Date object and adjust for timezone
-    const matchDate = new Date(date);
-    matchDate.setMinutes(matchDate.getMinutes() - matchDate.getTimezoneOffset());
+    // Parse date and time strings into numbers
+    const [year, month, day] = date.split('-').map(Number);
+    const [hours, minutes] = startTime.split(':').map(Number);
+
+    // Create a Date object using UTC to avoid timezone issues
+    const matchDateTime = new Date(Date.UTC(year, month - 1, day, hours, minutes));
 
     const newMatch = await prisma.partidos_club.create({
       data: {
-        date: matchDate.toISOString().split('T')[0], // Store only the date part
+        date: matchDateTime.toISOString(), // Store as full ISO DateTime
         startTime,
         endTime,
         court,
@@ -58,8 +61,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Error creating match' }, { status: 500 });
   }
 }
-
-// ... (rest of the code remains the same)
 
 // GET: Retrieve matches
 export async function GET(request: Request) {

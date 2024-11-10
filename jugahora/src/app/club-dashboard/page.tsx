@@ -128,20 +128,21 @@ export default function ClubDashboard() {
   const handleCreateMatch = async () => {
     if (!clubData) return;
     try {
-      const matchDate = new Date(newMatch.date);
-      matchDate.setMinutes(matchDate.getMinutes() - matchDate.getTimezoneOffset());
-  
+      const [year, month, day] = newMatch.date.split('-').map(Number);
+      const [hours, minutes] = newMatch.startTime.split(':').map(Number);
+      const matchDateTime = new Date(Date.UTC(year, month - 1, day, hours, minutes));
+
       const response = await fetch('/api/matches', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...newMatch,
-          date: matchDate.toISOString().split('T')[0], // Send only the date part
+          date: matchDateTime.toISOString(),
           clubId: clubData.id.toString(),
           price: parseFloat(newMatch.price),
         }),
       });
-  
+
       if (response.ok) {
         const createdMatch = await response.json();
         setMatches([...matches, createdMatch]);
