@@ -8,6 +8,7 @@ import { CalendarIcon, Plus, Trash2, Edit, Users, Clock, MapPin, Bell } from "lu
 import Image from 'next/image'
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
+import { format, toZonedTime } from 'date-fns-tz'
 import {
   Card,
   CardContent,
@@ -59,6 +60,7 @@ export default function ClubDashboard() {
   const [clubData, setClubData] = useState<Club | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
+  
 
   
 
@@ -71,7 +73,11 @@ export default function ClubDashboard() {
       });
       if (response.ok) {
         const matchesData = await response.json();
-        setMatches(matchesData);
+        const formattedMatches = matchesData.map((match:Match) => ({
+          ...match,
+          date: format(toZonedTime(match.date, 'America/Argentina/Buenos_Aires'), 'dd/MM/yyyy'),
+        }))
+        setMatches(formattedMatches)
       } else {
         console.error('Error al obtener los partidos del club:', await response.text());
       }
@@ -164,7 +170,7 @@ export default function ClubDashboard() {
       console.error('Error al conectar con la API para eliminar el partido:', error)
     }
   }
-
+  
   const handleEditMatch = (match: Match) => {
     setEditMatch(match)
     setIsEditModalOpen(true)
@@ -423,7 +429,7 @@ export default function ClubDashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {matches.map(match => (
+                {matches.map((match:Match) => (
                   <div key={match.id} className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="flex items-center space-x-4">
                       <CalendarIcon className="h-6 w-6 text-gray-400" />
