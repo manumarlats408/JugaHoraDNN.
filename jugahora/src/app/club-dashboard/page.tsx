@@ -130,16 +130,13 @@ export default function ClubDashboard() {
     try {
       const [year, month, day] = newMatch.date.split('-').map(Number);
       const [hours, minutes] = newMatch.startTime.split(':').map(Number);
-      
-      // Create a date object in local time
       const matchDateTime = new Date(year, month - 1, day, hours, minutes);
-
-      // Check if the date is valid
+  
       if (isNaN(matchDateTime.getTime())) {
-        console.error('Fecha u hora inválida');
+        console.error('Invalid date or time');
         return;
       }
-
+  
       const response = await fetch('/api/matches', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -147,10 +144,10 @@ export default function ClubDashboard() {
           ...newMatch,
           date: matchDateTime.toISOString(),
           clubId: clubData.id.toString(),
-          price: parseFloat(newMatch.price) || 0,
+          price: parseFloat(newMatch.price),
         }),
       });
-
+  
       if (response.ok) {
         const createdMatch = await response.json();
         setMatches([...matches, createdMatch]);
