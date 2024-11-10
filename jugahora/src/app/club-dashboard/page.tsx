@@ -177,46 +177,42 @@ export default function ClubDashboard() {
   }
 
   const handleSaveEdit = async () => {
-    if (!editMatch) return;
-  
-    // Asegurarte de que la fecha está formateada correctamente
-    const formattedDate = format(new Date(editMatch.date), 'yyyy-MM-dd'); // Asegúrate de que sea en formato 'yyyy-MM-dd' al guardarla
+    if (!editMatch) return
   
     try {
       const response = await fetch(`/api/matches/${editMatch.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          date: formattedDate, // Enviar la fecha correctamente formateada
+          date: editMatch.date,
           startTime: editMatch.startTime,
           endTime: editMatch.endTime,
           court: editMatch.court,
           price: editMatch.price,
         }),
-      });
+      })
   
       if (response.ok) {
-        const updatedMatch = await response.json();
-        setMatches(matches.map(match => (match.id === updatedMatch.id ? updatedMatch : match)));
-        setEditMatch(null);
-        setIsEditModalOpen(false);
+        const updatedMatch = await response.json()
+        setMatches(matches.map(match => (match.id === updatedMatch.id ? updatedMatch : match)))
+        setEditMatch(null)
+        setIsEditModalOpen(false)
       } else {
-        console.error('Error al actualizar el partido:', await response.text());
+        console.error('Error al actualizar el partido:', await response.text())
       }
     } catch (error) {
-      console.error('Error al conectar con la API para actualizar el partido:', error);
+      console.error('Error al conectar con la API para actualizar el partido:', error)
     }
-  };
-  
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, isEdit: boolean = false) => {
     const { id, value } = e.target;
-  
+    
     if (isEdit && editMatch) {
       setEditMatch((prev) => {
         if (!prev) return prev;
-        // Si el campo es `date`, convertir el valor de la fecha
-        const updatedValue = id === 'date' ? value : (id === 'price' ? (value === '' ? '' : parseFloat(value)) : value);
+        // Si el campo es `price`, permite que el valor sea vacío temporalmente
+        const updatedValue = id === 'price' ? (value === '' ? '' : parseFloat(value)) : value;
         return { ...prev, [id]: updatedValue };
       });
     } else {
@@ -226,7 +222,6 @@ export default function ClubDashboard() {
       }));
     }
   };
-  
 
   const handleDateChange = (value: Value) => {
     if (value instanceof Date) {
@@ -375,10 +370,9 @@ export default function ClubDashboard() {
                     id="date"
                     type="date"
                     className="col-span-3"
-                    value={editMatch ? new Date(editMatch.date).toISOString().split('T')[0] : ""} // Asegúrate de mostrar la fecha en el formato correcto
+                    value={editMatch ? new Date(editMatch.date).toISOString().split('T')[0] : ""}
                     onChange={(e) => handleInputChange(e, true)}
                   />
-
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="startTime" className="text-right">Hora de Inicio</Label>
