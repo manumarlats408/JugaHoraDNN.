@@ -160,7 +160,7 @@ export default function PaginaJuega() {
       if (respuesta.ok) {
         const updatedMatch = await respuesta.json()
         setMatches(matches.map(match => 
-          match.id === idPartido ? { ...match, players: updatedMatch.players } : match
+          match.id === idPartido ? { ...match, players: updatedMatch.players, usuarios: [...match.usuarios, user.id] } : match
         ))
         toast.success('Te has unido al partido exitosamente!')
       } else {
@@ -198,7 +198,7 @@ export default function PaginaJuega() {
       if (respuesta.ok) {
         const updatedMatch = await respuesta.json();
         setMatches(matches.map(match =>
-          match.id === idPartido ? { ...match, players: updatedMatch.players } : match
+          match.id === idPartido ? { ...match, players: updatedMatch.players, usuarios: match.usuarios.filter(userId => userId !== user.id) } : match
         ));
         toast.success('Te has retirado del partido exitosamente!');
       } else {
