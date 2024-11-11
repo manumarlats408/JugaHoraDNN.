@@ -12,11 +12,13 @@ import { toast } from 'react-hot-toast'
 type Match = {
   id: number
   date: string
-  time: string
+  startTime: string
+  endTime: string  
   court: string
   players: number
   maxPlayers: number
   nombreClub: string
+  price: number
   direccionClub: string; // make sure address is included in the fetched data
 
 }
@@ -255,11 +257,11 @@ export default function PaginaJuega() {
                     <p className="font-semibold text-gray-800">{match.nombreClub}</p>
                     <p className="text-sm text-gray-500 flex items-center">
                       <Calendar className="w-4 h-4 mr-1" />
-                      {new Date(match.date).toLocaleDateString()}
+                      {match.date.split("T")[0]}
                     </p>
                     <p className="text-sm text-gray-500 flex items-center">
                       <Clock className="w-4 h-4 mr-1" />
-                      {match.time}
+                      {match.startTime} - {match.endTime}
                     </p>
                     <p className="text-sm text-gray-500 flex items-center">
                       <MapPin className="w-4 h-4 mr-1" />
@@ -272,6 +274,9 @@ export default function PaginaJuega() {
                     <p className="text-sm text-gray-500 flex items-center">
                       <Users className="w-4 h-4 mr-1" />
                       {match.players}/{match.maxPlayers} jugadores
+                    </p>
+                    <p className="text-sm text-gray-500 flex items-center">
+                      ${match.price} por jugador
                     </p>
                   </div>
                   <Button

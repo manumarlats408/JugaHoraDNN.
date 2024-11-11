@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
-import { CalendarIcon, Plus, Trash2, Edit, Users, Clock, MapPin, Bell } from "lucide-react"
+import { CalendarIcon, Plus, Trash2, Edit, Users, Clock, Hash, Bell } from "lucide-react"
 import Image from 'next/image'
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
@@ -431,7 +431,7 @@ export default function ClubDashboard() {
                         <div className="flex items-center text-sm text-gray-500">
                           <Clock className="mr-1 h-4 w-4" />
                           {match.startTime} - {match.endTime}
-                          <MapPin className="ml-2 mr-1 h-4 w-4" />
+                          <Hash className="ml-2 mr-1 h-4 w-4" />
                           {match.court}
                           <Users className="ml-2 mr-1 h-4 w-4" />
                           {match.players}/4
