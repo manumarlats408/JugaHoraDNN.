@@ -23,7 +23,7 @@ type Match = {
   nombreClub: string
   price: number
   direccionClub: string
-  userJoined: boolean
+  userJoined?: boolean
 }
 
 type User = {
@@ -32,7 +32,6 @@ type User = {
   firstName?: string
   lastName?: string
   name?: string
-  partidosUnidos: number[]
 }
 
 const elementosMenu = [
@@ -79,14 +78,10 @@ export default function PaginaJuega() {
 
           if (matchesResponse.ok) {
             const matchesData = await matchesResponse.json()
-            const matchesWithUserJoined = matchesData.map((match: Match) => ({
-              ...match,
-              userJoined: userData.entity.partidosUnidos.includes(match.id)
-            }))
-            setMatches(matchesWithUserJoined)
-            setFilteredMatches(matchesWithUserJoined)
+            setMatches(matchesData)
+            setFilteredMatches(matchesData)
 
-            const prices = matchesWithUserJoined.map((match: Match) => match.price)
+            const prices = matchesData.map((match: Match) => match.price)
             setMinPrice(Math.min(...prices))
             setMaxPrice(Math.max(...prices))
             setPriceFilter(Math.max(...prices))
@@ -166,10 +161,6 @@ export default function PaginaJuega() {
         setMatches(matches.map(match => 
           match.id === idPartido ? { ...match, players: updatedMatch.players, userJoined: true } : match
         ))
-        setUser(prevUser => ({
-          ...prevUser!,
-          partidosUnidos: [...prevUser!.partidosUnidos, idPartido]
-        }))
         toast.success('Te has unido al partido exitosamente!')
       } else {
         const errorData = await respuesta.json()
@@ -223,10 +214,6 @@ export default function PaginaJuega() {
         setMatches(matches.map(match => 
           match.id === idPartido ? { ...match, players: updatedMatch.players, userJoined: false } : match
         ))
-        setUser(prevUser => ({
-          ...prevUser!,
-          partidosUnidos: prevUser!.partidosUnidos.filter(id => id !== idPartido)
-        }))
         toast.success('Te has retirado del partido exitosamente!')
       } else {
         const errorData = await respuesta.json()
