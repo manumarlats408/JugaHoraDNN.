@@ -331,7 +331,7 @@ export default function PaginaJuega() {
                     <p className="font-semibold text-gray-800">{match.nombreClub}</p>
                     <p className="text-sm text-gray-500 flex items-center">
                       <Calendar className="w-4 h-4 mr-1" />
-                      {new Date(match.date).toLocaleDateString()}
+                      {match.date.split("T")[0]}
                     </p>
                     <p className="text-sm text-gray-500 flex items-center">
                       <Clock className="w-4 h-4 mr-1" />
