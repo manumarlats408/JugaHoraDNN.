@@ -48,7 +48,7 @@ export default function PaginaJuega() {
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [dateFilter, setDateFilter] = useState('')
-  const [priceFilter, setPriceFilter] = useState('')
+  const [priceFilter, setPriceFilter] = useState('all')
   const referenciaMenu = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
@@ -112,7 +112,7 @@ export default function PaginaJuega() {
       const matchesSearch = match.nombreClub.toLowerCase().includes(searchTerm.toLowerCase()) ||
                             match.direccionClub.toLowerCase().includes(searchTerm.toLowerCase())
       const matchesDate = dateFilter === '' || matchDate === dateFilter
-      const matchesPrice = priceFilter === '' || 
+      const matchesPrice = priceFilter === 'all' || 
                            (priceFilter === 'low' && match.price <= 50) ||
                            (priceFilter === 'medium' && match.price > 50 && match.price <= 100) ||
                            (priceFilter === 'high' && match.price > 100)
@@ -296,7 +296,7 @@ export default function PaginaJuega() {
                       <SelectValue placeholder="Seleccionar rango" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Todos los precios</SelectItem>
+                      <SelectItem value="all">Todos los precios</SelectItem>
                       <SelectItem value="low">Hasta $50</SelectItem>
                       <SelectItem value="medium">$51 - $100</SelectItem>
                       <SelectItem value="high">Más de $100</SelectItem>
