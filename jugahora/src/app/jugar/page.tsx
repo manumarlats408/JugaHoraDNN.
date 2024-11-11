@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Menu, X, Home, User, Calendar, Users, LogOut, Clock, MapPin, Hash, Search } from 'lucide-react'
+import { Slider } from "@/components/ui/slider"
+import { Menu, X, Home, User, Calendar, Users, LogOut, Clock, MapPin, Hash, Search, DollarSign } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 
 type Match = {
@@ -48,7 +48,9 @@ export default function PaginaJuega() {
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [dateFilter, setDateFilter] = useState('')
-  const [priceFilter, setPriceFilter] = useState('all')
+  const [priceFilter, setPriceFilter] = useState<number>(0)
+  const [minPrice, setMinPrice] = useState<number>(0)
+  const [maxPrice, setMaxPrice] = useState<number>(100)
   const referenciaMenu = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
@@ -76,6 +78,12 @@ export default function PaginaJuega() {
             const matchesData = await matchesResponse.json()
             setMatches(matchesData)
             setFilteredMatches(matchesData)
+
+            // Set min and max prices
+            const prices = matchesData.map((match: Match) => match.price)
+            setMinPrice(Math.min(...prices))
+            setMaxPrice(Math.max(...prices))
+            setPriceFilter(Math.max(...prices))
           } else {
             console.error('Error al obtener los partidos')
             toast.error('No se pudieron cargar los partidos')
@@ -112,10 +120,7 @@ export default function PaginaJuega() {
       const matchesSearch = match.nombreClub.toLowerCase().includes(searchTerm.toLowerCase()) ||
                             match.direccionClub.toLowerCase().includes(searchTerm.toLowerCase())
       const matchesDate = dateFilter === '' || matchDate === dateFilter
-      const matchesPrice = priceFilter === 'all' || 
-                           (priceFilter === 'low' && match.price <= 50) ||
-                           (priceFilter === 'medium' && match.price > 50 && match.price <= 100) ||
-                           (priceFilter === 'high' && match.price > 100)
+      const matchesPrice = match.price <= priceFilter
       
       return matchesSearch && matchesDate && matchesPrice
     })
@@ -290,18 +295,33 @@ export default function PaginaJuega() {
                   />
                 </div>
                 <div className="flex-1 min-w-[200px]">
-                  <Label htmlFor="price" className="mb-2 block">Precio</Label>
-                  <Select value={priceFilter} onValueChange={setPriceFilter}>
-                    <SelectTrigger id="price">
-                      <SelectValue placeholder="Seleccionar rango" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Todos los precios</SelectItem>
-                      <SelectItem value="low">Hasta $50</SelectItem>
-                      <SelectItem value="medium">$51 - $100</SelectItem>
-                      <SelectItem value="high">Más de $100</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Label htmlFor="price" className="mb-2 block">Precio máximo</Label>
+                  <div className="relative pt-1">
+                    <div className="flex items-center justify-center w-full h-48">
+                      <div className="relative w-48 h-48">
+                        <Slider
+                          value={[priceFilter]}
+                          onValueChange={(value) => setPriceFilter(value[0])}
+                          max={maxPrice}
+                          min={minPrice}
+                          step={1}
+                          className="absolute inset-0 w-full h-full appearance-none bg-transparent"
+                          style={{
+                            transform: 'rotate(-90deg)',
+                          }}
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="text-2xl font-bold text-green-600">
+                            ${priceFilter}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-gray-600">
+                      <span>${minPrice}</span>
+                      <span>${maxPrice}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -335,7 +355,8 @@ export default function PaginaJuega() {
                       {match.players}/{match.maxPlayers} jugadores
                     </p>
                     <p className="text-sm text-gray-500 flex items-center">
-                      ${match.price} por jugador
+                      <DollarSign className="w-4 h-4 mr-1" />
+                      {match.price} por jugador
                     </p>
                   </div>
                   <Button
