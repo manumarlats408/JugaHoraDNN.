@@ -91,7 +91,6 @@ export async function GET(request: Request) {
 
       const formattedMatches = matches.map((match: Match) => ({
         ...match,
-        date: match.date.toISOString().split('T')[0], // Ensures date is sent as 'YYYY-MM-DD'
         nombreClub: match.Club.name,
         direccionClub: match.Club.address,
       }));
