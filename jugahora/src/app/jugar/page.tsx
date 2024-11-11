@@ -23,6 +23,7 @@ type Match = {
   nombreClub: string
   price: number
   direccionClub: string
+  isJoined: boolean
 }
 
 type User = {
@@ -159,7 +160,7 @@ export default function PaginaJuega() {
       if (respuesta.ok) {
         const updatedMatch = await respuesta.json()
         setMatches(matches.map(match => 
-          match.id === idPartido ? { ...match, players: updatedMatch.players } : match
+          match.id === idPartido ? { ...match, players: updatedMatch.players, isJoined: true } : match
         ))
         toast.success('Te has unido al partido exitosamente!')
       } else {
@@ -173,6 +174,38 @@ export default function PaginaJuega() {
       }
     } catch (error) {
       console.error('Error al conectar con la API para unirse al partido:', error)
+      toast.error('Error al conectar con el servidor')
+    } finally {
+      setLoadingMatches(prev => ({ ...prev, [idPartido]: false }));
+    }
+  }
+
+  const manejarRetirarsePartido = async (idPartido: number) => {
+    setLoadingMatches(prev => ({ ...prev, [idPartido]: true }));
+
+    try {
+      const respuesta = await fetch(`/api/matches/${idPartido}/leave`, {
+        method: 'POST',
+        credentials: 'include',
+      })
+      
+      if (respuesta.ok) {
+        const updatedMatch = await respuesta.json()
+        setMatches(matches.map(match => 
+          match.id === idPartido ? { ...match, players: updatedMatch.players, isJoined: false } : match
+        ))
+        toast.success('Te has retirado del partido exitosamente!')
+      } else {
+        const errorData = await respuesta.json()
+        if (respuesta.status === 401) {
+          toast.error('Sesión expirada. Por favor, inicia sesión nuevamente.')
+          router.push('/login')
+        } else {
+          toast.error(errorData.error || 'Error al retirarse del partido')
+        }
+      }
+    } catch (error) {
+      console.error('Error al conectar con la API para retirarse del partido:', error)
       toast.error('Error al conectar con el servidor')
     } finally {
       setLoadingMatches(prev => ({ ...prev, [idPartido]: false }));
@@ -355,9 +388,9 @@ export default function PaginaJuega() {
                     </p>
                   </div>
                   <Button
-                    onClick={() => manejarUnirsePartido(match.id)}
-                    disabled={match.players >= match.maxPlayers || loadingMatches[match.id]}
-                    className="min-w-[100px]"
+                    onClick={() => match.isJoined ? manejarRetirarsePartido(match.id) : manejarUnirsePartido(match.id)}
+                    disabled={(!match.isJoined && match.players >= match.maxPlayers) || loadingMatches[match.id]}
+                    className={`min-w-[100px] ${match.isJoined ? 'bg-red-600 hover:bg-red-700' : ''}`}
                   >
                     {loadingMatches[match.id] ? (
                       <span className="flex items-center">
@@ -365,9 +398,9 @@ export default function PaginaJuega() {
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        Uniéndose...
+                        {match.isJoined ? 'Retirándose...' : 'Uniéndose...'}
                       </span>
-                    ) : match.players >= match.maxPlayers ? 'Completo' : 'Unirse'}
+                    ) : match.isJoined ? 'Retirarse' : match.players >= match.maxPlayers ? 'Completo' : 'Unirse'}
                   </Button>
                 </div>
               ))}
