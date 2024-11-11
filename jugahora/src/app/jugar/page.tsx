@@ -296,30 +296,20 @@ export default function PaginaJuega() {
                 </div>
                 <div className="flex-1 min-w-[200px]">
                   <Label htmlFor="price" className="mb-2 block">Precio máximo</Label>
-                  <div className="relative pt-1">
-                    <div className="flex items-center justify-center w-full h-48">
-                      <div className="relative w-48 h-48">
-                        <Slider
-                          value={[priceFilter]}
-                          onValueChange={(value) => setPriceFilter(value[0])}
-                          max={maxPrice}
-                          min={minPrice}
-                          step={1}
-                          className="absolute inset-0 w-full h-full appearance-none bg-transparent"
-                          style={{
-                            transform: 'rotate(-90deg)',
-                          }}
-                        />
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="text-2xl font-bold text-green-600">
-                            ${priceFilter}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-gray-600">
-                      <span>${minPrice}</span>
-                      <span>${maxPrice}</span>
+                  <div className="space-y-4">
+                    <Slider
+                      id="price"
+                      min={minPrice}
+                      max={maxPrice}
+                      step={1}
+                      value={[priceFilter]}
+                      onValueChange={(value) => setPriceFilter(value[0])}
+                      className="w-full"
+                    />
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-500">${minPrice}</span>
+                      <span className="text-lg font-semibold text-green-600">${priceFilter}</span>
+                      <span className="text-sm text-gray-500">${maxPrice}</span>
                     </div>
                   </div>
                 </div>
