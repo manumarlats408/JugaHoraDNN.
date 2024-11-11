@@ -6,7 +6,10 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Menu, X, Home, User, Calendar, Users, LogOut, Clock, MapPin, Hash } from 'lucide-react'
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Menu, X, Home, User, Calendar, Users, LogOut, Clock, MapPin, Hash, Search, Filter } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 
 type Match = {
@@ -19,8 +22,7 @@ type Match = {
   maxPlayers: number
   nombreClub: string
   price: number
-  direccionClub: string; // make sure address is included in the fetched data
-
+  direccionClub: string
 }
 
 type User = {
@@ -41,8 +43,12 @@ const elementosMenu = [
 export default function PaginaJuega() {
   const [menuAbierto, setMenuAbierto] = useState(false)
   const [matches, setMatches] = useState<Match[]>([])
+  const [filteredMatches, setFilteredMatches] = useState<Match[]>([])
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [dateFilter, setDateFilter] = useState('')
+  const [priceFilter, setPriceFilter] = useState('')
   const referenciaMenu = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
@@ -69,6 +75,7 @@ export default function PaginaJuega() {
           if (matchesResponse.ok) {
             const matchesData = await matchesResponse.json()
             setMatches(matchesData)
+            setFilteredMatches(matchesData)
           } else {
             console.error('Error al obtener los partidos')
             toast.error('No se pudieron cargar los partidos')
@@ -99,6 +106,22 @@ export default function PaginaJuega() {
     }
   }, [router])
 
+  useEffect(() => {
+    const filtered = matches.filter(match => {
+      const matchDate = new Date(match.date).toISOString().split('T')[0]
+      const matchesSearch = match.nombreClub.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            match.direccionClub.toLowerCase().includes(searchTerm.toLowerCase())
+      const matchesDate = dateFilter === '' || matchDate === dateFilter
+      const matchesPrice = priceFilter === '' || 
+                           (priceFilter === 'low' && match.price <= 50) ||
+                           (priceFilter === 'medium' && match.price > 50 && match.price <= 100) ||
+                           (priceFilter === 'high' && match.price > 100)
+      
+      return matchesSearch && matchesDate && matchesPrice
+    })
+    setFilteredMatches(filtered)
+  }, [matches, searchTerm, dateFilter, priceFilter])
+
   const manejarCierreSesion = async () => {
     try {
       await fetch('/api/logout', {
@@ -113,34 +136,27 @@ export default function PaginaJuega() {
   }
 
   const manejarUnirsePartido = async (idPartido: number) => {
-    console.log('Iniciando manejarUnirsePartido para el partido:', idPartido)
     if (!user) {
-      console.log('Usuario no autenticado, redirigiendo a login')
       toast.error('Debes iniciar sesión para unirte a un partido')
       router.push('/login')
       return
     }
   
     try {
-      console.log('Enviando solicitud para unirse al partido')
       const respuesta = await fetch(`/api/matches/${idPartido}/join`, {
         method: 'POST',
         credentials: 'include',
       })
-      console.log('Respuesta recibida, status:', respuesta.status)
       
       if (respuesta.ok) {
         const updatedMatch = await respuesta.json()
-        console.log('Partido actualizado:', updatedMatch)
         setMatches(matches.map(match => 
           match.id === idPartido ? { ...match, players: updatedMatch.players } : match
         ))
         toast.success('Te has unido al partido exitosamente!')
       } else {
         const errorData = await respuesta.json()
-        console.error('Error al unirse al partido:', errorData)
         if (respuesta.status === 401) {
-          console.log('Error de autenticación, redirigiendo a login')
           toast.error('Sesión expirada. Por favor, inicia sesión nuevamente.')
           router.push('/login')
         } else {
@@ -238,7 +254,7 @@ export default function PaginaJuega() {
       )}
 
       <main className="flex-1 p-4 bg-gradient-to-b from-green-50 to-white">
-        <Card className="w-full max-w-2xl mx-auto shadow-lg border-green-100">
+        <Card className="w-full max-w-4xl mx-auto shadow-lg border-green-100">
           <CardHeader className="bg-green-50 border-b border-green-100">
             <CardTitle className="text-2xl font-bold text-green-800 flex items-center">
               <Users className="w-6 h-6 mr-2" />
@@ -247,8 +263,51 @@ export default function PaginaJuega() {
           </CardHeader>
           <CardContent className="pt-6">
             <p className="mb-4 text-gray-600">Bienvenido, {user.firstName || user.name}. Elige un partido y únete para jugar!</p>
+            
+            <div className="mb-6 space-y-4">
+              <div className="flex flex-wrap gap-4">
+                <div className="flex-1 min-w-[200px]">
+                  <Label htmlFor="search" className="mb-2 block">Buscar</Label>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                    <Input
+                      id="search"
+                      type="text"
+                      placeholder="Buscar por club o dirección"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                </div>
+                <div className="flex-1 min-w-[200px]">
+                  <Label htmlFor="date" className="mb-2 block">Fecha</Label>
+                  <Input
+                    id="date"
+                    type="date"
+                    value={dateFilter}
+                    onChange={(e) => setDateFilter(e.target.value)}
+                  />
+                </div>
+                <div className="flex-1 min-w-[200px]">
+                  <Label htmlFor="price" className="mb-2 block">Precio</Label>
+                  <Select value={priceFilter} onValueChange={setPriceFilter}>
+                    <SelectTrigger id="price">
+                      <SelectValue placeholder="Seleccionar rango" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Todos los precios</SelectItem>
+                      <SelectItem value="low">Hasta $50</SelectItem>
+                      <SelectItem value="medium">$51 - $100</SelectItem>
+                      <SelectItem value="high">Más de $100</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+
             <div className="space-y-4">
-              {matches.map((match) => (
+              {filteredMatches.map((match) => (
                 <div
                   key={match.id}
                   className="flex items-center justify-between p-4 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300"
@@ -257,7 +316,7 @@ export default function PaginaJuega() {
                     <p className="font-semibold text-gray-800">{match.nombreClub}</p>
                     <p className="text-sm text-gray-500 flex items-center">
                       <Calendar className="w-4 h-4 mr-1" />
-                      {match.date.split("T")[0]}
+                      {new Date(match.date).toLocaleDateString()}
                     </p>
                     <p className="text-sm text-gray-500 flex items-center">
                       <Clock className="w-4 h-4 mr-1" />
@@ -287,6 +346,9 @@ export default function PaginaJuega() {
                   </Button>
                 </div>
               ))}
+              {filteredMatches.length === 0 && (
+                <p className="text-center text-gray-500">No se encontraron partidos que coincidan con los criterios de búsqueda.</p>
+              )}
             </div>
           </CardContent>
         </Card>
