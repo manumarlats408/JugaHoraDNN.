@@ -16,7 +16,7 @@ const nextConfig = {
         headers: [
           {
             key: "Content-Security-Policy",
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' https://vercel.live; frame-src https://vercel.live; style-src 'self' 'unsafe-inline' https://vercel.live/fonts; connect-src 'self' wss://ws-us3.pusher.com https://sockjs-us3.pusher.com; object-src 'none';", // CSP ajustada
+            value: "default-src 'self'; img-src 'self' https://vercel.com; font-src 'self' https://vercel.live;  script-src 'self' 'unsafe-inline' https://vercel.live; frame-src https://vercel.live; style-src 'self' 'unsafe-inline' https://vercel.live/fonts; connect-src 'self' wss://ws-us3.pusher.com https://sockjs-us3.pusher.com; object-src 'none';", // CSP ajustada
           },
           {
             key: "X-Frame-Options",
