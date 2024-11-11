@@ -308,7 +308,7 @@ export default function PaginaJuega() {
                       max={maxPrice}
                       step={1}
                       value={[priceFilter]}
-                      onValueChange={(value) => setPriceFilter(value[0])}
+                      onValueChange={(value: number[]) => setPriceFilter(value[0])}
                       className="w-full"
                     />
                     <div className="flex justify-between items-center">
