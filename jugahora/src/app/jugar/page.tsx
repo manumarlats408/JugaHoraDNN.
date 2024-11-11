@@ -9,14 +9,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
 import { Menu, X, Home, User, Calendar, Users, LogOut, Clock, MapPin, Hash, Search, DollarSign } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 
@@ -31,11 +23,7 @@ type Match = {
   nombreClub: string
   price: number
   direccionClub: string
-  jugadoresUnidos: {
-    id: number
-    firstName: string
-    lastName: string
-  }[]
+  userJoined?: boolean
 }
 
 type User = {
@@ -44,7 +32,6 @@ type User = {
   firstName?: string
   lastName?: string
   name?: string
-  partidosUnidos: number[]
 }
 
 const elementosMenu = [
@@ -172,12 +159,8 @@ export default function PaginaJuega() {
       if (respuesta.ok) {
         const updatedMatch = await respuesta.json()
         setMatches(matches.map(match => 
-          match.id === idPartido ? { ...match, players: updatedMatch.players, jugadoresUnidos: updatedMatch.jugadoresUnidos } : match
+          match.id === idPartido ? { ...match, players: updatedMatch.players, userJoined: true } : match
         ))
-        setUser(prevUser => ({
-          ...prevUser!,
-          partidosUnidos: [...prevUser!.partidosUnidos, idPartido]
-        }))
         toast.success('Te has unido al partido exitosamente!')
       } else {
         const errorData = await respuesta.json()
@@ -229,12 +212,8 @@ export default function PaginaJuega() {
       if (respuesta.ok) {
         const updatedMatch = await respuesta.json()
         setMatches(matches.map(match => 
-          match.id === idPartido ? { ...match, players: updatedMatch.players, jugadoresUnidos: updatedMatch.jugadoresUnidos } : match
+          match.id === idPartido ? { ...match, players: updatedMatch.players, userJoined: false } : match
         ))
-        setUser(prevUser => ({
-          ...prevUser!,
-          partidosUnidos: prevUser!.partidosUnidos.filter(id => id !== idPartido)
-        }))
         toast.success('Te has retirado del partido exitosamente!')
       } else {
         const errorData = await respuesta.json()
@@ -396,77 +375,55 @@ export default function PaginaJuega() {
             </div>
 
             <div className="space-y-4">
-              {filteredMatches.map((match) => {
-                const userJoined = user.partidosUnidos.includes(match.id);
-                return (
-                  <div
-                    key={match.id}
-                    className="flex items-center justify-between p-4 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300"
-                  >
-                    <div>
-                      <p className="font-semibold text-gray-800">{match.nombreClub}</p>
-                      <p className="text-sm text-gray-500 flex items-center">
-                        <Calendar className="w-4 h-4 mr-1" />
-                        {match.date.split("T")[0]}
-                      </p>
-                      <p className="text-sm text-gray-500 flex items-center">
-                        <Clock className="w-4 h-4 mr-1" />
-                        {match.startTime} - {match.endTime}
-                      </p>
-                      <p className="text-sm text-gray-500 flex items-center">
-                        <MapPin className="w-4 h-4 mr-1" />
-                        {match.direccionClub}
-                      </p>
-                      <p className="text-sm text-gray-500 flex items-center">
-                        <Hash className="w-4 h-4 mr-1" />
-                        {match.court}
-                      </p>
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <p className="text-sm text-gray-500 flex items-center cursor-pointer hover:text-green-600">
-                            <Users className="w-4 h-4 mr-1" />
-                            {match.players}/{match.maxPlayers} jugadores
-                          </p>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[425px]">
-                          <DialogHeader>
-                            <DialogTitle>Jugadores Unidos</DialogTitle>
-                            <DialogDescription>
-                              Lista de jugadores que se han unido a este partido.
-                            </DialogDescription>
-                          </DialogHeader>
-                          <div className="py-4">
-                            {match.jugadoresUnidos.map((jugador) => (
-                              <p key={jugador.id} className="text-sm text-gray-700">
-                                {jugador.firstName} {jugador.lastName}
-                              </p>
-                            ))}
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-                      <p className="text-sm text-gray-500 flex items-center">
-                        <DollarSign className="w-4 h-4 mr-1" />
-                        {match.price} por jugador
-                      </p>
-                    </div>
-                    <Button
-                      onClick={() => userJoined ? manejarRetirarse(match.id) : manejarUnirsePartido(match.id)}
-                      disabled={(!userJoined && match.players >= match.maxPlayers) || loadingMatches[match.id]}
-                      className={`min-w-[100px] ${userJoined ? 'bg-red-600 hover:bg-red-700' : ''}`}
-                    >
-                      {loadingMatches[match.id] ? (
-                        <span className="flex items-center">
-                          <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
-                          {userJoined ? 'Retirándose...' : 'Uniéndose...'}
-                        </span>
-                      ) : userJoined ? 'Retirarse' : (match.players >= match.maxPlayers ? 'Completo' : 'Unirse')}
-                    </Button>
+              {filteredMatches.map((match) => (
+                <div
+                  key={match.id}
+                  className="flex items-center justify-between p-4 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300"
+                >
+                  <div>
+                    <p className="font-semibold text-gray-800">{match.nombreClub}</p>
+                    <p className="text-sm text-gray-500 flex items-center">
+                      <Calendar className="w-4 h-4 mr-1" />
+                      {match.date.split("T")[0]}
+                    </p>
+                    <p className="text-sm text-gray-500 flex items-center">
+                      <Clock className="w-4 h-4 mr-1" />
+                      {match.startTime} - {match.endTime}
+                    </p>
+                    <p className="text-sm text-gray-500 flex items-center">
+                      <MapPin className="w-4 h-4 mr-1" />
+                      {match.direccionClub}
+                    </p>
+                    <p className="text-sm text-gray-500 flex items-center">
+                      <Hash className="w-4 h-4 mr-1" />
+                      {match.court}
+                    </p>
+                    <p className="text-sm text-gray-500 flex items-center">
+                      <Users className="w-4 h-4 mr-1" />
+                      {match.players}/{match.maxPlayers} jugadores
+                    </p>
+                    <p className="text-sm text-gray-500 flex items-center">
+                      <DollarSign className="w-4 h-4 mr-1" />
+                      {match.price} por jugador
+                    </p>
                   </div>
-                );
-              })}
+                  <Button
+                    onClick={() => match.userJoined ? manejarRetirarse(match.id) : manejarUnirsePartido(match.id)}
+                    disabled={(!match.userJoined && match.players >= match.maxPlayers) || loadingMatches[match.id]}
+                    className={`min-w-[100px] ${match.userJoined ? 'bg-red-600 hover:bg-red-700' : ''}`}
+                  >
+                    {loadingMatches[match.id] ? (
+                      <span className="flex items-center">
+                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        {match.userJoined ? 'Retirándose...' : 'Uniéndose...'}
+                      </span>
+                    ) : match.userJoined ? 'Retirarse' : (match.players >= match.maxPlayers ? 'Completo' : 'Unirse')}
+                  </Button>
+                </div>
+              ))}
               {filteredMatches.length === 0 && (
                 <p className="text-center text-gray-500">No se encontraron partidos que coincidan con los criterios de búsqueda.</p>
               )}
