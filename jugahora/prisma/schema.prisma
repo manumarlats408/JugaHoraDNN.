@@ -36,6 +36,7 @@ model Club {
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
   Partidos_club   Partidos_club[] // Relación con Partidos_club
+  notifications   Notification[]  // Relación con las notificaciones
 }
 
 model Partidos {
@@ -62,3 +63,15 @@ model Partidos_club {
   usuarios    Int[]     // Array of User IDs
   Club        Club      @relation(fields: [clubId], references: [id])
 }
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  clubId    Int
+  message   String
+  type      String   // Campo 'type' que contiene el tipo de notificación
+  createdAt DateTime @default(now())
+
+  Club      Club     @relation(fields: [clubId], references: [id])
+}
+
+
