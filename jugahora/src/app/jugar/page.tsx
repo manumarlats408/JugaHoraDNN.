@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
 import { Menu, X, Home, User, Calendar, Users, LogOut, Clock, MapPin, Hash, Search, DollarSign } from 'lucide-react'
 import { toast } from 'react-hot-toast'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 
 type Match = {
   id: number
@@ -23,7 +24,7 @@ type Match = {
   nombreClub: string
   price: number
   direccionClub: string
-  usuarios: number[]; // Agregamos la propiedad usuarios
+  usuarios: number[]
 }
 
 type User = {
@@ -52,7 +53,9 @@ export default function PaginaJuega() {
   const [priceFilter, setPriceFilter] = useState<number>(0)
   const [minPrice, setMinPrice] = useState<number>(0)
   const [maxPrice, setMaxPrice] = useState<number>(100)
-  const [loadingMatches, setLoadingMatches] = useState<{ [key: number]: boolean }>({});
+  const [loadingMatches, setLoadingMatches] = useState<{ [key: number]: boolean }>({})
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null)
   const referenciaMenu = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
@@ -217,7 +220,18 @@ export default function PaginaJuega() {
       setLoadingMatches(prev => ({ ...prev, [idPartido]: false }));
     }
   };
-  
+
+  const handleRetirarse = (idPartido: number) => {
+    setSelectedMatchId(idPartido);
+    setIsDialogOpen(true);
+  };
+
+  const confirmarRetirarse = () => {
+    if (selectedMatchId !== null) {
+      manejarRetirarsePartido(selectedMatchId);
+    }
+    setIsDialogOpen(false);
+  };
 
   if (isLoading) {
     return (
@@ -363,7 +377,7 @@ export default function PaginaJuega() {
 
             <div className="space-y-4">
               {filteredMatches.map((match) => {
-                const isUserJoined = match.usuarios.includes(user?.id); // Verifica si el usuario está en el partido
+                const isUserJoined = match.usuarios.includes(user?.id);
                 return (
                   <div
                     key={match.id}
@@ -398,9 +412,9 @@ export default function PaginaJuega() {
                     </div>
                     {isUserJoined ? (
                       <Button
-                        onClick={() => manejarRetirarsePartido(match.id)}
+                        onClick={() => handleRetirarse(match.id)}
                         disabled={loadingMatches[match.id]}
-                        className="min-w-[100px]"
+                        className="min-w-[100px] bg-red-600 hover:bg-red-700"
                       >
                         {loadingMatches[match.id] ? (
                           <span className="flex items-center">
@@ -487,6 +501,21 @@ export default function PaginaJuega() {
           </nav>
         </div>
       </footer>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirmar retiro del partido</DialogTitle>
+            <DialogDescription>
+              Atención: Si te retiras del partido 1 hora y 30 minutos antes de la hora de inicio del partido no se hará el reembolso.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end space-x-2">
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancelar</Button>
+            <Button onClick={confirmarRetirarse}>Confirmar retiro</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
