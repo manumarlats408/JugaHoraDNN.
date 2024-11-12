@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
 import { CalendarIcon, Plus, Trash2, Edit, Users, Clock, Hash, Bell } from "lucide-react"
+import Image from 'next/image'
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
 import {
@@ -18,14 +19,15 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogFooter,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { DropdownMenu, DropdownMenuItem } from "@/components/ui/dropdown-menu"
+
 
 type ValuePiece = Date | null
 type Value = ValuePiece | [ValuePiece, ValuePiece]
@@ -56,8 +58,8 @@ export default function ClubDashboard() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [clubData, setClubData] = useState<Club | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [notifications, setNotifications] = useState<any[]>([])
   const router = useRouter()
+  
 
   const fetchMatches = useCallback(async () => {
     if (!clubData) return;
@@ -69,7 +71,6 @@ export default function ClubDashboard() {
       if (response.ok) {
         const matchesData = await response.json();
         setMatches(matchesData);
-        checkNotifications(matchesData);
       } else {
         console.error('Error al obtener los partidos del club:', await response.text());
       }
@@ -77,39 +78,6 @@ export default function ClubDashboard() {
       console.error('Error al conectar con la API para obtener los partidos:', error);
     }
   }, [clubData]);
-
-  const checkNotifications = (matches: Match[]) => {
-    const newNotifications = matches.map(match => {
-      const matchDate = new Date(match.date);
-      const now = new Date();
-      const timeDifference = matchDate.getTime() - now.getTime();
-      const oneDayBefore = 24 * 60 * 60 * 1000;
-
-      let notification = null;
-
-      // Verificar si hay partidos con 4/4 personas y a 24 horas de inicio
-      if (match.players === 4 && timeDifference <= oneDayBefore && timeDifference >= 0) {
-        notification = {
-          title: 'Partido a 24 horas',
-          message: `El partido ${match.court} está a 24 horas de inicio`,
-          matchId: match.id
-        };
-      }
-
-      // Verificar si hay partidos completos
-      if (match.players === 4) {
-        notification = {
-          title: 'Partido completo',
-          message: `El partido en la cancha ${match.court} está completo`,
-          matchId: match.id
-        };
-      }
-
-      return notification;
-    }).filter(Boolean); // Filtrar valores nulos
-
-    setNotifications(newNotifications);
-  };
 
   useEffect(() => {
     const fetchClubProfile = async () => {
@@ -124,6 +92,8 @@ export default function ClubDashboard() {
           const data = await authResponse.json()
           const club = data.entity
           setClubData(club)
+
+
         } else {
           throw new Error('Failed to fetch club data')
         }
@@ -171,7 +141,6 @@ export default function ClubDashboard() {
         const createdMatch = await response.json();
         setMatches([...matches, createdMatch]);
         setNewMatch({ date: '', startTime: '', endTime: '', court: '', price: '' });
-        checkNotifications([...matches, createdMatch]);
       } else {
         console.error('Error al crear el partido:', await response.text());
       }
@@ -187,7 +156,6 @@ export default function ClubDashboard() {
       })
       if (response.ok) {
         setMatches(matches.filter(match => match.id !== id))
-        checkNotifications(matches.filter(match => match.id !== id));
       } else {
         console.error('Error al eliminar el partido:', await response.text())
       }
@@ -222,7 +190,6 @@ export default function ClubDashboard() {
         setMatches(matches.map(match => (match.id === updatedMatch.id ? updatedMatch : match)))
         setEditMatch(null)
         setIsEditModalOpen(false)
-        checkNotifications(matches.map(match => (match.id === updatedMatch.id ? updatedMatch : match)));
       } else {
         console.error('Error al actualizar el partido:', await response.text())
       }
@@ -275,15 +242,16 @@ export default function ClubDashboard() {
   if (!clubData) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gray-50">
-        <p className="text-lg text-gray-600">No se pudo cargar la información del club.</p>
+        <p className="text-lg text-gray-600">No se pudo cargar el dashboard del club. Por favor, inténtalo de nuevo.</p>
       </div>
     )
   }
-
+  
   return (
     <div className="flex flex-col min-h-screen">
       <header className="px-4 lg:px-6 h-16 flex items-center justify-between border-b">
         <Link className="flex items-center justify-center" href="/">
+          <Image src='/logo.svg' alt="JugáHora Logo" width={32} height={32} /> 
           <span className="ml-2 text-xl font-bold">JugáHora</span>
         </Link>
         <nav className="flex gap-4 sm:gap-6 items-center">
@@ -292,31 +260,38 @@ export default function ClubDashboard() {
               <Button variant="ghost" size="icon" className="relative">
                 <Bell className="h-5 w-5" />
                 <span className="sr-only">Notificaciones</span>
-                {notifications.length > 0 && (
-                  <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-600"></span>
-                )}
+                <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-600"></span>
               </Button>
             }
           >
             <div className="px-4 py-3 text-sm text-gray-900 dark:text-white">
               <div className="font-medium">Notificaciones</div>
             </div>
-            {notifications.length === 0 ? (
-              <DropdownMenuItem>
-                <span>No hay notificaciones.</span>
-              </DropdownMenuItem>
-            ) : (
-              notifications.map((notification) => (
-                <DropdownMenuItem key={notification.matchId}>
-                  <div className="flex flex-col">
-                    <span className="font-medium">{notification.title}</span>
-                    <span className="text-sm text-gray-500">{notification.message}</span>
-                  </div>
-                </DropdownMenuItem>
-              ))
-            )}
+            <DropdownMenuItem>
+              <div className="flex flex-col">
+                <span className="font-medium">Nuevo partido creado</span>
+                <span className="text-sm text-gray-500">Cancha 1, hoy a las 18:00</span>
+              </div>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <div className="flex flex-col">
+                <span className="font-medium">Recordatorio: Mantenimiento</span>
+                <span className="text-sm text-gray-500">Cancha 3, mañana a las 10:00</span>
+              </div>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <div className="flex flex-col">
+                <span className="font-medium">Partido cancelado</span>
+                <span className="text-sm text-gray-500">Cancha 2, 20/03 a las 19:00</span>
+              </div>
+            </DropdownMenuItem>
           </DropdownMenu>
-          <Button variant="outline" onClick={handleLogout}>Cerrar sesión</Button>
+          <button
+            className="text-sm font-medium hover:underline underline-offset-4"
+            onClick={handleLogout}
+          >
+            Cerrar Sesión
+          </button>
         </nav>
       </header>
       <main className="flex-1 p-4 md:p-6 space-y-8">
