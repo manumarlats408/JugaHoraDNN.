@@ -50,6 +50,12 @@ type Club = {
   address?: string
 }
 
+type User = {
+  id: number
+  firstName: string
+  lastName: string
+}
+
 export default function ClubDashboard() {
   const [currentDate] = useState<Date>(new Date())
   const [matches, setMatches] = useState<Match[]>([])
@@ -60,6 +66,9 @@ export default function ClubDashboard() {
   const [isLoading, setIsLoading] = useState(true)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [filteredMatches, setFilteredMatches] = useState<Match[]>([])
+  const [selectedMatch, setSelectedMatch] = useState<Match | null>(null)
+  const [joinedUsers, setJoinedUsers] = useState<User[]>([])
+  const [isUserModalOpen, setIsUserModalOpen] = useState(false)
   const router = useRouter()
   
   const resetDateFilter = () => {
@@ -84,6 +93,22 @@ export default function ClubDashboard() {
       console.error('Error al conectar con la API para obtener los partidos:', error)
     }
   }, [clubData])
+
+  const handleMatchClick = async (match: Match) => {
+    setSelectedMatch(match)
+    try {
+      const response = await fetch(`/api/matches/${match.id}/users`)
+      if (response.ok) {
+        const users = await response.json()
+        setJoinedUsers(users)
+        setIsUserModalOpen(true)
+      } else {
+        console.error('Error al obtener los usuarios del partido:', await response.text())
+      }
+    } catch (error) {
+      console.error('Error al conectar con la API para obtener los usuarios:', error)
+    }
+  }
   
 
   useEffect(() => {
@@ -466,6 +491,7 @@ export default function ClubDashboard() {
                 <div
                   key={match.id}
                   className="flex items-center justify-between p-4 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300"
+                  onClick={() => handleMatchClick(match)}
                 >
                   <div>
                     <p className="font-semibold text-gray-800">{match.date.split("T")[0]}</p>
@@ -510,6 +536,33 @@ export default function ClubDashboard() {
           © 2024 JugáHora. Todos los derechos reservados.
         </p>
       </footer>
+      <Dialog open={isUserModalOpen} onOpenChange={setIsUserModalOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Usuarios Unidos al Partido</DialogTitle>
+            <DialogDescription>
+              {selectedMatch && `Fecha: ${selectedMatch.date}, Cancha: ${selectedMatch.court}`}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            {joinedUsers.length > 0 ? (
+              <ul className="space-y-2">
+                {joinedUsers.map((user) => (
+                  <li key={user.id} className="flex items-center space-x-2">
+                    <Users className="h-4 w-4" />
+                    <span>{`${user.firstName} ${user.lastName}`}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-center text-gray-500">No hay usuarios unidos a este partido.</p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setIsUserModalOpen(false)}>Cerrar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
