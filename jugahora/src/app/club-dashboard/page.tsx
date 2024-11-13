@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
-import { CalendarIcon, Plus, Trash2, Edit, Users, Clock, Hash, Bell } from "lucide-react"
+import { CalendarIcon, Plus, Trash2, Edit, Users, Clock, Hash, Bell } from 'lucide-react'
 import Image from 'next/image'
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
@@ -66,7 +66,7 @@ export default function ClubDashboard() {
   const [isLoading, setIsLoading] = useState(true)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [filteredMatches, setFilteredMatches] = useState<Match[]>([])
-  const [selectedMatch, setSelectedMatch] = useState<Match | null>(null)
+  const [loadingMatches, setLoadingMatches] = useState<{ [key: number]: boolean }>({})
   const [joinedUsers, setJoinedUsers] = useState<User[]>([])
   const [isUserModalOpen, setIsUserModalOpen] = useState(false)
   const router = useRouter()
@@ -94,12 +94,8 @@ export default function ClubDashboard() {
     }
   }, [clubData])
 
-  const handleMatchClick = useCallback(async (match: Match, event: React.MouseEvent) => {
-    if ((event.target as HTMLElement).closest('button')) {
-      return;
-    }
-
-    setSelectedMatch(match)
+  const handleMatchClick = async (match: Match) => {
+    setLoadingMatches(prev => ({ ...prev, [match.id]: true }))
     try {
       const response = await fetch(`/api/matches/${match.id}/users`)
       if (response.ok) {
@@ -111,8 +107,10 @@ export default function ClubDashboard() {
       }
     } catch (error) {
       console.error('Error al conectar con la API para obtener los usuarios:', error)
+    } finally {
+      setLoadingMatches(prev => ({ ...prev, [match.id]: false }))
     }
-  }, [])
+  }
   
 
   useEffect(() => {
@@ -490,47 +488,64 @@ export default function ClubDashboard() {
               <CardDescription>Administra los partidos programados</CardDescription>
             </CardHeader>
             <CardContent>
-            <div className="space-y-4">
-              {filteredMatches.map((match) => (
-                <div
-                  key={match.id}
-                  className="flex items-center justify-between p-4 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300 cursor-pointer"
-                  onClick={(e) => handleMatchClick(match, e)}
-                >
-                  <div>
-                    <p className="font-semibold text-gray-800">{match.date.split("T")[0]}</p>
-                    <p className="text-sm text-gray-500 flex items-center">
-                      <CalendarIcon className="w-4 h-4 mr-1" />
-                      {match.date.split("T")[0]}
-                    </p>
-                    <p className="text-sm text-gray-500 flex items-center">
-                      <Clock className="w-4 h-4 mr-1" />
-                      {match.startTime} - {match.endTime}
-                    </p>
-                    <p className="text-sm text-gray-500 flex items-center">
-                      <Hash className="w-4 h-4 mr-1" />
-                      {match.court}
-                    </p>
-                    <p className="text-sm text-gray-500 flex items-center">
-                      <Users className="w-4 h-4 mr-1" />
-                      {match.players}/4
-                    </p>
-                    <span className="text-sm font-semibold text-green-600">${match.price}</span>
+              <div className="space-y-4">
+                {filteredMatches.map((match) => (
+                  <div
+                    key={match.id}
+                    className="flex items-center justify-between p-4 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300 cursor-pointer relative"
+                    onClick={() => handleMatchClick(match)}
+                  >
+                    <div>
+                      <p className="font-semibold text-gray-800">{match.date.split("T")[0]}</p>
+                      <p className="text-sm text-gray-500 flex items-center">
+                        <CalendarIcon className="w-4 h-4 mr-1" />
+                        {match.date.split("T")[0]}
+                      </p>
+                      <p className="text-sm text-gray-500 flex items-center">
+                        <Clock className="w-4 h-4 mr-1" />
+                        {match.startTime} - {match.endTime}
+                      </p>
+                      <p className="text-sm text-gray-500 flex items-center">
+                        <Hash className="w-4 h-4 mr-1" />
+                        {match.court}
+                      </p>
+                      <p className="text-sm text-gray-500 flex items-center">
+                        <Users className="w-4 h-4 mr-1" />
+                        {match.players}/4
+                      </p>
+                      <span className="text-sm font-semibold text-green-600">${match.price}</span>
+                    </div>
+                    <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>
+                      <Button variant="outline" size="icon" onClick={() => handleEditMatch(match)}>
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button variant="outline" size="icon" onClick={() => handleDeleteMatch(match.id)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    {loadingMatches[match.id] && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-70 rounded-lg">
+                        <svg
+                          className="animate-spin h-5 w-5 text-green-600"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                      </div>
+                    )}
                   </div>
-                  <div className="flex space-x-2">
-                    <Button variant="outline" size="icon" onClick={() => handleEditMatch(match)}>
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button variant="outline" size="icon" onClick={() => handleDeleteMatch(match.id)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-              {filteredMatches.length === 0 && (
-                <p className="text-center text-gray-500">No se encontraron partidos para esta fecha.</p>
-              )}
-            </div>
+                ))}
+                {filteredMatches.length === 0 && (
+                  <p className="text-center text-gray-500">No se encontraron partidos para esta fecha.</p>
+                )}
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -544,9 +559,6 @@ export default function ClubDashboard() {
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Usuarios Unidos al Partido</DialogTitle>
-            <DialogDescription>
-              {selectedMatch && `Fecha: ${selectedMatch.date}, Cancha: ${selectedMatch.court}`}
-            </DialogDescription>
           </DialogHeader>
           <div className="py-4">
             {joinedUsers.length > 0 ? (
