@@ -62,6 +62,9 @@ export default function ClubDashboard() {
   const [filteredMatches, setFilteredMatches] = useState<Match[]>([])
   const router = useRouter()
   
+  const resetDateFilter = () => {
+    setSelectedDate(null) // Restablece selectedDate a null para mostrar todos los partidos
+  }
 
   const fetchMatches = useCallback(async () => {
     if (!clubData) return
@@ -436,18 +439,20 @@ export default function ClubDashboard() {
         )}
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <Card>
+        <Card>
             <CardHeader>
               <CardTitle>Calendario de Partidos</CardTitle>
               <CardDescription>Vista mensual de los partidos programados</CardDescription>
             </CardHeader>
             <CardContent>
-            <Calendar
-              value={currentDate}
-              onChange={(date) => setSelectedDate(date as Date)}
-              tileClassName={tileClassName}
-            />
-
+              <Calendar
+                value={currentDate}
+                onChange={(date) => setSelectedDate(date as Date)}
+                tileClassName={tileClassName}
+              />
+              <Button onClick={resetDateFilter} className="mt-4">
+                Mostrar Todos los Partidos
+              </Button>
             </CardContent>
           </Card>
           <Card className="md:col-span-2">
