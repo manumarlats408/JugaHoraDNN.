@@ -94,7 +94,11 @@ export default function ClubDashboard() {
     }
   }, [clubData])
 
-  const handleMatchClick = async (match: Match) => {
+  const handleMatchClick = useCallback(async (match: Match, event: React.MouseEvent) => {
+    if ((event.target as HTMLElement).closest('button')) {
+      return;
+    }
+
     setSelectedMatch(match)
     try {
       const response = await fetch(`/api/matches/${match.id}/users`)
@@ -108,7 +112,7 @@ export default function ClubDashboard() {
     } catch (error) {
       console.error('Error al conectar con la API para obtener los usuarios:', error)
     }
-  }
+  }, [])
   
 
   useEffect(() => {
@@ -490,8 +494,8 @@ export default function ClubDashboard() {
               {filteredMatches.map((match) => (
                 <div
                   key={match.id}
-                  className="flex items-center justify-between p-4 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300"
-                  onClick={() => handleMatchClick(match)}
+                  className="flex items-center justify-between p-4 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300 cursor-pointer"
+                  onClick={(e) => handleMatchClick(match, e)}
                 >
                   <div>
                     <p className="font-semibold text-gray-800">{match.date.split("T")[0]}</p>
