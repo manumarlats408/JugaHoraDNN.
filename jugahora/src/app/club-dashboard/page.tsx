@@ -58,27 +58,29 @@ export default function ClubDashboard() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [clubData, setClubData] = useState<Club | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [filteredMatches, setFilteredMatches] = useState<Match[]>([])
   const router = useRouter()
   
 
   const fetchMatches = useCallback(async () => {
-    if (!clubData) return;
+    if (!clubData) return
     try {
       const response = await fetch(`/api/matches?clubId=${clubData.id}`, {
         method: 'GET',
         credentials: 'include',
-      });
+      })
       if (response.ok) {
-        const matchesData = await response.json();
-        setMatches(matchesData);
+        const matchesData = await response.json()
+        setMatches(matchesData)
+        setFilteredMatches(matchesData) // Inicializamos los partidos filtrados
       } else {
-        console.error('Error al obtener los partidos del club:', await response.text());
+        console.error('Error al obtener los partidos del club:', await response.text())
       }
     } catch (error) {
-      console.error('Error al conectar con la API para obtener los partidos:', error);
+      console.error('Error al conectar con la API para obtener los partidos:', error)
     }
-  }, [clubData]);
-
+  }, [clubData])
+  
   useEffect(() => {
     const fetchClubProfile = async () => {
       try {
@@ -217,12 +219,27 @@ export default function ClubDashboard() {
   };
 
   const handleDateChange = (value: Value) => {
+    let selectedDate: Date | undefined
     if (value instanceof Date) {
-      setCurrentDate(value)
+      selectedDate = value
+      setCurrentDate(selectedDate)
     } else if (Array.isArray(value) && value[0] instanceof Date) {
-      setCurrentDate(value[0])
+      selectedDate = value[0]
+      setCurrentDate(selectedDate)
+    }
+  
+    // Verificar que selectedDate esté definido antes de filtrar
+    if (selectedDate) {
+      const filtered = matches.filter(match => {
+        const matchDate = new Date(match.date).toDateString()
+        return matchDate === selectedDate.toDateString()
+      })
+  
+      setFilteredMatches(filtered) // Actualizamos el estado de los partidos filtrados
     }
   }
+  
+  
 
   const tileClassName = ({ date, view }: { date: Date; view: string }) => {
     if (view === 'month') {
@@ -421,35 +438,46 @@ export default function ClubDashboard() {
               <CardDescription>Administra los partidos programados</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {matches.map(match => (
-                  <div key={match.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex items-center space-x-4">
-                      <CalendarIcon className="h-6 w-6 text-gray-400" />
-                      <div>
-                        <p className="font-medium">{match.date.split("T")[0]}</p>
-                        <div className="flex items-center text-sm text-gray-500">
-                          <Clock className="mr-1 h-4 w-4" />
-                          {match.startTime} - {match.endTime}
-                          <Hash className="ml-2 mr-1 h-4 w-4" />
-                          {match.court}
-                          <Users className="ml-2 mr-1 h-4 w-4" />
-                          {match.players}/4
-                          <span className="ml-4 font-semibold">${match.price}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex space-x-2">
-                      <Button variant="outline" size="icon" onClick={() => handleEditMatch(match)}>
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button variant="outline" size="icon" onClick={() => handleDeleteMatch(match.id)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
+            <div className="space-y-4">
+              {filteredMatches.map((match) => (
+                <div
+                  key={match.id}
+                  className="flex items-center justify-between p-4 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300"
+                >
+                  <div>
+                    <p className="font-semibold text-gray-800">{match.date.split("T")[0]}</p>
+                    <p className="text-sm text-gray-500 flex items-center">
+                      <CalendarIcon className="w-4 h-4 mr-1" />
+                      {match.date.split("T")[0]}
+                    </p>
+                    <p className="text-sm text-gray-500 flex items-center">
+                      <Clock className="w-4 h-4 mr-1" />
+                      {match.startTime} - {match.endTime}
+                    </p>
+                    <p className="text-sm text-gray-500 flex items-center">
+                      <Hash className="w-4 h-4 mr-1" />
+                      {match.court}
+                    </p>
+                    <p className="text-sm text-gray-500 flex items-center">
+                      <Users className="w-4 h-4 mr-1" />
+                      {match.players}/4
+                    </p>
+                    <span className="text-sm font-semibold text-green-600">${match.price}</span>
                   </div>
-                ))}
-              </div>
+                  <div className="flex space-x-2">
+                    <Button variant="outline" size="icon" onClick={() => handleEditMatch(match)}>
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button variant="outline" size="icon" onClick={() => handleDeleteMatch(match.id)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+              {filteredMatches.length === 0 && (
+                <p className="text-center text-gray-500">No se encontraron partidos para esta fecha.</p>
+              )}
+            </div>
             </CardContent>
           </Card>
         </div>
