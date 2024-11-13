@@ -29,8 +29,8 @@ import { Label } from "@/components/ui/label"
 import { DropdownMenu, DropdownMenuItem } from "@/components/ui/dropdown-menu"
 
 
-type ValuePiece = Date | null
-type Value = ValuePiece | [ValuePiece, ValuePiece]
+// type ValuePiece = Date | null
+// type Value = ValuePiece | [ValuePiece, ValuePiece]
 
 type Match = {
   id: number
@@ -51,13 +51,14 @@ type Club = {
 }
 
 export default function ClubDashboard() {
-  const [currentDate, setCurrentDate] = useState<Date>(new Date())
+  const [currentDate] = useState<Date>(new Date())
   const [matches, setMatches] = useState<Match[]>([])
   const [newMatch, setNewMatch] = useState({ date: '', startTime: '', endTime: '', court: '', price: '' })
   const [editMatch, setEditMatch] = useState<Match | null>(null)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [clubData, setClubData] = useState<Club | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [filteredMatches, setFilteredMatches] = useState<Match[]>([])
   const router = useRouter()
   
@@ -81,40 +82,56 @@ export default function ClubDashboard() {
     }
   }, [clubData])
   
+
   useEffect(() => {
     const fetchClubProfile = async () => {
       try {
-        setIsLoading(true)
+        setIsLoading(true);
         const authResponse = await fetch('/api/auth', {
           method: 'GET',
           credentials: 'include',
-        })
-
+        });
+  
         if (authResponse.ok) {
-          const data = await authResponse.json()
-          const club = data.entity
-          setClubData(club)
-
-
+          const data = await authResponse.json();
+          const club = data.entity;
+          setClubData(club);
         } else {
-          throw new Error('Failed to fetch club data')
+          throw new Error('Failed to fetch club data');
         }
       } catch (error) {
-        console.error('Error al obtener el perfil del club:', error)
-        router.push('/login')
+        console.error('Error al obtener el perfil del club:', error);
+        router.push('/login');
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
-
-    fetchClubProfile()
-  }, [router])
-
+    };
+  
+    fetchClubProfile();
+  }, [router]);
+  
   useEffect(() => {
     if (clubData) {
       fetchMatches();
     }
   }, [clubData, fetchMatches]);
+  
+  // Nuevo useEffect para filtrar los partidos por fecha
+  useEffect(() => {
+    if (!selectedDate) {
+      setFilteredMatches(matches); // Si no hay una fecha seleccionada, mostrar todos los partidos
+    } else {
+      const filtered = matches.filter(match => {
+        // Convertir las fechas a 'YYYY-MM-DD' para una comparación precisa
+        const selectedDateString = selectedDate.toISOString().split('T')[0];
+        const matchDateString = new Date(match.date).toISOString().split('T')[0];
+  
+        return selectedDateString === matchDateString;
+      });
+  
+      setFilteredMatches(filtered);
+    }
+  }, [matches, selectedDate]);
 
   const handleLogout = async () => {
     try {
@@ -218,26 +235,26 @@ export default function ClubDashboard() {
     }
   };
 
-  const handleDateChange = (value: Value) => {
-    let selectedDate: Date | undefined
-    if (value instanceof Date) {
-      selectedDate = value
-      setCurrentDate(selectedDate)
-    } else if (Array.isArray(value) && value[0] instanceof Date) {
-      selectedDate = value[0]
-      setCurrentDate(selectedDate)
-    }
+  // const handleDateChange = (value: Value) => {
+  //   let selectedDate: Date | undefined
+  //   if (value instanceof Date) {
+  //     selectedDate = value
+  //     setCurrentDate(selectedDate)
+  //   } else if (Array.isArray(value) && value[0] instanceof Date) {
+  //     selectedDate = value[0]
+  //     setCurrentDate(selectedDate)
+  //   }
   
-    // Verificar que selectedDate esté definido antes de filtrar
-    if (selectedDate) {
-      const filtered = matches.filter(match => {
-        const matchDate = new Date(match.date).toDateString()
-        return matchDate === selectedDate.toDateString()
-      })
+  //   // Verificar que selectedDate esté definido antes de filtrar
+  //   if (selectedDate) {
+  //     const filtered = matches.filter(match => {
+  //       const matchDate = new Date(match.date).toDateString()
+  //       return matchDate === selectedDate.toDateString()
+  //     })
   
-      setFilteredMatches(filtered) // Actualizamos el estado de los partidos filtrados
-    }
-  }
+  //     setFilteredMatches(filtered) // Actualizamos el estado de los partidos filtrados
+  //   }
+  // }
   
   
 
@@ -425,11 +442,12 @@ export default function ClubDashboard() {
               <CardDescription>Vista mensual de los partidos programados</CardDescription>
             </CardHeader>
             <CardContent>
-              <Calendar
-                value={currentDate}
-                onChange={handleDateChange}
-                tileClassName={tileClassName}
-              />
+            <Calendar
+              value={currentDate}
+              onChange={(date) => setSelectedDate(date as Date)}
+              tileClassName={tileClassName}
+            />
+
             </CardContent>
           </Card>
           <Card className="md:col-span-2">
