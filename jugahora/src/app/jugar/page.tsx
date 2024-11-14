@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
 import { Menu, X, Home, User, Calendar, Users, LogOut, Clock, MapPin, Hash, Search, DollarSign } from 'lucide-react'
 import { toast } from 'react-hot-toast'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader,  DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 
 type Match = {
   id: number
@@ -56,6 +56,8 @@ export default function PaginaJuega() {
   const [loadingMatches, setLoadingMatches] = useState<{ [key: number]: boolean }>({})
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null)
+  const [joinedUsers, setJoinedUsers] = useState<User[]>([])
+  const [isUserModalOpen, setIsUserModalOpen] = useState(false)
   const referenciaMenu = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
@@ -221,6 +223,24 @@ export default function PaginaJuega() {
     }
   };
 
+  const handleMatchClick = async (matchId: number) => {
+    setLoadingMatches(prev => ({ ...prev, [matchId]: true }))
+    try {
+      const response = await fetch(`/api/matches/${matchId}/users`)
+      if (response.ok) {
+        const users = await response.json()
+        setJoinedUsers(users)
+        setIsUserModalOpen(true)
+      } else {
+        console.error('Error al obtener los usuarios del partido:', await response.text())
+      }
+    } catch (error) {
+      console.error('Error al conectar con la API para obtener los usuarios:', error)
+    } finally {
+      setLoadingMatches(prev => ({ ...prev, [matchId]: false }))
+    }
+  }
+  
   const handleRetirarse = (idPartido: number) => {
     setSelectedMatchId(idPartido);
     setIsDialogOpen(true);
@@ -381,8 +401,10 @@ export default function PaginaJuega() {
                 return (
                   <div
                     key={match.id}
-                    className="flex items-center justify-between p-4 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300"
+                    className="flex items-center justify-between p-4 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300 cursor-pointer"
+                    onClick={() => handleMatchClick(match.id)}
                   >
+
                     <div>
                       <p className="font-semibold text-gray-800">{match.nombreClub}</p>
                       <p className="text-sm text-gray-500 flex items-center">
@@ -516,6 +538,31 @@ export default function PaginaJuega() {
           </div>
         </DialogContent>
       </Dialog>
+      <Dialog open={isUserModalOpen} onOpenChange={setIsUserModalOpen}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Usuarios Unidos al Partido</DialogTitle>
+        </DialogHeader>
+        <div className="py-4">
+          {joinedUsers.length > 0 ? (
+            <ul className="space-y-2">
+              {joinedUsers.map((user) => (
+                <li key={user.id} className="flex items-center space-x-2">
+                  <Users className="h-4 w-4" />
+                  <span>{`${user.firstName} ${user.lastName}`}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-center text-gray-500">No hay usuarios unidos a este partido.</p>
+          )}
+        </div>
+        <DialogFooter>
+          <Button onClick={() => setIsUserModalOpen(false)}>Cerrar</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+
     </div>
   )
 }
