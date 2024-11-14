@@ -21,7 +21,7 @@ export default function PaginaInicioSesion() {
     e.preventDefault()
     setError('')
     setIsLoading(true)
-
+  
     try {
       console.log('Iniciando proceso de login...');
       const respuesta = await fetch('/api/auth', {
@@ -32,12 +32,17 @@ export default function PaginaInicioSesion() {
         body: JSON.stringify({ email, password }),
         credentials: 'include',
       })
-
+  
       console.log('Respuesta recibida:', respuesta.status);
-
+  
       if (respuesta.ok) {
+        const data = await respuesta.json();
         console.log('Login exitoso, redirigiendo...');
-        router.replace('/menu')
+        if (data.isClub) {
+          router.replace('/club-dashboard')
+        } else {
+          router.replace('/menu')
+        }
       } else {
         const datos = await respuesta.json()
         console.error('Error en la autenticación:', datos.error);

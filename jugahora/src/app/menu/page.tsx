@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import Image from 'next/image'
 
-
 const menuItems = [
   { href: '/menu', label: 'Menu', icon: Home },
   { href: '/perfil', label: 'Perfil', icon: User },
@@ -20,6 +19,7 @@ export default function MenuPage() {
   console.log('Página de menú cargada');
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [userName, setUserName] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
   const menuRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
@@ -28,19 +28,22 @@ export default function MenuPage() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
+        setIsLoading(true);
         const response = await fetch('/api/auth', {
           method: 'GET',
           credentials: 'include',
         });
         if (response.ok) {
           const data = await response.json();
-          setUserName(data.user.firstName);
+          setUserName(data.entity.firstName || data.entity.name);
         } else {
-          router.push('/login');
+          throw new Error('Authentication failed');
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
         router.push('/login');
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -58,6 +61,10 @@ export default function MenuPage() {
       console.error('Error al cerrar sesión:', error);
     }
   };
+
+  if (isLoading) {
+    return <div className="flex justify-center items-center h-screen">Cargando...</div>;
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
