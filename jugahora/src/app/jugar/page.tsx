@@ -54,6 +54,7 @@ export default function PaginaJuega() {
   const [minPrice, setMinPrice] = useState<number>(0)
   const [maxPrice, setMaxPrice] = useState<number>(100)
   const [loadingMatches, setLoadingMatches] = useState<{ [key: number]: boolean }>({})
+  const [loadingMatchDetails, setLoadingMatchDetails] = useState<{ [key: number]: boolean }>({})
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null)
   const [joinedUsers, setJoinedUsers] = useState<User[]>([])
@@ -224,7 +225,7 @@ export default function PaginaJuega() {
   };
 
   const handleMatchClick = async (matchId: number) => {
-    setLoadingMatches(prev => ({ ...prev, [matchId]: true }))
+    setLoadingMatchDetails(prev => ({ ...prev, [matchId]: true }))
     try {
       const response = await fetch(`/api/matches/${matchId}/users`)
       if (response.ok) {
@@ -237,9 +238,10 @@ export default function PaginaJuega() {
     } catch (error) {
       console.error('Error al conectar con la API para obtener los usuarios:', error)
     } finally {
-      setLoadingMatches(prev => ({ ...prev, [matchId]: false }))
+      setLoadingMatchDetails(prev => ({ ...prev, [matchId]: false }))
     }
   }
+  
   
   const handleRetirarse = (idPartido: number) => {
     setSelectedMatchId(idPartido);
@@ -404,7 +406,6 @@ export default function PaginaJuega() {
                     className="flex items-center justify-between p-4 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300 cursor-pointer"
                     onClick={() => handleMatchClick(match.id)}
                   >
-
                     <div>
                       <p className="font-semibold text-gray-800">{match.nombreClub}</p>
                       <p className="text-sm text-gray-500 flex items-center">
@@ -432,77 +433,99 @@ export default function PaginaJuega() {
                         {match.price} por jugador
                       </p>
                     </div>
-                    {isUserJoined ? (
-                      <Button
-                        onClick={(e) => {
-                          e.stopPropagation(); // Detiene la propagación del clic
-                          handleRetirarse(match.id);
-                        }}
-                        disabled={loadingMatches[match.id]}
-                        className="min-w-[100px] bg-red-600 hover:bg-red-700"
-                      >
-                        {loadingMatches[match.id] ? (
-                          <span className="flex items-center">
-                            <svg
-                              className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                            >
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                              <path
-                                className="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                              ></path>
-                            </svg>
-                            Retirándose...
-                          </span>
-                        ) : (
-                          'Retirarse'
-                        )}
-                      </Button>
-                    ) : (
-                      <Button
-                        onClick={(e) => {
-                          e.stopPropagation(); // Detiene la propagación del clic
-                          manejarUnirsePartido(match.id);
-                        }}
-                        disabled={match.players >= match.maxPlayers || loadingMatches[match.id]}
-                        className="min-w-[100px]"
-                      >
-                        {loadingMatches[match.id] ? (
-                          <span className="flex items-center">
-                            <svg
-                              className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                            >
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                              <path
-                                className="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                              ></path>
-                            </svg>
-                            Uniéndose...
-                          </span>
-                        ) : match.players >= match.maxPlayers ? (
-                          'Completo'
-                        ) : (
-                          'Unirse'
-                        )}
-                      </Button>
-                    )}
 
+                    <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>
+                      {isUserJoined ? (
+                        <Button
+                          onClick={(e) => {
+                            e.stopPropagation(); // Detiene la propagación del clic
+                            handleRetirarse(match.id);
+                          }}
+                          disabled={loadingMatches[match.id]}
+                          className="min-w-[100px] bg-red-600 hover:bg-red-700"
+                        >
+                          {loadingMatches[match.id] ? (
+                            <span className="flex items-center">
+                              <svg
+                                className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                              >
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path
+                                  className="opacity-75"
+                                  fill="currentColor"
+                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                ></path>
+                              </svg>
+                              Retirándose...
+                            </span>
+                          ) : (
+                            'Retirarse'
+                          )}
+                        </Button>
+                      ) : (
+                        <Button
+                          onClick={(e) => {
+                            e.stopPropagation(); // Detiene la propagación del clic
+                            manejarUnirsePartido(match.id);
+                          }}
+                          disabled={match.players >= match.maxPlayers || loadingMatches[match.id]}
+                          className="min-w-[100px]"
+                        >
+                          {loadingMatches[match.id] ? (
+                            <span className="flex items-center">
+                              <svg
+                                className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                              >
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path
+                                  className="opacity-75"
+                                  fill="currentColor"
+                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                ></path>
+                              </svg>
+                              Uniéndose...
+                            </span>
+                          ) : match.players >= match.maxPlayers ? (
+                            'Completo'
+                          ) : (
+                            'Unirse'
+                          )}
+                        </Button>
+                      )}
+                    </div>
+
+                    {loadingMatchDetails[match.id] && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-70 rounded-lg">
+                        <svg
+                          className="animate-spin h-5 w-5 text-green-600"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                      </div>
+                    )}
                   </div>
                 );
               })}
+              
               {filteredMatches.length === 0 && (
                 <p className="text-center text-gray-500">No se encontraron partidos que coincidan con los criterios de búsqueda.</p>
               )}
             </div>
+
 
           </CardContent>
         </Card>
