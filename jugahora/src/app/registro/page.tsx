@@ -186,15 +186,15 @@ export default function PaginaRegistro() {
             )}
             <div className="space-y-2">
               <Label htmlFor="phoneNumber" className="flex items-center">
-                Número de teléfono {isClub && <RequiredFieldTooltip />}
+                Número de teléfono <RequiredFieldTooltip />
               </Label>
               <Input 
                 id="phoneNumber"
                 type="tel"
-                placeholder={isClub ? "+54 9 1234 5678" : "Opcional: +54 9 1234 5678"}
+                placeholder="+5491160381888"
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
-                required={isClub}
+                required
               />
             </div>
             <div className="space-y-2">
