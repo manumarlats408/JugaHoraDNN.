@@ -434,7 +434,10 @@ export default function PaginaJuega() {
                     </div>
                     {isUserJoined ? (
                       <Button
-                        onClick={() => handleRetirarse(match.id)}
+                        onClick={(e) => {
+                          e.stopPropagation(); // Detiene la propagación del clic
+                          handleRetirarse(match.id);
+                        }}
                         disabled={loadingMatches[match.id]}
                         className="min-w-[100px] bg-red-600 hover:bg-red-700"
                       >
@@ -461,7 +464,10 @@ export default function PaginaJuega() {
                       </Button>
                     ) : (
                       <Button
-                        onClick={() => manejarUnirsePartido(match.id)}
+                        onClick={(e) => {
+                          e.stopPropagation(); // Detiene la propagación del clic
+                          manejarUnirsePartido(match.id);
+                        }}
                         disabled={match.players >= match.maxPlayers || loadingMatches[match.id]}
                         className="min-w-[100px]"
                       >
@@ -489,6 +495,7 @@ export default function PaginaJuega() {
                         )}
                       </Button>
                     )}
+
                   </div>
                 );
               })}
