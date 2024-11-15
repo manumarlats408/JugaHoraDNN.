@@ -21,6 +21,8 @@ model User {
   age              Int?
   resetToken       String?         @map("resettoken")
   resetTokenExpiry DateTime?       @map("resettokenexpiry")
+  nivel            String?         // Nuevo campo para almacenar el nivel del usuario
+
 
   partidosUnidos   Int[]           // Array of IDs of Partidos_club
   Partidos         Partidos[]      // Relación con la tabla Partidos

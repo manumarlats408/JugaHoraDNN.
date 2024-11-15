@@ -27,6 +27,8 @@ export default function PaginaRegistro() {
   const [address, setAddress] = useState('')
   const [age, setAge] = useState<number | ''>('')
   const [clubName, setClubName] = useState('')
+  const [nivel, setNivel] = useState('') // Estado para el nivel
+  const [currentStep, setCurrentStep] = useState(1) // Estado para el paso actual
   const [error, setError] = useState('')
   const [isRegistering, setIsRegistering] = useState(false)
   const router = useRouter()
@@ -37,28 +39,47 @@ export default function PaginaRegistro() {
     setIsRegistering(true)
 
     try {
-      const respuesta = await fetch('/api/registro', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          isClub,
-          email, 
-          password, 
-          firstName: isClub ? clubName : firstName, 
-          lastName: isClub ? '' : lastName, 
-          phoneNumber, 
-          address, 
-          age: isClub ? null : age 
-        }),
-      })
+      if (currentStep === 1) {
+        // Enviar los datos iniciales del usuario
+        const respuesta = await fetch('/api/registro', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            isClub,
+            email,
+            password,
+            firstName: isClub ? clubName : firstName,
+            lastName: isClub ? '' : lastName,
+            phoneNumber,
+            address,
+            age: isClub ? null : age,
+          }),
+        })
 
-      if (respuesta.ok) {
-        router.push('/login')
+        if (respuesta.ok) {
+          setCurrentStep(2) // Pasar al segundo paso
+        } else {
+          const datos = await respuesta.json()
+          setError(datos.error || 'Ocurrió un error durante el registro')
+        }
       } else {
-        const datos = await respuesta.json()
-        setError(datos.error || 'Ocurrió un error durante el registro')
+        // Enviar el nivel del usuario
+        const respuesta = await fetch('/api/registro', {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, nivel }),
+        })
+
+        if (respuesta.ok) {
+          router.push('/login') // Redirigir al login después del registro
+        } else {
+          const datos = await respuesta.json()
+          setError(datos.error || 'Ocurrió un error al completar el registro')
+        }
       }
     } catch (error) {
       console.error('Error de registro:', error)
@@ -89,19 +110,26 @@ export default function PaginaRegistro() {
       </Link>
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Crear una cuenta</CardTitle>
-          <p className="text-center text-gray-500">Ingresa tus datos para registrarte</p>
+          <CardTitle className="text-2xl font-bold text-center">
+            {currentStep === 1 ? 'Crear una cuenta' : 'Selecciona tu nivel'}
+          </CardTitle>
+          <p className="text-center text-gray-500">
+            {currentStep === 1
+              ? 'Ingresa tus datos para registrarte'
+              : 'A continuación, selecciona tu nivel'}
+          </p>
         </CardHeader>
         <CardContent>
-          <form onSubmit={manejarEnvio} className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="club-mode"
-                checked={isClub}
-                onCheckedChange={setIsClub}
-              />
-              <Label htmlFor="club-mode">Registrarse como club</Label>
-            </div>
+          {currentStep === 1 ? (
+            <form onSubmit={manejarEnvio} className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="club-mode"
+                  checked={isClub}
+                  onCheckedChange={setIsClub}
+                />
+                <Label htmlFor="club-mode">Registrarse como club</Label>
+              </div>
             <div className="space-y-2">
               <Label htmlFor="email" className="flex items-center">
                 Correo electrónico <RequiredFieldTooltip />
@@ -211,19 +239,53 @@ export default function PaginaRegistro() {
               />
             </div>
             {error && <p className="text-red-500 text-center">{error}</p>}
-            <Button type="submit" className="w-full" disabled={isRegistering}>
-              {isRegistering ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Registrando...
-                </>
-              ) : (
-                <>
-                  <UserPlus className="mr-2 h-4 w-4" /> Registrarse
-                </>
-              )}
-            </Button>
-          </form>
+              <Button type="submit" className="w-full" disabled={isRegistering}>
+                {isRegistering ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Registrando...
+                  </>
+                ) : (
+                  <>
+                    <UserPlus className="mr-2 h-4 w-4" /> Siguiente
+                  </>
+                )}
+              </Button>
+            </form>
+          ) : (
+            <form onSubmit={manejarEnvio} className="space-y-4">
+              <p className="text-gray-500">
+                A continuación, selecciona el nivel que mejor describe tu experiencia:
+              </p>
+              <ul className="list-disc pl-5 text-gray-700">
+                <li><strong>Nivel 1:</strong> Principiante - Sin experiencia previa.</li>
+                <li><strong>Nivel 2:</strong> Intermedio - Con algo de experiencia.</li>
+                <li><strong>Nivel 3:</strong> Avanzado - Experiencia amplia y habilidades avanzadas.</li>
+              </ul>
+              <div className="space-y-2">
+                <Label htmlFor="nivel">Selecciona tu nivel</Label>
+                <Input
+                  id="nivel"
+                  type="text"
+                  placeholder="Ejemplo: Nivel 2"
+                  value={nivel}
+                  onChange={(e) => setNivel(e.target.value)}
+                  required
+                />
+              </div>
+              {error && <p className="text-red-500 text-center">{error}</p>}
+              <Button type="submit" className="w-full" disabled={isRegistering}>
+                {isRegistering ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Registrando...
+                  </>
+                ) : (
+                  <>Finalizar Registro</>
+                )}
+              </Button>
+            </form>
+          )}
         </CardContent>
         <CardFooter className="flex flex-col space-y-2">
           <p className="text-sm text-gray-500 text-center">
