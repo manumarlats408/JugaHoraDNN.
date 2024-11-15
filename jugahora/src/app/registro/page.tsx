@@ -257,17 +257,22 @@ export default function PaginaRegistro() {
               <p className="text-gray-500">
                 A continuación, selecciona el nivel que mejor describe tu experiencia:
               </p>
-              <ul className="list-disc pl-5 text-gray-700">
-                <li><strong>Nivel 1:</strong> Principiante - Sin experiencia previa.</li>
-                <li><strong>Nivel 2:</strong> Intermedio - Con algo de experiencia.</li>
-                <li><strong>Nivel 3:</strong> Avanzado - Experiencia amplia y habilidades avanzadas.</li>
+              <ul className="list-disc pl-5 text-gray-700 space-y-2">
+                <li><strong>Nivel 9 (Principiante):</strong> Maneja golpes básicos con poca precisión y control, especialmente en situaciones de juego lento. Suelen preferir los golpes de derecha y están empezando a entender el posicionamiento en la cancha.</li>
+                <li><strong>Nivel 8 (Principiante):</strong> Tiene algo de experiencia y ha comenzado a desarrollar habilidades básicas. Se enfoca en mejorar la consistencia de sus golpes, controlar mejor la pelota, y manejar su posicionamiento en la cancha con mayor efectividad.</li>
+                <li><strong>Nivel 7 (Principiante Intermedio):</strong> Posee técnica refinada para ejecutar todos los golpes con consistencia. Tiene buen control y adaptabilidad en la cancha, logrando manejar la velocidad media de la pelota, aunque puede tener dificultades con golpes rápidos.</li>
+                <li><strong>Nivel 6 (Intermedio):</strong> Maneja golpes con velocidad y juego constante. Además, muestra habilidad para variar la estrategia en el juego y para identificar los puntos débiles del oponente.</li>
+                <li><strong>Nivel 5 (Intermedio):</strong> Combina una técnica excelente con una comprensión táctica del juego. Se adapta rápidamente a diferentes estilos y estrategias, explotando las debilidades del rival con efectividad y manejando con confianza la velocidad alta de la pelota.</li>
+                <li><strong>Nivel 4 (Avanzado):</strong> Alto nivel de competitividad y dominio completo de la técnica, así como una comprensión táctica avanzada. Puede variar constantemente las estrategias, anticiparse a las jugadas del rival y controlar tanto la velocidad como la dirección de la pelota con precisión.</li>
+                <li><strong>Nivel 3 (Avanzado):</strong> Control excepcional de la pelota, ejecutando golpes complejos como bandejas y víboras con consistencia. El uso estratégico de las paredes y los ángulos forma parte integral de su juego, permitiéndole construir puntos elaborados.</li>
+                <li><strong>Niveles 2 y 1 (Profesional):</strong> En estas categorías, los jugadores suelen dedicarse de manera profesional al padel, aunque el nivel de profesionalización puede variar entre ambas categorías. Tienen un dominio avanzado y juegan con gran habilidad y experiencia.</li>
               </ul>
               <div className="space-y-2">
                 <Label htmlFor="nivel">Selecciona tu nivel</Label>
                 <Input
                   id="nivel"
                   type="text"
-                  placeholder="Ejemplo: Nivel 2"
+                  placeholder="Ejemplo: Nivel 4"
                   value={nivel}
                   onChange={(e) => setNivel(e.target.value)}
                   required
@@ -285,6 +290,7 @@ export default function PaginaRegistro() {
                 )}
               </Button>
             </form>
+
           )}
         </CardContent>
         <CardFooter className="flex flex-col space-y-2">
