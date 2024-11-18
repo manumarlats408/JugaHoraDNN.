@@ -368,12 +368,21 @@ export default function PaginaJuega() {
                 </div>
                 <div className="flex-1 min-w-[200px]">
                   <Label htmlFor="date" className="mb-2 block">Fecha</Label>
-                  <Input
-                    id="date"
-                    type="date"
-                    value={dateFilter}
-                    onChange={(e) => setDateFilter(e.target.value)}
-                  />
+                  <div className="flex items-center space-x-2">
+                    <Input
+                      id="date"
+                      type="date"
+                      value={dateFilter}
+                      onChange={(e) => setDateFilter(e.target.value)}
+                    />
+                    <Button
+                      variant="outline"
+                      onClick={() => setDateFilter('')} // Restablece el filtro de fecha
+                      className="px-2"
+                    >
+                      Borrar
+                    </Button>
+                  </div>
                 </div>
                 <div className="flex-1 min-w-[200px]">
                   <Label htmlFor="price" className="mb-2 block">Precio máximo</Label>
