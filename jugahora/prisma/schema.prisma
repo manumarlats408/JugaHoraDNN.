@@ -21,12 +21,18 @@ model User {
   age              Int?
   resetToken       String?         @map("resettoken")
   resetTokenExpiry DateTime?       @map("resettokenexpiry")
-  nivel            String?         // Nuevo campo para almacenar el nivel del usuario
+  nivel            String?         // Campo existente para nivel del usuario
 
+  profilePicture   String?         // Nueva columna para foto de perfil
+  preferredSide    String?         // Nueva columna para el lado preferido ("Izquierdo", "Derecho")
+  strengths        String[]       // Nueva columna para fortalezas
+  weaknesses       String[]       // Nueva columna para debilidades
+  progress         Float?          @default(0.0) // Nueva columna para el progreso del nivel
 
   partidosUnidos   Int[]           // Array of IDs of Partidos_club
   Partidos         Partidos[]      // Relación con la tabla Partidos
 }
+
 
 model Club {
   id              Int             @id @default(autoincrement())

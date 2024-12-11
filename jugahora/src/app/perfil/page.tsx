@@ -17,10 +17,13 @@ interface User {
   email: string
   firstName?: string
   lastName?: string
-  name?: string
   phoneNumber?: string
   address?: string
   age?: number
+  nivel?: string
+  preferredSide?: string
+  strengths?: string[]
+  weaknesses?: string[]
 }
 
 interface Partido {
@@ -71,7 +74,7 @@ export default function PerfilPage() {
           const data = await authResponse.json()
           const user = data.entity
           setUserData(user)
-          setJugadores([user.firstName || user.name || 'Jugador 1', 'Jugador 2', 'Jugador 3', 'Jugador 4'])
+          setJugadores([user.firstName || 'Jugador 1', 'Jugador 2', 'Jugador 3', 'Jugador 4'])
 
           const partidosResponse = await fetch(`/api/partidos?userId=${user.id}`, {
             method: 'GET',
@@ -249,12 +252,12 @@ export default function PerfilPage() {
         </div>
       )}
 
-      <main className="flex-1 flex flex-col items-center p-4 bg-gradient-to-b from-green-50 to-white">
+<main className="flex-1 flex flex-col items-center p-4 bg-gradient-to-b from-green-50 to-white">
         <Card className="w-full max-w-lg shadow-lg border-green-100 mb-6">
           <CardHeader className="bg-green-50 border-b border-green-100">
             <CardTitle className="text-2xl font-bold text-green-800 flex items-center">
               <User className="w-6 h-6 mr-2" />
-              Perfil de {userData.firstName || userData.name}
+              Perfil de {userData.firstName}
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6 space-y-4">
@@ -264,7 +267,7 @@ export default function PerfilPage() {
             </div>
             <div className="flex items-center">
               <User className="w-5 h-5 mr-2 text-gray-500" />
-              <p><strong>Nombre completo:</strong> {userData.firstName || userData.name} {userData.lastName || ''}</p>
+              <p><strong>Nombre:</strong> {userData.firstName} {userData.lastName}</p>
             </div>
             {userData.phoneNumber && (
               <div className="flex items-center">
@@ -284,8 +287,38 @@ export default function PerfilPage() {
                 <p><strong>Edad:</strong> {userData.age}</p>
               </div>
             )}
+            {userData.nivel && (
+              <div>
+                <p><strong>Nivel:</strong> {userData.nivel}</p>
+              </div>
+            )}
+            {userData.preferredSide && (
+              <div>
+                <p><strong>Lado preferido:</strong> {userData.preferredSide}</p>
+              </div>
+            )}
+            {userData.strengths && userData.strengths.length > 0 && (
+              <div>
+                <p><strong>Fortalezas:</strong></p>
+                <ul className="list-disc pl-5">
+                  {userData.strengths.map((strength, index) => (
+                    <li key={index}>{strength}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {userData.weaknesses && userData.weaknesses.length > 0 && (
+              <div>
+                <p><strong>Debilidades:</strong></p>
+                <ul className="list-disc pl-5">
+                  {userData.weaknesses.map((weakness, index) => (
+                    <li key={index}>{weakness}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
             <Button
-              className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white transition-colors duration-300"
+              className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white"
               onClick={() => router.push('/editar-perfil')}
             >
               Editar perfil
