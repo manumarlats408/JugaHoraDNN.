@@ -66,8 +66,8 @@ export async function PATCH(request: Request) {
       data: { 
         nivel,
         preferredSide,
-        strengths,
-        weaknesses
+        strengths: strengths.split(',').map((s: string) => s.trim()),
+        weaknesses: weaknesses.split(',').map((s: string) => s.trim()),
       },
     });
 
