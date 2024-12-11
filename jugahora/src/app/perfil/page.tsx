@@ -288,33 +288,41 @@ export default function PerfilPage() {
               </div>
             )}
             {userData.nivel && (
-              <div>
+              <div className="flex items-center">
+                <User className="w-5 h-5 mr-2 text-gray-500" />
                 <p><strong>Nivel:</strong> {userData.nivel}</p>
               </div>
             )}
             {userData.preferredSide && (
-              <div>
+              <div className="flex items-center">
+                <User className="w-5 h-5 mr-2 text-gray-500" />
                 <p><strong>Lado preferido:</strong> {userData.preferredSide}</p>
               </div>
             )}
             {userData.strengths && userData.strengths.length > 0 && (
-              <div>
-                <p><strong>Fortalezas:</strong></p>
-                <ul className="list-disc pl-5">
-                  {userData.strengths.map((strength, index) => (
-                    <li key={index}>{strength}</li>
-                  ))}
-                </ul>
+              <div className="flex items-start">
+                <User className="w-5 h-5 mr-2 mt-1 text-gray-500" />
+                <div>
+                  <p><strong>Fortalezas:</strong></p>
+                  <ul className="list-disc pl-5">
+                    {userData.strengths.map((strength, index) => (
+                      <li key={index}>{strength}</li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             )}
             {userData.weaknesses && userData.weaknesses.length > 0 && (
-              <div>
-                <p><strong>Debilidades:</strong></p>
-                <ul className="list-disc pl-5">
-                  {userData.weaknesses.map((weakness, index) => (
-                    <li key={index}>{weakness}</li>
-                  ))}
-                </ul>
+              <div className="flex items-start">
+                <User className="w-5 h-5 mr-2 mt-1 text-gray-500" />
+                <div>
+                  <p><strong>Debilidades:</strong></p>
+                  <ul className="list-disc pl-5">
+                    {userData.weaknesses.map((weakness, index) => (
+                      <li key={index}>{weakness}</li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             )}
             <Button
