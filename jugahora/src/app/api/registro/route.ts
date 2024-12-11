@@ -54,7 +54,7 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
-  const { email, nivel } = await request.json();
+  const { email, nivel, preferredSide, strengths, weaknesses } = await request.json();
 
   if (!nivel) {
     return NextResponse.json({ error: 'El nivel es obligatorio' }, { status: 400 });
@@ -63,12 +63,18 @@ export async function PATCH(request: Request) {
   try {
     const updatedUser = await prisma.user.update({
       where: { email },
-      data: { nivel },
+      data: { 
+        nivel,
+        preferredSide,
+        strengths,
+        weaknesses
+      },
     });
 
     return NextResponse.json(updatedUser, { status: 200 });
   } catch (error) {
-    console.error('Error al actualizar el nivel:', error);
-    return NextResponse.json({ error: 'Ocurrió un error al actualizar el nivel' }, { status: 500 });
+    console.error('Error al actualizar el perfil:', error);
+    return NextResponse.json({ error: 'Ocurrió un error al actualizar el perfil' }, { status: 500 });
   }
 }
+

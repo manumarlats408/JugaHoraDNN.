@@ -33,6 +33,11 @@ export default function PaginaRegistro() {
   const [isRegistering, setIsRegistering] = useState(false)
   const router = useRouter()
 
+  // New state for player preferences
+  const [preferredSide, setPreferredSide] = useState('')
+  const [strengths, setStrengths] = useState('')
+  const [weaknesses, setWeaknesses] = useState('')
+
   const manejarEnvio = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setError('')
@@ -59,19 +64,22 @@ export default function PaginaRegistro() {
         })
 
         if (respuesta.ok) {
-          setCurrentStep(2) // Pasar al segundo paso
+          setCurrentStep(2) // Pasar al segundo paso (preferencias del jugador)
         } else {
           const datos = await respuesta.json()
           setError(datos.error || 'Ocurrió un error durante el registro')
         }
+      } else if (currentStep === 2) {
+        // Pasar al tercer paso (nivel)
+        setCurrentStep(3)
       } else {
-        // Enviar el nivel del usuario
+        // Enviar el nivel del usuario y las preferencias
         const respuesta = await fetch('/api/registro', {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ email, nivel }),
+          body: JSON.stringify({ email, nivel, preferredSide, strengths, weaknesses }),
         })
 
         if (respuesta.ok) {
@@ -111,11 +119,15 @@ export default function PaginaRegistro() {
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">
-            {currentStep === 1 ? 'Crear una cuenta' : 'Selecciona tu nivel'}
+            {currentStep === 1 ? 'Crear una cuenta' : 
+             currentStep === 2 ? 'Preferencias de juego' : 
+             'Selecciona tu nivel'}
           </CardTitle>
           <p className="text-center text-gray-500">
             {currentStep === 1
               ? 'Ingresa tus datos para registrarte'
+              : currentStep === 2
+              ? 'Cuéntanos sobre tu estilo de juego'
               : 'A continuación, selecciona tu nivel'}
           </p>
         </CardHeader>
@@ -130,115 +142,115 @@ export default function PaginaRegistro() {
                 />
                 <Label htmlFor="club-mode">Registrarse como club</Label>
               </div>
-            <div className="space-y-2">
-              <Label htmlFor="email" className="flex items-center">
-                Correo electrónico <RequiredFieldTooltip />
-              </Label>
-              <Input 
-                id="email"
-                type="email" 
-                placeholder="tu@email.com" 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password" className="flex items-center">
-                Contraseña <RequiredFieldTooltip />
-              </Label>
-              <Input 
-                id="password"
-                type="password" 
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            {isClub ? (
               <div className="space-y-2">
-                <Label htmlFor="clubName" className="flex items-center">
-                  Nombre del Club <RequiredFieldTooltip />
+                <Label htmlFor="email" className="flex items-center">
+                  Correo electrónico <RequiredFieldTooltip />
                 </Label>
                 <Input 
-                  id="clubName"
-                  type="text" 
-                  placeholder="Nombre del Club"
-                  value={clubName}
-                  onChange={(e) => setClubName(e.target.value)}
+                  id="email"
+                  type="email" 
+                  placeholder="tu@email.com" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
               </div>
-            ) : (
-              <>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="firstName" className="flex items-center">
-                      Nombre <RequiredFieldTooltip />
-                    </Label>
-                    <Input 
-                      id="firstName"
-                      type="text" 
-                      placeholder="Juan"
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="lastName" className="flex items-center">
-                      Apellido <RequiredFieldTooltip />
-                    </Label>
-                    <Input 
-                      id="lastName"
-                      type="text" 
-                      placeholder="Pérez"
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
-                      required
-                    />
-                  </div>
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="password" className="flex items-center">
+                  Contraseña <RequiredFieldTooltip />
+                </Label>
+                <Input 
+                  id="password"
+                  type="password" 
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+              {isClub ? (
                 <div className="space-y-2">
-                  <Label htmlFor="age">Edad</Label>
+                  <Label htmlFor="clubName" className="flex items-center">
+                    Nombre del Club <RequiredFieldTooltip />
+                  </Label>
                   <Input 
-                    id="age"
-                    type="number"
-                    placeholder="Opcional: 30"
-                    value={age}
-                    onChange={(e) => setAge(Number(e.target.value))}
+                    id="clubName"
+                    type="text" 
+                    placeholder="Nombre del Club"
+                    value={clubName}
+                    onChange={(e) => setClubName(e.target.value)}
+                    required
                   />
                 </div>
-              </>
-            )}
-            <div className="space-y-2">
-              <Label htmlFor="phoneNumber" className="flex items-center">
-                Número de teléfono <RequiredFieldTooltip />
-              </Label>
-              <Input 
-                id="phoneNumber"
-                type="tel"
-                placeholder="+5491160381888"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="address" className="flex items-center">
-                Dirección {isClub && <RequiredFieldTooltip />}
-              </Label>
-              <Input 
-                id="address"
-                type="text"
-                placeholder={isClub ? "Av. Siempreviva 123" : "Opcional: Av. Siempreviva 123"}
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                required={isClub}
-              />
-            </div>
-            {error && <p className="text-red-500 text-center">{error}</p>}
+              ) : (
+                <>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="firstName" className="flex items-center">
+                        Nombre <RequiredFieldTooltip />
+                      </Label>
+                      <Input 
+                        id="firstName"
+                        type="text" 
+                        placeholder="Juan"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="lastName" className="flex items-center">
+                        Apellido <RequiredFieldTooltip />
+                      </Label>
+                      <Input 
+                        id="lastName"
+                        type="text" 
+                        placeholder="Pérez"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="age">Edad</Label>
+                    <Input 
+                      id="age"
+                      type="number"
+                      placeholder="Opcional: 30"
+                      value={age}
+                      onChange={(e) => setAge(Number(e.target.value))}
+                    />
+                  </div>
+                </>
+              )}
+              <div className="space-y-2">
+                <Label htmlFor="phoneNumber" className="flex items-center">
+                  Número de teléfono <RequiredFieldTooltip />
+                </Label>
+                <Input 
+                  id="phoneNumber"
+                  type="tel"
+                  placeholder="+5491160381888"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="address" className="flex items-center">
+                  Dirección {isClub && <RequiredFieldTooltip />}
+                </Label>
+                <Input 
+                  id="address"
+                  type="text"
+                  placeholder={isClub ? "Av. Siempreviva 123" : "Opcional: Av. Siempreviva 123"}
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  required={isClub}
+                />
+              </div>
+              {error && <p className="text-red-500 text-center">{error}</p>}
               <Button type="submit" className="w-full" disabled={isRegistering}>
                 {isRegistering ? (
                   <>
@@ -249,6 +261,54 @@ export default function PaginaRegistro() {
                   <>
                     <UserPlus className="mr-2 h-4 w-4" /> Siguiente
                   </>
+                )}
+              </Button>
+            </form>
+          ) : currentStep === 2 ? (
+            <form onSubmit={manejarEnvio} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="preferredSide">Lado preferido de la cancha</Label>
+                <select
+                  id="preferredSide"
+                  value={preferredSide}
+                  onChange={(e) => setPreferredSide(e.target.value)}
+                  className="w-full p-2 border rounded"
+                  required
+                >
+                  <option value="">Selecciona un lado</option>
+                  <option value="Izquierdo">Izquierdo</option>
+                  <option value="Derecho">Derecho</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="strengths">Fortalezas (separa con comas)</Label>
+                <Input
+                  id="strengths"
+                  type="text"
+                  placeholder="Ej: Saque, Volea, Smash"
+                  value={strengths}
+                  onChange={(e) => setStrengths(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="weaknesses">Debilidades (separa con comas)</Label>
+                <Input
+                  id="weaknesses"
+                  type="text"
+                  placeholder="Ej: Revés, Globo, Defensa"
+                  value={weaknesses}
+                  onChange={(e) => setWeaknesses(e.target.value)}
+                />
+              </div>
+              {error && <p className="text-red-500 text-center">{error}</p>}
+              <Button type="submit" className="w-full" disabled={isRegistering}>
+                {isRegistering ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Procesando...
+                  </>
+                ) : (
+                  <>Siguiente</>
                 )}
               </Button>
             </form>
@@ -290,7 +350,6 @@ export default function PaginaRegistro() {
                 )}
               </Button>
             </form>
-
           )}
         </CardContent>
         <CardFooter className="flex flex-col space-y-2">
@@ -308,3 +367,4 @@ export default function PaginaRegistro() {
     </div>
   )
 }
+
