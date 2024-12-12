@@ -18,6 +18,8 @@ type UserWithPassword = {
   preferredSide: string | null;
   strengths: string[] | null;
   weaknesses: string[] | null;
+  progress: number | null;
+  profilePicture: string | null;
 };
 
 type ClubWithPassword = {
@@ -54,6 +56,12 @@ export async function POST(request: Request) {
         phoneNumber: true,
         address: true,
         age: true,
+        nivel: true,
+        preferredSide: true,
+        strengths: true,
+        weaknesses: true,
+        progress: true,
+        profilePicture: true,
       },
     }).catch(error => {
       console.error('Error al buscar usuario en la base de datos:', error);
@@ -174,6 +182,8 @@ export async function GET(request: Request) {
           preferredSide: true,
           strengths: true,
           weaknesses: true,
+          progress: true,
+          profilePicture: true,
         },
       });
     }
