@@ -14,6 +14,10 @@ type UserWithPassword = {
   phoneNumber: string | null;
   address: string | null;
   age: number | null;
+  nivel: string | null;
+  preferredSide: string | null;
+  strengths: string[] | null;
+  weaknesses: string[] | null;
 };
 
 type ClubWithPassword = {
@@ -166,6 +170,10 @@ export async function GET(request: Request) {
           phoneNumber: true,
           address: true,
           age: true,
+          nivel: true,
+          preferredSide: true,
+          strengths: true,
+          weaknesses: true,
         },
       });
     }

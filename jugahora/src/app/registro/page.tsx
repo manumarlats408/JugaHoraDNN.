@@ -276,8 +276,8 @@ export default function PaginaRegistro() {
                   required
                 >
                   <option value="">Selecciona un lado</option>
-                  <option value="Izquierdo">Izquierdo</option>
-                  <option value="Derecho">Derecho</option>
+                  <option value="Revés">Revés</option>
+                  <option value="Drive">Drive</option>
                 </select>
               </div>
               <div className="space-y-2">
@@ -332,7 +332,7 @@ export default function PaginaRegistro() {
                 <Input
                   id="nivel"
                   type="text"
-                  placeholder="Ejemplo: Nivel 4"
+                  placeholder="Ejemplo: 4"
                   value={nivel}
                   onChange={(e) => setNivel(e.target.value)}
                   required
