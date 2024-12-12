@@ -73,6 +73,7 @@ export default function PerfilPage() {
         if (authResponse.ok) {
           const data = await authResponse.json()
           const user = data.entity
+          console.log('User:', user)
           setUserData(user)
           setJugadores([user.firstName || 'Jugador 1', 'Jugador 2', 'Jugador 3', 'Jugador 4'])
 
