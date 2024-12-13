@@ -67,110 +67,119 @@ export default function PerfilPage() {
 
   useEffect(() => {
     const fetchUserProfile = async () => {
-      try {
-        setIsLoading(true);
-        const authResponse = await fetch('/api/auth', {
-          method: 'GET',
-          credentials: 'include',
-        });
-  
-        if (authResponse.ok) {
-          const data = await authResponse.json();
-          const user = data.entity;
-          console.log('User:', user);
-          setUserData(user);
-          setJugadores([user.firstName || 'Jugador 1', 'Jugador 2', 'Jugador 3', 'Jugador 4']);
-  
-          const partidosResponse = await fetch(`/api/partidos?userId=${user.id}`, {
-            method: 'GET',
-            credentials: 'include',
-          });
-  
-          if (partidosResponse.ok) {
-            const partidosData = await partidosResponse.json();
-            setPartidos(partidosData); // Mantén todos los partidos en el historial
-  
-            // Filtrar partidos no procesados
-            const partidosNoProcesados = partidosData.filter(
-              (partido: Partido) => !partido.procesado
-            );
-  
-            if (partidosNoProcesados.length > 0) {
-              // Calcular incrementos y decrementos
-              const ganados = partidosNoProcesados.filter((partido: Partido) => partido.ganado).length;
-              const perdidos = partidosNoProcesados.filter((partido: Partido) => !partido.ganado).length;
-  
-              // Actualizar progreso y nivel
-              setUserData((prev) => {
-                if (!prev) return prev;
-  
-                let updatedProgress = prev.progress + ganados * 10 - perdidos * 10;
-  
-                if (updatedProgress >= 100) {
-                  updatedProgress = 0;
-                  return {
-                    ...prev,
-                    progress: updatedProgress,
-                    nivel: `Nivel ${parseInt(prev.nivel?.split(' ')[1] || '1') + 1}`,
-                  };
+        try {
+            setIsLoading(true);
+            const authResponse = await fetch('/api/auth', {
+                method: 'GET',
+                credentials: 'include',
+            });
+
+            if (authResponse.ok) {
+                const data = await authResponse.json();
+                const user = data.entity;
+                console.log('User:', user);
+                setUserData(user);
+                setJugadores([user.firstName || 'Jugador 1', 'Jugador 2', 'Jugador 3', 'Jugador 4']);
+
+                const partidosResponse = await fetch(`/api/partidos?userId=${user.id}`, {
+                    method: 'GET',
+                    credentials: 'include',
+                });
+
+                if (partidosResponse.ok) {
+                    const partidosData = await partidosResponse.json();
+                    setPartidos(partidosData); // Mantén todos los partidos en el historial
+
+                    // Filtrar partidos no procesados
+                    const partidosNoProcesados = partidosData.filter(
+                        (partido: Partido) => !partido.procesado
+                    );
+
+                    if (partidosNoProcesados.length > 0) {
+                        // Calcular incrementos y decrementos
+                        const ganados = partidosNoProcesados.filter((partido: Partido) => partido.ganado).length;
+                        const perdidos = partidosNoProcesados.filter((partido: Partido) => !partido.ganado).length;
+
+                        let updatedProgress = user.progress + ganados * 10 - perdidos * 10;
+                        let updatedNivel = user.nivel || 'Nivel 1';
+
+                        if (updatedProgress >= 100) {
+                            updatedProgress = 0;
+                            updatedNivel = `Nivel ${parseInt(updatedNivel.split(' ')[1] || '1') + 1}`;
+                        }
+
+                        if (updatedProgress < 0) {
+                            const nivelActual = parseInt(updatedNivel.split(' ')[1] || '1');
+                            if (nivelActual > 1) {
+                                updatedProgress = 90; // Restablecer progreso al nivel anterior
+                                updatedNivel = `Nivel ${nivelActual - 1}`;
+                            } else {
+                                updatedProgress = 0; // No puedes bajar de nivel 1
+                            }
+                        }
+
+                        // Actualizar el estado de userData
+                        setUserData((prev) => {
+                            if (!prev) return prev;
+                            return {
+                                ...prev,
+                                progress: updatedProgress,
+                                nivel: updatedNivel,
+                            };
+                        });
+
+                        // Enviar al backend para guardar los cambios
+                        await fetch(`/api/update-progress`, {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                userId: user.id,
+                                progress: updatedProgress,
+                                nivel: updatedNivel,
+                            }),
+                        }).catch((error) => {
+                            console.error('Error al actualizar el progreso en la base de datos:', error);
+                        });
+
+                        // Marcar los partidos como procesados en el backend
+                        await fetch(`/api/marcar-partidos-procesados`, {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ userId: user.id }),
+                        });
+                    }
+                } else {
+                    console.error('Error al obtener los partidos del usuario');
                 }
-  
-                if (updatedProgress < 0) {
-                  const nivelActual = parseInt(prev.nivel?.split(' ')[1] || '1');
-                  if (nivelActual > 1) {
-                    updatedProgress = 90; // Restablecer progreso al nivel anterior
-                    return {
-                      ...prev,
-                      progress: updatedProgress,
-                      nivel: `Nivel ${nivelActual - 1}`,
-                    };
-                  } else {
-                    updatedProgress = 0; // No puedes bajar de nivel 1
-                  }
-                }
-  
-                return {
-                  ...prev,
-                  progress: updatedProgress,
-                };
-              });
-  
-              // Marcar los partidos como procesados en el backend
-              await fetch(`/api/marcar-partidos-procesados`, {
-                method: 'PATCH',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ userId: user.id }),
-              });
+            } else {
+                throw new Error('Failed to fetch user data');
             }
-          } else {
-            console.error('Error al obtener los partidos del usuario');
-          }
-        } else {
-          throw new Error('Failed to fetch user data');
+        } catch (error) {
+            console.error('Error al obtener el perfil del usuario:', error);
+            router.push('/login');
+        } finally {
+            setIsLoading(false);
         }
-      } catch (error) {
-        console.error('Error al obtener el perfil del usuario:', error);
-        router.push('/login');
-      } finally {
-        setIsLoading(false);
-      }
     };
-  
+
     fetchUserProfile();
-  
+
     const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsMenuOpen(false);
-      }
+        if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+            setIsMenuOpen(false);
+        }
     };
-  
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+        document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [router]);
+}, [router]);
+
   
   
   
