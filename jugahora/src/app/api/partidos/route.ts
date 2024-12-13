@@ -39,7 +39,6 @@ export async function GET(request: Request) {
     const partidos = await prisma.partidos.findMany({
       where: {
         userId: parseInt(userId),
-        procesado: false,
       },
       orderBy: {
         fecha: 'desc',
