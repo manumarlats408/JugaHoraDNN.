@@ -52,7 +52,8 @@ model Partidos {
   fecha      DateTime @default(now())
   jugadores  String
   resultado  String
-  ganado       Boolean  // 1 si ganó, 0 si perdió
+  ganado     Boolean  // 1 si ganó, 0 si perdió
+  procesado  Boolean  @default(false)
 
   User       User @relation(fields: [userId], references: [id])
 }

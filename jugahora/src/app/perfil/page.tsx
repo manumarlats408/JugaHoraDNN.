@@ -33,6 +33,7 @@ interface Partido {
   jugadores: string
   resultado: string
   ganado: boolean
+  procesado: boolean
 }
 
 const menuItems = [
@@ -67,89 +68,114 @@ export default function PerfilPage() {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        setIsLoading(true)
+        setIsLoading(true);
         const authResponse = await fetch('/api/auth', {
           method: 'GET',
           credentials: 'include',
-        })
-
+        });
+  
         if (authResponse.ok) {
-          const data = await authResponse.json()
-          const user = data.entity
-          console.log('User:', user)
-          setUserData(user)
-          setJugadores([user.firstName || 'Jugador 1', 'Jugador 2', 'Jugador 3', 'Jugador 4'])
-
+          const data = await authResponse.json();
+          const user = data.entity;
+          console.log('User:', user);
+          setUserData(user);
+          setJugadores([user.firstName || 'Jugador 1', 'Jugador 2', 'Jugador 3', 'Jugador 4']);
+  
           const partidosResponse = await fetch(`/api/partidos?userId=${user.id}`, {
             method: 'GET',
             credentials: 'include',
-          })
-
+          });
+  
           if (partidosResponse.ok) {
-            const partidosData = await partidosResponse.json()
-            setPartidos(partidosData)
-            // Calcular progreso basado en partidos ganados
-            const partidosGanados = partidosData.filter((partido: Partido) => partido.ganado).length;
-
-            setUserData((prev) => {
-              if (!prev) return prev;
-
-              const updatedProgress = Math.min(100, prev.progress + partidosGanados * 10);
-
-              // Enviar cambios al backend
-              if (updatedProgress === 100 || partidosGanados > 0) {
-                fetch(`/api/update-progress`, {
-                  method: 'PATCH',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                    userId: prev.id, // ID del usuario
-                    progress: updatedProgress === 100 ? 0 : updatedProgress, // Reinicia progreso si llega a 100
-                    nivel: updatedProgress === 100
-                      ? `Nivel ${parseInt(prev.nivel?.split(' ')[1] || '1') + 1}` // Incrementa nivel
-                      : prev.nivel,
-                  }),
-                }).catch((error) => {
-                  console.error('Error al actualizar el progreso:', error);
-                });
-              }
-
-              return {
-                ...prev,
-                progress: updatedProgress,
-                nivel: updatedProgress === 100
-                  ? `Nivel ${parseInt(prev.nivel?.split(' ')[1] || '1') + 1}`
-                  : prev.nivel,
-              };
-            });
+            const partidosData = await partidosResponse.json();
+            setPartidos(partidosData);
+  
+            // Filtrar partidos no procesados
+            const partidosNoProcesados = partidosData.filter(
+              (partido: Partido) => !partido.procesado
+            );
+  
+            if (partidosNoProcesados.length > 0) {
+              // Calcular incrementos y decrementos
+              const ganados = partidosNoProcesados.filter((partido: Partido) => partido.ganado).length;
+              const perdidos = partidosNoProcesados.filter((partido: Partido) => !partido.ganado).length;
+  
+              // Actualizar progreso y nivel
+              setUserData((prev) => {
+                if (!prev) return prev;
+  
+                let updatedProgress = prev.progress + ganados * 10 - perdidos * 10;
+  
+                if (updatedProgress >= 100) {
+                  updatedProgress = 0;
+                  return {
+                    ...prev,
+                    progress: updatedProgress,
+                    nivel: `Nivel ${parseInt(prev.nivel?.split(' ')[1] || '1') + 1}`,
+                  };
+                }
+  
+                if (updatedProgress < 0) {
+                  const nivelActual = parseInt(prev.nivel?.split(' ')[1] || '1');
+                  if (nivelActual > 1) {
+                    updatedProgress = 90; // Restablecer progreso al nivel anterior
+                    return {
+                      ...prev,
+                      progress: updatedProgress,
+                      nivel: `Nivel ${nivelActual - 1}`,
+                    };
+                  } else {
+                    updatedProgress = 0; // No puedes bajar de nivel 1
+                  }
+                }
+  
+                return {
+                  ...prev,
+                  progress: updatedProgress,
+                };
+              });
+  
+              // Marcar los partidos como procesados en el backend
+              await Promise.all(
+                partidosNoProcesados.map(async (partido: Partido) => {
+                  await fetch(`/api/partidos`, {
+                    method: 'PATCH',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ id: partido.id, procesado: true }),
+                  });
+                })
+              );
+            }
           } else {
-            console.error('Error al obtener los partidos del usuario')
+            console.error('Error al obtener los partidos del usuario');
           }
         } else {
-          throw new Error('Failed to fetch user data')
+          throw new Error('Failed to fetch user data');
         }
       } catch (error) {
-        console.error('Error al obtener el perfil del usuario:', error)
-        router.push('/login')
+        console.error('Error al obtener el perfil del usuario:', error);
+        router.push('/login');
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
-
-    fetchUserProfile()
-
+    };
+  
+    fetchUserProfile();
+  
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsMenuOpen(false)
+        setIsMenuOpen(false);
       }
-    }
-
-    document.addEventListener('mousedown', handleClickOutside)
+    };
+  
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [router])
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [router]);
+  
 
   const handleLogout = async () => {
     try {
