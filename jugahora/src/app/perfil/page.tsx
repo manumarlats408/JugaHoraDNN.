@@ -136,17 +136,13 @@ export default function PerfilPage() {
               });
   
               // Marcar los partidos como procesados en el backend
-              await Promise.all(
-                partidosNoProcesados.map(async (partido: Partido) => {
-                  await fetch(`/api/partidos`, {
-                    method: 'PATCH',
-                    headers: {
-                      'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ id: partido.id, procesado: true }),
-                  });
-                })
-              );
+              await fetch(`/api/marcar-partidos-procesados`, {
+                method: 'PATCH',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId: user.id }),
+              });
             }
           } else {
             console.error('Error al obtener los partidos del usuario');
@@ -175,6 +171,7 @@ export default function PerfilPage() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [router]);
+  
   
 
   const handleLogout = async () => {
