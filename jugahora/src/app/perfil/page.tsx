@@ -88,6 +88,41 @@ export default function PerfilPage() {
           if (partidosResponse.ok) {
             const partidosData = await partidosResponse.json()
             setPartidos(partidosData)
+            // Calcular progreso basado en partidos ganados
+            const partidosGanados = partidosData.filter((partido: Partido) => partido.ganado).length;
+
+            setUserData((prev) => {
+              if (!prev) return prev;
+
+              const updatedProgress = Math.min(100, prev.progress + partidosGanados * 10);
+
+              // Enviar cambios al backend
+              if (updatedProgress === 100 || partidosGanados > 0) {
+                fetch(`/api/update-progress`, {
+                  method: 'PATCH',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    userId: prev.id, // ID del usuario
+                    progress: updatedProgress === 100 ? 0 : updatedProgress, // Reinicia progreso si llega a 100
+                    nivel: updatedProgress === 100
+                      ? `Nivel ${parseInt(prev.nivel?.split(' ')[1] || '1') + 1}` // Incrementa nivel
+                      : prev.nivel,
+                  }),
+                }).catch((error) => {
+                  console.error('Error al actualizar el progreso:', error);
+                });
+              }
+
+              return {
+                ...prev,
+                progress: updatedProgress,
+                nivel: updatedProgress === 100
+                  ? `Nivel ${parseInt(prev.nivel?.split(' ')[1] || '1') + 1}`
+                  : prev.nivel,
+              };
+            });
           } else {
             console.error('Error al obtener los partidos del usuario')
           }
