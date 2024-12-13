@@ -32,6 +32,7 @@ interface Partido {
   fecha: string
   jugadores: string
   resultado: string
+  ganado: boolean
 }
 
 const menuItems = [
@@ -51,6 +52,7 @@ export default function PerfilPage() {
   const [numSets, setNumSets] = useState('2')
   const [isAddingPartido, setIsAddingPartido] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [ganado, setGanado] = useState<boolean>(false);
   const menuRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
@@ -142,7 +144,8 @@ export default function PerfilPage() {
       userId: userData?.id,
       fecha,
       jugadores: jugadores.join(', '),
-      resultado
+      resultado,
+      ganado
     }
 
     try {
@@ -406,6 +409,20 @@ export default function PerfilPage() {
                         </SelectContent>
                       </Select>
                     </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="ganado" className="text-right">
+                        Resultado
+                      </Label>
+                      <Select value={ganado.toString()} onValueChange={(value) => setGanado(value === 'true')}>
+                        <SelectTrigger className="col-span-3">
+                          <SelectValue placeholder="Seleccionar resultado" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="true">Ganado</SelectItem>
+                          <SelectItem value="false">Perdido</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                     <div className="grid gap-2">
                       <Label className="text-center">Puntuación</Label>
                       {scores.slice(0, parseInt(numSets)).map((set, setIndex) => (
@@ -467,6 +484,7 @@ export default function PerfilPage() {
                   <p><strong>Fecha:</strong> {new Date(partido.fecha).toLocaleDateString()}</p>
                   <p><strong>Jugadores:</strong> {partido.jugadores}</p>
                   <p><strong>Resultado:</strong> {partido.resultado}</p>
+                  <p><strong>Estado:</strong> {partido.ganado ? 'Ganado' : 'Perdido'}</p>
                 </div>
               ))
             ) : (

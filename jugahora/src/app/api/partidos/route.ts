@@ -6,7 +6,7 @@ import prisma from '@/lib/prisma';
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { userId, fecha, jugadores, resultado } = body
+    const { userId, fecha, jugadores, resultado, ganado } = body
 
     const newPartido = await prisma.partidos.create({
       data: {
@@ -14,6 +14,7 @@ export async function POST(request: Request) {
         fecha: new Date(fecha),
         jugadores,
         resultado,
+        ganado: !!ganado, // Asegura que sea un booleano
       },
     })
 
