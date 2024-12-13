@@ -88,7 +88,7 @@ export default function PerfilPage() {
   
           if (partidosResponse.ok) {
             const partidosData = await partidosResponse.json();
-            setPartidos(partidosData);
+            setPartidos(partidosData); // Mantén todos los partidos en el historial
   
             // Filtrar partidos no procesados
             const partidosNoProcesados = partidosData.filter(
@@ -171,6 +171,7 @@ export default function PerfilPage() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [router]);
+  
   
   
 
