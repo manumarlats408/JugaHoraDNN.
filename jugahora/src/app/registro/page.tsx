@@ -121,14 +121,14 @@ export default function PaginaRegistro() {
           <CardTitle className="text-2xl font-bold text-center">
             {currentStep === 1 ? 'Crear una cuenta' : 
              currentStep === 2 ? 'Preferencias de juego' : 
-             'Selecciona tu nivel'}
+             'Selecciona tu categoría'}
           </CardTitle>
           <p className="text-center text-gray-500">
             {currentStep === 1
               ? 'Ingresa tus datos para registrarte'
               : currentStep === 2
               ? 'Cuéntanos sobre tu estilo de juego'
-              : 'A continuación, selecciona tu nivel'}
+              : 'A continuación, selecciona tu categoría'}
           </p>
         </CardHeader>
         <CardContent>
@@ -315,7 +315,7 @@ export default function PaginaRegistro() {
           ) : (
             <form onSubmit={manejarEnvio} className="space-y-4">
               <p className="text-gray-500">
-                A continuación, selecciona el nivel que mejor describe tu experiencia:
+                A continuación, selecciona la categoría que mejor describe tu experiencia:
               </p>
               <ul className="list-disc pl-5 text-gray-700 space-y-2">
                 <li><strong>Categoría 9 (Principiante):</strong> Maneja golpes básicos con poca precisión y control, especialmente en situaciones de juego lento. Suelen preferir los golpes de derecha y están empezando a entender el posicionamiento en la cancha.</li>
@@ -328,7 +328,7 @@ export default function PaginaRegistro() {
                 <li><strong>Categorías 2 y 1 (Profesional):</strong> En estas categorías, los jugadores suelen dedicarse de manera profesional al padel, aunque el nivel de profesionalización puede variar entre ambas categorías. Tienen un dominio avanzado y juegan con gran habilidad y experiencia.</li>
               </ul>
               <div className="space-y-2">
-                <Label htmlFor="nivel">Selecciona tu nivel</Label>
+                <Label htmlFor="nivel">Selecciona tu categoría</Label>
                 <Input
                   id="nivel"
                   type="text"
