@@ -96,51 +96,54 @@ export default function PerfilPage() {
                     );
 
                     if (partidosNoProcesados.length > 0) {
+                        // Calcular incrementos y decrementos
                         const ganados = partidosNoProcesados.filter((partido: Partido) => partido.ganado).length;
                         const perdidos = partidosNoProcesados.filter((partido: Partido) => !partido.ganado).length;
 
-                        // Actualizar progreso y categoría
+                        let updatedProgress = user.progress + ganados * 10 - perdidos * 10;
+                        let updatedCategoria = parseInt(user.nivel || '8'); // Categoría inicial (8 es la peor)
+
+                        // Manejar descenso de categoría
+                        if (updatedProgress >= 100) {
+                            updatedProgress = 0;
+                            if (updatedCategoria > 1) {
+                                updatedCategoria -= 1; // Bajas a una mejor categoría
+                            }
+                        }
+
+                        // Manejar ascenso de categoría
+                        if (updatedProgress < 0) {
+                            if (updatedCategoria < 8) {
+                                updatedProgress = 90; // Restablecer progreso al subir de categoría
+                                updatedCategoria += 1; // Subes a una peor categoría
+                            } else {
+                                updatedProgress = 0; // No puedes subir más allá de la categoría 8
+                            }
+                        }
+
+                        // Actualizar el estado de userData
                         setUserData((prev) => {
                             if (!prev) return prev;
-
-                            let updatedProgress = prev.progress + ganados * 10 - perdidos * 10;
-                            let categoriaActual = parseInt(prev.nivel || '8');
-
-                            // Manejar incremento y decremento de categoría
-                            if (updatedProgress >= 100) {
-                                updatedProgress = 0;
-                                if (categoriaActual > 1) {
-                                    categoriaActual -= 1; // Mejorar categoría
-                                }
-                            } else if (updatedProgress < 0) {
-                                if (categoriaActual < 8) {
-                                    updatedProgress = 90;
-                                    categoriaActual += 1; // Peorar categoría
-                                } else {
-                                    updatedProgress = 0;
-                                }
-                            }
-
-                            // Enviar cambios al backend
-                            fetch(`/api/update-progress`, {
-                                method: 'PATCH',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({
-                                    userId: prev.id,
-                                    progress: updatedProgress,
-                                    nivel: categoriaActual.toString(), // Guardar solo el número
-                                }),
-                            }).catch((error) => {
-                                console.error('Error al actualizar el progreso en la base de datos:', error);
-                            });
-
                             return {
                                 ...prev,
                                 progress: updatedProgress,
-                                nivel: categoriaActual.toString(), // Mostrar el número como categoría
+                                nivel: updatedCategoria.toString(), // Guardar como número en formato string
                             };
+                        });
+
+                        // Enviar al backend para guardar los cambios
+                        await fetch(`/api/update-progress`, {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                userId: user.id,
+                                progress: updatedProgress,
+                                nivel: updatedCategoria.toString(),
+                            }),
+                        }).catch((error) => {
+                            console.error('Error al actualizar el progreso en la base de datos:', error);
                         });
 
                         // Marcar los partidos como procesados en el backend
@@ -179,6 +182,7 @@ export default function PerfilPage() {
         document.removeEventListener('mousedown', handleClickOutside);
     };
 }, [router]);
+
 
 
 
