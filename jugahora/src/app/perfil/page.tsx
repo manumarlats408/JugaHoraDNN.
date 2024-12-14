@@ -101,20 +101,23 @@ export default function PerfilPage() {
                         const perdidos = partidosNoProcesados.filter((partido: Partido) => !partido.ganado).length;
 
                         let updatedProgress = user.progress + ganados * 10 - perdidos * 10;
-                        let updatedNivel = user.nivel || 'Nivel 1';
+                        let updatedCategoria = user.nivel || 'Categoría 8'; // Por defecto, inicia en la peor categoría
 
                         if (updatedProgress >= 100) {
                             updatedProgress = 0;
-                            updatedNivel = `Nivel ${parseInt(updatedNivel.split(' ')[1] || '1') + 1}`;
+                            const categoriaActual = parseInt(updatedCategoria.split(' ')[1] || '8');
+                            if (categoriaActual > 1) {
+                                updatedCategoria = `Categoría ${categoriaActual - 1}`;
+                            }
                         }
 
                         if (updatedProgress < 0) {
-                            const nivelActual = parseInt(updatedNivel.split(' ')[1] || '1');
-                            if (nivelActual > 1) {
-                                updatedProgress = 90; // Restablecer progreso al nivel anterior
-                                updatedNivel = `Nivel ${nivelActual - 1}`;
+                            const categoriaActual = parseInt(updatedCategoria.split(' ')[1] || '8');
+                            if (categoriaActual < 8) {
+                                updatedProgress = 90; // Restablecer progreso al bajar de categoría
+                                updatedCategoria = `Categoría ${categoriaActual + 1}`;
                             } else {
-                                updatedProgress = 0; // No puedes bajar de nivel 1
+                                updatedProgress = 0; // No puedes subir más allá de Categoría 8
                             }
                         }
 
@@ -124,7 +127,7 @@ export default function PerfilPage() {
                             return {
                                 ...prev,
                                 progress: updatedProgress,
-                                nivel: updatedNivel,
+                                nivel: updatedCategoria, // Cambio a categoría
                             };
                         });
 
@@ -137,7 +140,7 @@ export default function PerfilPage() {
                             body: JSON.stringify({
                                 userId: user.id,
                                 progress: updatedProgress,
-                                nivel: updatedNivel,
+                                nivel: updatedCategoria, // Cambio a categoría
                             }),
                         }).catch((error) => {
                             console.error('Error al actualizar el progreso en la base de datos:', error);
@@ -180,9 +183,6 @@ export default function PerfilPage() {
     };
 }, [router]);
 
-  
-  
-  
 
   const handleLogout = async () => {
     try {
@@ -363,11 +363,11 @@ export default function PerfilPage() {
             {userData.nivel && (
               <div className="flex items-center">
                 <User className="w-5 h-5 mr-2 text-gray-500" />
-                <p><strong>Nivel:</strong> {userData.nivel}</p>
+                <p><strong>Categoría:</strong> {userData.nivel}</p>
               </div>
             )}
             <div className="space-y-4">
-            <Label htmlFor="progress" className="block text-green-800 text-lg font-bold">Progreso en el Nivel</Label>
+            <Label htmlFor="progress" className="block text-green-800 text-lg font-bold">Progreso en la Categoría</Label>
             <div className="w-full bg-gray-200 rounded-full h-4">
               <div
                 className="bg-green-600 h-4 rounded-full"
