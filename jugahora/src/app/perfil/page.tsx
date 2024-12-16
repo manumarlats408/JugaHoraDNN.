@@ -491,70 +491,78 @@ const dataEficienciaTotal = {
               <p><strong>Total de Partidos Perdidos:</strong> {partidos.filter((p) => !p.ganado).length}</p>
             </div>
 
+            {/* Gráfico de Eficiencia Total */}
             <div className="flex flex-col mb-8">
-              <p className="font-bold text-green-800 mb-4">Eficiencia Total:</p>
-              <div style={{ width: '300px', height: '300px' }}>
-                <Doughnut 
-                  data={dataEficienciaTotal} 
-                  options={{
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                      legend: {
-                        position: 'top',
-                      },
-                      tooltip: {
-                        callbacks: {
-                          label: function (context) {
-                            const total = (context.dataset.data as number[]).reduce((a, b) => a + b, 0);
-                            const value = context.raw as number;
-                            const percentage = ((value / total) * 100).toFixed(1);
-                            return `${context.label}: ${percentage}% (${value})`;
+              <p className="font-bold text-green-800 text-left w-full mb-4">Eficiencia Total:</p>
+              <div className="flex justify-center">
+                <div style={{ width: '250px', height: '250px' }}>
+                  <Doughnut 
+                    data={dataEficienciaTotal} 
+                    options={{
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      plugins: {
+                        legend: {
+                          position: 'top',
+                        },
+                        tooltip: {
+                          callbacks: {
+                            label: function (context) {
+                              const total = (context.dataset.data as number[]).reduce((a, b) => a + b, 0);
+                              const value = context.raw as number;
+                              const percentage = ((value / total) * 100).toFixed(1);
+                              return `${context.label}: ${percentage}% (${value})`;
+                            },
                           },
                         },
                       },
-                    },
-                  }}
-                />
+                    }}
+                  />
+                </div>
               </div>
             </div>
 
-
-            {/* Gráfico de Eficiencia */}
-            <div>
-              <p className="font-bold text-green-800">Eficiencia con Compañeros:</p>
-              <Bar
-                data={{
-                  labels: Object.keys(eficaciaCompañeros).slice(0, 5), // Top 5 compañeros
-                  datasets: [
-                    {
-                      label: 'Eficiencia (%)',
-                      data: Object.values(eficaciaCompañeros).slice(0, 5),
-                      backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                    },
-                  ],
-                }}
-                options={{
-                  responsive: true,
-                  scales: {
-                    y: {
-                      beginAtZero: true,
-                      max: 100,
-                      title: {
-                        display: true,
-                        text: '% de Victorias',
+            {/* Gráfico de Eficiencia con Compañeros */}
+            <div className="flex flex-col mb-8">
+              <p className="font-bold text-green-800 text-left w-full mb-4">Eficiencia con Compañeros:</p>
+              <div className="flex justify-center">
+                <div style={{ width: '100%', maxWidth: '600px' }}>
+                  <Bar
+                    data={{
+                      labels: Object.keys(eficaciaCompañeros).slice(0, 5), // Top 5 compañeros
+                      datasets: [
+                        {
+                          label: 'Eficiencia (%)',
+                          data: Object.values(eficaciaCompañeros).slice(0, 5),
+                          backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        },
+                      ],
+                    }}
+                    options={{
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      scales: {
+                        y: {
+                          beginAtZero: true,
+                          max: 100,
+                          title: {
+                            display: true,
+                            text: '% de Victorias',
+                          },
+                        },
+                        x: {
+                          title: {
+                            display: true,
+                            text: 'Compañeros',
+                          },
+                        },
                       },
-                    },
-                    x: {
-                      title: {
-                        display: true,
-                        text: 'Compañeros',
-                      },
-                    },
-                  },
-                }}
-              />
+                    }}
+                  />
+                </div>
+              </div>
             </div>
+
           </CardContent>
         </Card>
 
