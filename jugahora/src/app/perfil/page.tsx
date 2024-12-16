@@ -623,6 +623,9 @@ const rachas = calcularRachas(partidos);
             {/* Gráfico de Eficiencia Total */}
             <div className="flex flex-col mb-8">
               <p className="font-bold text-green-800 text-left w-full mb-4">Eficiencia Total:</p>
+              <p className="text-gray-600 text-sm mb-4">
+                Este gráfico de torta muestra el porcentaje de partidos ganados y perdidos en relación al total de partidos jugados.
+              </p>
               <div className="flex justify-center">
                 <div style={{ width: '250px', height: '250px' }}>
                   <Doughnut 
@@ -654,6 +657,9 @@ const rachas = calcularRachas(partidos);
             {/* Gráfico de Eficiencia con Compañeros */}
             <div className="flex flex-col mb-8">
               <p className="font-bold text-green-800 text-left w-full mb-4">Eficiencia con Compañeros:</p>
+              <p className="text-gray-600 text-sm mb-4">
+                Este gráfico de barras muestra el porcentaje de victorias alcanzado con los 5 compañeros más frecuentes.
+              </p>
               <div className="flex justify-center">
                 <div style={{ width: '100%', height: '250px', maxWidth: '600px' }}>
                   <Bar
@@ -695,6 +701,9 @@ const rachas = calcularRachas(partidos);
             {/* Gráfico de lineas */}
             <div className="mb-8">
               <p className="font-bold text-green-800 mb-4">Historial de Victorias Acumuladas</p>
+              <p className="text-gray-600 text-sm mb-4">
+                Este gráfico de líneas muestra cómo evolucionaron tus partidos jugados/ganados a lo largo del tiempo.
+              </p>
               <div style={{ width: '100%', height: '400px' }}>
                 <Line data={dataHistorial} options={opciones} />
               </div>
@@ -703,6 +712,9 @@ const rachas = calcularRachas(partidos);
             {/* Rachas de Partidos con Fechas */}
             <div className="mb-8">
               <p className="font-bold text-green-800 mb-4">Rachas de Partidos</p>
+              <p className="text-gray-600 text-sm mb-4">
+                Aquí puedes ver tus rachas más largas de partidos ganados y perdidos, con las fechas de inicio y fin de cada una.
+              </p>
               <div className="mb-4">
                 <p className="text-green-600 font-bold">
                   🟢 Racha más larga de victorias: {rachas.maxGanadas} partidos
