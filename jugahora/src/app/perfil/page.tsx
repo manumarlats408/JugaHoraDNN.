@@ -492,7 +492,8 @@ const dataEficienciaTotal = {
             </div>
 
             <div className="flex justify-center mb-8">
-              <div style={{ width: '400px', height: '400px' }}>
+            <p className="font-bold text-green-800 mb-2">Eficiencia Total:</p>
+              <div style={{ width: '200px', height: '200px' }}>
                 <Doughnut 
                   data={dataEficienciaTotal} 
                   options={{
