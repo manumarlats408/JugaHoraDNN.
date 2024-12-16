@@ -12,10 +12,10 @@ import { Label } from "@/components/ui/label"
 import { Menu, X, Home, User, Calendar, Users, LogOut, Mail, Phone, MapPin, Clock, Plus, Loader2 } from 'lucide-react'
 import Image from 'next/image'
 import { Bar } from 'react-chartjs-2';
-import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { Chart as ChartJS, LineElement, PointElement, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 import { Doughnut } from 'react-chartjs-2';
-ChartJS.register(ArcElement, Tooltip, Legend);
+ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend);
 import { Line } from 'react-chartjs-2';
 
 
@@ -640,7 +640,8 @@ const dataEficienciaTotal = {
                 </div>
               </div>
             </div>
-
+            
+            {/* Gráfico de lineas */}
             <div className="mb-8">
               <p className="font-bold text-green-800 mb-4">Historial de Victorias Acumuladas</p>
               <div style={{ width: '100%', height: '400px' }}>
