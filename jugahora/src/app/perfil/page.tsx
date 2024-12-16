@@ -491,7 +491,7 @@ const dataEficienciaTotal = {
               <p><strong>Total de Partidos Perdidos:</strong> {partidos.filter((p) => !p.ganado).length}</p>
             </div>
 
-            <div className="flex flex-col items-center mb-8">
+            <div className="flex flex-col mb-8">
               <p className="font-bold text-green-800 mb-4">Eficiencia Total:</p>
               <div style={{ width: '300px', height: '300px' }}>
                 <Doughnut 
