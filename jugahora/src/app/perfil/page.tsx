@@ -491,27 +491,31 @@ const dataEficienciaTotal = {
               <p><strong>Total de Partidos Perdidos:</strong> {partidos.filter((p) => !p.ganado).length}</p>
             </div>
 
-            <div>
-              <p className="font-bold text-green-800 mb-2">Eficiencia Total:</p>
-              <Doughnut
-                data={dataEficienciaTotal}
-                options={{
-                  responsive: true,
-                  plugins: {
-                    legend: { position: 'top' },
-                    tooltip: {
-                      callbacks: {
-                        label: function (context) {
-                          const total = (context.dataset.data as number[]).reduce((a, b) => a + b, 0);
-                          const value = context.raw as number; // Aseguramos que el valor sea un número
-                          const percentage = ((value / total) * 100).toFixed(1);
-                          return `${context.label}: ${percentage}% (${value})`;
+            <div className="flex justify-center mb-8">
+              <div style={{ width: '400px', height: '400px' }}>
+                <Doughnut 
+                  data={dataEficienciaTotal} 
+                  options={{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                      legend: {
+                        position: 'top',
+                      },
+                      tooltip: {
+                        callbacks: {
+                          label: function (context) {
+                            const total = (context.dataset.data as number[]).reduce((a, b) => a + b, 0);
+                            const value = context.raw as number;
+                            const percentage = ((value / total) * 100).toFixed(1);
+                            return `${context.label}: ${percentage}% (${value})`;
+                          },
                         },
                       },
                     },
-                  },
-                }}
-              />
+                  }}
+                />
+              </div>
             </div>
 
             {/* Gráfico de Eficiencia */}
