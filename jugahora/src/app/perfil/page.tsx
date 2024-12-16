@@ -16,7 +16,7 @@ import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, BarElement, T
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 import { Doughnut } from 'react-chartjs-2';
 ChartJS.register(ArcElement, Tooltip, Legend);
-
+import { Line } from 'react-chartjs-2';
 
 
 interface User {
@@ -227,6 +227,84 @@ useEffect(() => {
   }
 }, [partidos, userData]);
 
+// Procesar los datos para acumular partidos jugados y ganados
+const procesarHistorial = (partidos: Partido[]) => {
+  const acumulados: { [key: string]: { jugados: number; ganados: number } } = {};
+
+  // Ordenar partidos por fecha
+  const partidosOrdenados = partidos.sort(
+    (a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime()
+  );
+
+  let jugadosAcumulados = 0;
+  let ganadosAcumulados = 0;
+
+  partidosOrdenados.forEach((partido) => {
+    const fecha = new Date(partido.fecha).toLocaleDateString();
+
+    jugadosAcumulados++;
+    if (partido.ganado) ganadosAcumulados++;
+
+    acumulados[fecha] = { jugados: jugadosAcumulados, ganados: ganadosAcumulados };
+  });
+
+  return acumulados;
+};
+
+// Procesar los datos
+const historial = procesarHistorial(partidos);
+const fechas = Object.keys(historial);
+const partidosJugados = fechas.map((fecha) => historial[fecha].jugados);
+const partidosGanados = fechas.map((fecha) => historial[fecha].ganados);
+
+// Datos para el gráfico
+const dataHistorial = {
+  labels: fechas,
+  datasets: [
+    {
+      label: 'Partidos Jugados',
+      data: partidosJugados,
+      borderColor: 'rgba(255, 99, 132, 1)',
+      backgroundColor: 'rgba(255, 99, 132, 0.2)',
+      fill: false,
+      tension: 0.4,
+    },
+    {
+      label: 'Partidos Ganados',
+      data: partidosGanados,
+      borderColor: 'rgba(75, 192, 192, 1)',
+      backgroundColor: 'rgba(75, 192, 192, 0.2)',
+      fill: false,
+      tension: 0.4,
+    },
+  ],
+};
+
+// Opciones del gráfico
+const opciones = {
+  responsive: true,
+  maintainAspectRatio: false,
+  scales: {
+    x: {
+      title: {
+        display: true,
+        text: 'Fecha',
+      },
+    },
+    y: {
+      beginAtZero: true,
+      title: {
+        display: true,
+        text: 'Cantidad Acumulada',
+      },
+    },
+  },
+  plugins: {
+    legend: {
+      position: 'top' as const,
+    },
+  },
+};
 
 // Preparar datos de eficiencia total
 const totalJugados = partidos.length;
@@ -560,6 +638,13 @@ const dataEficienciaTotal = {
                     }}
                   />
                 </div>
+              </div>
+            </div>
+
+            <div className="mb-8">
+              <p className="font-bold text-green-800 mb-4">Historial de Victorias Acumuladas</p>
+              <div style={{ width: '100%', height: '400px' }}>
+                <Line data={dataHistorial} options={opciones} />
               </div>
             </div>
 
