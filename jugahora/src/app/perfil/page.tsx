@@ -322,6 +322,21 @@ const dataEficienciaTotal = {
     },
   ],
 };
+
+  const rachas = { ganadas: 0, perdidas: 0, maxGanadas: 0, maxPerdidas: 0 };
+
+  partidos.forEach(partido => {
+    if (partido.ganado) {
+      rachas.ganadas++;
+      rachas.perdidas = 0;
+      if (rachas.ganadas > rachas.maxGanadas) rachas.maxGanadas = rachas.ganadas;
+    } else {
+      rachas.perdidas++;
+      rachas.ganadas = 0;
+      if (rachas.perdidas > rachas.maxPerdidas) rachas.maxPerdidas = rachas.perdidas;
+    }
+  });
+
   const handleLogout = async () => {
     try {
       await fetch('/api/logout', {
@@ -646,6 +661,22 @@ const dataEficienciaTotal = {
               <p className="font-bold text-green-800 mb-4">Historial de Victorias Acumuladas</p>
               <div style={{ width: '100%', height: '400px' }}>
                 <Line data={dataHistorial} options={opciones} />
+              </div>
+            </div>
+            
+            {/* Gráfico de rachas */}
+            <div className="mb-8">
+              <p className="font-bold text-green-800 mb-4">Rachas de Partidos</p>
+              <p className="mb-2">Racha Actual: <strong>{rachas.ganadas > 0 ? `Ganados: ${rachas.ganadas}` : `Perdidos: ${rachas.perdidas}`}</strong></p>
+              <div className="flex justify-around">
+                <div>
+                  <p>Racha Máxima de Victorias</p>
+                  <div className="bg-green-500 text-white p-2 text-center rounded">{rachas.maxGanadas}</div>
+                </div>
+                <div>
+                  <p>Racha Máxima de Derrotas</p>
+                  <div className="bg-red-500 text-white p-2 text-center rounded">{rachas.maxPerdidas}</div>
+                </div>
               </div>
             </div>
 
