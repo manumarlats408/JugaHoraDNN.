@@ -604,7 +604,7 @@ const dataEficienciaTotal = {
             <div className="flex flex-col mb-8">
               <p className="font-bold text-green-800 text-left w-full mb-4">Eficiencia con Compañeros:</p>
               <div className="flex justify-center">
-                <div style={{ width: '100%', maxWidth: '600px' }}>
+                <div style={{ width: '100%', height: '250px', maxWidth: '600px' }}>
                   <Bar
                     data={{
                       labels: Object.keys(eficaciaCompañeros).slice(0, 5), // Top 5 compañeros
