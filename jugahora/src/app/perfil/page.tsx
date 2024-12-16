@@ -12,8 +12,10 @@ import { Label } from "@/components/ui/label"
 import { Menu, X, Home, User, Calendar, Users, LogOut, Mail, Phone, MapPin, Clock, Plus, Loader2 } from 'lucide-react'
 import Image from 'next/image'
 import { Bar } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+import { Doughnut } from 'react-chartjs-2';
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 
 
@@ -226,6 +228,22 @@ useEffect(() => {
 }, [partidos, userData]);
 
 
+// Preparar datos de eficiencia total
+const totalJugados = partidos.length;
+const totalGanados = partidos.filter((p) => p.ganado).length;
+const totalPerdidos = totalJugados - totalGanados;
+
+const dataEficienciaTotal = {
+  labels: ['Ganados', 'Perdidos'],
+  datasets: [
+    {
+      label: 'Eficiencia Total',
+      data: [totalGanados, totalPerdidos],
+      backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(255, 99, 132, 0.6)'],
+      hoverBackgroundColor: ['rgba(75, 192, 192, 0.8)', 'rgba(255, 99, 132, 0.8)'],
+    },
+  ],
+};
   const handleLogout = async () => {
     try {
       await fetch('/api/logout', {
@@ -471,6 +489,29 @@ useEffect(() => {
               <p><strong>Total de Partidos Jugados:</strong> {partidos.length}</p>
               <p><strong>Total de Partidos Ganados:</strong> {partidos.filter((p) => p.ganado).length}</p>
               <p><strong>Total de Partidos Perdidos:</strong> {partidos.filter((p) => !p.ganado).length}</p>
+            </div>
+
+            <div>
+              <p className="font-bold text-green-800 mb-2">Eficiencia Total:</p>
+              <Doughnut
+                data={dataEficienciaTotal}
+                options={{
+                  responsive: true,
+                  plugins: {
+                    legend: { position: 'top' },
+                    tooltip: {
+                      callbacks: {
+                        label: function (context) {
+                          const total = (context.dataset.data as number[]).reduce((a, b) => a + b, 0);
+                          const value = context.raw as number; // Aseguramos que el valor sea un número
+                          const percentage = ((value / total) * 100).toFixed(1);
+                          return `${context.label}: ${percentage}% (${value})`;
+                        },
+                      },
+                    },
+                  },
+                }}
+              />
             </div>
 
             {/* Gráfico de Eficiencia */}
