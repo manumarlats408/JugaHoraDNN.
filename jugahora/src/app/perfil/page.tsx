@@ -11,6 +11,11 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Menu, X, Home, User, Calendar, Users, LogOut, Mail, Phone, MapPin, Clock, Plus, Loader2 } from 'lucide-react'
 import Image from 'next/image'
+import { Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+
+
 
 interface User {
   id: string
@@ -54,6 +59,7 @@ export default function PerfilPage() {
   const [isAddingPartido, setIsAddingPartido] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [ganado, setGanado] = useState<boolean>(false);
+  const [eficaciaCompañeros, setEficaciaCompañeros] = useState<{ [key: string]: number }>({});
   const menuRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
@@ -183,7 +189,41 @@ export default function PerfilPage() {
     };
 }, [router]);
 
+useEffect(() => {
+  const calcularEficaciaCompañeros = () => {
+    const compañerosStats: { [key: string]: { ganados: number; total: number } } = {};
 
+    partidos.forEach((partido) => {
+      const jugadores = partido.jugadores.split(', ');
+      const yo = userData?.firstName || 'Yo';
+      const compañero = jugadores.find((j) => j !== yo && !j.includes('Rival'));
+
+      if (compañero) {
+        if (!compañerosStats[compañero]) {
+          compañerosStats[compañero] = { ganados: 0, total: 0 };
+        }
+
+        compañerosStats[compañero].total += 1;
+        if (partido.ganado) {
+          compañerosStats[compañero].ganados += 1;
+        }
+      }
+    });
+
+    // Calcular eficacia por compañero (en %)
+    const eficacia = Object.keys(compañerosStats).reduce((acc, compañero) => {
+      const { ganados, total } = compañerosStats[compañero];
+      acc[compañero] = (ganados / total) * 100;
+      return acc;
+    }, {} as { [key: string]: number });
+
+    setEficaciaCompañeros(eficacia);
+  };
+
+  if (partidos.length > 0) {
+    calcularEficaciaCompañeros();
+  }
+}, [partidos, userData]);
 
 
   const handleLogout = async () => {
@@ -417,6 +457,57 @@ export default function PerfilPage() {
             >
               Editar perfil
             </Button>
+          </CardContent>
+        </Card>
+        
+        <Card className="w-full max-w-lg shadow-lg border-green-100 mb-6">
+          <CardHeader className="bg-green-50 border-b border-green-100">
+            <CardTitle className="text-2xl font-bold text-green-800">
+              Estadísticas de Partidos
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6 space-y-4">
+            <div>
+              <p><strong>Total de Partidos Jugados:</strong> {partidos.length}</p>
+              <p><strong>Total de Partidos Ganados:</strong> {partidos.filter((p) => p.ganado).length}</p>
+              <p><strong>Total de Partidos Perdidos:</strong> {partidos.filter((p) => !p.ganado).length}</p>
+            </div>
+
+            {/* Gráfico de Eficiencia */}
+            <div>
+              <p className="font-bold text-green-800">Eficiencia con Compañeros:</p>
+              <Bar
+                data={{
+                  labels: Object.keys(eficaciaCompañeros).slice(0, 5), // Top 5 compañeros
+                  datasets: [
+                    {
+                      label: 'Eficiencia (%)',
+                      data: Object.values(eficaciaCompañeros).slice(0, 5),
+                      backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    },
+                  ],
+                }}
+                options={{
+                  responsive: true,
+                  scales: {
+                    y: {
+                      beginAtZero: true,
+                      max: 100,
+                      title: {
+                        display: true,
+                        text: '% de Victorias',
+                      },
+                    },
+                    x: {
+                      title: {
+                        display: true,
+                        text: 'Compañeros',
+                      },
+                    },
+                  },
+                }}
+              />
+            </div>
           </CardContent>
         </Card>
 
