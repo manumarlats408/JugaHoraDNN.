@@ -322,20 +322,56 @@ const dataEficienciaTotal = {
     },
   ],
 };
+  // Calcular rachas de victorias y derrotas con fechas
+const calcularRachas = (partidos: Partido[]) => {
+  let maxGanadas = 0,
+    maxPerdidas = 0,
+    tempGanadas = 0,
+    tempPerdidas = 0,
+    inicioGanadas = '',
+    finGanadas = '',
+    inicioPerdidas = '',
+    finPerdidas = '',
+    tempInicioGanadas = '',
+    tempInicioPerdidas = '';
 
-  const rachas = { ganadas: 0, perdidas: 0, maxGanadas: 0, maxPerdidas: 0 };
+  partidos.forEach((partido) => {
+    const fecha = new Date(partido.fecha).toLocaleDateString();
 
-  partidos.forEach(partido => {
     if (partido.ganado) {
-      rachas.ganadas++;
-      rachas.perdidas = 0;
-      if (rachas.ganadas > rachas.maxGanadas) rachas.maxGanadas = rachas.ganadas;
+      if (tempGanadas === 0) tempInicioGanadas = fecha;
+      tempGanadas++;
+      tempPerdidas = 0;
     } else {
-      rachas.perdidas++;
-      rachas.ganadas = 0;
-      if (rachas.perdidas > rachas.maxPerdidas) rachas.maxPerdidas = rachas.perdidas;
+      if (tempPerdidas === 0) tempInicioPerdidas = fecha;
+      tempPerdidas++;
+      tempGanadas = 0;
+    }
+
+    if (tempGanadas > maxGanadas) {
+      maxGanadas = tempGanadas;
+      inicioGanadas = tempInicioGanadas;
+      finGanadas = fecha;
+    }
+    if (tempPerdidas > maxPerdidas) {
+      maxPerdidas = tempPerdidas;
+      inicioPerdidas = tempInicioPerdidas;
+      finPerdidas = fecha;
     }
   });
+
+  return {
+    maxGanadas,
+    inicioGanadas,
+    finGanadas,
+    maxPerdidas,
+    inicioPerdidas,
+    finPerdidas,
+  };
+};
+
+const rachas = calcularRachas(partidos);
+
 
   const handleLogout = async () => {
     try {
@@ -664,19 +700,28 @@ const dataEficienciaTotal = {
               </div>
             </div>
             
-            {/* Gráfico de rachas */}
+            {/* Rachas de Partidos con Fechas */}
             <div className="mb-8">
               <p className="font-bold text-green-800 mb-4">Rachas de Partidos</p>
-              <p className="mb-2">Racha Actual: <strong>{rachas.ganadas > 0 ? `Ganados: ${rachas.ganadas}` : `Perdidos: ${rachas.perdidas}`}</strong></p>
-              <div className="flex justify-around">
-                <div>
-                  <p>Racha Máxima de Victorias</p>
-                  <div className="bg-green-500 text-white p-2 text-center rounded">{rachas.maxGanadas}</div>
-                </div>
-                <div>
-                  <p>Racha Máxima de Derrotas</p>
-                  <div className="bg-red-500 text-white p-2 text-center rounded">{rachas.maxPerdidas}</div>
-                </div>
+              <div className="mb-4">
+                <p className="text-green-600 font-bold">
+                  🟢 Racha más larga de victorias: {rachas.maxGanadas} partidos
+                </p>
+                {rachas.maxGanadas > 0 && (
+                  <p className="text-gray-700">
+                    Desde <strong>{rachas.inicioGanadas}</strong> hasta <strong>{rachas.finGanadas}</strong>
+                  </p>
+                )}
+              </div>
+              <div>
+                <p className="text-red-600 font-bold">
+                  🔴 Racha más larga de derrotas: {rachas.maxPerdidas} partidos
+                </p>
+                {rachas.maxPerdidas > 0 && (
+                  <p className="text-gray-700">
+                    Desde <strong>{rachas.inicioPerdidas}</strong> hasta <strong>{rachas.finPerdidas}</strong>
+                  </p>
+                )}
               </div>
             </div>
 
