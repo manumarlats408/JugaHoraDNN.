@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 interface User {
   id: number;
@@ -58,6 +59,10 @@ export default function ExploreProfiles() {
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Explorar Perfiles</h1>
+        <Link href="/requests" className="text-sm font-medium hover:text-green-500">
+            Solicitudes de Amistad
+        </Link>
+
       {profiles.length > 0 ? (
         profiles.map((profile) => (
           <div key={profile.id} className="border-b py-2 flex justify-between items-center">
