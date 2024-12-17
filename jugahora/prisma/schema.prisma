@@ -31,8 +31,23 @@ model User {
 
   partidosUnidos   Int[]           // Array of IDs of Partidos_club
   Partidos         Partidos[]      // Relación con la tabla Partidos
+
+  // Relaciones de Amistad
+  sentRequests     Friend[]        @relation("FriendSender")
+  receivedRequests Friend[]        @relation("FriendReceiver")
 }
 
+model Friend {
+  id         Int       @id @default(autoincrement()) // Clave primaria
+  userId     Int       // Usuario que envía la solicitud
+  friendId   Int       // Usuario receptor de la solicitud
+  status     String    @default("pending") // Estado de la solicitud: pending, accepted, rejected
+  createdAt  DateTime  @default(now())     // Fecha de creación de la solicitud
+
+  // Relaciones
+  sender     User      @relation("FriendSender", fields: [userId], references: [id])
+  receiver   User      @relation("FriendReceiver", fields: [friendId], references: [id])
+}
 
 model Club {
   id              Int             @id @default(autoincrement())

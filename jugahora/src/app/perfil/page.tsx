@@ -882,6 +882,17 @@ const rachas = calcularRachas(partidos);
             )}
           </CardContent>
         </Card>
+
+        <section className="w-full max-w-lg mb-8">
+          <h2 className="text-xl font-bold text-green-800 mb-4">Explora Nuevos Amigos</h2>
+          <p className="text-sm text-gray-600 mb-4">
+            Conéctate con otros jugadores y envía solicitudes de amistad.
+          </p>
+          <Link href="/explore" className="inline-block">
+            <Button className="bg-green-600 hover:bg-green-700 text-white">Explorar Perfiles</Button>
+          </Link>
+        </section>
+
         </main>
 
         <footer className="py-6 px-4 md:px-6 bg-white border-t border-gray-200">
