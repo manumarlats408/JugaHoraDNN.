@@ -35,18 +35,20 @@ export default function ExploreProfiles() {
 
   const handleSendRequest = async (friendId: number) => {
     try {
+      console.log("Enviando solicitud con userId: 1 y friendId:", friendId); // Debug
       const response = await fetch('/api/friends/send-request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: 1, friendId }), // Reemplaza con el ID actual del usuario logueado
+        body: JSON.stringify({ userId: 1, friendId }), // Reemplaza '1' con el ID del usuario autenticado
       });
-
+  
       const result = await response.json();
       alert(result.message);
     } catch (error) {
       console.error('Error al enviar solicitud:', error);
     }
   };
+  
 
   if (loading) return <p>Cargando perfiles...</p>;
 

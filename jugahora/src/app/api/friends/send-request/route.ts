@@ -9,13 +9,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Datos incompletos." }, { status: 400 });
     }
 
+    // Verificar si ambos usuarios existen
+    const sender = await prisma.user.findUnique({ where: { id: userId } });
+    const receiver = await prisma.user.findUnique({ where: { id: friendId } });
+
+    if (!sender || !receiver) {
+      return NextResponse.json({ message: "Uno de los usuarios no existe." }, { status: 404 });
+    }
+
     // Verifica si la solicitud ya existe
     const existingRequest = await prisma.friend.findFirst({
-      where: { 
-        sender: { id: userId }, 
-        receiver: { id: friendId },
-        status: 'pending',
-      },
+      where: { userId, friendId, status: 'pending' },
     });
 
     if (existingRequest) {
@@ -24,10 +28,10 @@ export async function POST(req: Request) {
 
     // Crea una solicitud de amistad
     await prisma.friend.create({
-      data: { 
+      data: {
         sender: { connect: { id: userId } },
         receiver: { connect: { id: friendId } },
-        status: 'pending',
+        status: "pending",
       },
     });
 
