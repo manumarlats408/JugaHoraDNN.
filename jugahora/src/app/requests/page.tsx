@@ -17,7 +17,9 @@ export default function RequestsPage() {
   const [requests, setRequests] = useState<Request[]>([]);
 
   const getToken = () => {
-    return localStorage.getItem('token'); // Token JWT desde el localStorage
+    const token = localStorage.getItem('token'); // Obtener token JWT
+    console.log('Token obtenido del localStorage:', token); // Log del token
+    return token;
   };
 
   useEffect(() => {
@@ -30,22 +32,29 @@ export default function RequestsPage() {
       }
 
       try {
+        console.log('Iniciando fetch para solicitudes con el token:', token);
+
         const response = await fetch('/api/friends/list-requests', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`, // Enviar token JWT en el header
+            Authorization: `Bearer ${token}`, // Enviar token JWT
           },
         });
 
+        console.log('Respuesta recibida del servidor:', response);
+
         if (response.ok) {
           const data = await response.json();
+          console.log('Solicitudes recibidas:', data);
           setRequests(data);
         } else {
-          console.error('Error al obtener las solicitudes');
+          console.error('Error al obtener las solicitudes. Código de estado:', response.status);
+          const errorData = await response.json();
+          console.error('Detalle del error:', errorData);
         }
       } catch (error) {
-        console.error('Error:', error);
+        console.error('Error en el fetch de solicitudes:', error);
       }
     };
 
@@ -54,28 +63,56 @@ export default function RequestsPage() {
 
   const handleAccept = async (requestId: number) => {
     const token = getToken();
-    await fetch('/api/friends/accept-request', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`, // Enviar token JWT
-      },
-      body: JSON.stringify({ requestId }),
-    });
-    setRequests(requests.filter((req) => req.id !== requestId));
+    console.log(`Enviando solicitud de aceptación para requestId: ${requestId}`);
+
+    try {
+      const response = await fetch('/api/friends/accept-request', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`, // Enviar token JWT
+        },
+        body: JSON.stringify({ requestId }),
+      });
+
+      console.log('Respuesta al aceptar solicitud:', response);
+
+      if (response.ok) {
+        console.log(`Solicitud aceptada correctamente (requestId: ${requestId})`);
+        setRequests(requests.filter((req) => req.id !== requestId));
+      } else {
+        console.error('Error al aceptar solicitud. Código de estado:', response.status);
+      }
+    } catch (error) {
+      console.error('Error al aceptar solicitud:', error);
+    }
   };
 
   const handleReject = async (requestId: number) => {
     const token = getToken();
-    await fetch('/api/friends/reject-request', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`, // Enviar token JWT
-      },
-      body: JSON.stringify({ requestId }),
-    });
-    setRequests(requests.filter((req) => req.id !== requestId));
+    console.log(`Enviando solicitud de rechazo para requestId: ${requestId}`);
+
+    try {
+      const response = await fetch('/api/friends/reject-request', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`, // Enviar token JWT
+        },
+        body: JSON.stringify({ requestId }),
+      });
+
+      console.log('Respuesta al rechazar solicitud:', response);
+
+      if (response.ok) {
+        console.log(`Solicitud rechazada correctamente (requestId: ${requestId})`);
+        setRequests(requests.filter((req) => req.id !== requestId));
+      } else {
+        console.error('Error al rechazar solicitud. Código de estado:', response.status);
+      }
+    } catch (error) {
+      console.error('Error al rechazar solicitud:', error);
+    }
   };
 
   return (
