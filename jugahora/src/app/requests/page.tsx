@@ -16,33 +16,39 @@ interface Request {
 export default function RequestsPage() {
   const [requests, setRequests] = useState<Request[]>([]);
 
-  const getToken = () => {
-    const token = localStorage.getItem('token'); // Obtener token JWT
-    console.log('Token obtenido del localStorage:', token); // Log del token
+  // Función para obtener el token de las cookies
+  const getTokenFromCookies = () => {
+    const cookieHeader = document.cookie;
+    console.log("Cookies obtenidas:", cookieHeader); // Log para depuración
+    const token = cookieHeader
+      ?.split('; ')
+      .find((row) => row.startsWith('token='))
+      ?.split('=')[1];
+    console.log("Token extraído de cookies:", token); // Verificar el token
     return token;
   };
 
   useEffect(() => {
     const fetchRequests = async () => {
-      const token = getToken();
+      const token = getTokenFromCookies();
 
       if (!token) {
-        console.error('Usuario no autenticado o token inválido.');
+        console.error('Usuario no autenticado o token no encontrado en cookies.');
         return;
       }
 
       try {
-        console.log('Iniciando fetch para solicitudes con el token:', token);
+        console.log('Iniciando fetch para solicitudes con token:', token);
 
         const response = await fetch('/api/friends/list-requests', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`, // Enviar token JWT
+            Authorization: `Bearer ${token}`, // Enviar el token en el header
           },
         });
 
-        console.log('Respuesta recibida del servidor:', response);
+        console.log('Respuesta del servidor:', response);
 
         if (response.ok) {
           const data = await response.json();
@@ -62,7 +68,7 @@ export default function RequestsPage() {
   }, []);
 
   const handleAccept = async (requestId: number) => {
-    const token = getToken();
+    const token = getTokenFromCookies();
     console.log(`Enviando solicitud de aceptación para requestId: ${requestId}`);
 
     try {
@@ -70,7 +76,7 @@ export default function RequestsPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`, // Enviar token JWT
+          Authorization: `Bearer ${token}`, // Enviar el token JWT
         },
         body: JSON.stringify({ requestId }),
       });
@@ -89,7 +95,7 @@ export default function RequestsPage() {
   };
 
   const handleReject = async (requestId: number) => {
-    const token = getToken();
+    const token = getTokenFromCookies();
     console.log(`Enviando solicitud de rechazo para requestId: ${requestId}`);
 
     try {
@@ -97,7 +103,7 @@ export default function RequestsPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`, // Enviar token JWT
+          Authorization: `Bearer ${token}`, // Enviar el token JWT
         },
         body: JSON.stringify({ requestId }),
       });
