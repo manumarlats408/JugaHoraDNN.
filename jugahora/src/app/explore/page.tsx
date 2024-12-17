@@ -35,11 +35,15 @@ export default function ExploreProfiles() {
 
   const handleSendRequest = async (friendId: number) => {
     try {
-      console.log("Enviando solicitud con userId: 1 y friendId:", friendId); // Debug
+      const token = localStorage.getItem('token'); // Token almacenado localmente
+  
       const response = await fetch('/api/friends/send-request', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: 1, friendId }), // Reemplaza '1' con el ID del usuario autenticado
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`, // Token en el encabezado
+        },
+        body: JSON.stringify({ friendId }),
       });
   
       const result = await response.json();
@@ -48,7 +52,6 @@ export default function ExploreProfiles() {
       console.error('Error al enviar solicitud:', error);
     }
   };
-  
 
   if (loading) return <p>Cargando perfiles...</p>;
 

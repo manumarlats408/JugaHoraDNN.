@@ -1,32 +1,40 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import jwt from 'jsonwebtoken';
 
 export async function POST(req: Request) {
   try {
-    const { userId, friendId } = await req.json();
+    // Extraer el token de autorización del encabezado
+    const authHeader = req.headers.get('authorization');
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ message: "No autorizado." }, { status: 401 });
+    }
+
+    const token = authHeader.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: number };
+
+    const userId = decoded.userId; // El ID del usuario autenticado
+    const { friendId } = await req.json();
 
     if (!userId || !friendId) {
       return NextResponse.json({ message: "Datos incompletos." }, { status: 400 });
     }
 
-    // Verificar si ambos usuarios existen
-    const sender = await prisma.user.findUnique({ where: { id: userId } });
-    const receiver = await prisma.user.findUnique({ where: { id: friendId } });
-
-    if (!sender || !receiver) {
-      return NextResponse.json({ message: "Uno de los usuarios no existe." }, { status: 404 });
-    }
-
-    // Verifica si la solicitud ya existe
+    // Verificar si ya existe una solicitud pendiente
     const existingRequest = await prisma.friend.findFirst({
-      where: { userId, friendId, status: 'pending' },
+      where: {
+        sender: { id: userId },    // Accede a la relación 'sender'
+        receiver: { id: friendId }, // Accede a la relación 'receiver'
+        status: "pending",
+      },
     });
 
     if (existingRequest) {
       return NextResponse.json({ message: "La solicitud ya fue enviada." }, { status: 400 });
     }
 
-    // Crea una solicitud de amistad
+    // Crear la solicitud de amistad
     await prisma.friend.create({
       data: {
         sender: { connect: { id: userId } },
