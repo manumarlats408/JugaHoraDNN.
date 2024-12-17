@@ -30,33 +30,30 @@ export default function RequestsPage() {
 
   useEffect(() => {
     const fetchRequests = async () => {
-        const token = localStorage.getItem('token'); // Debug: revisar si el token está disponible
-        console.log("Token desde localStorage:", token);
-      
         try {
           const response = await fetch('/api/friends/list-requests', {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
             },
-            credentials: 'include', // Asegura que las cookies se envíen
+            credentials: 'include', // Importante: Enviar cookies HTTP-only
           });
       
-          console.log("Respuesta del servidor:", response);
-      
+          console.log("Respuesta completa del servidor:", response);
           if (response.ok) {
             const data = await response.json();
             console.log("Solicitudes recibidas:", data);
             setRequests(data);
           } else {
-            console.error("Error al obtener solicitudes. Estado:", response.status);
-            const errorData = await response.json();
-            console.error("Detalle del error:", errorData);
+            console.error('Error al obtener las solicitudes. Estado:', response.status);
+            const errorDetail = await response.json();
+            console.error('Detalle del error:', errorDetail);
           }
         } catch (error) {
-          console.error("Error al obtener solicitudes:", error);
+          console.error('Error general:', error);
         }
       };
+      
       
 
     fetchRequests();

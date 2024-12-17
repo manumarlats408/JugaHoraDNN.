@@ -1,25 +1,33 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
 import jwt from 'jsonwebtoken';
-import { JsonWebTokenError } from 'jsonwebtoken';
+import prisma from '@/lib/prisma';
 
 export async function GET(req: Request) {
   try {
-    const authHeader = req.headers.get('Authorization');
+    // Extraer el token de las cookies
+    const cookieHeader = req.headers.get('Cookie');
+    const token = cookieHeader
+      ?.split('; ')
+      .find((row) => row.startsWith('token='))
+      ?.split('=')[1];
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json({ message: "No autorizado." }, { status: 401 });
+    console.log("Token extraído de cookies:", token);
+
+    if (!token) {
+      return NextResponse.json({ message: "No autorizado: Token no encontrado." }, { status: 401 });
     }
 
-    const token = authHeader.split(' ')[1];
+    // Verificar el token
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { id: number };
+    console.log("Token decodificado:", decoded);
 
     const userId = decoded.id;
 
+    // Obtener solicitudes de amistad
     const requests = await prisma.friend.findMany({
-      where: {
+      where: { 
         receiver: { id: userId },
-        status: "pending",
+        status: "pending"
       },
       include: {
         sender: true,
@@ -27,11 +35,8 @@ export async function GET(req: Request) {
     });
 
     return NextResponse.json(requests, { status: 200 });
-  } catch (error: unknown) {
-    if (error instanceof JsonWebTokenError) {
-      console.error("JWT Error:", error.message);
-      return NextResponse.json({ message: "Token inválido." }, { status: 401 });
-    }
+  } catch (error) {
+    console.error("Error al obtener solicitudes:", error);
     return NextResponse.json({ message: "Error interno del servidor." }, { status: 500 });
   }
 }
