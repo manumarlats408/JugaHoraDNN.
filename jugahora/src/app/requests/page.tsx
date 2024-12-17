@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button'; // Reutilizamos botones existentes
+import { Button } from '@/components/ui/button';
 
 interface Request {
   id: number;
@@ -16,15 +16,38 @@ interface Request {
 export default function RequestsPage() {
   const [requests, setRequests] = useState<Request[]>([]);
 
+  // Función para obtener el userId desde el JWT
+  const getUserIdFromToken = () => {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.id; // El campo 'id' en tu token JWT
+    } catch (error) {
+      console.error('Error al decodificar el token:', error);
+      return null;
+    }
+  };
+
   useEffect(() => {
+    const userIdFromToken = getUserIdFromToken();
+    if (!userIdFromToken) {
+      console.error('Usuario no autenticado o token inválido.');
+      return;
+    }
+  
     const fetchRequests = async () => {
       try {
-        const response = await fetch('/api/friends/list-requests', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+        const response = await fetch(
+          `/api/friends/list-requests?userId=${userIdFromToken}`, // Usar el userId directamente aquí
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
         if (response.ok) {
           const data = await response.json();
           setRequests(data);
@@ -35,9 +58,10 @@ export default function RequestsPage() {
         console.error('Error:', error);
       }
     };
-
+  
     fetchRequests();
   }, []);
+  
 
   const handleAccept = async (requestId: number) => {
     await fetch('/api/friends/accept-request', {
@@ -72,7 +96,10 @@ export default function RequestsPage() {
           >
             <div>
               <p>
-                <strong>{request.sender.firstName} {request.sender.lastName}</strong> ({request.sender.email})
+                <strong>
+                  {request.sender.firstName} {request.sender.lastName}
+                </strong>{' '}
+                ({request.sender.email})
               </p>
             </div>
             <div className="flex space-x-2">
