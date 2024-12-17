@@ -648,7 +648,7 @@ const rachas = calcularRachas(partidos);
                 Aquí puedes ver tu lista de amigos y también explorar nuevos perfiles.
               </p>
               <Button
-                onClick={() => (window.location.href = '/explorar')}
+                onClick={() => (window.location.href = '/explore')}
                 className="bg-green-500 hover:bg-green-600 text-white"
               >
                 Explorar Nuevos Perfiles
