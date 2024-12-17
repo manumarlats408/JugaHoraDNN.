@@ -43,6 +43,13 @@ interface Partido {
   procesado: boolean
 }
 
+interface Friend {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
 const menuItems = [
   { href: '/menu', label: 'Menu', icon: Home },
   { href: '/perfil', label: 'Perfil', icon: User },
@@ -62,6 +69,7 @@ export default function PerfilPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [ganado, setGanado] = useState<boolean>(false);
   const [eficaciaCompañeros, setEficaciaCompañeros] = useState<{ [key: string]: number }>({});
+  const [friends, setFriends] = useState<Friend[]>([]);
   const menuRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
@@ -391,6 +399,28 @@ const rachas = calcularRachas(partidos);
     setScores(newScores)
   }
 
+  const fetchFriends = async () => {
+    try {
+      const response = await fetch('/api/friends/list-friends', {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setFriends(data);
+      } else {
+        console.error('Error al obtener la lista de amigos.');
+      }
+    } catch (error) {
+      console.error('Error al conectar con el servidor:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchFriends();
+  }, []);
+
   const handleAddPartido = async () => {
     setIsAddingPartido(true)
     const resultado = scores
@@ -604,6 +634,46 @@ const rachas = calcularRachas(partidos);
             >
               Editar perfil
             </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="w-full max-w-lg shadow-lg border-green-100 mb-6">
+          <CardHeader className="bg-green-50 border-b border-green-100">
+            <CardTitle className="text-2xl font-bold text-green-800">Amigos</CardTitle>
+          </CardHeader>
+
+          <CardContent className="pt-6 space-y-4">
+            <div className="mb-4">
+              <p className="text-gray-600 mb-2">
+                Aquí puedes ver tu lista de amigos y también explorar nuevos perfiles.
+              </p>
+              <Button
+                onClick={() => (window.location.href = '/explorar')}
+                className="bg-green-500 hover:bg-green-600 text-white"
+              >
+                Explorar Nuevos Perfiles
+              </Button>
+            </div>
+
+            {/* Lista de Amigos */}
+            <div>
+              {friends.length > 0 ? (
+                <ul>
+                  {friends.map((friend) => (
+                    <li
+                      key={friend.id}
+                      className="border-b py-2 flex justify-between items-center text-gray-800"
+                    >
+                      <span>
+                        <strong>{friend.firstName} {friend.lastName}</strong> ({friend.email})
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-gray-500">No tienes amigos agregados.</p>
+              )}
+            </div>
           </CardContent>
         </Card>
         
