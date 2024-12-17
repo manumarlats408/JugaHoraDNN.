@@ -16,38 +16,28 @@ interface Request {
 export default function RequestsPage() {
   const [requests, setRequests] = useState<Request[]>([]);
 
-  // Función para obtener el userId desde el JWT
-  const getUserIdFromToken = () => {
-    const token = localStorage.getItem('token');
-    if (!token) return null;
-
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.id; // El campo 'id' en tu token JWT
-    } catch (error) {
-      console.error('Error al decodificar el token:', error);
-      return null;
-    }
+  const getToken = () => {
+    return localStorage.getItem('token'); // Token JWT desde el localStorage
   };
 
   useEffect(() => {
-    const userIdFromToken = getUserIdFromToken();
-    if (!userIdFromToken) {
-      console.error('Usuario no autenticado o token inválido.');
-      return;
-    }
-  
     const fetchRequests = async () => {
+      const token = getToken();
+
+      if (!token) {
+        console.error('Usuario no autenticado o token inválido.');
+        return;
+      }
+
       try {
-        const response = await fetch(
-          `/api/friends/list-requests?userId=${userIdFromToken}`, // Usar el userId directamente aquí
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        );
+        const response = await fetch('/api/friends/list-requests', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`, // Enviar token JWT en el header
+          },
+        });
+
         if (response.ok) {
           const data = await response.json();
           setRequests(data);
@@ -58,16 +48,17 @@ export default function RequestsPage() {
         console.error('Error:', error);
       }
     };
-  
+
     fetchRequests();
   }, []);
-  
 
   const handleAccept = async (requestId: number) => {
+    const token = getToken();
     await fetch('/api/friends/accept-request', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`, // Enviar token JWT
       },
       body: JSON.stringify({ requestId }),
     });
@@ -75,10 +66,12 @@ export default function RequestsPage() {
   };
 
   const handleReject = async (requestId: number) => {
+    const token = getToken();
     await fetch('/api/friends/reject-request', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`, // Enviar token JWT
       },
       body: JSON.stringify({ requestId }),
     });
