@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import jwt from 'jsonwebtoken';
+import { JsonWebTokenError } from 'jsonwebtoken';
+
 
 export async function POST(req: Request) {
   try {
-    // Extraer el token de autorización del encabezado
+    // Extraer el token del encabezado
     const authHeader = req.headers.get('authorization');
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -12,9 +14,13 @@ export async function POST(req: Request) {
     }
 
     const token = authHeader.split(' ')[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: number };
+    console.log("Token recibido:", token); // Depuración
 
-    const userId = decoded.userId; // El ID del usuario autenticado
+    // Verificar el token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: number };
+    console.log("Token decodificado:", decoded);
+
+    const userId = decoded.userId; // ID del usuario autenticado
     const { friendId } = await req.json();
 
     if (!userId || !friendId) {
@@ -24,8 +30,8 @@ export async function POST(req: Request) {
     // Verificar si ya existe una solicitud pendiente
     const existingRequest = await prisma.friend.findFirst({
       where: {
-        sender: { id: userId },    // Accede a la relación 'sender'
-        receiver: { id: friendId }, // Accede a la relación 'receiver'
+        sender: { id: userId },
+        receiver: { id: friendId },
         status: "pending",
       },
     });
@@ -44,8 +50,12 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ message: "Solicitud enviada con éxito." }, { status: 200 });
-  } catch (error) {
-    console.error("Error al enviar solicitud:", error);
+  } catch (error: unknown) {
+    if (error instanceof JsonWebTokenError) {
+      console.error("JWT Error:", error.message);
+    } else if (error instanceof Error) {
+      console.error("Error general:", error.message);
+    }
     return NextResponse.json({ message: "Error interno del servidor." }, { status: 500 });
   }
 }
