@@ -30,39 +30,34 @@ export default function RequestsPage() {
 
   useEffect(() => {
     const fetchRequests = async () => {
-      const token = getTokenFromCookies();
-
-      if (!token) {
-        console.error('Usuario no autenticado o token no encontrado en cookies.');
-        return;
-      }
-
-      try {
-        console.log('Iniciando fetch para solicitudes con token:', token);
-
-        const response = await fetch('/api/friends/list-requests', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`, // Enviar el token en el header
-          },
-        });
-
-        console.log('Respuesta del servidor:', response);
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log('Solicitudes recibidas:', data);
-          setRequests(data);
-        } else {
-          console.error('Error al obtener las solicitudes. Código de estado:', response.status);
-          const errorData = await response.json();
-          console.error('Detalle del error:', errorData);
+        const token = localStorage.getItem('token'); // Debug: revisar si el token está disponible
+        console.log("Token desde localStorage:", token);
+      
+        try {
+          const response = await fetch('/api/friends/list-requests', {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include', // Asegura que las cookies se envíen
+          });
+      
+          console.log("Respuesta del servidor:", response);
+      
+          if (response.ok) {
+            const data = await response.json();
+            console.log("Solicitudes recibidas:", data);
+            setRequests(data);
+          } else {
+            console.error("Error al obtener solicitudes. Estado:", response.status);
+            const errorData = await response.json();
+            console.error("Detalle del error:", errorData);
+          }
+        } catch (error) {
+          console.error("Error al obtener solicitudes:", error);
         }
-      } catch (error) {
-        console.error('Error en el fetch de solicitudes:', error);
-      }
-    };
+      };
+      
 
     fetchRequests();
   }, []);
