@@ -31,7 +31,7 @@ export async function POST(
       console.log('Buscando partido...');
       const match = await prisma.partidos_club.findUnique({
         where: { id: matchId },
-        include: { Club: true }, // Incluir info del club
+        include: { Club: true }, // Incluir información del club
       });
 
       if (!match) {
@@ -44,30 +44,20 @@ export async function POST(
         throw new Error('El partido está completo');
       }
 
-      if (match.usuarios && match.usuarios.includes(userId)) {
+      if (match.usuarios.includes(userId)) {
         console.log('Usuario ya está unido al partido');
         throw new Error('Ya estás unido a este partido');
       }
 
       console.log('Actualizando el partido para agregar el usuario');
-      
+
       // Agregar usuario al partido
       const updatedMatch = await prisma.partidos_club.update({
         where: { id: matchId },
         data: {
           players: match.players + 1,
           usuarios: {
-            push: userId,
-          },
-        },
-      });
-
-      // Agregar partido a la lista de partidos del usuario
-      await prisma.user.update({
-        where: { id: userId },
-        data: {
-          partidosUnidos: {
-            push: matchId,
+            push: userId, // Agregar ID al array de usuarios
           },
         },
       });
@@ -78,17 +68,35 @@ export async function POST(
       if (updatedMatch.players === updatedMatch.maxPlayers) {
         console.log('El partido se ha llenado, enviando email al club...');
 
-        // Verificar que el partido tiene un club asignado
+        // 🔹 Obtener detalles de los jugadores desde la base de datos
+        const jugadores = await prisma.user.findMany({
+          where: { id: { in: updatedMatch.usuarios } },  // Filtrar por IDs en el array `usuarios`
+          select: { firstName: true, email: true },
+        });
+
+        // 🔹 Formatear la lista de jugadores para el email
+        const jugadoresLista = jugadores
+          .map(jugador => `${jugador.firstName || "Usuario"} (${jugador.email})`)
+          .join("<br>");
+
+        // 🔹 Enviar email al club
         if (match.Club && match.Club.email) {
           await sendgrid.send({
             to: match.Club.email, // Email del club que creó el partido
             from: process.env.SENDGRID_FROM_EMAIL as string,
-            subject: "🎾 Partido Completo - Notificación",
+            subject: "🎾 Partido Completo - Detalles",
             html: `
-              <h2>🎾 El partido en ${match.Club.name} está completo!</h2>
-              <p>Ya se han unido 4 jugadores al partido en la cancha ${match.court}.</p>
-              <p>Fecha: ${match.date}</p>
-              <p>Hora: ${match.startTime} - ${match.endTime}</p>
+              <h2>🎾 ¡El partido en ${match.Club.name} está completo!</h2>
+              <p>Ya se han unido 4 jugadores al partido.</p>
+              <h3>📅 Detalles del Partido:</h3>
+              <ul>
+                <li><strong>📍 Club:</strong> ${match.Club.name}</li>
+                <li><strong>📆 Día:</strong> ${match.date.toISOString().split("T")[0]}</li>
+                <li><strong>⏰ Hora:</strong> ${match.startTime} - ${match.endTime}</li>
+                <li><strong>🏟️ Cancha:</strong> ${match.court}</li>
+              </ul>
+              <h3>👥 Jugadores inscritos:</h3>
+              <p>${jugadoresLista}</p>
               <p>Por favor, revisa la plataforma para gestionar la reserva.</p>
             `
           });
