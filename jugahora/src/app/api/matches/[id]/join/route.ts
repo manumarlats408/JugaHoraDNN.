@@ -4,6 +4,9 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { cookies } from 'next/headers';
 import { verifyAuth } from '@/lib/auth';
+import sendgrid from "@sendgrid/mail";
+
+sendgrid.setApiKey(process.env.SENDGRID_API_KEY as string);
 
 export async function POST(
   request: Request,
@@ -14,7 +17,7 @@ export async function POST(
     const matchId = parseInt(params.id);
     console.log('ID del partido:', matchId);
 
-    // Extract token from cookies and verify authentication
+    // Extraer token y verificar autenticación
     const token = cookies().get('token')?.value;
     const userId = await verifyAuth(token);
 
@@ -23,11 +26,12 @@ export async function POST(
       return NextResponse.json({ error: 'No autenticado' }, { status: 401 });
     }
 
-    // Start a transaction to join the user to the match
+    // Iniciar transacción para agregar al usuario al partido
     const result = await prisma.$transaction(async (prisma) => {
       console.log('Buscando partido...');
       const match = await prisma.partidos_club.findUnique({
         where: { id: matchId },
+        include: { Club: true }, // Incluir info del club
       });
 
       if (!match) {
@@ -47,18 +51,18 @@ export async function POST(
 
       console.log('Actualizando el partido para agregar el usuario');
       
-      // Update the match to add the userId to Usuarios array and increment the player count
+      // Agregar usuario al partido
       const updatedMatch = await prisma.partidos_club.update({
         where: { id: matchId },
         data: {
           players: match.players + 1,
           usuarios: {
-            push: userId, // Ensure userId is defined before attempting this operation
+            push: userId,
           },
         },
       });
 
-      // Update the user to add the matchId to PartidosUnidos array
+      // Agregar partido a la lista de partidos del usuario
       await prisma.user.update({
         where: { id: userId },
         data: {
@@ -69,6 +73,31 @@ export async function POST(
       });
 
       console.log('Partido actualizado:', updatedMatch);
+
+      // ✅ Si el partido se llena, enviamos el email al club
+      if (updatedMatch.players === updatedMatch.maxPlayers) {
+        console.log('El partido se ha llenado, enviando email al club...');
+
+        // Verificar que el partido tiene un club asignado
+        if (match.Club && match.Club.email) {
+          await sendgrid.send({
+            to: match.Club.email, // Email del club que creó el partido
+            from: process.env.SENDGRID_FROM_EMAIL as string,
+            subject: "🎾 Partido Completo - Notificación",
+            html: `
+              <h2>🎾 El partido en ${match.Club.name} está completo!</h2>
+              <p>Ya se han unido 4 jugadores al partido en la cancha ${match.court}.</p>
+              <p>Fecha: ${match.date}</p>
+              <p>Hora: ${match.startTime} - ${match.endTime}</p>
+              <p>Por favor, revisa la plataforma para gestionar la reserva.</p>
+            `
+          });
+          console.log('Correo enviado al club correctamente.');
+        } else {
+          console.error('Error: No se encontró email del club.');
+        }
+      }
+
       return updatedMatch;
     });
 
