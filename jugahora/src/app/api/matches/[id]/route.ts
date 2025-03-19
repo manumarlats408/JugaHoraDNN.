@@ -11,10 +11,10 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
   const matchId = parseInt(params.id);
 
   try {
-    // 🔹 Obtener jugadores del partido antes de eliminarlo
+    // 🔹 Obtener detalles del partido antes de eliminarlo
     const match = await prisma.partidos_club.findUnique({
       where: { id: matchId },
-      select: { usuarios: true, Club: true },
+      select: { usuarios: true, Club: true, date: true, startTime: true, endTime: true, court: true },
     });
 
     if (!match) {
@@ -39,8 +39,14 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
         html: `
           <h2>⚠️ Partido Cancelado</h2>
           <p>Hola ${jugador.firstName || "jugador"},</p>
-          <p>Lamentamos informarte que el partido en <strong>${match.Club?.name || "tu club"}</strong> ha sido cancelado.</p>
-          <p>Por favor, revisa la plataforma para encontrar otro partido disponible.</p>
+          <p>Te informamos que el partido en <strong>${match.Club?.name || "tu club"}</strong> ha sido cancelado.</p>
+          <h3>📅 Detalles del Partido:</h3>
+          <ul>
+            <li><strong>📆 Día:</strong> ${match.date.toISOString().split("T")[0]}</li>
+            <li><strong>⏰ Hora:</strong> ${match.startTime} - ${match.endTime}</li>
+            <li><strong>🏟️ Cancha:</strong> ${match.court}</li>
+          </ul>
+          <p>Lamentamos los inconvenientes. Esperamos verte en otro partido pronto.</p>
           <p>Gracias por utilizar <strong>JugáHora</strong>.</p>
         `,
       });
@@ -120,13 +126,20 @@ export async function PATCH(request: Request, { params }: { params: { id: string
         html: `
           <h2>📢 Partido Modificado</h2>
           <p>Hola ${jugador.firstName || "jugador"},</p>
-          <p>El partido en <strong>${oldMatch.Club?.name || "tu club"}</strong> ha sido modificado.</p>
-          <h3>🔄 Cambios:</h3>
+          <p>El partido en <strong>${oldMatch.Club?.name || "tu club"}</strong> ha sido actualizado.</p>
+          <h3>🔄 Cambios realizados:</h3>
           <ul>${cambios.map(cambio => `<li>${cambio}</li>`).join("")}</ul>
-          <p>Por favor, revisa la plataforma para confirmar tu asistencia.</p>
+          <h3>📅 Detalles del Partido:</h3>
+          <ul>
+            <li><strong>📆 Día:</strong> ${new Date(date).toISOString().split("T")[0]}</li>
+            <li><strong>⏰ Hora:</strong> ${startTime} - ${endTime}</li>
+            <li><strong>🏟️ Cancha:</strong> ${court}</li>
+          </ul>
+          <p>Lamentamos cualquier inconveniente que esta modificación pueda causar. Esperamos que aún puedas participar en el partido. En caso de que no puedas asistir, tienes la opción de cancelar tu inscripción a través de la plataforma.</p>
           <p>Gracias por utilizar <strong>JugáHora</strong>.</p>
         `,
       });
+      
     }
 
     console.log("Notificaciones enviadas a los jugadores.");
