@@ -1,0 +1,12 @@
+name: Notificaciones de Partidos
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Ejecuta cada hora (en UTC)
+
+jobs:
+  send_reminders:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hacer petición a la API de recordatorios
+        run: curl -X GET "https://tu-deploy-de-vercel.vercel.app/api/matches/reminder"

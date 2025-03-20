@@ -1,9 +1,0 @@
-{
-    "crons": [
-      {
-        "path": "/api/matches/reminder",
-        "schedule": "0 * * * *"
-      }
-    ]
-  }
-  
