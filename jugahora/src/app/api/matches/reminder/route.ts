@@ -1,5 +1,3 @@
-// app/api/matches/reminder/route.ts
-
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import sendgrid from "@sendgrid/mail";
@@ -10,45 +8,37 @@ export async function GET() {
   console.log("⏳ Verificando partidos para notificar...");
 
   try {
-    // Obtener la fecha y hora actual
     const now = new Date();
+    
+    // 🔹 Obtener hora actual y las horas futuras
+    const horaActual = now.getHours();
+    const minutosActual = now.getMinutes();
+    const hora24h = `${horaActual.toString().padStart(2, "0")}:${minutosActual.toString().padStart(2, "0")}`;
+    const hora12h = `${(horaActual + 12) % 24}:${minutosActual.toString().padStart(2, "0")}`;
 
-    // Calcular la hora en 24h y 12h
-    const in24Hours = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-    const formatted24h = `${String(in24Hours.getHours()).padStart(2, "0")}:${String(in24Hours.getMinutes()).padStart(2, "0")}`;
+    console.log(`🔍 Buscando partidos con startTime en 24h: ${hora24h} o en 12h: ${hora12h}`);
 
-    const in12Hours = new Date(now.getTime() + 12 * 60 * 60 * 1000);
-    const formatted12h = `${String(in12Hours.getHours()).padStart(2, "0")}:${String(in12Hours.getMinutes()).padStart(2, "0")}`;
-
-    console.log(`🔍 Buscando partidos con startTime en 24h: ${formatted24h} o en 12h: ${formatted12h}`);
-
-    // 🔹 Buscar partidos que comienzan en 24h
-    const partidos24h = await prisma.partidos_club.findMany({
+    // 🔹 Buscar partidos llenos en la base de datos
+    const partidos = await prisma.partidos_club.findMany({
       where: {
         players: 4, // Partido lleno
-        date: now.toISOString().split("T")[0], // La fecha de hoy
-        startTime: formatted24h, // Hora exacta en 24h
+        date: {
+          equals: new Date(now.toISOString().split("T")[0]), // ✅ Convertir string a DateTime
+        },
       },
       include: { Club: true },
     });
 
-    // 🔹 Buscar partidos que comienzan en 12h
-    const partidos12h = await prisma.partidos_club.findMany({
-      where: {
-        players: 4, // Partido lleno
-        date: now.toISOString().split("T")[0], // La fecha de hoy
-        startTime: formatted12h, // Hora exacta en 12h
-      },
-      include: { Club: true },
-    });
+    // 🔹 Filtrar partidos con startTime en 24h o 12h
+    const partidosFiltrados24h = partidos.filter(p => p.startTime === hora24h);
+    const partidosFiltrados12h = partidos.filter(p => p.startTime === hora12h);
 
-    console.log(`📌 Partidos en 24h encontrados: ${partidos24h.length}`);
-    console.log(`📌 Partidos en 12h encontrados: ${partidos12h.length}`);
+    console.log(`✅ Partidos encontrados: 24h=${partidosFiltrados24h.length}, 12h=${partidosFiltrados12h.length}`);
 
-    // 🔹 Enviar notificaciones a jugadores de partidos en 24h
-    for (const partido of partidos24h) {
+    // 🔹 Notificar jugadores para partidos en 24h
+    for (const partido of partidosFiltrados24h) {
       const jugadores = await prisma.user.findMany({
-        where: { id: { in: partido.usuarios } }, // Buscar por los IDs del array `usuarios`
+        where: { id: { in: partido.usuarios } },
         select: { email: true, firstName: true },
       });
 
@@ -63,7 +53,7 @@ export async function GET() {
             <p>Tu partido en <strong>${partido.Club.name}</strong> está programado para mañana.</p>
             <h3>📅 Detalles del Partido:</h3>
             <ul>
-              <li><strong>📆 Día:</strong> ${partido.date}</li>
+              <li><strong>📆 Día:</strong> ${partido.date.toISOString().split("T")[0]}</li>
               <li><strong>⏰ Hora:</strong> ${partido.startTime} - ${partido.endTime}</li>
               <li><strong>🏟️ Cancha:</strong> ${partido.court}</li>
             </ul>
@@ -74,8 +64,8 @@ export async function GET() {
       }
     }
 
-    // 🔹 Enviar notificaciones a jugadores de partidos en 12h
-    for (const partido of partidos12h) {
+    // 🔹 Notificar jugadores para partidos en 12h
+    for (const partido of partidosFiltrados12h) {
       const jugadores = await prisma.user.findMany({
         where: { id: { in: partido.usuarios } },
         select: { email: true, firstName: true },
@@ -92,7 +82,7 @@ export async function GET() {
             <p>Tu partido en <strong>${partido.Club.name}</strong> comienza en menos de 12 horas.</p>
             <h3>📅 Detalles del Partido:</h3>
             <ul>
-              <li><strong>📆 Día:</strong> ${partido.date}</li>
+              <li><strong>📆 Día:</strong> ${partido.date.toISOString().split("T")[0]}</li>
               <li><strong>⏰ Hora:</strong> ${partido.startTime} - ${partido.endTime}</li>
               <li><strong>🏟️ Cancha:</strong> ${partido.court}</li>
             </ul>
@@ -106,8 +96,9 @@ export async function GET() {
     console.log("✅ Notificaciones enviadas correctamente.");
     return NextResponse.json({ message: "Notificaciones enviadas correctamente" });
 
-  } catch (error) {
-    console.error("❌ Error al enviar notificaciones:", error);
-    return NextResponse.json({ error: "Error al enviar notificaciones" }, { status: 500 });
+  } catch (error: unknown) {
+    const errMessage = error instanceof Error ? error.message : "Error desconocido";
+    console.error("❌ Error al enviar notificaciones:", errMessage);
+    return NextResponse.json({ error: `Error en la API: ${errMessage}` }, { status: 500 });
   }
 }
