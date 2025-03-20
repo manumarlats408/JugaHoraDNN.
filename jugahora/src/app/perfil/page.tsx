@@ -66,7 +66,7 @@ const menuItems = [
   { href: "/perfil", label: "Perfil", icon: User },
   { href: "/reserva", label: "Reservar", icon: Calendar },
   { href: "/jugar", label: "Unirme a un partido", icon: Users },
-]
+] 
 
 export default function PerfilPage() {
   const [userData, setUserData] = useState<UserData | null>(null)
