@@ -1,102 +1,53 @@
-"use client"
-
-import * as React from "react"
-import { cn } from "@/lib/utils"
+import React, { useState, useRef, useEffect } from 'react';
 
 interface DropdownMenuProps {
-  children: React.ReactNode
+  trigger: React.ReactNode;
+  children: React.ReactNode;
 }
 
-const DropdownMenu = React.forwardRef<
-  HTMLDivElement,
-  DropdownMenuProps
->((props, ref) => {
-  return <div ref={ref}>{props.children}</div>
-})
-DropdownMenu.displayName = "DropdownMenu"
-
-interface DropdownMenuTriggerProps {
-  asChild?: boolean
-  children: React.ReactNode
-}
-
-const DropdownMenuTrigger = React.forwardRef<
-  HTMLButtonElement,
-  React.ButtonHTMLAttributes<HTMLButtonElement> & DropdownMenuTriggerProps
->(({ asChild, children, ...props }, ref) => {
-  const Comp = asChild ? React.cloneElement(children as React.ReactElement, { ref, ...props }) : (
-    <button ref={ref} type="button" {...props}>
-      {children}
-    </button>
-  )
-  return Comp
-})
-DropdownMenuTrigger.displayName = "DropdownMenuTrigger"
-
-interface DropdownMenuContentProps {
-  align?: "start" | "center" | "end"
-  children: React.ReactNode
-  className?: string
-}
-
-const DropdownMenuContent = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & DropdownMenuContentProps
->(({ align = "center", className, children, ...props }, ref) => {
-  const [open, setOpen] = React.useState(false)
-
-  React.useEffect(() => {
+export const DropdownMenu: React.FC<DropdownMenuProps> = ({ trigger, children }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+ 
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (ref && 'current' in ref && ref.current && !(ref.current as HTMLElement).contains(event.target as Node)) {
-        setOpen(false)
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
       }
-    }
+    };
 
-    document.addEventListener("mousedown", handleClickOutside)
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [ref])
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
-    <div
-      ref={ref}
-      className={cn(
-        "absolute z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md",
-        "top-full mt-1",
-        {
-          "left-0": align === "start",
-          "left-1/2 -translate-x-1/2": align === "center",
-          "right-0": align === "end",
-        },
-        className
+    <div className="relative inline-block text-left" ref={dropdownRef}>
+      <div onClick={() => setIsOpen(!isOpen)}>{trigger}</div>
+      {isOpen && (
+        <div className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+          <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+            {children}
+          </div>
+        </div>
       )}
-      {...props}
-    >
-      {children}
     </div>
-  )
-})
-DropdownMenuContent.displayName = "DropdownMenuContent"
+  );
+};
 
-const DropdownMenuItem = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      className
-    )}
-    {...props}
-  />
-))
-DropdownMenuItem.displayName = "DropdownMenuItem"
-
-export {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-}
+export const DropdownMenuItem: React.FC<{ children: React.ReactNode; onClick?: () => void }> = ({ children, onClick }) => (
+  <a
+    href="#"
+    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+    role="menuitem"
+    onClick={(e) => {
+      e.preventDefault();
+      if (onClick) {
+        onClick();
+      }
+    }}
+  >
+    {children}
+  </a>
+);
