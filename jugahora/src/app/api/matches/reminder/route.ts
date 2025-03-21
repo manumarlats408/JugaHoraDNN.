@@ -7,10 +7,12 @@ sendgrid.setApiKey(process.env.SENDGRID_API_KEY as string);
 export async function GET() {
   console.log("⏳ Verificando partidos para notificar...");
 
-  const ahora = new Date();
+  const ahora = new Date(new Date().getTime() - 3 * 60 * 60 * 1000);
+
   const logs: string[] = [];
 
-  logs.push(`🕒 Hora actual (UTC): ${ahora.toISOString()}`);
+  logs.push(`🕒 Hora actual (ARG): ${ahora.toISOString()}`);
+
 
   try {
     const partidos = await prisma.partidos_club.findMany({
