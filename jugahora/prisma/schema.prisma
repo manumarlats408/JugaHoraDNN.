@@ -21,9 +21,32 @@ model User {
   age              Int?
   resetToken       String?         @map("resettoken")
   resetTokenExpiry DateTime?       @map("resettokenexpiry")
+  nivel            String?         // Campo existente para nivel del usuario
+
+  profilePicture   String?         // Nueva columna para foto de perfil
+  preferredSide    String?         // Nueva columna para el lado preferido ("Izquierdo", "Derecho")
+  strengths        String[]       // Nueva columna para fortalezas
+  weaknesses       String[]       // Nueva columna para debilidades
+  progress         Float?          @default(0.0) // Nueva columna para el progreso del nivel
 
   partidosUnidos   Int[]           // Array of IDs of Partidos_club
   Partidos         Partidos[]      // Relación con la tabla Partidos
+
+  // Relaciones de Amistad
+  sentRequests     Friend[]        @relation("FriendSender")
+  receivedRequests Friend[]        @relation("FriendReceiver")
+}
+
+model Friend {
+  id         Int       @id @default(autoincrement()) // Clave primaria
+  userId     Int       // Usuario que envía la solicitud
+  friendId   Int       // Usuario receptor de la solicitud
+  status     String    @default("pending") // Estado de la solicitud: pending, accepted, rejected
+  createdAt  DateTime  @default(now())     // Fecha de creación de la solicitud
+
+  // Relaciones
+  sender     User      @relation("FriendSender", fields: [userId], references: [id])
+  receiver   User      @relation("FriendReceiver", fields: [friendId], references: [id])
 }
 
 model Club {
@@ -44,6 +67,8 @@ model Partidos {
   fecha      DateTime @default(now())
   jugadores  String
   resultado  String
+  ganado     Boolean  // 1 si ganó, 0 si perdió
+  procesado  Boolean  @default(false)
 
   User       User @relation(fields: [userId], references: [id])
 }
@@ -58,6 +83,8 @@ model Partidos_club {
   maxPlayers  Int       @default(4)
   clubId      Int       // Foreign key to Club
   price       Float    // Precio, que puede ser null inicialmente
+  mail24h Boolean @default(false)
+  mail12h Boolean @default(false)
 
   usuarios    Int[]     // Array of User IDs
   Club        Club      @relation(fields: [clubId], references: [id])

@@ -11,16 +11,27 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Menu, X, Home, User, Calendar, Users, LogOut, Mail, Phone, MapPin, Clock, Plus, Loader2 } from 'lucide-react'
 import Image from 'next/image'
+import { Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, LineElement, PointElement, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+import { Doughnut } from 'react-chartjs-2';
+ChartJS.register(ArcElement, LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend);
+import { Line } from 'react-chartjs-2';
+
 
 interface User {
   id: string
   email: string
   firstName?: string
   lastName?: string
-  name?: string
   phoneNumber?: string
   address?: string
   age?: number
+  nivel?: string
+  preferredSide?: string
+  strengths?: string[]
+  weaknesses?: string[]
+  progress: number
 }
 
 interface Partido {
@@ -28,6 +39,15 @@ interface Partido {
   fecha: string
   jugadores: string
   resultado: string
+  ganado: boolean
+  procesado: boolean
+}
+
+interface Friend {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
 }
 
 const menuItems = [
@@ -47,6 +67,9 @@ export default function PerfilPage() {
   const [numSets, setNumSets] = useState('2')
   const [isAddingPartido, setIsAddingPartido] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [ganado, setGanado] = useState<boolean>(false);
+  const [eficaciaCompañeros, setEficaciaCompañeros] = useState<{ [key: string]: number }>({});
+  const [friends, setFriends] = useState<Friend[]>([]);
   const menuRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
@@ -60,54 +83,303 @@ export default function PerfilPage() {
 
   useEffect(() => {
     const fetchUserProfile = async () => {
-      try {
-        setIsLoading(true)
-        const authResponse = await fetch('/api/auth', {
-          method: 'GET',
-          credentials: 'include',
-        })
+        try {
+            setIsLoading(true);
+            const authResponse = await fetch('/api/auth', {
+                method: 'GET',
+                credentials: 'include',
+            });
 
-        if (authResponse.ok) {
-          const data = await authResponse.json()
-          const user = data.entity
-          setUserData(user)
-          setJugadores([user.firstName || user.name || 'Jugador 1', 'Jugador 2', 'Jugador 3', 'Jugador 4'])
+            if (authResponse.ok) {
+                const data = await authResponse.json();
+                const user = data.entity;
+                console.log('User:', user);
+                setUserData(user);
+                setJugadores([user.firstName || 'Jugador 1', 'Jugador 2', 'Jugador 3', 'Jugador 4']);
 
-          const partidosResponse = await fetch(`/api/partidos?userId=${user.id}`, {
-            method: 'GET',
-            credentials: 'include',
-          })
+                const partidosResponse = await fetch(`/api/partidos?userId=${user.id}`, {
+                    method: 'GET',
+                    credentials: 'include',
+                });
 
-          if (partidosResponse.ok) {
-            const partidosData = await partidosResponse.json()
-            setPartidos(partidosData)
-          } else {
-            console.error('Error al obtener los partidos del usuario')
-          }
-        } else {
-          throw new Error('Failed to fetch user data')
+                if (partidosResponse.ok) {
+                    const partidosData = await partidosResponse.json();
+                    setPartidos(partidosData);
+
+                    // Filtrar partidos no procesados
+                    const partidosNoProcesados = partidosData.filter(
+                        (partido: Partido) => !partido.procesado
+                    );
+
+                    if (partidosNoProcesados.length > 0) {
+                        // Calcular incrementos y decrementos
+                        const ganados = partidosNoProcesados.filter((partido: Partido) => partido.ganado).length;
+                        const perdidos = partidosNoProcesados.filter((partido: Partido) => !partido.ganado).length;
+
+                        let updatedProgress = user.progress + ganados * 10 - perdidos * 10;
+                        let updatedCategoria = parseInt(user.nivel || '8'); // Categoría inicial (8 es la peor)
+
+                        // Manejar descenso de categoría
+                        if (updatedProgress >= 100) {
+                            updatedProgress = 0;
+                            if (updatedCategoria > 1) {
+                                updatedCategoria -= 1; // Bajas a una mejor categoría
+                            }
+                        }
+
+                        // Manejar ascenso de categoría
+                        if (updatedProgress < 0) {
+                            if (updatedCategoria < 8) {
+                                updatedProgress = 90; // Restablecer progreso al subir de categoría
+                                updatedCategoria += 1; // Subes a una peor categoría
+                            } else {
+                                updatedProgress = 0; // No puedes subir más allá de la categoría 8
+                            }
+                        }
+
+                        // Actualizar el estado de userData
+                        setUserData((prev) => {
+                            if (!prev) return prev;
+                            return {
+                                ...prev,
+                                progress: updatedProgress,
+                                nivel: updatedCategoria.toString(), // Guardar como número en formato string
+                            };
+                        });
+
+                        // Enviar al backend para guardar los cambios
+                        await fetch(`/api/update-progress`, {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                userId: user.id,
+                                progress: updatedProgress,
+                                nivel: updatedCategoria.toString(),
+                            }),
+                        }).catch((error) => {
+                            console.error('Error al actualizar el progreso en la base de datos:', error);
+                        });
+
+                        // Marcar los partidos como procesados en el backend
+                        await fetch(`/api/marcar-partidos-procesados`, {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ userId: user.id }),
+                        });
+                    }
+                } else {
+                    console.error('Error al obtener los partidos del usuario');
+                }
+            } else {
+                throw new Error('Failed to fetch user data');
+            }
+        } catch (error) {
+            console.error('Error al obtener el perfil del usuario:', error);
+            router.push('/login');
+        } finally {
+            setIsLoading(false);
         }
-      } catch (error) {
-        console.error('Error al obtener el perfil del usuario:', error)
-        router.push('/login')
-      } finally {
-        setIsLoading(false)
-      }
-    }
+    };
 
-    fetchUserProfile()
+    fetchUserProfile();
 
     const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsMenuOpen(false)
+        if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+            setIsMenuOpen(false);
+        }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+    };
+}, [router]);
+
+useEffect(() => {
+  const calcularEficaciaCompañeros = () => {
+    const compañerosStats: { [key: string]: { ganados: number; total: number } } = {};
+
+    partidos.forEach((partido) => {
+      const jugadores = partido.jugadores.split(', ');
+      const yo = userData?.firstName || 'Yo';
+      const compañero = jugadores.find((j) => j !== yo && !j.includes('Rival'));
+
+      if (compañero) {
+        if (!compañerosStats[compañero]) {
+          compañerosStats[compañero] = { ganados: 0, total: 0 };
+        }
+
+        compañerosStats[compañero].total += 1;
+        if (partido.ganado) {
+          compañerosStats[compañero].ganados += 1;
+        }
       }
+    });
+
+    // Calcular eficacia por compañero (en %)
+    const eficacia = Object.keys(compañerosStats).reduce((acc, compañero) => {
+      const { ganados, total } = compañerosStats[compañero];
+      acc[compañero] = (ganados / total) * 100;
+      return acc;
+    }, {} as { [key: string]: number });
+
+    setEficaciaCompañeros(eficacia);
+  };
+
+  if (partidos.length > 0) {
+    calcularEficaciaCompañeros();
+  }
+}, [partidos, userData]);
+
+// Procesar los datos para acumular partidos jugados y ganados
+const procesarHistorial = (partidos: Partido[]) => {
+  const acumulados: { [key: string]: { jugados: number; ganados: number } } = {};
+
+  // Ordenar partidos por fecha
+  const partidosOrdenados = partidos.sort(
+    (a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime()
+  );
+
+  let jugadosAcumulados = 0;
+  let ganadosAcumulados = 0;
+
+  partidosOrdenados.forEach((partido) => {
+    const fecha = new Date(partido.fecha).toLocaleDateString();
+
+    jugadosAcumulados++;
+    if (partido.ganado) ganadosAcumulados++;
+
+    acumulados[fecha] = { jugados: jugadosAcumulados, ganados: ganadosAcumulados };
+  });
+
+  return acumulados;
+};
+
+// Procesar los datos
+const historial = procesarHistorial(partidos);
+const fechas = Object.keys(historial);
+const partidosJugados = fechas.map((fecha) => historial[fecha].jugados);
+const partidosGanados = fechas.map((fecha) => historial[fecha].ganados);
+
+// Datos para el gráfico
+const dataHistorial = {
+  labels: fechas,
+  datasets: [
+    {
+      label: 'Partidos Jugados',
+      data: partidosJugados,
+      borderColor: 'rgba(255, 99, 132, 1)',
+      backgroundColor: 'rgba(255, 99, 132, 0.2)',
+      fill: false,
+      tension: 0.4,
+    },
+    {
+      label: 'Partidos Ganados',
+      data: partidosGanados,
+      borderColor: 'rgba(75, 192, 192, 1)',
+      backgroundColor: 'rgba(75, 192, 192, 0.2)',
+      fill: false,
+      tension: 0.4,
+    },
+  ],
+};
+
+// Opciones del gráfico
+const opciones = {
+  responsive: true,
+  maintainAspectRatio: false,
+  scales: {
+    x: {
+      title: {
+        display: true,
+        text: 'Fecha',
+      },
+    },
+    y: {
+      beginAtZero: true,
+      title: {
+        display: true,
+        text: 'Cantidad Acumulada',
+      },
+    },
+  },
+  plugins: {
+    legend: {
+      position: 'top' as const,
+    },
+  },
+};
+
+// Preparar datos de eficiencia total
+const totalJugados = partidos.length;
+const totalGanados = partidos.filter((p) => p.ganado).length;
+const totalPerdidos = totalJugados - totalGanados;
+
+const dataEficienciaTotal = {
+  labels: ['Ganados', 'Perdidos'],
+  datasets: [
+    {
+      label: 'Eficiencia Total',
+      data: [totalGanados, totalPerdidos],
+      backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(255, 99, 132, 0.6)'],
+      hoverBackgroundColor: ['rgba(75, 192, 192, 0.8)', 'rgba(255, 99, 132, 0.8)'],
+    },
+  ],
+};
+  // Calcular rachas de victorias y derrotas con fechas
+const calcularRachas = (partidos: Partido[]) => {
+  let maxGanadas = 0,
+    maxPerdidas = 0,
+    tempGanadas = 0,
+    tempPerdidas = 0,
+    inicioGanadas = '',
+    finGanadas = '',
+    inicioPerdidas = '',
+    finPerdidas = '',
+    tempInicioGanadas = '',
+    tempInicioPerdidas = '';
+
+  partidos.forEach((partido) => {
+    const fecha = new Date(partido.fecha).toLocaleDateString();
+
+    if (partido.ganado) {
+      if (tempGanadas === 0) tempInicioGanadas = fecha;
+      tempGanadas++;
+      tempPerdidas = 0;
+    } else {
+      if (tempPerdidas === 0) tempInicioPerdidas = fecha;
+      tempPerdidas++;
+      tempGanadas = 0;
     }
 
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
+    if (tempGanadas > maxGanadas) {
+      maxGanadas = tempGanadas;
+      inicioGanadas = tempInicioGanadas;
+      finGanadas = fecha;
     }
-  }, [router])
+    if (tempPerdidas > maxPerdidas) {
+      maxPerdidas = tempPerdidas;
+      inicioPerdidas = tempInicioPerdidas;
+      finPerdidas = fecha;
+    }
+  });
+
+  return {
+    maxGanadas,
+    inicioGanadas,
+    finGanadas,
+    maxPerdidas,
+    inicioPerdidas,
+    finPerdidas,
+  };
+};
+
+const rachas = calcularRachas(partidos);
+
 
   const handleLogout = async () => {
     try {
@@ -127,6 +399,28 @@ export default function PerfilPage() {
     setScores(newScores)
   }
 
+  const fetchFriends = async () => {
+    try {
+      const response = await fetch('/api/friends/list-friends', {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setFriends(data);
+      } else {
+        console.error('Error al obtener la lista de amigos.');
+      }
+    } catch (error) {
+      console.error('Error al conectar con el servidor:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchFriends();
+  }, []);
+
   const handleAddPartido = async () => {
     setIsAddingPartido(true)
     const resultado = scores
@@ -137,7 +431,8 @@ export default function PerfilPage() {
       userId: userData?.id,
       fecha,
       jugadores: jugadores.join(', '),
-      resultado
+      resultado,
+      ganado
     }
 
     try {
@@ -249,12 +544,12 @@ export default function PerfilPage() {
         </div>
       )}
 
-      <main className="flex-1 flex flex-col items-center p-4 bg-gradient-to-b from-green-50 to-white">
+<main className="flex-1 flex flex-col items-center p-4 bg-gradient-to-b from-green-50 to-white">
         <Card className="w-full max-w-lg shadow-lg border-green-100 mb-6">
           <CardHeader className="bg-green-50 border-b border-green-100">
             <CardTitle className="text-2xl font-bold text-green-800 flex items-center">
               <User className="w-6 h-6 mr-2" />
-              Perfil de {userData.firstName || userData.name}
+              Perfil de {userData.firstName}
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6 space-y-4">
@@ -264,7 +559,7 @@ export default function PerfilPage() {
             </div>
             <div className="flex items-center">
               <User className="w-5 h-5 mr-2 text-gray-500" />
-              <p><strong>Nombre completo:</strong> {userData.firstName || userData.name} {userData.lastName || ''}</p>
+              <p><strong>Nombre:</strong> {userData.firstName} {userData.lastName}</p>
             </div>
             {userData.phoneNumber && (
               <div className="flex items-center">
@@ -284,12 +579,234 @@ export default function PerfilPage() {
                 <p><strong>Edad:</strong> {userData.age}</p>
               </div>
             )}
+            {userData.nivel && (
+              <div className="flex items-center">
+                <User className="w-5 h-5 mr-2 text-gray-500" />
+                <p><strong>Categoría:</strong> {userData.nivel}</p>
+              </div>
+            )}
+            <div className="space-y-4">
+            <Label htmlFor="progress" className="block text-green-800 text-lg font-bold">Progreso en la Categoría</Label>
+            <div className="w-full bg-gray-200 rounded-full h-4">
+              <div
+                className="bg-green-600 h-4 rounded-full"
+                style={{ width: `${userData.progress || 0}%` }}
+              ></div>
+            </div>
+            <p className="text-sm text-gray-600">Progreso actual: {userData.progress || 0}%</p>
+            </div>
+            
+            {userData.preferredSide && (
+              <div className="flex items-center">
+                <User className="w-5 h-5 mr-2 text-gray-500" />
+                <p><strong>Lado preferido:</strong> {userData.preferredSide}</p>
+              </div>
+            )}
+            {userData.strengths && userData.strengths.length > 0 && (
+              <div className="flex items-start">
+                <User className="w-5 h-5 mr-2 mt-1 text-gray-500" />
+                <div>
+                  <p><strong>Fortalezas:</strong></p>
+                  <ul className="list-disc pl-5">
+                    {userData.strengths.map((strength, index) => (
+                      <li key={index}>{strength}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
+            {userData.weaknesses && userData.weaknesses.length > 0 && (
+              <div className="flex items-start">
+                <User className="w-5 h-5 mr-2 mt-1 text-gray-500" />
+                <div>
+                  <p><strong>Debilidades:</strong></p>
+                  <ul className="list-disc pl-5">
+                    {userData.weaknesses.map((weakness, index) => (
+                      <li key={index}>{weakness}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
             <Button
-              className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white transition-colors duration-300"
+              className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white"
               onClick={() => router.push('/editar-perfil')}
             >
               Editar perfil
             </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="w-full max-w-lg shadow-lg border-green-100 mb-6">
+          <CardHeader className="bg-green-50 border-b border-green-100">
+            <CardTitle className="text-2xl font-bold text-green-800">Amigos</CardTitle>
+          </CardHeader>
+
+          <CardContent className="pt-6 space-y-4">
+            <div className="mb-4">
+              <p className="text-gray-600 mb-2">
+                Aquí puedes ver tu lista de amigos y también explorar nuevos perfiles.
+              </p>
+              <Button
+                onClick={() => (window.location.href = '/explore')}
+                className="bg-green-500 hover:bg-green-600 text-white"
+              >
+                Explorar Nuevos Perfiles
+              </Button>
+            </div>
+
+            {/* Lista de Amigos */}
+            <div>
+              {friends.length > 0 ? (
+                <ul>
+                  {friends.map((friend) => (
+                    <li
+                      key={friend.id}
+                      className="border-b py-2 flex justify-between items-center text-gray-800"
+                    >
+                      <span>
+                        <strong>{friend.firstName} {friend.lastName}</strong> ({friend.email})
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-gray-500">No tienes amigos agregados.</p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="w-full max-w-lg shadow-lg border-green-100 mb-6">
+          <CardHeader className="bg-green-50 border-b border-green-100">
+            <CardTitle className="text-2xl font-bold text-green-800">
+              Estadísticas de Partidos
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6 space-y-4">
+            <div>
+              <p><strong>Total de Partidos Jugados:</strong> {partidos.length}</p>
+              <p><strong>Total de Partidos Ganados:</strong> {partidos.filter((p) => p.ganado).length}</p>
+              <p><strong>Total de Partidos Perdidos:</strong> {partidos.filter((p) => !p.ganado).length}</p>
+            </div>
+
+            {/* Gráfico de Eficiencia Total */}
+            <div className="flex flex-col mb-8">
+              <p className="font-bold text-green-800 text-left w-full mb-4">Eficiencia Total:</p>
+              <p className="text-gray-600 text-sm mb-4">
+                Este gráfico de torta muestra el porcentaje de partidos ganados y perdidos en relación al total de partidos jugados.
+              </p>
+              <div className="flex justify-center">
+                <div style={{ width: '250px', height: '250px' }}>
+                  <Doughnut 
+                    data={dataEficienciaTotal} 
+                    options={{
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      plugins: {
+                        legend: {
+                          position: 'top',
+                        },
+                        tooltip: {
+                          callbacks: {
+                            label: function (context) {
+                              const total = (context.dataset.data as number[]).reduce((a, b) => a + b, 0);
+                              const value = context.raw as number;
+                              const percentage = ((value / total) * 100).toFixed(1);
+                              return `${context.label}: ${percentage}% (${value})`;
+                            },
+                          },
+                        },
+                      },
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Gráfico de Eficiencia con Compañeros */}
+            <div className="flex flex-col mb-8">
+              <p className="font-bold text-green-800 text-left w-full mb-4">Eficiencia con Compañeros:</p>
+              <p className="text-gray-600 text-sm mb-4">
+                Este gráfico de barras muestra el porcentaje de victorias alcanzado con los 5 compañeros más frecuentes.
+              </p>
+              <div className="flex justify-center">
+                <div style={{ width: '100%', height: '250px', maxWidth: '600px' }}>
+                  <Bar
+                    data={{
+                      labels: Object.keys(eficaciaCompañeros).slice(0, 5), // Top 5 compañeros
+                      datasets: [
+                        {
+                          label: 'Eficiencia (%)',
+                          data: Object.values(eficaciaCompañeros).slice(0, 5),
+                          backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        },
+                      ],
+                    }}
+                    options={{
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      scales: {
+                        y: {
+                          beginAtZero: true,
+                          max: 100,
+                          title: {
+                            display: true,
+                            text: '% de Victorias',
+                          },
+                        },
+                        x: {
+                          title: {
+                            display: true,
+                            text: 'Compañeros',
+                          },
+                        },
+                      },
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+            
+            {/* Gráfico de lineas */}
+            <div className="mb-8">
+              <p className="font-bold text-green-800 mb-4">Historial de Victorias Acumuladas</p>
+              <p className="text-gray-600 text-sm mb-4">
+                Este gráfico de líneas muestra cómo evolucionaron tus partidos jugados/ganados a lo largo del tiempo.
+              </p>
+              <div style={{ width: '100%', height: '400px' }}>
+                <Line data={dataHistorial} options={opciones} />
+              </div>
+            </div>
+            
+            {/* Rachas de Partidos con Fechas */}
+            <div className="mb-8">
+              <p className="font-bold text-green-800 mb-4">Rachas de Partidos</p>
+              <p className="text-gray-600 text-sm mb-4">
+                Aquí puedes ver tus rachas más largas de partidos ganados y perdidos, con las fechas de inicio y fin de cada una.
+              </p>
+              <div className="mb-4">
+                <p className="text-green-600 font-bold">
+                  🟢 Racha más larga de victorias: {rachas.maxGanadas} partidos
+                </p>
+                {rachas.maxGanadas > 0 && (
+                  <p className="text-gray-700">
+                    Desde <strong>{rachas.inicioGanadas}</strong> hasta <strong>{rachas.finGanadas}</strong>
+                  </p>
+                )}
+              </div>
+              <div>
+                <p className="text-red-600 font-bold">
+                  🔴 Racha más larga de derrotas: {rachas.maxPerdidas} partidos
+                </p>
+                {rachas.maxPerdidas > 0 && (
+                  <p className="text-gray-700">
+                    Desde <strong>{rachas.inicioPerdidas}</strong> hasta <strong>{rachas.finPerdidas}</strong>
+                  </p>
+                )}
+              </div>
+            </div>
+
           </CardContent>
         </Card>
 
@@ -349,6 +866,20 @@ export default function PerfilPage() {
                         <SelectContent>
                           <SelectItem value="2">2 Sets</SelectItem>
                           <SelectItem value="3">3 Sets</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="ganado" className="text-right">
+                        Resultado
+                      </Label>
+                      <Select value={ganado.toString()} onValueChange={(value) => setGanado(value === 'true')}>
+                        <SelectTrigger className="col-span-3">
+                          <SelectValue placeholder="Seleccionar resultado" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="true">Ganado</SelectItem>
+                          <SelectItem value="false">Perdido</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -413,6 +944,7 @@ export default function PerfilPage() {
                   <p><strong>Fecha:</strong> {new Date(partido.fecha).toLocaleDateString()}</p>
                   <p><strong>Jugadores:</strong> {partido.jugadores}</p>
                   <p><strong>Resultado:</strong> {partido.resultado}</p>
+                  <p><strong>Estado:</strong> {partido.ganado ? 'Ganado' : 'Perdido'}</p>
                 </div>
               ))
             ) : (
@@ -420,6 +952,17 @@ export default function PerfilPage() {
             )}
           </CardContent>
         </Card>
+
+        <section className="w-full max-w-lg mb-8">
+          <h2 className="text-xl font-bold text-green-800 mb-4">Explora Nuevos Amigos</h2>
+          <p className="text-sm text-gray-600 mb-4">
+            Conéctate con otros jugadores y envía solicitudes de amistad.
+          </p>
+          <Link href="/explore" className="inline-block">
+            <Button className="bg-green-600 hover:bg-green-700 text-white">Explorar Perfiles</Button>
+          </Link>
+        </section>
+
         </main>
 
         <footer className="py-6 px-4 md:px-6 bg-white border-t border-gray-200">

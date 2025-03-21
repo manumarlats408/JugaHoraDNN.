@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
 import { Menu, X, Home, User, Calendar, Users, LogOut, Clock, MapPin, Hash, Search, DollarSign } from 'lucide-react'
 import { toast } from 'react-hot-toast'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader,  DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 
 type Match = {
   id: number
@@ -54,8 +54,11 @@ export default function PaginaJuega() {
   const [minPrice, setMinPrice] = useState<number>(0)
   const [maxPrice, setMaxPrice] = useState<number>(100)
   const [loadingMatches, setLoadingMatches] = useState<{ [key: number]: boolean }>({})
+  const [loadingMatchDetails, setLoadingMatchDetails] = useState<{ [key: number]: boolean }>({})
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null)
+  const [joinedUsers, setJoinedUsers] = useState<User[]>([])
+  const [isUserModalOpen, setIsUserModalOpen] = useState(false)
   const referenciaMenu = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
@@ -221,6 +224,25 @@ export default function PaginaJuega() {
     }
   };
 
+  const handleMatchClick = async (matchId: number) => {
+    setLoadingMatchDetails(prev => ({ ...prev, [matchId]: true }))
+    try {
+      const response = await fetch(`/api/matches/${matchId}/users`)
+      if (response.ok) {
+        const users = await response.json()
+        setJoinedUsers(users)
+        setIsUserModalOpen(true)
+      } else {
+        console.error('Error al obtener los usuarios del partido:', await response.text())
+      }
+    } catch (error) {
+      console.error('Error al conectar con la API para obtener los usuarios:', error)
+    } finally {
+      setLoadingMatchDetails(prev => ({ ...prev, [matchId]: false }))
+    }
+  }
+  
+  
   const handleRetirarse = (idPartido: number) => {
     setSelectedMatchId(idPartido);
     setIsDialogOpen(true);
@@ -346,12 +368,21 @@ export default function PaginaJuega() {
                 </div>
                 <div className="flex-1 min-w-[200px]">
                   <Label htmlFor="date" className="mb-2 block">Fecha</Label>
-                  <Input
-                    id="date"
-                    type="date"
-                    value={dateFilter}
-                    onChange={(e) => setDateFilter(e.target.value)}
-                  />
+                  <div className="flex items-center space-x-2">
+                    <Input
+                      id="date"
+                      type="date"
+                      value={dateFilter}
+                      onChange={(e) => setDateFilter(e.target.value)}
+                    />
+                    <Button
+                      variant="outline"
+                      onClick={() => setDateFilter('')} // Restablece el filtro de fecha
+                      className="px-2"
+                    >
+                      Borrar
+                    </Button>
+                  </div>
                 </div>
                 <div className="flex-1 min-w-[200px]">
                   <Label htmlFor="price" className="mb-2 block">Precio máximo</Label>
@@ -381,7 +412,8 @@ export default function PaginaJuega() {
                 return (
                   <div
                     key={match.id}
-                    className="flex items-center justify-between p-4 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300"
+                    className="flex items-center justify-between p-4 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300 cursor-pointer"
+                    onClick={() => handleMatchClick(match.id)}
                   >
                     <div>
                       <p className="font-semibold text-gray-800">{match.nombreClub}</p>
@@ -410,70 +442,99 @@ export default function PaginaJuega() {
                         {match.price} por jugador
                       </p>
                     </div>
-                    {isUserJoined ? (
-                      <Button
-                        onClick={() => handleRetirarse(match.id)}
-                        disabled={loadingMatches[match.id]}
-                        className="min-w-[100px] bg-red-600 hover:bg-red-700"
-                      >
-                        {loadingMatches[match.id] ? (
-                          <span className="flex items-center">
-                            <svg
-                              className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                            >
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                              <path
-                                className="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                              ></path>
-                            </svg>
-                            Retirándose...
-                          </span>
-                        ) : (
-                          'Retirarse'
-                        )}
-                      </Button>
-                    ) : (
-                      <Button
-                        onClick={() => manejarUnirsePartido(match.id)}
-                        disabled={match.players >= match.maxPlayers || loadingMatches[match.id]}
-                        className="min-w-[100px]"
-                      >
-                        {loadingMatches[match.id] ? (
-                          <span className="flex items-center">
-                            <svg
-                              className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                            >
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                              <path
-                                className="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                              ></path>
-                            </svg>
-                            Uniéndose...
-                          </span>
-                        ) : match.players >= match.maxPlayers ? (
-                          'Completo'
-                        ) : (
-                          'Unirse'
-                        )}
-                      </Button>
+
+                    <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>
+                      {isUserJoined ? (
+                        <Button
+                          onClick={(e) => {
+                            e.stopPropagation(); // Detiene la propagación del clic
+                            handleRetirarse(match.id);
+                          }}
+                          disabled={loadingMatches[match.id]}
+                          className="min-w-[100px] bg-red-600 hover:bg-red-700"
+                        >
+                          {loadingMatches[match.id] ? (
+                            <span className="flex items-center">
+                              <svg
+                                className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                              >
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path
+                                  className="opacity-75"
+                                  fill="currentColor"
+                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                ></path>
+                              </svg>
+                              Retirándose...
+                            </span>
+                          ) : (
+                            'Retirarse'
+                          )}
+                        </Button>
+                      ) : (
+                        <Button
+                          onClick={(e) => {
+                            e.stopPropagation(); // Detiene la propagación del clic
+                            manejarUnirsePartido(match.id);
+                          }}
+                          disabled={match.players >= match.maxPlayers || loadingMatches[match.id]}
+                          className="min-w-[100px]"
+                        >
+                          {loadingMatches[match.id] ? (
+                            <span className="flex items-center">
+                              <svg
+                                className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                              >
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path
+                                  className="opacity-75"
+                                  fill="currentColor"
+                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                ></path>
+                              </svg>
+                              Uniéndose...
+                            </span>
+                          ) : match.players >= match.maxPlayers ? (
+                            'Completo'
+                          ) : (
+                            'Unirse'
+                          )}
+                        </Button>
+                      )}
+                    </div>
+
+                    {loadingMatchDetails[match.id] && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-70 rounded-lg">
+                        <svg
+                          className="animate-spin h-5 w-5 text-green-600"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                      </div>
                     )}
                   </div>
                 );
               })}
+              
               {filteredMatches.length === 0 && (
                 <p className="text-center text-gray-500">No se encontraron partidos que coincidan con los criterios de búsqueda.</p>
               )}
             </div>
+
 
           </CardContent>
         </Card>
@@ -516,6 +577,31 @@ export default function PaginaJuega() {
           </div>
         </DialogContent>
       </Dialog>
+      <Dialog open={isUserModalOpen} onOpenChange={setIsUserModalOpen}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Usuarios Unidos al Partido</DialogTitle>
+        </DialogHeader>
+        <div className="py-4">
+          {joinedUsers.length > 0 ? (
+            <ul className="space-y-2">
+              {joinedUsers.map((user) => (
+                <li key={user.id} className="flex items-center space-x-2">
+                  <Users className="h-4 w-4" />
+                  <span>{`${user.firstName} ${user.lastName}`}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-center text-gray-500">No hay usuarios unidos a este partido.</p>
+          )}
+        </div>
+        <DialogFooter>
+          <Button onClick={() => setIsUserModalOpen(false)}>Cerrar</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+
     </div>
   )
 }
