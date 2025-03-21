@@ -5,11 +5,11 @@ import sendgrid from "@sendgrid/mail"
 sendgrid.setApiKey(process.env.SENDGRID_API_KEY as string)
 
 export async function GET() {
-  console.log("⏳ Verificando partidos para notificar...")
+  const logs = ["⏳ Verificando partidos para notificar..."]
 
   try {
     const now = new Date()
-    console.log("📅 Fecha y hora actual:", now.toISOString())
+    logs.push(`📅 Fecha y hora actual: ${now.toISOString()}`)
 
     // Obtener todos los partidos llenos
     const partidos = await prisma.partidos_club.findMany({
@@ -19,7 +19,17 @@ export async function GET() {
       include: { Club: true },
     })
 
-    console.log(`📊 Total partidos encontrados: ${partidos.length}`)
+    logs.push(`📊 Total partidos encontrados: ${partidos.length}`)
+
+    // Información detallada de los partidos para debugging
+    const partidosInfo = partidos.map((p) => ({
+      id: p.id,
+      fecha: p.date.toISOString().split("T")[0],
+      hora: p.startTime,
+      jugadores: p.usuarios.length,
+      club: p.Club.name,
+    }))
+    logs.push(`📊 Detalles de partidos: ${JSON.stringify(partidosInfo)}`)
 
     // Arrays para almacenar partidos que necesitan notificación
     const partidos24h = []
@@ -36,24 +46,24 @@ export async function GET() {
       const diffMs = partidoDate.getTime() - now.getTime()
       const diffHours = diffMs / (1000 * 60 * 60)
 
-      console.log(
-        `📊 Partido ID ${partido.id}: fecha ${partidoDate.toISOString()}, diferencia: ${diffHours.toFixed(2)} horas`,
+      logs.push(
+        `📊 Partido ID ${partido.id}: fecha ${partidoDate.toISOString()}, hora ${partido.startTime}, diferencia: ${diffHours.toFixed(2)} horas`,
       )
 
       // Verificar si el partido está a ~24 horas (entre 23.5 y 24.5 horas)
       if (diffHours >= 23.5 && diffHours <= 24.5) {
         partidos24h.push(partido)
-        console.log(`✅ Partido ID ${partido.id} seleccionado para notificación de 24h`)
+        logs.push(`✅ Partido ID ${partido.id} seleccionado para notificación de 24h`)
       }
 
       // Verificar si el partido está a ~12 horas (entre 11.5 y 12.5 horas)
       if (diffHours >= 11.5 && diffHours <= 12.5) {
         partidos12h.push(partido)
-        console.log(`✅ Partido ID ${partido.id} seleccionado para notificación de 12h`)
+        logs.push(`✅ Partido ID ${partido.id} seleccionado para notificación de 12h`)
       }
     }
 
-    console.log(`📊 Partidos para notificar: 24h=${partidos24h.length}, 12h=${partidos12h.length}`)
+    logs.push(`📊 Partidos para notificar: 24h=${partidos24h.length}, 12h=${partidos12h.length}`)
 
     // Enviar notificaciones para partidos de 24h
     for (const partido of partidos24h) {
@@ -62,8 +72,10 @@ export async function GET() {
         select: { email: true, firstName: true },
       })
 
+      logs.push(`📊 Jugadores para partido ${partido.id}: ${jugadores.length}`)
+
       for (const jugador of jugadores) {
-        console.log(`📩 Enviando notificación de 24h a: ${jugador.email}`)
+        logs.push(`📩 Enviando notificación de 24h a: ${jugador.email}`)
         try {
           await sendgrid.send({
             to: jugador.email,
@@ -83,9 +95,9 @@ export async function GET() {
               <p>Gracias por utilizar <strong>JugáHora</strong>.</p>
             `,
           })
-          console.log(`✅ Email enviado a ${jugador.email} para partido de 24h`)
+          logs.push(`✅ Email enviado a ${jugador.email} para partido de 24h`)
         } catch (emailError) {
-          console.error(`❌ Error al enviar email a ${jugador.email}:`, emailError)
+          logs.push(`❌ Error al enviar email a ${jugador.email}: ${emailError}`)
         }
       }
     }
@@ -97,8 +109,10 @@ export async function GET() {
         select: { email: true, firstName: true },
       })
 
+      logs.push(`📊 Jugadores para partido ${partido.id}: ${jugadores.length}`)
+
       for (const jugador of jugadores) {
-        console.log(`📩 Enviando notificación de 12h a: ${jugador.email}`)
+        logs.push(`📩 Enviando notificación de 12h a: ${jugador.email}`)
         try {
           await sendgrid.send({
             to: jugador.email,
@@ -118,14 +132,16 @@ export async function GET() {
               <p>Gracias por utilizar <strong>JugáHora</strong>.</p>
             `,
           })
-          console.log(`✅ Email enviado a ${jugador.email} para partido de 12h`)
+          logs.push(`✅ Email enviado a ${jugador.email} para partido de 12h`)
         } catch (emailError) {
-          console.error(`❌ Error al enviar email a ${jugador.email}:`, emailError)
+          logs.push(`❌ Error al enviar email a ${jugador.email}: ${emailError}`)
         }
       }
     }
 
-    console.log("✅ Proceso de notificaciones completado.")
+    logs.push("✅ Proceso de notificaciones completado.")
+
+    // Devolver todos los logs en la respuesta para mejor debugging
     return NextResponse.json({
       success: true,
       message: "Proceso de notificaciones completado",
@@ -134,6 +150,8 @@ export async function GET() {
         partidos12h: partidos12h.length,
         total: partidos.length,
       },
+      logs: logs,
+      partidosInfo: partidosInfo,
     })
   } catch (error: unknown) {
     const errMessage = error instanceof Error ? error.message : "Error desconocido"
@@ -141,7 +159,13 @@ export async function GET() {
     if (error instanceof Error && error.stack) {
       console.error("Stack trace:", error.stack)
     }
-    return NextResponse.json({ error: `Error en la API: ${errMessage}` }, { status: 500 })
+    return NextResponse.json(
+      {
+        error: `Error en la API: ${errMessage}`,
+        logs: logs,
+      },
+      { status: 500 },
+    )
   }
 }
 
