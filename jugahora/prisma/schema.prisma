@@ -83,6 +83,8 @@ model Partidos_club {
   maxPlayers  Int       @default(4)
   clubId      Int       // Foreign key to Club
   price       Float    // Precio, que puede ser null inicialmente
+  mail24h Boolean @default(false)
+  mail12h Boolean @default(false)
 
   usuarios    Int[]     // Array of User IDs
   Club        Club      @relation(fields: [clubId], references: [id])
