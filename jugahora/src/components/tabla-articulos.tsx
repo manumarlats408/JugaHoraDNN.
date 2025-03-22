@@ -40,6 +40,7 @@ export function TablaArticulos({ articulos, cargando, onActualizar }: TablaArtic
         throw new Error(resultado.error)
       }
     } catch (error) {
+        console.error(error)
       toast({
         title: "Error",
         description: "No se pudo actualizar el artículo",
@@ -70,6 +71,7 @@ export function TablaArticulos({ articulos, cargando, onActualizar }: TablaArtic
         throw new Error(resultado.error)
       }
     } catch (error) {
+        console.error(error)
       toast({
         title: "Error",
         description: "No se pudo actualizar el artículo",

@@ -25,6 +25,7 @@ export function ListadoArticulos() {
         const datos = await respuesta.json()
         setArticulos(datos)
       } catch (error) {
+            console.error(error)
         toast({
           title: "Error",
           description: "No se pudieron cargar los artículos",
@@ -77,6 +78,7 @@ export function ListadoArticulos() {
         throw new Error(resultado.error)
       }
     } catch (error) {
+        console.error(error)
       toast({
         title: "Error",
         description: "No se pudieron importar los artículos",
@@ -98,6 +100,7 @@ export function ListadoArticulos() {
         description: "Artículos exportados correctamente",
       })
     } catch (error) {
+        console.error(error)
       toast({
         title: "Error",
         description: "No se pudieron exportar los artículos",

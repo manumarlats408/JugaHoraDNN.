@@ -27,6 +27,7 @@ export function MovimientosFinancieros() {
       const datos = await respuesta.json()
       setMovimientos(datos)
     } catch (error) {
+        console.error(error)
       toast({
         title: "Error",
         description: "No se pudieron cargar los movimientos",
