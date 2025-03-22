@@ -152,6 +152,7 @@ export function ClubDashboard() {
   }, [matches, selectedDate])
 
   const handleLogout = async () => {
+    console.log("Logout clicked");
     try {
       await fetch("/api/logout", {
         method: "GET",

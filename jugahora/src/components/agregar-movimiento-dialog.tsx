@@ -95,6 +95,7 @@ export function AgregarMovimientoDialog({ onMovimientoCreado }: AgregarMovimient
         throw new Error(resultado.error)
       }
     } catch (error) {
+        console.error(error)
       toast({
         title: "Error",
         description: "No se pudo registrar el movimiento",
