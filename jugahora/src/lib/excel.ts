@@ -8,6 +8,8 @@ export async function importarArticulosDesdeExcel(buffer: ArrayBuffer): Promise<
   // Simular procesamiento de archivo Excel
   await new Promise((resolve) => setTimeout(resolve, 1000))
 
+  console.log(buffer) // <-- Usa la variable para evitar el error
+
   // En un caso real, aquí procesaríamos el buffer con una biblioteca como xlsx
   // Para este ejemplo, simplemente devolvemos algunos artículos de prueba
 
@@ -47,6 +49,8 @@ export async function exportarArticulosAExcel(articulos: Articulo[]): Promise<Ar
   // Simular generación de archivo Excel
   await new Promise((resolve) => setTimeout(resolve, 1000))
 
+
+    console.log(articulos)
   // En un caso real, aquí generaríamos un buffer con una biblioteca como xlsx
   // Para este ejemplo, simplemente devolvemos un buffer vacío
 
