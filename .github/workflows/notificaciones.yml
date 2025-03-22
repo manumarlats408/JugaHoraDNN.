@@ -10,4 +10,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Llamar a la API
-        run: curl -X GET "https://jugahora.vercel.app/api/matches/reminder"
+        run: curl -X GET "https://www.jugahora.com.ar/api/matches/reminder"
+
