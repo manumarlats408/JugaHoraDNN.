@@ -94,7 +94,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Link href="/dashboard/partidos">
+        <Link href="/partidos">
           <Card className="hover:shadow-md transition-shadow cursor-pointer">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-sm font-medium">Partidos Próximos</CardTitle>
@@ -109,7 +109,7 @@ export default function DashboardPage() {
           </Card>
         </Link>
 
-        <Link href="/dashboard/inventario">
+        <Link href="/inventario">
           <Card className="hover:shadow-md transition-shadow cursor-pointer">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-sm font-medium">Artículos en Inventario</CardTitle>
@@ -122,7 +122,7 @@ export default function DashboardPage() {
           </Card>
         </Link>
 
-        <Link href="/dashboard/finanzas">
+        <Link href="/finanzas">
           <Card className="hover:shadow-md transition-shadow cursor-pointer">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-sm font-medium">Balance Financiero</CardTitle>
@@ -203,7 +203,7 @@ export default function DashboardPage() {
                   ))}
                 <div className="pt-2">
                   <Button variant="outline" size="sm" asChild>
-                    <Link href="/dashboard/inventario">Ver inventario completo</Link>
+                    <Link href="/inventario">Ver inventario completo</Link>
                   </Button>
                 </div>
               </div>
@@ -241,7 +241,7 @@ export default function DashboardPage() {
                 ))}
                 <div className="pt-2">
                   <Button variant="outline" size="sm" asChild>
-                    <Link href="/dashboard/finanzas">Ver todos los movimientos</Link>
+                    <Link href="/finanzas">Ver todos los movimientos</Link>
                   </Button>
                 </div>
               </div>
