@@ -151,18 +151,7 @@ export function ClubDashboard() {
     }
   }, [matches, selectedDate])
 
-  const handleLogout = async () => {
-    console.log("Logout clicked");
-    try {
-      await fetch("/api/logout", {
-        method: "GET",
-        credentials: "include",
-      })
-      router.push("/")
-    } catch (error) {
-      console.error("Error al cerrar sesión:", error)
-    }
-  }
+  
 
   const handleCreateMatch = async () => {
     if (!clubData) return
