@@ -9,6 +9,13 @@ export interface Articulo {
     activo: boolean
     ultimaModificacion: string
   }
+  export interface Partido {
+    id: string
+    court: string
+    date: string
+    startTime: string
+    price: number
+  }
   
   export interface Movimiento {
     id: string
@@ -21,5 +28,11 @@ export interface Articulo {
     egreso: number | null
     ingreso: number | null
   }
+  
+  export interface Club {
+    id: string
+    name: string
+  }
+  
   
   

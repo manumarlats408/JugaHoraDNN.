@@ -6,14 +6,15 @@ import { formatearPrecio } from "@/lib/utils"
 import Link from "next/link"
 import { CalendarIcon, Package, DollarSign, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import type { Articulo, Movimiento } from "@/lib/tipos"
+import type { Articulo, Movimiento, Partido, Club } from "@/lib/tipos"
 
 export default function DashboardPage() {
   const [articulos, setArticulos] = useState<Articulo[]>([])
   const [movimientos, setMovimientos] = useState<Movimiento[]>([])
-  const [partidos, setPartidos] = useState<any[]>([])
+  const [partidos, setPartidos] = useState<Partido[]>([])
   const [cargando, setCargando] = useState(true)
-  const [clubData, setClubData] = useState<any>(null)
+  const [clubData, setClubData] = useState<Club | null>(null)
+
 
   useEffect(() => {
     async function cargarDatos() {
