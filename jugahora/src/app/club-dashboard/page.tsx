@@ -170,7 +170,7 @@ export default function DashboardPage() {
                 ))}
                 <div className="pt-2">
                   <Button variant="outline" size="sm" asChild>
-                    <Link href="/dashboard/partidos">Ver todos los partidos</Link>
+                    <Link href="/partidos">Ver todos los partidos</Link>
                   </Button>
                 </div>
               </div>
