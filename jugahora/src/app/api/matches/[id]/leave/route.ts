@@ -57,6 +57,14 @@ export async function POST(
         },
       });
 
+      // ✅ Si el partido quedó vacío, reseteamos la categoría
+      if (updatedMatch.players === 0) {
+        await prisma.partidos_club.update({
+          where: { id: matchId },
+          data: { categoria: null },
+        });
+      }
+
       // Actualiza el usuario para remover el `matchId` de su array `partidosUnidos`
       await prisma.user.update({
         where: { id: userId },

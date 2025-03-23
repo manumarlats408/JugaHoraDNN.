@@ -25,6 +25,7 @@ type Match = {
   price: number
   direccionClub: string
   usuarios: number[]
+  categoria: string
 }
 
 type User = {
@@ -416,7 +417,11 @@ export default function PaginaJuega() {
                     onClick={() => handleMatchClick(match.id)}
                   >
                     <div>
-                      <p className="font-semibold text-gray-800">{match.nombreClub}</p>
+                      {match.players === 0 && (
+                        <p className="text-sm text-blue-600 font-medium mb-1">
+                          🎯 Si sos el primer jugador, el partido se ajustará a tu nivel.
+                        </p>
+                      )}
                       <p className="text-sm text-gray-500 flex items-center">
                         <Calendar className="w-4 h-4 mr-1" />
                         {match.date.split("T")[0]}
@@ -441,6 +446,12 @@ export default function PaginaJuega() {
                         <DollarSign className="w-4 h-4 mr-1" />
                         {match.price} por jugador
                       </p>
+                      {match.players > 0 && match.categoria && (
+                        <p className="text-sm text-gray-500 flex items-center">
+                          <Hash className="w-4 h-4 mr-1" />
+                          Nivel requerido: {match.categoria}
+                        </p>
+                      )}
                     </div>
 
                     <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>
