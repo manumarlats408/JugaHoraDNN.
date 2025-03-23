@@ -17,19 +17,19 @@ export function Navbar() {
     },
     {
       name: "Partidos",
-      href: "/dashboard/partidos",
+      href: "/partidos",
       icon: <CalendarIcon className="h-5 w-5" />,
       active: pathname === "/dashboard/partidos",
     },
     {
       name: "Inventario",
-      href: "/dashboard/inventario",
+      href: "/inventario",
       icon: <Package className="h-5 w-5" />,
       active: pathname === "/dashboard/inventario",
     },
     {
       name: "Finanzas",
-      href: "/dashboard/finanzas",
+      href: "/finanzas",
       icon: <DollarSign className="h-5 w-5" />,
       active: pathname === "/dashboard/finanzas",
     },
