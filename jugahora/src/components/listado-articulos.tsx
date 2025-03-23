@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState, useEffect } from "react"
-import { Search, Download, Upload, Plus } from "lucide-react"
+import { Search, Download, Upload } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { TablaArticulos } from "@/components/tabla-articulos"
