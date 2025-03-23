@@ -417,6 +417,7 @@ export default function PaginaJuega() {
                     onClick={() => handleMatchClick(match.id)}
                   >
                     <div>
+                      <p className="font-semibold text-gray-800">{match.nombreClub}</p>
                       {match.players === 0 && (
                         <p className="text-sm text-blue-600 font-medium mb-1">
                           🎯 Si sos el primer jugador, el partido se ajustará a tu nivel.
