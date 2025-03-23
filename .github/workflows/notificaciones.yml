@@ -2,7 +2,7 @@ name: Notificaciones de Partidos
 
 on:
   schedule:
-    - cron: '0 * * * *'  # Cada hora en UTC
+    - cron: '*/30 * * * *'  # Cada hora en UTC
   workflow_dispatch:  # Para ejecutarlo manualmente
 
 jobs:
