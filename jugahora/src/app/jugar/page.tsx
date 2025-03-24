@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
-import { Menu, X, Home, User, Calendar, Users, LogOut, Clock, MapPin, Hash, Search, DollarSign } from 'lucide-react'
+import { Menu, X, Home, User, Calendar, Users, LogOut, Clock, MapPin, Hash, Search, DollarSign, Trophy } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { Dialog, DialogContent, DialogHeader,  DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 
@@ -425,7 +425,7 @@ export default function PaginaJuega() {
                       )}
                       <p className="text-sm text-gray-500 flex items-center">
                         <Calendar className="w-4 h-4 mr-1" />
-                        {match.date.split("T")[0]}
+                        {new Date(match.date).toLocaleDateString('es-AR')}
                       </p>
                       <p className="text-sm text-gray-500 flex items-center">
                         <Clock className="w-4 h-4 mr-1" />
@@ -437,7 +437,7 @@ export default function PaginaJuega() {
                       </p>
                       <p className="text-sm text-gray-500 flex items-center">
                         <Hash className="w-4 h-4 mr-1" />
-                        {match.court}
+                        Cancha: {match.court}
                       </p>
                       <p className="text-sm text-gray-500 flex items-center">
                         <Users className="w-4 h-4 mr-1" />
@@ -449,7 +449,7 @@ export default function PaginaJuega() {
                       </p>
                       {match.players > 0 && match.categoria && (
                         <p className="text-sm text-gray-500 flex items-center">
-                          <Hash className="w-4 h-4 mr-1" />
+                          <Trophy className="w-4 h-4 mr-1" />
                           Nivel requerido: {match.categoria}
                         </p>
                       )}
