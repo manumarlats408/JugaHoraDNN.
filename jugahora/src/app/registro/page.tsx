@@ -64,10 +64,11 @@ export default function PaginaRegistro() {
         })
 
         if (respuesta.ok) {
+          await respuesta.json();
           if (isClub) {
-            router.push('/login'); // Redirigir al login si es club
+            router.push('/login'); // Redirigir directamente al login si es club
           } else {
-            setCurrentStep(2); // Pasar al segundo paso (jugador)
+            setCurrentStep(2); // Solo avanzar si es jugador
           }
         } else {
           const datos = await respuesta.json()
