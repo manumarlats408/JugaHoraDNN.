@@ -19,7 +19,6 @@ export async function POST(
       return NextResponse.json({ error: 'No autenticado' }, { status: 401 });
     }
 
-    // Obtener datos del jugador (nivel)
     const jugador = await prisma.user.findUnique({
       where: { id: userId },
       select: { id: true, nivel: true, firstName: true, email: true },
@@ -39,36 +38,27 @@ export async function POST(
       if (match.players >= match.maxPlayers) throw new Error('El partido está completo');
       if (match.usuarios.includes(userId)) throw new Error('Ya estás unido a este partido');
 
-      // Validación de categoría
+      // Asignar o validar categoría
       if (match.players === 0) {
-        // Primera persona, se asigna su nivel como categoría
         await prisma.partidos_club.update({
           where: { id: matchId },
           data: { categoria: jugador.nivel },
         });
       } else {
-        // Validar que coincida con la categoría
-        if (match.categoria == null) {
-          throw new Error('Este partido no tiene categoría definida');
-        }
-
-        if (jugador.nivel !== match.categoria) {
+        if (match.categoria == null || jugador.nivel !== match.categoria) {
           throw new Error(`Este partido es para nivel ${match.categoria}. Tu nivel actual es ${jugador.nivel}.`);
         }
-        
       }
 
       const updatedMatch = await prisma.partidos_club.update({
         where: { id: matchId },
         data: {
           players: match.players + 1,
-          usuarios: {
-            push: userId,
-          },
+          usuarios: { push: userId },
         },
       });
 
-      // Notificar al club si se llenó el partido
+      // 🔔 Notificación si se llenó el partido
       if (updatedMatch.players === updatedMatch.maxPlayers && match.Club?.email) {
         const jugadores = await prisma.user.findMany({
           where: { id: { in: updatedMatch.usuarios } },
@@ -85,7 +75,7 @@ export async function POST(
           subject: "🎾 Partido Completo - Detalles",
           html: `
             <h2>🎾 ¡El partido en ${match.Club.name} está completo!</h2>
-            <p>Ya se han unido 4 jugadores al partido.</p>
+            <p>Se han unido 4 jugadores al partido.</p>
             <ul>
               <li><strong>📆 Día:</strong> ${match.date.toISOString().split("T")[0]}</li>
               <li><strong>⏰ Hora:</strong> ${match.startTime} - ${match.endTime}</li>
@@ -95,6 +85,36 @@ export async function POST(
             ${jugadoresLista}
           `,
         });
+      }
+
+      // 🔔 Notificación si el partido queda con 3 jugadores
+      if (updatedMatch.players === 3 && match.categoria !== null) {
+        const usuariosNivel = await prisma.user.findMany({
+          where: {
+            nivel: match.categoria,
+            NOT: { id: { in: updatedMatch.usuarios } },
+          },
+          select: { email: true, firstName: true },
+        });
+
+        for (const user of usuariosNivel) {
+          await sendgrid.send({
+            to: user.email,
+            from: process.env.SENDGRID_FROM_EMAIL as string,
+            subject: "🎾 ¡Unite a este partido de tu nivel!",
+            html: `
+              <h2>🎾 ¡Un partido de nivel ${match.categoria} necesita un jugador!</h2>
+              <p>Hay un lugar disponible en un partido que coincide con tu nivel:</p>
+              <ul>
+                <li><strong>📍 Club:</strong> ${match.Club.name}</li>
+                <li><strong>📆 Día:</strong> ${match.date.toISOString().split("T")[0]}</li>
+                <li><strong>⏰ Hora:</strong> ${match.startTime} - ${match.endTime}</li>
+                <li><strong>🏟️ Cancha:</strong> ${match.court}</li>
+              </ul>
+              <p>¡Unite desde la plataforma antes de que se llene!</p>
+            `,
+          });
+        }
       }
 
       return updatedMatch;

@@ -141,6 +141,36 @@ export async function POST(
         console.log('Correos enviados a los jugadores restantes.');
       }
 
+      // 🔔 Notificar si quedó con 3 jugadores
+      if (match.players === 4 && updatedMatch.players === 3 && match.categoria !== null) {
+        const usuariosNivel = await prisma.user.findMany({
+          where: {
+            nivel: match.categoria,
+            NOT: { id: { in: updatedMatch.usuarios } },
+          },
+          select: { email: true, firstName: true },
+        });
+
+        for (const user of usuariosNivel) {
+          await sendgrid.send({
+            to: user.email,
+            from: process.env.SENDGRID_FROM_EMAIL as string,
+            subject: "🎾 ¡Unite a este partido de tu nivel!",
+            html: `
+              <h2>🎾 ¡Un partido de nivel ${match.categoria} necesita un jugador!</h2>
+              <p>Un jugador se retiró de un partido que coincide con tu nivel:</p>
+              <ul>
+                <li><strong>📍 Club:</strong> ${match.Club.name}</li>
+                <li><strong>📆 Día:</strong> ${match.date.toISOString().split("T")[0]}</li>
+                <li><strong>⏰ Hora:</strong> ${match.startTime} - ${match.endTime}</li>
+                <li><strong>🏟️ Cancha:</strong> ${match.court}</li>
+              </ul>
+              <p>¡Unite desde la plataforma antes de que se llene!</p>
+            `,
+          });
+        }
+      }
+
       return updatedMatch;
     });
 
