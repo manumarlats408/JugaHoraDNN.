@@ -53,11 +53,9 @@ export async function POST(
         }
 
         if (jugador.nivel !== match.categoria) {
-          return NextResponse.json(
-            { error: `Este partido es para nivel ${match.categoria}. Tu nivel actual es ${jugador.nivel}.` },
-            { status: 403 }
-          );
+          throw new Error(`Este partido es para nivel ${match.categoria}. Tu nivel actual es ${jugador.nivel}.`);
         }
+        
       }
 
       const updatedMatch = await prisma.partidos_club.update({
