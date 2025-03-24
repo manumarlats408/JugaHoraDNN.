@@ -64,7 +64,12 @@ export default function PaginaRegistro() {
         })
 
         if (respuesta.ok) {
-          setCurrentStep(2) // Pasar al segundo paso (preferencias del jugador)
+          await respuesta.json();
+          if (isClub) {
+            router.push('/login'); // Redirigir directamente al login si es club
+          } else {
+            setCurrentStep(2); // Solo avanzar si es jugador
+          }
         } else {
           const datos = await respuesta.json()
           setError(datos.error || 'Ocurrió un error durante el registro')

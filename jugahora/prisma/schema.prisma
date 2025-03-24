@@ -85,6 +85,7 @@ model Partidos_club {
   price       Float    // Precio, que puede ser null inicialmente
   mail24h Boolean @default(false)
   mail12h Boolean @default(false)
+  categoria   String?  // 
 
   usuarios    Int[]     // Array of User IDs
   Club        Club      @relation(fields: [clubId], references: [id])

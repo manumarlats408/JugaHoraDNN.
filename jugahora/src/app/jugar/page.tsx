@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
-import { Menu, X, Home, User, Calendar, Users, LogOut, Clock, MapPin, Hash, Search, DollarSign } from 'lucide-react'
+import { Menu, X, Home, User, Calendar, Users, LogOut, Clock, MapPin, Hash, Search, DollarSign, Trophy } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { Dialog, DialogContent, DialogHeader,  DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 
@@ -25,6 +25,7 @@ type Match = {
   price: number
   direccionClub: string
   usuarios: number[]
+  categoria: string
 }
 
 type User = {
@@ -417,9 +418,14 @@ export default function PaginaJuega() {
                   >
                     <div>
                       <p className="font-semibold text-gray-800">{match.nombreClub}</p>
+                      {match.players === 0 && (
+                        <p className="text-sm text-blue-600 font-medium mb-1">
+                          🎯 Si sos el primer jugador, el partido se ajustará a tu nivel.
+                        </p>
+                      )}
                       <p className="text-sm text-gray-500 flex items-center">
                         <Calendar className="w-4 h-4 mr-1" />
-                        {match.date.split("T")[0]}
+                        {new Date(match.date).toLocaleDateString('es-AR')}
                       </p>
                       <p className="text-sm text-gray-500 flex items-center">
                         <Clock className="w-4 h-4 mr-1" />
@@ -431,7 +437,7 @@ export default function PaginaJuega() {
                       </p>
                       <p className="text-sm text-gray-500 flex items-center">
                         <Hash className="w-4 h-4 mr-1" />
-                        {match.court}
+                        Cancha: {match.court}
                       </p>
                       <p className="text-sm text-gray-500 flex items-center">
                         <Users className="w-4 h-4 mr-1" />
@@ -441,6 +447,12 @@ export default function PaginaJuega() {
                         <DollarSign className="w-4 h-4 mr-1" />
                         {match.price} por jugador
                       </p>
+                      {match.players > 0 && match.categoria && (
+                        <p className="text-sm text-gray-500 flex items-center">
+                          <Trophy className="w-4 h-4 mr-1" />
+                          Nivel requerido: {match.categoria}
+                        </p>
+                      )}
                     </div>
 
                     <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>
