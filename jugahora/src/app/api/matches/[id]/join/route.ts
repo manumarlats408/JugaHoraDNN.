@@ -69,6 +69,7 @@ export async function POST(
           .map(j => `${j.firstName || 'Jugador'} (${j.email})`)
           .join("<br>");
 
+        // Email al club
         await sendgrid.send({
           to: match.Club.email,
           from: process.env.SENDGRID_FROM_EMAIL as string,
@@ -85,6 +86,28 @@ export async function POST(
             ${jugadoresLista}
           `,
         });
+
+        // Email a los jugadores
+        for (const jugador of jugadores) {
+          await sendgrid.send({
+            to: jugador.email,
+            from: process.env.SENDGRID_FROM_EMAIL as string,
+            subject: "✅ Tu partido ha sido confirmado",
+            html: `
+              <h2>🎾 ¡Partido confirmado!</h2>
+              <p>Hola ${jugador.firstName || 'jugador'},</p>
+              <p>El partido en <strong>${match.Club.name}</strong> ya se encuentra completo.</p>
+              <h3>📅 Detalles:</h3>
+              <ul>
+                <li><strong>Día:</strong> ${match.date.toISOString().split("T")[0]}</li>
+                <li><strong>Hora:</strong> ${match.startTime} - ${match.endTime}</li>
+                <li><strong>Cancha:</strong> ${match.court}</li>
+              </ul>
+              <p>¡Nos vemos en la cancha! 🏆</p>
+              <p style="font-size: 12px; color: #888;">JugáHora</p>
+            `,
+          });
+        }
       }
 
       // 🔔 Notificación si el partido queda con 3 jugadores
