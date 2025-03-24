@@ -14,7 +14,7 @@ export async function DELETE() {
 
     const partidosParaBorrar = partidos.filter((partido) => {
       const fecha = partido.date.toISOString().split("T")[0];
-      const end = partido.endTime || "00:00";
+      const end = partido.startTime || "00:00";
       const [hh, mm] = end.split(":");
       const endDate = new Date(`${fecha}T${hh.padStart(2, '0')}:${mm.padStart(2, '0')}:00`);
 
