@@ -1,5 +1,6 @@
 "use client"
 
+import { Sidebar } from "@/components/layout/sidebar"
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatearPrecio } from "@/lib/utils"
@@ -88,6 +89,9 @@ export default function DashboardPage() {
   }
 
   return (
+    <div className="flex min-h-screen">
+      {/* Sidebar fijo */}
+      <Sidebar />
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Dashboard {clubData?.name ? `de ${clubData.name}` : ""}</h1>
@@ -251,6 +255,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+    </div>
     </div>
   )
 }
