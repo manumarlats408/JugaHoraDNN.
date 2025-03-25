@@ -19,7 +19,7 @@ export function Sidebar() {
           <DollarSign size={20} className="text-green-600" />
         </Link>
 
-        <Link href="/club-dashboard" className="flex items-center justify-center w-10 h-10 rounded-md hover:bg-gray-100">
+        <Link href="/partidos" className="flex items-center justify-center w-10 h-10 rounded-md hover:bg-gray-100">
           <CalendarIcon size={20} className="text-gray-600" />
         </Link>
 
