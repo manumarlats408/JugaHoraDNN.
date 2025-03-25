@@ -17,13 +17,11 @@ export async function actualizarArticulo(articulo: Articulo) {
 
 export async function importarArticulos(formData: FormData) {
   try {
-    // Aseguramos que la URL sea absoluta y correcta
-    const url = new URL("/api/importar-articulos", window.location.origin).toString()
-
-    const response = await fetch(url, {
+    // En un Server Action no podemos usar window.location.origin
+    // Usamos directamente la ruta relativa
+    const response = await fetch("/api/importar-articulos", {
       method: "POST",
       body: formData,
-      // No incluimos 'Content-Type' para que el navegador establezca el boundary correcto para FormData
     })
 
     if (!response.ok) {
@@ -35,12 +33,10 @@ export async function importarArticulos(formData: FormData) {
     }
 
     const data = await response.json()
-    // Eliminamos revalidatePath ya que no conocemos la ruta correcta
     return { success: true, data }
   } catch (error: unknown) {
     console.error("Error en importarArticulos:", error)
 
-    // Manejar el error con el tipo correcto
     let errorMessage = "Error desconocido al importar artículos"
 
     if (error instanceof Error) {
