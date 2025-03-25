@@ -60,6 +60,8 @@ model Club {
   updatedAt       DateTime        @updatedAt
   Partidos_club   Partidos_club[] // Relación con Partidos_club
   Evento_club     Evento_club[]
+  Articulo           Articulo[]
+  MovimientoFinanciero         MovimientoFinanciero[]
 }
 
 model Partidos {
@@ -107,4 +109,33 @@ model Evento_club {
   parejas      String[] // nombres de las parejas inscriptas
 
   Club         Club     @relation(fields: [clubId], references: [id])
+}
+
+model Articulo {
+  id            Int      @id @default(autoincrement())
+  codigo        String
+  nombre        String
+  precioCompra  Float
+  precioVenta   Float
+  tipo          String
+  mostrarStock  Boolean  @default(true)
+  activo        Boolean  @default(true)
+  updatedAt     DateTime @updatedAt
+  clubId        Int
+  Club          Club     @relation(fields: [clubId], references: [id])
+}
+
+
+model MovimientoFinanciero {
+  id              Int      @id @default(autoincrement())
+  concepto        String
+  jugador         String?
+  cancha          String?
+  fechaTurno      DateTime?
+  fechaMovimiento DateTime
+  metodoPago      String
+  egreso          Float?
+  ingreso         Float?
+  clubId          Int
+  Club            Club     @relation(fields: [clubId], references: [id])
 }
