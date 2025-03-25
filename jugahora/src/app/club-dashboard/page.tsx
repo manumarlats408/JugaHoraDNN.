@@ -7,15 +7,15 @@ import { formatearPrecio } from "@/lib/utils"
 import Link from "next/link"
 import { CalendarIcon, Package, DollarSign, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import type { Articulo, Movimiento, Partido, Club } from "@/lib/tipos"
+import type { Articulo, Movimiento, Partido, Club, Evento } from "@/lib/tipos"
 
 export default function DashboardPage() {
   const [articulos, setArticulos] = useState<Articulo[]>([])
   const [movimientos, setMovimientos] = useState<Movimiento[]>([])
   const [partidos, setPartidos] = useState<Partido[]>([])
+  const [eventos, setEventos] = useState<Evento[]>([]) // 👉 NUEVO
   const [cargando, setCargando] = useState(true)
   const [clubData, setClubData] = useState<Club | null>(null)
-
 
   useEffect(() => {
     async function cargarDatos() {
@@ -32,14 +32,23 @@ export default function DashboardPage() {
           const data = await authResponse.json()
           setClubData(data.entity)
 
-          // Cargar partidos
           if (data.entity?.id) {
+            // Cargar partidos
             const partidosResponse = await fetch(`/api/matches?clubId=${data.entity.id}`, {
               credentials: "include",
             })
             if (partidosResponse.ok) {
               const partidosData = await partidosResponse.json()
               setPartidos(partidosData)
+            }
+
+            // 👉 Cargar eventos
+            const eventosResponse = await fetch(`/api/eventos?clubId=${data.entity.id}`, {
+              credentials: "include",
+            })
+            if (eventosResponse.ok) {
+              const eventosData = await eventosResponse.json()
+              setEventos(eventosData)
             }
           }
         }
@@ -51,7 +60,7 @@ export default function DashboardPage() {
           setArticulos(articulosData)
         }
 
-        // Cargar movimientos financieros (últimos 7 días)
+        // Cargar movimientos financieros
         const fechaDesde = new Date()
         fechaDesde.setDate(fechaDesde.getDate() - 7)
         const fechaHasta = new Date()
@@ -73,7 +82,7 @@ export default function DashboardPage() {
     cargarDatos()
   }, [])
 
-  // Calcular estadísticas
+  // Estadísticas
   const articulosActivos = articulos.filter((a) => a.activo).length
   const totalIngresos = movimientos.reduce((total, m) => total + (m.ingreso || 0), 0)
   const totalEgresos = movimientos.reduce((total, m) => total + (m.egreso || 0), 0)
@@ -90,56 +99,75 @@ export default function DashboardPage() {
 
   return (
     <div className="flex min-h-screen">
-      {/* Sidebar fijo */}
       <Sidebar />
-    <div className="flex-1 ml-[4rem] p-6 space-y-6 overflow-auto">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Dashboard {clubData?.name ? `de ${clubData.name}` : ""}</h1>
-      </div>
+      <div className="flex-1 ml-[4rem] p-6 space-y-6 overflow-auto">
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold">Dashboard {clubData?.name ? `de ${clubData.name}` : ""}</h1>
+        </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Link href="/partidos">
-          <Card className="hover:shadow-md transition-shadow cursor-pointer">
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium">Partidos Próximos</CardTitle>
-              <CalendarIcon className="h-4 w-4 text-green-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{partidosProximos}</div>
-              <p className="text-xs text-muted-foreground">
-                {partidosProximos === 1 ? "partido programado" : "partidos programados"}
-              </p>
-            </CardContent>
-          </Card>
-        </Link>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {/* 👉 Partidos */}
+          <Link href="/partidos">
+            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                <CardTitle className="text-sm font-medium">Partidos Próximos</CardTitle>
+                <CalendarIcon className="h-4 w-4 text-green-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{partidosProximos}</div>
+                <p className="text-xs text-muted-foreground">
+                  {partidosProximos === 1 ? "partido programado" : "partidos programados"}
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
 
-        <Link href="/inventario">
-          <Card className="hover:shadow-md transition-shadow cursor-pointer">
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium">Artículos en Inventario</CardTitle>
-              <Package className="h-4 w-4 text-blue-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{articulosActivos}</div>
-              <p className="text-xs text-muted-foreground">{articulos.length} artículos en total</p>
-            </CardContent>
-          </Card>
-        </Link>
+          {/* 👉 Eventos */}
+          <Link href="/eventos">
+            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                <CardTitle className="text-sm font-medium">Eventos Programados</CardTitle>
+                <CalendarIcon className="h-4 w-4 text-indigo-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{eventos.length}</div>
+                <p className="text-xs text-muted-foreground">
+                  {eventos.length === 1 ? "evento programado" : "eventos programados"}
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
 
-        <Link href="/finanzas">
-          <Card className="hover:shadow-md transition-shadow cursor-pointer">
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium">Balance Financiero</CardTitle>
-              <DollarSign className="h-4 w-4 text-emerald-500" />
-            </CardHeader>
-            <CardContent>
-              <div className={`text-2xl font-bold ${saldoNeto >= 0 ? "text-green-600" : "text-red-600"}`}>
-                {formatearPrecio(saldoNeto)}
-              </div>
-              <p className="text-xs text-muted-foreground">Últimos 7 días</p>
-            </CardContent>
-          </Card>
-        </Link>
+          {/* 👉 Inventario */}
+          <Link href="/inventario">
+            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                <CardTitle className="text-sm font-medium">Artículos en Inventario</CardTitle>
+                <Package className="h-4 w-4 text-blue-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{articulosActivos}</div>
+                <p className="text-xs text-muted-foreground">{articulos.length} artículos en total</p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          {/* 👉 Finanzas */}
+          <Link href="/finanzas">
+            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                <CardTitle className="text-sm font-medium">Balance Financiero</CardTitle>
+                <DollarSign className="h-4 w-4 text-emerald-500" />
+              </CardHeader>
+              <CardContent>
+                <div className={`text-2xl font-bold ${saldoNeto >= 0 ? "text-green-600" : "text-red-600"}`}>
+                  {formatearPrecio(saldoNeto)}
+                </div>
+                <p className="text-xs text-muted-foreground">Últimos 7 días</p>
+              </CardContent>
+            </Card>
+          </Link>
+      
 
         <Card className="hover:shadow-md transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">

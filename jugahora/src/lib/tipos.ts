@@ -33,6 +33,21 @@ export interface Articulo {
     id: string
     name: string
   }
+
+  export interface Evento {
+    id: number
+    nombre: string
+    date: string
+    startTime: string
+    endTime: string
+    categoria: string
+    genero: string
+    tipo: string
+    maxParejas: number
+    formato: string
+    clubId: number
+  }
+  
   
   
   
