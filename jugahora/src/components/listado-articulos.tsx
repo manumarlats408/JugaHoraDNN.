@@ -8,7 +8,7 @@ import { Search, Download, Upload } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { TablaArticulos } from "@/components/tabla-articulos"
-import { exportarArticulos, importarArticulos } from "@/lib/acciones"
+import { importarArticulos } from "@/lib/acciones"
 import { useToast } from "@/hooks/use-toast"
 import type { Articulo } from "@/lib/tipos"
 

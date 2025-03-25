@@ -2,6 +2,16 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import * as XLSX from "xlsx"
 
+interface Articulo {
+    Codigo: string;
+    Nombre: string;
+    PrecioCompra: string;
+    PrecioVenta: string;
+    Tipo: string;
+    MostrarStock: string;
+    Activo: string;
+  }
+
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData()
@@ -14,7 +24,7 @@ export async function POST(req: NextRequest) {
     const buffer = await file.arrayBuffer()
     const workbook = XLSX.read(buffer, { type: "buffer" })
     const sheet = workbook.Sheets[workbook.SheetNames[0]]
-    const datos: any[] = XLSX.utils.sheet_to_json(sheet)
+    const datos: Articulo[] = XLSX.utils.sheet_to_json(sheet)
 
     const nuevosArticulos = datos.map((articulo) => ({
       codigo: articulo.Codigo,
