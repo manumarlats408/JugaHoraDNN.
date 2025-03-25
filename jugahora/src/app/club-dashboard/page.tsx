@@ -92,7 +92,7 @@ export default function DashboardPage() {
     <div className="flex min-h-screen">
       {/* Sidebar fijo */}
       <Sidebar />
-    <div className="flex-1 ml-64 p-6 space-y-6 overflow-auto">
+    <div className="flex-1 ml-48 p-6 space-y-6 overflow-auto">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Dashboard {clubData?.name ? `de ${clubData.name}` : ""}</h1>
       </div>
