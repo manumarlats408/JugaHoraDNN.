@@ -1,8 +1,7 @@
-// /eventos/page.tsx
 "use client"
 
-import { ClubEventosDashboard } from "@/components/club-eventos-dashboard"
+import { EventosDashboard } from "@/components/eventos-dashboard"
 
 export default function EventosPage() {
-  return <ClubEventosDashboard />
+  return <EventosDashboard />
 }
