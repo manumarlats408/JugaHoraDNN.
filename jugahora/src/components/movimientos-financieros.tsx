@@ -1,5 +1,5 @@
 "use client"
-
+import { Sidebar } from "@/components/layout/sidebar"
 import { useState, useEffect } from "react"
 import { Search, Calendar } from "lucide-react"
 import { Input } from "@/components/ui/input"
@@ -64,6 +64,9 @@ export function MovimientosFinancieros() {
   }
 
   return (
+    <div className="flex min-h-screen">
+          {/* Sidebar fijo */}
+      <Sidebar />
     <div className="py-6">
       <div className="bg-white rounded-lg shadow-sm">
         <div className="p-6 border-b">
@@ -121,6 +124,7 @@ export function MovimientosFinancieros() {
           />
         </div>
       </div>
+    </div>
     </div>
   )
 }
