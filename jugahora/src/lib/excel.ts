@@ -1,48 +1,52 @@
 // Simulación de funciones para manejar archivos Excel
 // En un entorno real, usaríamos bibliotecas como xlsx o exceljs
-
+import * as XLSX from "xlsx"
 import type { Articulo } from "@/lib/tipos"
 import { crearArticulo } from "@/lib/db"
 
-export async function importarArticulosDesdeExcel(buffer: ArrayBuffer): Promise<Articulo[]> {
-  // Simular procesamiento de archivo Excel
-  await new Promise((resolve) => setTimeout(resolve, 1000))
+export async function importarArticulosDesdeExcel(file: File): Promise<Articulo[]> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
 
-  console.log(buffer) // <-- Usa la variable para evitar el error
+    reader.onload = async (event) => {
+      try {
+        const data = new Uint8Array(event.target?.result as ArrayBuffer)
+        const workbook = XLSX.read(data, { type: "array" })
+        const sheetName = workbook.SheetNames[0] // Tomamos la primera hoja
+        const sheet = workbook.Sheets[sheetName]
 
-  // En un caso real, aquí procesaríamos el buffer con una biblioteca como xlsx
-  // Para este ejemplo, simplemente devolvemos algunos artículos de prueba
+        // Convertimos los datos del Excel a JSON
+        const jsonData: any[] = XLSX.utils.sheet_to_json(sheet)
 
-  const articulosImportados = [
-    {
-      codigo: "IMP-001",
-      nombre: "Producto Importado 1",
-      precioCompra: 75.0,
-      precioVenta: 150.0,
-      tipo: "Ambos" as const,
-      mostrarEnStock: true,
-      activo: true,
-    },
-    {
-      codigo: "IMP-002",
-      nombre: "Producto Importado 2",
-      precioCompra: 120.0,
-      precioVenta: 240.0,
-      tipo: "Venta" as const,
-      mostrarEnStock: true,
-      activo: true,
-    },
-  ]
+        // Mapear los datos al formato de `Articulo`
+        const articulosImportados: Articulo[] = jsonData.map((row) => ({
+          id: crypto.randomUUID(), // 🔹 Generamos un ID único si es requerido
+          codigo: row["Código"] || "",
+          nombre: row["Nombre"] || "",
+          precioCompra: parseFloat(row["Precio Compra"] || 0),
+          precioVenta: parseFloat(row["Precio Venta"] || 0),
+          tipo: row["Tipo"] === "Ambos" ? "Ambos" : "Venta", // Ajusta si hay más tipos
+          mostrarEnStock: row["En Stock"] === "Sí",
+          activo: row["Activo"] === "Sí",
+          ultimaModificacion: new Date().toISOString(), // 🔹 Fecha actual como última modificación
+        }))
 
-  // Crear los artículos en la "base de datos"
-  const articulosCreados = []
+        // Guardar los artículos en la "base de datos"
+        const articulosCreados: Articulo[] = []
+        for (const articulo of articulosImportados) {
+          const creado = await crearArticulo(articulo)
+          articulosCreados.push(creado)
+        }
 
-  for (const articulo of articulosImportados) {
-    const creado = await crearArticulo(articulo)
-    articulosCreados.push(creado)
-  }
+        resolve(articulosCreados)
+      } catch (error) {
+        reject(error)
+      }
+    }
 
-  return articulosCreados
+    reader.onerror = (error) => reject(error)
+    reader.readAsArrayBuffer(file) // Leemos el archivo como ArrayBuffer
+  })
 }
 
 export async function exportarArticulosAExcel(articulos: Articulo[]): Promise<ArrayBuffer> {
