@@ -37,11 +37,21 @@ export async function importarArticulos(formData: FormData) {
     const data = await response.json()
     // Eliminamos revalidatePath ya que no conocemos la ruta correcta
     return { success: true, data }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error en importarArticulos:", error)
+
+    // Manejar el error con el tipo correcto
+    let errorMessage = "Error desconocido al importar artículos"
+
+    if (error instanceof Error) {
+      errorMessage = error.message
+    } else if (typeof error === "string") {
+      errorMessage = error
+    }
+
     return {
       success: false,
-      error: error.message || "Error desconocido al importar artículos",
+      error: errorMessage,
     }
   }
 }
