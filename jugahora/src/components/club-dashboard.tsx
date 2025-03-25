@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-
+import { Sidebar } from "@/components/layout/sidebar"
 import { useEffect, useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -265,7 +265,10 @@ export function ClubDashboard() {
   }
 
   return (
-    <div className="flex flex-col">
+    <div className="flex min-h-screen">
+              {/* Sidebar fijo */}
+              <Sidebar />
+            <div className="flex-1 ml-[4rem] p-6 space-y-6 overflow-auto">
       <main className="flex-1 p-4 md:p-6 space-y-8">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">Dashboard del Club {clubData.name}</h1>
@@ -551,6 +554,7 @@ export function ClubDashboard() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+    </div>
     </div>
   )
 }
