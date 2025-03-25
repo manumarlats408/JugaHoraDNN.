@@ -139,7 +139,7 @@ export function ListadoArticulos() {
             </div>
             <div className="flex gap-3">
               <div className="relative">
-                <input type="file" id="importar" className="hidden" accept=".xlsx" onChange={handleImportar} />
+                <input type="file" id="importar" className="hidden" accept=".xlsx, .xls" onChange={handleImportar} />
                 <Button variant="outline" className="flex items-center gap-2" asChild>
                   <label htmlFor="importar" className="cursor-pointer">
                     <Upload size={18} className="text-green-500" />
