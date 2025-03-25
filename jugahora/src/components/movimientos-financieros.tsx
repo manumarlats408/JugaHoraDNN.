@@ -67,7 +67,7 @@ export function MovimientosFinancieros() {
     <div className="flex min-h-screen">
           {/* Sidebar fijo */}
       <Sidebar />
-    <div className="py-6">
+    <div className="flex-1 ml-[6rem] p-6 space-y-6 overflow-auto">
       <div className="bg-white rounded-lg shadow-sm">
         <div className="p-6 border-b">
           <h1 className="text-2xl font-medium text-gray-600">MOVIMIENTOS FINANCIEROS</h1>
