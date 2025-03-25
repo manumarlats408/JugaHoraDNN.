@@ -94,6 +94,7 @@ model Partidos_club {
 
 model Evento_club {
   id           Int      @id @default(autoincrement())
+  nombre      String
   date         DateTime
   startTime    String
   endTime      String
