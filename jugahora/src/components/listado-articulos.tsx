@@ -72,7 +72,7 @@ export function ListadoArticulos() {
           description: "Artículos importados correctamente",
         })
         // Recargar artículos
-        const respuesta = await fetch("/api/articulos")
+        const respuesta = await fetch("/api/importar-articulos")
         const datos = await respuesta.json()
         setArticulos(datos)
       } else {
@@ -95,13 +95,23 @@ export function ListadoArticulos() {
   const handleExportar = async () => {
     try {
       setCargando(true)
-      await exportarArticulos()
+      const respuesta = await fetch("/api/exportar-articulos")
+      const blob = await respuesta.blob()
+  
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = "articulos.xlsx"
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+  
       toast({
         title: "Éxito",
         description: "Artículos exportados correctamente",
       })
     } catch (error) {
-        console.error(error)
+      console.error(error)
       toast({
         title: "Error",
         description: "No se pudieron exportar los artículos",
@@ -111,6 +121,7 @@ export function ListadoArticulos() {
       setCargando(false)
     }
   }
+  
 
   return (
     <div className="flex min-h-screen">
