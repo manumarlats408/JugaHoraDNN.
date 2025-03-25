@@ -90,3 +90,20 @@ model Partidos_club {
   usuarios    Int[]     // Array of User IDs
   Club        Club      @relation(fields: [clubId], references: [id])
 }
+
+model Evento_club {
+  id           Int      @id @default(autoincrement())
+  date         DateTime
+  startTime    String
+  endTime      String
+  clubId       Int
+  nombre       String
+  tipo         String   // "torneo" o "cancha_abierta"
+  categoria    String?
+  genero       String   // "masculino", "femenino", "mixto"
+  maxParejas   Int?
+  formato      String?  // solo si tipo = "torneo": "grupos" o "eliminacion"
+  parejas      String[] // nombres de las parejas inscriptas
+
+  Club         Club     @relation(fields: [clubId], references: [id])
+}
