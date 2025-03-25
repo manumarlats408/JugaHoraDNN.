@@ -17,26 +17,35 @@ export async function actualizarArticulo(articulo: Articulo) {
 
 export async function importarArticulos(formData: FormData) {
   try {
-    const respuesta = await fetch("/api/importar-articulos", {
+    // Aseguramos que la URL sea absoluta y correcta
+    const url = new URL("/api/importar-articulos", window.location.origin).toString()
+
+    const response = await fetch(url, {
       method: "POST",
       body: formData,
+      // No incluimos 'Content-Type' para que el navegador establezca el boundary correcto para FormData
     })
 
-    if (!respuesta.ok) {
-      const error = await respuesta.json()
-      throw new Error(error.error || "Error al importar artículos")
+    if (!response.ok) {
+      const errorData = await response.json()
+      return {
+        success: false,
+        error: errorData.message || `Error ${response.status}: ${response.statusText}`,
+      }
     }
 
-    revalidatePath("/")
-    return { success: true }
-  } catch (error) {
-    console.error("Error al importar artículos:", error)
+    const data = await response.json()
+    // Eliminamos revalidatePath ya que no conocemos la ruta correcta
+    return { success: true, data }
+  } catch (error: any) {
+    console.error("Error en importarArticulos:", error)
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Error al importar artículos",
+      error: error.message || "Error desconocido al importar artículos",
     }
   }
 }
+
 
 export async function exportarArticulos() {
   try {
