@@ -47,15 +47,22 @@ export function ListadoArticulos() {
   )
 
   const handleImportar = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || e.target.files.length === 0) return
+    console.log("Iniciando importación de archivo")
+    if (!e.target.files || e.target.files.length === 0){
+      console.log("No se seleccionó ningún archivo")
+      return
+    }
 
     const file = e.target.files[0]
+    console.log("Archivo seleccionado:", file.name, file.type)
+
     if (file.type !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
       toast({
         title: "Formato incorrecto",
         description: "Por favor, sube un archivo XLSX",
         variant: "destructive",
       })
+      // Resetear el input file
       return
     }
 
@@ -63,8 +70,10 @@ export function ListadoArticulos() {
       setCargando(true)
       const formData = new FormData()
       formData.append("archivo", file)
+      console.log("FormData creado con archivo:", file.name)
 
       const resultado = await importarArticulos(formData)
+      console.log("Resultado de importación:", resultado)
 
       if (resultado.success) {
         toast({
@@ -73,13 +82,14 @@ export function ListadoArticulos() {
         })
         // Recargar artículos
         const respuesta = await fetch("/api/importar-articulos")
+        if (!respuesta.ok) throw new Error("Error al recargar los artículos")
         const datos = await respuesta.json()
         setArticulos(datos)
       } else {
-        throw new Error(resultado.error)
+        throw new Error(resultado.error || "Error desconocido al importar")
       }
     } catch (error) {
-        console.error(error)
+        console.error("Error en importación:", error)
       toast({
         title: "Error",
         description: "No se pudieron importar los artículos",

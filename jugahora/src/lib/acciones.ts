@@ -40,7 +40,7 @@ export async function importarArticulos(formData: FormData) {
 
 export async function exportarArticulos() {
   try {
-    const respuesta = await fetch("/api/exportar")
+    const respuesta = await fetch("/api/exportar-articulos")
 
     if (!respuesta.ok) {
       const error = await respuesta.json()
