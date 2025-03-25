@@ -24,22 +24,24 @@ export async function importarArticulosDesdeExcel(file: File): Promise<Articulo[
           "En Stock": string
           Activo: string
         }
+        
 
         // Convertimos los datos del Excel a JSON
         const jsonData: ExcelRow[] = XLSX.utils.sheet_to_json(sheet)
 
         // Mapear los datos al formato de `Articulo`
         const articulosImportados: Articulo[] = jsonData.map((row) => ({
-          id: crypto.randomUUID(), // 🔹 Generamos un ID único si es requerido
+          id: crypto.randomUUID(), // Generamos un ID único si es requerido
           codigo: row["Código"] || "",
           nombre: row["Nombre"] || "",
-          precioCompra: parseFloat(row["Precio Compra"] || 0),
-          precioVenta: parseFloat(row["Precio Venta"] || 0),
+          precioCompra: Number(row["Precio Compra"]) || 0, // 🔹 Corrección: Eliminamos `const`
+          precioVenta: Number(row["Precio Venta"]) || 0, // 🔹 También corregimos parseFloat
           tipo: row["Tipo"] === "Ambos" ? "Ambos" : "Venta", // Ajusta si hay más tipos
           mostrarEnStock: row["En Stock"] === "Sí",
           activo: row["Activo"] === "Sí",
-          ultimaModificacion: new Date().toISOString(), // 🔹 Fecha actual como última modificación
-        }))
+          ultimaModificacion: new Date().toISOString(), // Fecha actual como última modificación
+        }));
+        
 
         // Guardar los artículos en la "base de datos"
         const articulosCreados: Articulo[] = []
