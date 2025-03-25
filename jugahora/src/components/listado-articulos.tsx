@@ -2,6 +2,7 @@
 
 import type React from "react"
 
+import { Sidebar } from "@/components/layout/sidebar"
 import { useState, useEffect } from "react"
 import { Search, Download, Upload } from "lucide-react"
 import { Input } from "@/components/ui/input"
@@ -112,7 +113,10 @@ export function ListadoArticulos() {
   }
 
   return (
-    <div className="py-6">
+    <div className="flex min-h-screen">
+          {/* Sidebar fijo */}
+          <Sidebar />
+        <div className="flex-1 ml-[4rem] p-6 space-y-6 overflow-auto">
       <div className="bg-white rounded-lg shadow-sm">
         <div className="p-6 border-b">
           <h1 className="text-2xl font-medium text-gray-600">LISTADO DE CONCEPTOS / ARTÍCULOS</h1>
@@ -160,6 +164,7 @@ export function ListadoArticulos() {
           />
         </div>
       </div>
+    </div>
     </div>
   )
 }
