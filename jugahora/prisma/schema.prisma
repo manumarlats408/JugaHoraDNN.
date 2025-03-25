@@ -59,6 +59,7 @@ model Club {
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
   Partidos_club   Partidos_club[] // Relación con Partidos_club
+  Evento_club     Evento_club[]
 }
 
 model Partidos {
