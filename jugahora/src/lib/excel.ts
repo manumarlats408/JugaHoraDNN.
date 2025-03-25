@@ -15,8 +15,18 @@ export async function importarArticulosDesdeExcel(file: File): Promise<Articulo[
         const sheetName = workbook.SheetNames[0] // Tomamos la primera hoja
         const sheet = workbook.Sheets[sheetName]
 
+        interface ExcelRow {
+          Código: string
+          Nombre: string
+          "Precio Compra": number
+          "Precio Venta": number
+          Tipo: "Ambos" | "Venta"
+          "En Stock": string
+          Activo: string
+        }
+
         // Convertimos los datos del Excel a JSON
-        const jsonData: any[] = XLSX.utils.sheet_to_json(sheet)
+        const jsonData: ExcelRow[] = XLSX.utils.sheet_to_json(sheet)
 
         // Mapear los datos al formato de `Articulo`
         const articulosImportados: Articulo[] = jsonData.map((row) => ({
