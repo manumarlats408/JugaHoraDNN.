@@ -17,7 +17,7 @@ export async function actualizarArticulo(articulo: Articulo) {
 
 export async function importarArticulos(formData: FormData) {
   try {
-    const respuesta = await fetch("/api/importar", {
+    const respuesta = await fetch("/api/importar-articulos", {
       method: "POST",
       body: formData,
     })
