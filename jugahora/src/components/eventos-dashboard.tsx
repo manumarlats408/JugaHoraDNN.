@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback, ChangeEvent } from "react"
 import { Sidebar } from "@/components/layout/sidebar"
 import { Button } from "@/components/ui/button"
-import { CalendarIcon, Plus, Trash2, Edit, Users, Clock, Trophy } from "lucide-react"
+import { CalendarIcon, Plus, Trash2, Edit, Users, Clock, Trophy, Hash } from "lucide-react"
 import Calendar from "react-calendar"
 import "react-calendar/dist/Calendar.css"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -260,6 +260,10 @@ export function EventosDashboard() {
                         </p>
                         <p className="text-sm text-gray-500 flex items-center">
                           <Trophy className="w-4 h-4 mr-1" /> Nivel {evento.categoria} ({evento.genero})
+                        </p>
+                        <p className="text-sm text-gray-500 flex items-center">
+                        <Hash className="w-4 h-4 mr-1" /> {evento.tipo.charAt(0).toUpperCase() + evento.tipo.slice(1).replace("_", " ")} 
+                          {evento.tipo === "torneo" && evento.formato ? ` - Formato: ${evento.formato.replace("_", " ")}` : ""}
                         </p>
                         <p className="text-sm text-gray-500 flex items-center">
                           <Users className="w-4 h-4 mr-1" /> {evento.parejas?.length || 0}/{evento.maxParejas} parejas
