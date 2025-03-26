@@ -41,7 +41,7 @@ export function AgregarMovimientoDialog({ onMovimientoCreado }: AgregarMovimient
   useEffect(() => {
     const obtenerClubId = async () => {
       try {
-        const response = await fetch("/api/auth") // Suponiendo que tienes esta API configurada
+        const response = await fetch("/api/matches") // Suponiendo que tienes esta API configurada
         const data = await response.json()
         setClubId(data.clubId) // Ajusta según la respuesta
       } catch (error) {
