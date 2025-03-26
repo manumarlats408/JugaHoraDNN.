@@ -1,11 +1,10 @@
 // src/app/api/movimientos/route.ts
-
-import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { NextResponse } from "next/server"
+import { prisma } from "@/lib/prisma"
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json()
+    const body = await request.json() // Aquí utilizas el request para obtener el cuerpo
 
     const { concepto, jugador, cancha, fechaTurno, fechaMovimiento, metodoPago, egreso, ingreso, clubId } = body
 
@@ -33,16 +32,5 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error(error)
     return NextResponse.json({ error: "Error al guardar el movimiento" }, { status: 500 })
-  }
-}
-
-export async function GET(request: Request) {
-  try {
-    // Ejemplo de cómo podrías consultar los movimientos
-    const movimientos = await prisma.movimientoFinanciero.findMany()
-    return NextResponse.json(movimientos)
-  } catch (error) {
-    console.error(error)
-    return NextResponse.json({ error: "Error al obtener los movimientos" }, { status: 500 })
   }
 }
