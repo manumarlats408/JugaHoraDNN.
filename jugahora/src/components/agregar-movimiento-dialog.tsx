@@ -41,7 +41,7 @@ export function AgregarMovimientoDialog({ onMovimientoCreado }: AgregarMovimient
   useEffect(() => {
     const obtenerClubId = async () => {
       try {
-        const response = await fetch("/api/session") // Suponiendo que tienes esta API configurada
+        const response = await fetch("/api/auth") // Suponiendo que tienes esta API configurada
         const data = await response.json()
         setClubId(data.clubId) // Ajusta según la respuesta
       } catch (error) {
@@ -70,9 +70,21 @@ export function AgregarMovimientoDialog({ onMovimientoCreado }: AgregarMovimient
         title: "Error",
         description: "Por favor completa todos los campos requeridos correctamente",
         variant: "destructive",
-      })
-      return
+      });
+      return;
     }
+
+    // Verificar que el clubId esté disponible
+    if (!clubId) {
+      toast({
+        title: "Error",
+        description: "No se pudo obtener el clubId.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+
 
     try {
       setCargando(true)
