@@ -1,35 +1,48 @@
-import { NextApiRequest, NextApiResponse } from "next"
-import { prisma } from "@/lib/prisma"
+// src/app/api/movimientos/route.ts
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === "POST") {
-    try {
-      const { concepto, jugador, cancha, fechaTurno, fechaMovimiento, metodoPago, egreso, ingreso, clubId } = req.body
+import { NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
 
-      if (!concepto || !fechaMovimiento || !metodoPago || !clubId) {
-        return res.status(400).json({ error: "Faltan datos obligatorios" })
-      }
+export async function POST(request: Request) {
+  try {
+    const body = await request.json()
 
-      const nuevoMovimiento = await prisma.movimientoFinanciero.create({
-        data: {
-          concepto,
-          jugador,
-          cancha,
-          fechaTurno: fechaTurno ? new Date(fechaTurno) : null,
-          fechaMovimiento: new Date(fechaMovimiento),
-          metodoPago,
-          egreso: egreso ?? 0,
-          ingreso: ingreso ?? 0,
-          clubId,
-        },
-      })
+    const { concepto, jugador, cancha, fechaTurno, fechaMovimiento, metodoPago, egreso, ingreso, clubId } = body
 
-      return res.status(201).json(nuevoMovimiento)
-    } catch (error) {
-      console.error(error)
-      return res.status(500).json({ error: "Error al guardar el movimiento" })
+    // Validación de datos
+    if (!concepto || !fechaMovimiento || !metodoPago || !clubId) {
+      return NextResponse.json({ error: "Faltan datos obligatorios" }, { status: 400 })
     }
-  } else {
-    return res.status(405).json({ error: "Método no permitido" })
+
+    // Crear el movimiento
+    const nuevoMovimiento = await prisma.movimientoFinanciero.create({
+      data: {
+        concepto,
+        jugador,
+        cancha,
+        fechaTurno: fechaTurno ? new Date(fechaTurno) : null,
+        fechaMovimiento: new Date(fechaMovimiento),
+        metodoPago,
+        egreso: egreso ?? 0,
+        ingreso: ingreso ?? 0,
+        clubId,
+      },
+    })
+
+    return NextResponse.json(nuevoMovimiento, { status: 201 })
+  } catch (error) {
+    console.error(error)
+    return NextResponse.json({ error: "Error al guardar el movimiento" }, { status: 500 })
+  }
+}
+
+export async function GET(request: Request) {
+  try {
+    // Ejemplo de cómo podrías consultar los movimientos
+    const movimientos = await prisma.movimientoFinanciero.findMany()
+    return NextResponse.json(movimientos)
+  } catch (error) {
+    console.error(error)
+    return NextResponse.json({ error: "Error al obtener los movimientos" }, { status: 500 })
   }
 }
