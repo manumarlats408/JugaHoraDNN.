@@ -15,7 +15,7 @@ export function MovimientosFinancieros() {
   const [fechaDesde, setFechaDesde] = useState<string>(
     new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split("T")[0],
   )
-  const [clubId, setClubId] = useState<number | null>(null)
+  const [clubId] = useState<number | null>(null)
   const [fechaHasta, setFechaHasta] = useState<string>(new Date().toISOString().split("T")[0])
   const [cargando, setCargando] = useState(true)
   const { toast } = useToast()
