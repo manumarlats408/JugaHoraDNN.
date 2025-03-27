@@ -220,7 +220,7 @@ export function EventosDashboard() {
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="categoria" className="text-right">Categoría</Label>
-                  <Input id="categoria" name="categoria" className="col-span-3" value={newEvento.categoria} onChange={handleInputChange} />
+                  <Input id="categoria" name="categoria" placeholder="Ej: 5" className="col-span-3" value={newEvento.categoria} onChange={handleInputChange} />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="genero" className="text-right">Género</Label>
@@ -252,7 +252,7 @@ export function EventosDashboard() {
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="price" className="text-right">Precio</Label>
-                  <Input id="price" name="price" type="text" className="col-span-3" value={newEvento.price || ""} onChange={handleInputChange} onInput={(e) => {
+                  <Input id="price" name="price" placeholder="Ej: 14000" type="text" className="col-span-3" value={newEvento.price || ""} onChange={handleInputChange} onInput={(e) => {
                     e.currentTarget.value = e.currentTarget.value.replace(/\D/g, "")
                   }} />
                 </div>
