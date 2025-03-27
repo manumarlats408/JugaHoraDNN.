@@ -17,6 +17,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 
 type Evento = {
   id: number
@@ -208,26 +209,45 @@ export function EventosDashboard() {
         </div>
 
         {editEvento && (
-          <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Editar Evento</DialogTitle>
-                <DialogDescription>Modificá los datos del evento</DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <Input name="nombre" value={editEvento.nombre} onChange={(e) => handleInputChange(e, true)} />
-                <Input name="date" type="date" value={new Date(editEvento.date).toISOString().split("T")[0]} onChange={(e) => handleInputChange(e, true)} />
-                <Input name="startTime" value={editEvento.startTime} onChange={(e) => handleInputChange(e, true)} />
-                <Input name="endTime" value={editEvento.endTime} onChange={(e) => handleInputChange(e, true)} />
-                <Input name="categoria" value={editEvento.categoria} onChange={(e) => handleInputChange(e, true)} />
-                <Input name="maxParejas" type="number" value={editEvento.maxParejas} onChange={(e) => handleInputChange(e, true)} />
-              </div>
-              <DialogFooter>
-                <Button onClick={handleEdit}>Guardar Cambios</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        )}
+  <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+    <DialogContent className="sm:max-w-[425px]">
+      <DialogHeader>
+        <DialogTitle>Editar Evento</DialogTitle>
+        <DialogDescription>Modificá los datos del evento</DialogDescription>
+      </DialogHeader>
+      <div className="grid gap-4 py-4">
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="nombre" className="text-right">Nombre</Label>
+          <Input id="nombre" name="nombre" className="col-span-3" value={editEvento.nombre} onChange={(e) => handleInputChange(e, true)} />
+        </div>
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="date" className="text-right">Fecha</Label>
+          <Input id="date" name="date" type="date" className="col-span-3" value={new Date(editEvento.date).toISOString().split("T")[0]} onChange={(e) => handleInputChange(e, true)} />
+        </div>
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="startTime" className="text-right">Hora de Inicio</Label>
+          <Input id="startTime" name="startTime" className="col-span-3" value={editEvento.startTime} onChange={(e) => handleInputChange(e, true)} />
+        </div>
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="endTime" className="text-right">Hora de Fin</Label>
+          <Input id="endTime" name="endTime" className="col-span-3" value={editEvento.endTime} onChange={(e) => handleInputChange(e, true)} />
+        </div>
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="categoria" className="text-right">Categoría</Label>
+          <Input id="categoria" name="categoria" className="col-span-3" value={editEvento.categoria} onChange={(e) => handleInputChange(e, true)} />
+        </div>
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="maxParejas" className="text-right">Cantidad de Parejas</Label>
+          <Input id="maxParejas" name="maxParejas" type="number" className="col-span-3" value={editEvento.maxParejas} onChange={(e) => handleInputChange(e, true)} />
+        </div>
+      </div>
+      <DialogFooter>
+        <Button onClick={handleEdit}>Guardar Cambios</Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
+)}
+
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <Card>
