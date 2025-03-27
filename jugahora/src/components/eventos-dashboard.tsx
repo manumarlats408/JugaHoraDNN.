@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { toast } from "react-hot-toast"
+
 
 type Evento = {
   id: number
@@ -102,15 +104,19 @@ export function EventosDashboard() {
 
   const handleCrearEvento = async () => {
     if (!clubData) return
+  
     try {
       const res = await fetch("/api/eventos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...newEvento, clubId: clubData.id }),
       })
+  
       if (res.ok) {
         const creado = await res.json()
         setEventos([...eventos, creado])
+        
+        // 🔁 Resetear el formulario
         setNewEvento({
           nombre: "",
           date: "",
@@ -122,9 +128,16 @@ export function EventosDashboard() {
           formato: "",
           maxParejas: 4,
         })
+  
+        // ✅ Mostrar notificación
+        toast.success("Evento creado exitosamente!")
+      } else {
+        const errorData = await res.json()
+        toast.error(errorData.error || "Error al crear el evento")
       }
-    } catch (err) {
-      console.error("Error al crear evento:", err)
+    } catch (error) {
+      console.error("Error al crear evento:", error)
+      toast.error("Error al conectar con el servidor")
     }
   }
 
