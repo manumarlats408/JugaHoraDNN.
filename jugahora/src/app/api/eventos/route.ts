@@ -24,15 +24,18 @@ export async function POST(request: Request) {
         date: new Date(date),
         startTime,
         endTime,
-        clubId,
         categoria,
         genero,
         tipo,
         maxParejas: Number(maxParejas),
+        price: parseFloat(price),
         ...(tipo === "torneo" && { formato }),
-        price,
+        Club: {
+          connect: { id: clubId }
+        }
       },
-    });
+    })
+    
 
     return NextResponse.json(nuevoEvento, { status: 201 });
   } catch (error) {

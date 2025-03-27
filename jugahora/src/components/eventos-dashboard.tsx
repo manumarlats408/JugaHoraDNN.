@@ -57,7 +57,7 @@ export function EventosDashboard() {
     genero: "mixto",
     tipo: "cancha_abierta",
     formato: "eliminacion_directa",
-    maxParejas: 4,
+    maxParejas: 0,
     price: 0,
   })
 
