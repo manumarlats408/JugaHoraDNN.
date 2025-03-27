@@ -33,6 +33,7 @@ type Evento = {
   formato: string | null
   maxParejas: number
   parejas: { id: number }[]
+  price: number
 }
 
 type Club = {
@@ -57,6 +58,7 @@ export function EventosDashboard() {
     tipo: "cancha_abierta",
     formato: "eliminacion_directa",
     maxParejas: 4,
+    price: 0,
   })
 
   const fetchEventos = useCallback(async () => {
@@ -134,6 +136,7 @@ export function EventosDashboard() {
           tipo: "cancha_abierta",
           formato: "",
           maxParejas: 4,
+          price: 0,
         })
   
         // ✅ Mostrar notificación
@@ -220,6 +223,13 @@ export function EventosDashboard() {
                   </select>
                 )}
                 <Input type="number" name="maxParejas" placeholder="Cantidad de Parejas" onChange={handleInputChange} />
+                <Input
+                  name="price"
+                  placeholder="Precio"
+                  type="number"
+                  value={newEvento.price}
+                  onChange={handleInputChange}
+                />
               </div>
               <DialogFooter>
                 <Button onClick={handleCrearEvento}>Guardar Evento</Button>
@@ -305,6 +315,11 @@ export function EventosDashboard() {
           <Label htmlFor="maxParejas" className="text-right">Cantidad de Parejas</Label>
           <Input id="maxParejas" name="maxParejas" type="number" className="col-span-3" value={editEvento.maxParejas} onChange={(e) => handleInputChange(e, true)} />
         </div>
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="price" className="text-right">Precio</Label>
+          <Input id="price" name="price" type="number" className="col-span-3" value={editEvento.price} onChange={(e) => handleInputChange(e, true)} />
+        </div>
+        
       </div>
       <DialogFooter>
         <Button onClick={handleEdit}>Guardar Cambios</Button>
@@ -338,7 +353,7 @@ export function EventosDashboard() {
                       <div>
                         <p className="font-semibold text-gray-800">{evento.nombre}</p>
                         <p className="text-sm text-gray-500 flex items-center">
-                          <CalendarIcon className="w-4 h-4 mr-1" /> {evento.date}
+                          <CalendarIcon className="w-4 h-4 mr-1" /> {evento.date.split("T")[0]}
                         </p>
                         <p className="text-sm text-gray-500 flex items-center">
                           <Clock className="w-4 h-4 mr-1" /> {evento.startTime} - {evento.endTime}
@@ -353,6 +368,10 @@ export function EventosDashboard() {
                         <p className="text-sm text-gray-500 flex items-center">
                           <Users className="w-4 h-4 mr-1" /> {evento.parejas?.length || 0}/{evento.maxParejas} parejas
                         </p>
+                        <p className="text-sm text-gray-500 flex items-center">
+                          <span className="text-sm font-semibold text-green-600">Precio: ${evento.price}</span>
+                        </p>
+
                       </div>
                       <div className="flex space-x-2">
                         <Button variant="outline" size="icon" onClick={() => { setEditEvento(evento); setIsEditModalOpen(true) }}>

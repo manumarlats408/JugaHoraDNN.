@@ -107,6 +107,7 @@ model Evento_club {
   maxParejas   Int?
   formato      String?  // solo si tipo = "torneo": "grupos" o "eliminacion"
   parejas      String[] // nombres de las parejas inscriptas
+  price        Float
 
   Club         Club     @relation(fields: [clubId], references: [id])
 }
