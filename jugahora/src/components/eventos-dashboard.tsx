@@ -88,18 +88,16 @@ export function EventosDashboard() {
 
   useEffect(() => {
     if (!selectedDate) {
-      setFilteredEventos(eventos)
+      setFilteredEventos(eventos);
     } else {
-      const selected = selectedDate.toISOString().split("T")[0]
-      setFilteredEventos(eventos.filter(e => e.date === selected))
+      const selectedDateString = selectedDate.toISOString().split("T")[0];
+      const filtered = eventos.filter(evento => {
+        const eventoDateString = new Date(evento.date).toISOString().split("T")[0];
+        return selectedDateString === eventoDateString;
+      });
+      setFilteredEventos(filtered);
     }
-  }, [selectedDate, eventos])
-  
-  useEffect(() => {
-    if (editEvento?.tipo === "torneo" && (!editEvento.formato || editEvento.formato === "")) {
-      setEditEvento((prev) => prev ? { ...prev, formato: "eliminacion_directa" } : prev)
-    }
-  }, [editEvento?.tipo, editEvento?.formato])
+  }, [eventos, selectedDate]);
   
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>, isEdit = false) => {
@@ -179,12 +177,12 @@ export function EventosDashboard() {
     }
   }
 
-  const tileClassName = ({ date, view }: { date: Date; view: string }) => {
-    if (view === "month") {
-      const match = eventos.find(e => new Date(e.date).toDateString() === date.toDateString())
-      return match ? "bg-blue-200" : undefined
-    }
-  }
+  // const tileClassName = ({ date, view }: { date: Date; view: string }) => {
+  //   if (view === "month") {
+  //     const match = eventos.find(e => new Date(e.date).toDateString() === date.toDateString())
+  //     return match ? "bg-blue-200" : undefined
+  //   }
+  // }
 
   return (
     <div className="flex min-h-screen">
@@ -362,8 +360,21 @@ export function EventosDashboard() {
               <CardDescription>Vista mensual</CardDescription>
             </CardHeader>
             <CardContent>
-              <Calendar value={selectedDate || new Date()} onChange={(d) => setSelectedDate(d as Date)} tileClassName={tileClassName} />
-              <Button onClick={() => setSelectedDate(null)} className="mt-4">Ver Todos</Button>
+            <Calendar
+              value={selectedDate || new Date()}
+              onChange={(date) => setSelectedDate(date as Date)}
+              tileClassName={({ date, view }) => {
+                if (view === "month") {
+                  const eventoDate = eventos.find((evento) =>
+                    new Date(evento.date).toDateString() === date.toDateString()
+                  );
+                  return eventoDate ? "bg-green-200" : null;
+                }
+              }}
+            />
+            <Button onClick={() => setSelectedDate(null)} className="mt-4">
+              Mostrar Todos los Eventos
+            </Button>
             </CardContent>
           </Card>
 
