@@ -250,6 +250,51 @@ export function EventosDashboard() {
           <Input id="categoria" name="categoria" className="col-span-3" value={editEvento.categoria} onChange={(e) => handleInputChange(e, true)} />
         </div>
         <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="genero" className="text-right">Género</Label>
+          <select
+            id="genero"
+            name="genero"
+            className="col-span-3 border rounded p-2"
+            value={editEvento.genero}
+            onChange={(e) => handleInputChange(e, true)}
+          >
+            <option value="mixto">Mixto</option>
+            <option value="masculino">Masculino</option>
+            <option value="femenino">Femenino</option>
+          </select>
+        </div>
+
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="tipo" className="text-right">Tipo</Label>
+          <select
+            id="tipo"
+            name="tipo"
+            className="col-span-3 border rounded p-2"
+            value={editEvento.tipo}
+            onChange={(e) => handleInputChange(e, true)}
+          >
+            <option value="cancha_abierta">Cancha Abierta</option>
+            <option value="torneo">Torneo</option>
+          </select>
+        </div>
+
+        {editEvento.tipo === "torneo" && (
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="formato" className="text-right">Formato</Label>
+            <select
+              id="formato"
+              name="formato"
+              className="col-span-3 border rounded p-2"
+              value={editEvento.formato || "eliminacion_directa"}
+              onChange={(e) => handleInputChange(e, true)}
+            >
+              <option value="eliminacion_directa">Eliminación Directa</option>
+              <option value="grupos">Grupos</option>
+            </select>
+          </div>
+        )}
+
+        <div className="grid grid-cols-4 items-center gap-4">
           <Label htmlFor="maxParejas" className="text-right">Cantidad de Parejas</Label>
           <Input id="maxParejas" name="maxParejas" type="number" className="col-span-3" value={editEvento.maxParejas} onChange={(e) => handleInputChange(e, true)} />
         </div>
