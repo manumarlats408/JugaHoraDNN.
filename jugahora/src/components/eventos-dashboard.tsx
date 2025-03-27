@@ -92,6 +92,13 @@ export function EventosDashboard() {
       setFilteredEventos(eventos.filter(e => e.date === selected))
     }
   }, [selectedDate, eventos])
+  
+  useEffect(() => {
+    if (editEvento?.tipo === "torneo" && (!editEvento.formato || editEvento.formato === "")) {
+      setEditEvento((prev) => prev ? { ...prev, formato: "eliminacion_directa" } : prev)
+    }
+  }, [editEvento?.tipo, editEvento?.formato])
+  
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>, isEdit = false) => {
     const { name, value } = e.target
