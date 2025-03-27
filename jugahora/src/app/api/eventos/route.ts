@@ -15,6 +15,7 @@ export async function POST(request: Request) {
       tipo,
       maxParejas,
       formato,
+      price,
     } = data;
 
     const nuevoEvento = await prisma.evento_club.create({
@@ -29,6 +30,7 @@ export async function POST(request: Request) {
         tipo,
         maxParejas: Number(maxParejas),
         ...(tipo === "torneo" && { formato }),
+        price,
       },
     });
 

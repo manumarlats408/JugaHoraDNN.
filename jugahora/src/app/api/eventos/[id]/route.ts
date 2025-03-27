@@ -40,6 +40,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
       tipo,
       formato,
       maxParejas,
+      price,
     } = await request.json()
 
     const eventoActualizado = await prisma.evento_club.update({
@@ -54,6 +55,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
         tipo,
         formato: tipo === "torneo" ? formato : null,
         maxParejas: typeof maxParejas === "string" ? parseInt(maxParejas) : maxParejas,
+        price,
       },
     })
 
