@@ -202,34 +202,60 @@ export function EventosDashboard() {
                 <DialogDescription>Complete la información del evento</DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
-                <Input name="nombre" placeholder="Nombre" onChange={handleInputChange} />
-                <Input type="date" name="date" onChange={handleInputChange} />
-                <Input type="time" name="startTime" placeholder="Inicio" onChange={handleInputChange} />
-                <Input type="time" name="endTime" placeholder="Fin" onChange={handleInputChange} />
-                <Input name="categoria" placeholder="Categoría" onChange={handleInputChange} />
-                <select name="genero" onChange={handleInputChange} className="border rounded p-2">
-                  <option value="mixto">Mixto</option>
-                  <option value="masculino">Masculino</option>
-                  <option value="femenino">Femenino</option>
-                </select>
-                <select name="tipo" onChange={handleInputChange} className="border rounded p-2">
-                  <option value="cancha_abierta">Cancha Abierta</option>
-                  <option value="torneo">Torneo</option>
-                </select>
-                {newEvento.tipo === "torneo" && (
-                  <select name="formato" onChange={handleInputChange} className="border rounded p-2">
-                    <option value="eliminacion_directa">Eliminación Directa</option>
-                    <option value="grupos">Grupos</option>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="nombre" className="text-right">Nombre</Label>
+                  <Input id="nombre" name="nombre" className="col-span-3" value={newEvento.nombre} onChange={handleInputChange} />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="date" className="text-right">Fecha</Label>
+                  <Input id="date" name="date" type="date" className="col-span-3" value={newEvento.date} onChange={handleInputChange} />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="startTime" className="text-right">Hora de Inicio</Label>
+                  <Input id="startTime" name="startTime" type="time" className="col-span-3" value={newEvento.startTime} onChange={handleInputChange} />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="endTime" className="text-right">Hora de Fin</Label>
+                  <Input id="endTime" name="endTime" type="time" className="col-span-3" value={newEvento.endTime} onChange={handleInputChange} />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="categoria" className="text-right">Categoría</Label>
+                  <Input id="categoria" name="categoria" className="col-span-3" value={newEvento.categoria} onChange={handleInputChange} />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="genero" className="text-right">Género</Label>
+                  <select id="genero" name="genero" className="col-span-3 border rounded p-2" value={newEvento.genero} onChange={handleInputChange}>
+                    <option value="mixto">Mixto</option>
+                    <option value="masculino">Masculino</option>
+                    <option value="femenino">Femenino</option>
                   </select>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="tipo" className="text-right">Tipo</Label>
+                  <select id="tipo" name="tipo" className="col-span-3 border rounded p-2" value={newEvento.tipo} onChange={handleInputChange}>
+                    <option value="cancha_abierta">Cancha Abierta</option>
+                    <option value="torneo">Torneo</option>
+                  </select>
+                </div>
+                {newEvento.tipo === "torneo" && (
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="formato" className="text-right">Formato</Label>
+                    <select id="formato" name="formato" className="col-span-3 border rounded p-2" value={newEvento.formato || "eliminacion_directa"} onChange={handleInputChange}>
+                      <option value="eliminacion_directa">Eliminación Directa</option>
+                      <option value="grupos">Grupos</option>
+                    </select>
+                  </div>
                 )}
-                <Input type="number" name="maxParejas" placeholder="Cantidad de Parejas" onChange={handleInputChange} />
-                <Input
-                  name="price"
-                  placeholder="Precio"
-                  type="number"
-                  value={newEvento.price}
-                  onChange={handleInputChange}
-                />
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="maxParejas" className="text-right">Cantidad de Parejas</Label>
+                  <Input id="maxParejas" name="maxParejas" type="number" className="col-span-3" value={newEvento.maxParejas} onChange={handleInputChange} />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="price" className="text-right">Precio</Label>
+                  <Input id="price" name="price" type="text" className="col-span-3" value={newEvento.price || ""} onChange={handleInputChange} onInput={(e) => {
+                    e.currentTarget.value = e.currentTarget.value.replace(/\D/g, "")
+                  }} />
+                </div>
               </div>
               <DialogFooter>
                 <Button onClick={handleCrearEvento}>Guardar Evento</Button>
