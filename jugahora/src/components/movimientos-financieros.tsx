@@ -15,6 +15,7 @@ export function MovimientosFinancieros() {
   const [fechaDesde, setFechaDesde] = useState<string>(
     new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split("T")[0],
   )
+  const [clubId] = useState<number | null>(null)
   const [fechaHasta, setFechaHasta] = useState<string>(new Date().toISOString().split("T")[0])
   const [cargando, setCargando] = useState(true)
   const { toast } = useToast()
@@ -111,7 +112,7 @@ export function MovimientosFinancieros() {
                   <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
                 </div>
               </div>
-              <AgregarMovimientoDialog onMovimientoCreado={handleMovimientoCreado} />
+              <AgregarMovimientoDialog onMovimientoCreado={handleMovimientoCreado} clubId={clubId ?? 0}/>
             </div>
           </div>
 

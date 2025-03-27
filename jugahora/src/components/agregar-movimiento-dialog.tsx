@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect} from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -13,8 +13,10 @@ import { useToast } from "@/hooks/use-toast"
 import { crearMovimiento } from "@/lib/acciones-movimientos"
 import { Plus } from "lucide-react"
 
+
 interface AgregarMovimientoDialogProps {
   onMovimientoCreado: () => void
+  clubId: number
 }
 
 export function AgregarMovimientoDialog({ onMovimientoCreado }: AgregarMovimientoDialogProps) {
@@ -22,6 +24,9 @@ export function AgregarMovimientoDialog({ onMovimientoCreado }: AgregarMovimient
   const [open, setOpen] = useState(false)
   const [cargando, setCargando] = useState(false)
   const [tipoMovimiento, setTipoMovimiento] = useState<"ingreso" | "egreso">("ingreso")
+  const [clubId, setClubId] = useState<string | null>(null)
+
+
 
   const [formData, setFormData] = useState({
     concepto: "",
@@ -31,6 +36,21 @@ export function AgregarMovimientoDialog({ onMovimientoCreado }: AgregarMovimient
     metodoPago: "Efectivo",
     monto: "",
   })
+
+  // Llamada al backend para obtener la sesión y el clubId
+  useEffect(() => {
+    const obtenerClubId = async () => {
+      try {
+        const response = await fetch("/api/matches") // Suponiendo que tienes esta API configurada
+        const data = await response.json()
+        setClubId(data.clubId) // Ajusta según la respuesta
+      } catch (error) {
+        console.error("Error al obtener el clubId:", error)
+      }
+    }
+    obtenerClubId()
+  }, [])
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -50,9 +70,21 @@ export function AgregarMovimientoDialog({ onMovimientoCreado }: AgregarMovimient
         title: "Error",
         description: "Por favor completa todos los campos requeridos correctamente",
         variant: "destructive",
-      })
-      return
+      });
+      return;
     }
+
+    // Verificar que el clubId esté disponible
+    if (!clubId) {
+      toast({
+        title: "Error",
+        description: "No se pudo obtener el clubId.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+
 
     try {
       setCargando(true)
@@ -66,6 +98,7 @@ export function AgregarMovimientoDialog({ onMovimientoCreado }: AgregarMovimient
         metodoPago: formData.metodoPago as "Efectivo" | "Transferencia" | "Tarjeta",
         ingreso: tipoMovimiento === "ingreso" ? Number(formData.monto) : null,
         egreso: tipoMovimiento === "egreso" ? Number(formData.monto) : null,
+        clubId,
       }
 
       const resultado = await crearMovimiento(movimientoData)
