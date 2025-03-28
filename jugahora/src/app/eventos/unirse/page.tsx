@@ -213,12 +213,17 @@ export default function PaginaEventos() {
       if (respuesta.ok) {
         // Actualizar el estado local con la nueva pareja
         setEventos(
-          eventos.map((evento) =>
-            evento.id === selectedEventoId
-              ? { ...evento, parejas: [...evento.parejas, `${nombre1}/${nombre2}`] }
-              : evento,
-          ),
-        )
+            eventos.map((evento) =>
+              evento.id === selectedEventoId
+                ? {
+                    ...evento,
+                    parejas: [...evento.parejas, `${nombre1}/${nombre2}`],
+                    inscripciones: [...(evento.inscripciones || []), user!.id],
+                  }
+                : evento,
+            )
+          )
+          
         toast.success("Pareja registrada exitosamente!")
       } else {
         const errorData = await respuesta.json()
