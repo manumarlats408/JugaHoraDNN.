@@ -254,11 +254,15 @@ export default function PaginaEventos() {
       })
 
       if (respuesta.ok) {
-        // Actualizar el estado local eliminando la pareja
-        const updatedEventos = await respuesta.json()
-        setEventos(eventos.map((evento) => (evento.id === selectedEventoId ? updatedEventos : evento)))
-        toast.success("Inscripción cancelada exitosamente!")
-      } else {
+        const refreshed = await fetch("/api/eventos", { credentials: "include" });
+        if (refreshed.ok) {
+          const eventosActualizados = await refreshed.json();
+          setEventos(eventosActualizados);
+          setFilteredEventos(eventosActualizados);
+        }
+        toast.success("Inscripción cancelada exitosamente!");
+      }
+       else {
         const errorData = await respuesta.json()
         if (respuesta.status === 401) {
           toast.error("Sesión expirada. Por favor, inicia sesión nuevamente.")
