@@ -102,12 +102,41 @@ export function EventosDashboard() {
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>, isEdit = false) => {
     const { name, value } = e.target
+  
     if (isEdit && editEvento) {
-      setEditEvento({ ...editEvento, [name]: name === "maxParejas" ? parseInt(value) : value })
+      const updatedEvento = {
+        ...editEvento,
+        [name]: name === "maxParejas" ? parseInt(value) : value,
+      }
+  
+      if (name === "tipo") {
+        if (value === "torneo") {
+          updatedEvento.formato = editEvento.formato || "eliminacion_directa"
+        } else if (value === "cancha_abierta") {
+          updatedEvento.formato = null
+        }
+      }
+  
+      setEditEvento(updatedEvento)
     } else {
-      setNewEvento(prev => ({ ...prev, [name]: name === "maxParejas" ? parseInt(value) : value }))
+      const updatedEvento = {
+        ...newEvento,
+        [name]: name === "maxParejas" ? parseInt(value) : value,
+      }
+  
+      if (name === "tipo") {
+        if (value === "torneo") {
+          updatedEvento.formato = newEvento.formato || "eliminacion_directa"
+        } else if (value === "cancha_abierta") {
+          updatedEvento.formato = ""
+        }
+      }
+  
+      setNewEvento(updatedEvento)
     }
   }
+  
+  
 
   const handleCrearEvento = async () => {
     if (!clubData) return
