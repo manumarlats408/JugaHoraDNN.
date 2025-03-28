@@ -23,6 +23,7 @@ import {
   DollarSign,
   Trophy,
   CalendarIcon,
+  Hash,
 } from "lucide-react"
 import { toast } from "react-hot-toast"
 import {
@@ -480,13 +481,17 @@ export default function PaginaEventos() {
                         {evento.Club.name} {evento.Club.address ? `- ${evento.Club.address}` : ""}
                       </p>
                       <p className="text-sm text-gray-500 flex items-center">
-                        <Users className="w-4 h-4 mr-1" />
-                        {evento.parejas.length}/{evento.maxParejas} parejas
+                        <Trophy className="w-4 h-4 mr-1" />
+                        {evento.categoria ? `Nivel ${evento.categoria}` : "Todos los niveles"} {(evento.genero)}
+                      </p>
+                      
+                      <p className="text-sm text-gray-500 flex items-center">
+                        <Hash className="w-4 h-4 mr-1" />
+                        {evento.tipo === "torneo" ? `Torneo (${evento.formato || "Estándar"})` : "Cancha Abierta"}
                       </p>
                       <p className="text-sm text-gray-500 flex items-center">
-                        <Trophy className="w-4 h-4 mr-1" />
-                        {evento.tipo === "torneo" ? `Torneo (${evento.formato || "Estándar"})` : "Cancha Abierta"} -{" "}
-                        {evento.genero} - {evento.categoria ? `Nivel ${evento.categoria}` : "Todos los niveles"}
+                        <Users className="w-4 h-4 mr-1" />
+                        {evento.parejas.length}/{evento.maxParejas} parejas
                       </p>
                       <p className="text-sm text-green-600 font-semibold flex items-center">
                         <DollarSign className="w-4 h-4 mr-1" />${evento.price}
