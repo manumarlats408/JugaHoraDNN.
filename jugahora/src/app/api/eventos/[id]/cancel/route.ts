@@ -17,12 +17,21 @@ export async function POST(request: Request, { params }: { params: { id: string 
     const evento = await prisma.evento_club.findUnique({ where: { id: eventoId } })
     if (!evento) return NextResponse.json({ error: 'Evento no encontrado' }, { status: 404 })
 
-    const nombreUsuario = user.firstName || ''
+    const nombreUsuario = user.firstName 
     const nuevasParejas = evento.parejas.filter((p) => !p.includes(nombreUsuario))
+
+    const inscripciones = Array.isArray(evento.inscripciones)
+      ? (evento.inscripciones as number[])
+      : []
+
+    const nuevasInscripciones = inscripciones.filter((id) => id !== userId)
 
     const eventoActualizado = await prisma.evento_club.update({
       where: { id: eventoId },
-      data: { parejas: nuevasParejas },
+      data: {
+        parejas: nuevasParejas,
+        inscripciones: nuevasInscripciones,
+      },
     })
 
     return NextResponse.json(eventoActualizado)

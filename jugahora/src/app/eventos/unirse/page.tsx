@@ -47,6 +47,7 @@ type Evento = {
   genero: string
   maxParejas: number
   parejas: string[]
+  inscripciones?: number[] // 👈 NUEVO
   price: number
   Club: {
     name: string
@@ -297,16 +298,9 @@ export default function PaginaEventos() {
     }
   }
 
-  // Verificar si el usuario está inscrito en un evento
   const isUserInscrito = (evento: Evento) => {
-    // Esta lógica dependerá de cómo se almacenan las parejas y cómo identificas al usuario
-    // Por ejemplo, si las parejas incluyen el ID del usuario o su nombre
-    return evento.parejas.some(
-      (pareja) =>
-        pareja.includes(user?.firstName || "") ||
-        pareja.includes(user?.lastName || "") ||
-        pareja.includes(user?.name || ""),
-    )
+    if (!user) return false
+    return evento.inscripciones?.includes(user?.id)
   }
 
   if (isLoading) {

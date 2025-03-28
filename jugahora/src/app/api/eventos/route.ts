@@ -52,12 +52,18 @@ export async function GET(req: Request) {
     const eventos = await prisma.evento_club.findMany({
       where: clubId ? { clubId: Number(clubId) } : {},
       include: {
-        Club: true, // Esto es lo que necesitás para que el frontend reciba name y address del club
+        Club: true,
       },
       orderBy: { date: "asc" },
     })
 
-    return NextResponse.json(eventos)
+    // Asegurar que `inscripciones` siempre sea un array
+    const eventosConInscripciones = eventos.map(evento => ({
+      ...evento,
+      inscripciones: evento.inscripciones || [], // Esto previene `undefined`
+    }))
+
+    return NextResponse.json(eventosConInscripciones)
   } catch (error) {
     console.error("Error al obtener eventos:", error)
     return NextResponse.json({ error: "Error al obtener eventos" }, { status: 500 })
