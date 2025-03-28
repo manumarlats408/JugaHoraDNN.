@@ -15,9 +15,13 @@ export async function GET(request: Request, { params }: { params: { id: string }
     }
 
     const parejasEnumeradas = evento.parejas.map((pareja, i) => {
-      const [j1, j2] = pareja.split('/')
-      return `${i + 1}) ${j1} - ${j2}`
-    })
+        const [j1, j2] = pareja.split('/')
+        if (!j1 || !j2) {
+          return `${i + 1}) ${pareja}` // fallback sin split
+        }
+        return `${i + 1}) ${j1.trim()} - ${j2.trim()}`
+      })
+      
 
     return NextResponse.json(parejasEnumeradas)
   } catch (error) {
