@@ -106,7 +106,7 @@ export default function PaginaEventos() {
           const userData = await authResponse.json()
           setUser(userData.entity)
 
-          const eventosResponse = await fetch("/api/eventos/usuarios", {
+          const eventosResponse = await fetch("/api/eventos", {
             method: "GET",
             credentials: "include",
           })
