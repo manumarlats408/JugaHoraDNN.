@@ -186,13 +186,50 @@ export default function PaginaEventos() {
       router.push("/login")
       return
     }
-
+  
+    const evento = eventos.find((e) => e.id === eventoId)
+    if (!evento) return
+  
     setSelectedEventoId(eventoId)
-    setNombre1("")
-    setNombre2("")
-    setIsInscripcionModalOpen(true)
+  
+    if (evento.tipo === "torneo") {
+      setNombre1("")
+      setNombre2("")
+      setIsInscripcionModalOpen(true) // Mostrar modal para torneos
+    } else {
+      // Enviar inscripción directa para cancha abierta
+      confirmarInscripcionDirecta(eventoId)
+    }
   }
-
+  
+  const confirmarInscripcionDirecta = async (eventoId: number) => {
+    setLoadingEventos((prev) => ({ ...prev, [eventoId]: true }))
+  
+    try {
+      const respuesta = await fetch(`/api/eventos/${eventoId}/join`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+        credentials: "include",
+      })
+  
+      if (respuesta.ok) {
+        const eventosActualizados = await fetch("/api/eventos", { credentials: "include" }).then((res) => res.json())
+        setEventos(eventosActualizados)
+        setFilteredEventos(eventosActualizados)
+        toast.success("Inscripción exitosa!")
+      } else {
+        const errorData = await respuesta.json()
+        toast.error(errorData.error || "Error al unirse al evento")
+      }
+    } catch (error) {
+      console.error("Error al conectar con el servidor:", error)
+      toast.error("Error al conectar con el servidor")
+    } finally {
+      setLoadingEventos((prev) => ({ ...prev, [eventoId]: false }))
+    }
+  }
+  
   const confirmarInscripcion = async () => {
     if (!nombre1 || !nombre2 || !selectedEventoId) {
       toast.error("Por favor completa los nombres de ambos jugadores")
