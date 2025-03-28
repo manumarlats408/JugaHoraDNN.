@@ -482,7 +482,7 @@ export default function PaginaEventos() {
                       </p>
                       <p className="text-sm text-gray-500 flex items-center">
                         <Trophy className="w-4 h-4 mr-1" />
-                        {evento.categoria ? `Nivel ${evento.categoria}` : "Todos los niveles"} {(evento.genero)}
+                        {evento.categoria ? `Nivel ${evento.categoria}` : "Todos los niveles"} ({evento.genero})
                       </p>
                       
                       <p className="text-sm text-gray-500 flex items-center">
