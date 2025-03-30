@@ -393,33 +393,7 @@ export function EventosDashboard() {
           <Label htmlFor="price" className="text-right">Precio</Label>
           <Input id="price" name="price" type="number" className="col-span-3" value={editEvento.price} onChange={(e) => handleInputChange(e, true)} />
         </div>
-        
-        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>
-              {selectedEventoTipo === "torneo" ? "Parejas Inscritas" : "Personas Inscritas"}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="py-4">
-            {joinedUsers.length > 0 ? (
-              <ul className="space-y-2">
-                {joinedUsers.map((user, index) => (
-                  <li key={index} className="flex items-center space-x-2">
-                    <Users className="h-4 w-4" />
-                    <span>{user}</span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-center text-gray-500">No hay inscriptos en este evento.</p>
-            )}
-          </div>
-          <DialogFooter>
-            <Button onClick={() => setIsModalOpen(false)}>Cerrar</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      
 
       </div>
       <DialogFooter>
@@ -526,6 +500,37 @@ export function EventosDashboard() {
           </Card>
         </div>
       </div>
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {selectedEventoTipo === "torneo" ? "Parejas Inscritas" : "Personas Inscritas"}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            {joinedUsers.length > 0 ? (
+              <ul className="space-y-2">
+                {joinedUsers.map((user, index) => (
+                  <li key={index} className="flex items-center space-x-2">
+                    <Users className="h-4 w-4" />
+                    <span>{user}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-center text-gray-500">
+                {selectedEventoTipo === "torneo"
+                  ? "No hay parejas inscritas."
+                  : "No hay personas inscritas."}
+              </p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setIsModalOpen(false)}>Cerrar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
     </div>
   )
 }
