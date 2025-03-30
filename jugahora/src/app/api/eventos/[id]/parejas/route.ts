@@ -7,44 +7,37 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
     const evento = await prisma.evento_club.findUnique({
       where: { id: eventoId },
-      select: {
-        tipo: true,
-        parejas: true,
-      },
+      select: { parejas: true, tipo: true },
     })
 
     if (!evento) {
       return NextResponse.json({ error: 'Evento no encontrado' }, { status: 404 })
     }
 
-    if (evento.tipo === 'cancha_abierta') {
-      const userIds = evento.parejas
-        .map((idStr) => parseInt(idStr))
-        .filter((id) => !isNaN(id))
+    const resultados = await Promise.all(
+      evento.parejas.map(async (pareja, i) => {
+        // Si es torneo, dejamos el formato "1) Jugador 1 - Jugador 2"
+        if (evento.tipo === "torneo") {
+          const [j1, j2] = pareja.split('/')
+          if (!j1 || !j2) {
+            return `${i + 1}) ${pareja}`
+          }
+          return `${i + 1}) ${j1.trim()} - ${j2.trim()}`
+        }
 
-      const usuarios = await prisma.user.findMany({
-        where: { id: { in: userIds } },
-        select: { id: true, firstName: true, lastName: true},
+        // Si es cancha abierta, interpretamos como userId y buscamos el nombre
+        const userId = parseInt(pareja)
+        const user = await prisma.user.findUnique({
+          where: { id: userId },
+          select: { firstName: true, lastName: true },
+        })
+
+        const nombre = user ? `${user.firstName || ""} ${user.lastName || ""}`.trim() : `Usuario ${userId}`
+        return `${i + 1}) ${nombre}`
       })
+    )
 
-      const nombres = usuarios.map((u, i) => {
-        const nombreCompleto = u.firstName || `Jugador ${u.id}`
-        return `${i + 1}) ${nombreCompleto}`
-      })
-
-      return NextResponse.json(nombres)
-    }
-
-    // Evento tipo torneo
-    const parejasEnumeradas = evento.parejas.map((pareja, i) => {
-      const [j1, j2] = pareja.split('/')
-      if (!j1 || !j2) {
-        return `${i + 1}) ${pareja}`
-      }
-      return `${i + 1}) ${j1.trim()} - ${j2.trim()}`
-    })
-
-    return NextResponse.json(parejasEnumeradas)
+    return NextResponse.json(resultados)
   } catch (error) {
     console.error('Error al obtener parejas del evento:', error)
     return NextResponse.json({ error: 'Error al obtener parejas' }, { status: 500 })
