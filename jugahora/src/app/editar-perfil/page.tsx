@@ -20,6 +20,9 @@ interface UserData {
   address?: string
   age?: number
   isClub?: boolean
+  preferredSide?: string
+  strengths?: string
+  weaknesses?: string
 }
 
 export default function EditarPerfilPage() {
@@ -128,7 +131,7 @@ export default function EditarPerfilPage() {
                   required
                 />
               </div>
-              {userData.isClub ? (
+              {userData.isClub ? (  
                 <div>
                   <Label htmlFor="name">Nombre del Club</Label>
                   <Input
@@ -185,7 +188,38 @@ export default function EditarPerfilPage() {
                     value={userData.age || ''}
                     onChange={(e) => setUserData({ ...userData, age: parseInt(e.target.value) || undefined })}
                   />
-                </div>
+                </div>               
+              )}
+              {!userData.isClub && (
+                <>
+                  <div>
+                    <Label htmlFor="preferredSide">Lado preferido</Label>
+                    <Input
+                      id="preferredSide"
+                      value={userData.preferredSide || ''}
+                      onChange={(e) => setUserData({ ...userData, preferredSide: e.target.value })}
+                      placeholder="Ej: derecha, revés"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="strengths">Fortalezas</Label>
+                    <Input
+                      id="strengths"
+                      value={userData.strengths || ''}
+                      onChange={(e) => setUserData({ ...userData, strengths: e.target.value })}
+                      placeholder="Ej: volea, saque, smash"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="weaknesses">Debilidades</Label>
+                    <Input
+                      id="weaknesses"
+                      value={userData.weaknesses || ''}
+                      onChange={(e) => setUserData({ ...userData, weaknesses: e.target.value })}
+                      placeholder="Ej: movilidad, juego en red"
+                    />
+                  </div>
+                </>
               )}
               <div className="flex justify-between">
                 <Button type="button" variant="outline" onClick={() => router.push('/perfil')}>
