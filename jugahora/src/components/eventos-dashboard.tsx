@@ -48,6 +48,9 @@ export function EventosDashboard() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [editEvento, setEditEvento] = useState<Evento | null>(null)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [selectedEventoTipo, setSelectedEventoTipo] = useState<string | null>(null)
+  const [joinedUsers, setJoinedUsers] = useState<string[]>([])
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const [newEvento, setNewEvento] = useState({
     nombre: "",
     date: "",
@@ -205,6 +208,24 @@ export function EventosDashboard() {
       console.error("Error al editar evento:", err)
     }
   }
+
+  const handleEventoClick = async (eventoId: number, tipo: string) => {
+    setSelectedEventoTipo(tipo)
+    try {
+      const res = await fetch(`/api/eventos/${eventoId}/parejas`)
+      if (res.ok) {
+        const data = await res.json()
+        setJoinedUsers(data)
+        setIsModalOpen(true)
+      } else {
+        toast.error("No se pudieron obtener los datos del evento")
+      }
+    } catch (err) {
+      console.error("Error al obtener datos del evento:", err)
+      toast.error("Error al conectar con el servidor")
+    }
+  }
+  
 
   // const tileClassName = ({ date, view }: { date: Date; view: string }) => {
   //   if (view === "month") {
@@ -373,6 +394,33 @@ export function EventosDashboard() {
           <Input id="price" name="price" type="number" className="col-span-3" value={editEvento.price} onChange={(e) => handleInputChange(e, true)} />
         </div>
         
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>
+              {selectedEventoTipo === "torneo" ? "Parejas Inscritas" : "Personas Inscritas"}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            {joinedUsers.length > 0 ? (
+              <ul className="space-y-2">
+                {joinedUsers.map((user, index) => (
+                  <li key={index} className="flex items-center space-x-2">
+                    <Users className="h-4 w-4" />
+                    <span>{user}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-center text-gray-500">No hay inscriptos en este evento.</p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setIsModalOpen(false)}>Cerrar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       </div>
       <DialogFooter>
         <Button onClick={handleEdit}>Guardar Cambios</Button>
@@ -415,7 +463,11 @@ export function EventosDashboard() {
               <div className="space-y-4">
                 {filteredEventos.length > 0 ? (
                   filteredEventos.map((evento) => (
-                    <div key={evento.id} className="flex items-center justify-between p-4 border border-blue-100 rounded-lg hover:bg-blue-50">
+                    <div
+                      key={evento.id}
+                      className="cursor-pointer relative flex items-center justify-between p-4 border border-blue-100 rounded-lg hover:bg-blue-50 transition-colors duration-300"
+                      onClick={() => handleEventoClick(evento.id, evento.tipo)}
+                    >
                       <div>
                         <p className="font-semibold text-gray-800">{evento.nombre}</p>
                         <p className="text-sm text-gray-500 flex items-center">
@@ -440,12 +492,29 @@ export function EventosDashboard() {
 
                       </div>
                       <div className="flex space-x-2">
-                        <Button variant="outline" size="icon" onClick={() => { setEditEvento(evento); setIsEditModalOpen(true) }}>
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="outline" size="icon" onClick={() => handleDelete(evento.id)}>
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setEditEvento(evento)
+                          setIsEditModalOpen(true)
+                        }}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleDelete(evento.id)
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+
                       </div>
                     </div>
                   ))
