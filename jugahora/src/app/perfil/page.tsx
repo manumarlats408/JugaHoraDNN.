@@ -655,11 +655,11 @@ const rachas = calcularRachas(partidos);
               </Button>
             </div>
 
-            {/* Lista de Amigos */}
+            {/* Lista de Amigos sin duplicados */}
             <div>
               {friends.length > 0 ? (
                 <ul>
-                  {friends.map((friend) => (
+                  {Array.from(new Map(friends.map((friend) => [friend.email, friend])).values()).map((friend) => (
                     <li
                       key={friend.id}
                       className="border-b py-2 flex justify-between items-center text-gray-800"
@@ -674,6 +674,8 @@ const rachas = calcularRachas(partidos);
                 <p className="text-gray-500">No tienes amigos agregados.</p>
               )}
             </div>
+
+
           </CardContent>
         </Card>
         
@@ -952,16 +954,6 @@ const rachas = calcularRachas(partidos);
             )}
           </CardContent>
         </Card>
-
-        <section className="w-full max-w-lg mb-8">
-          <h2 className="text-xl font-bold text-green-800 mb-4">Explora Nuevos Amigos</h2>
-          <p className="text-sm text-gray-600 mb-4">
-            Conéctate con otros jugadores y envía solicitudes de amistad.
-          </p>
-          <Link href="/explore" className="inline-block">
-            <Button className="bg-green-600 hover:bg-green-700 text-white">Explorar Perfiles</Button>
-          </Link>
-        </section>
 
         </main>
 
