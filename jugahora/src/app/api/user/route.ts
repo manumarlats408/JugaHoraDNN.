@@ -62,7 +62,18 @@ export async function PUT(request: Request) {
                 phoneNumber: updatedData.phoneNumber,
                 address: updatedData.address,
                 age: updatedData.age,
-            })
+                preferredSide: updatedData.preferredSide || null,
+                strengths: updatedData.strengths
+                  ? Array.isArray(updatedData.strengths)
+                    ? updatedData.strengths
+                    : updatedData.strengths.split(',').map((s: string) => s.trim())
+                  : [],
+                weaknesses: updatedData.weaknesses
+                  ? Array.isArray(updatedData.weaknesses)
+                    ? updatedData.weaknesses
+                    : updatedData.weaknesses.split(',').map((s: string) => s.trim())
+                  : [],
+              })
             .eq('email', userEmail);
 
         console.log('Resultado de actualización:', data);
