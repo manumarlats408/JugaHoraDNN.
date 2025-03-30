@@ -17,8 +17,19 @@ export async function POST(request: Request, { params }: { params: { id: string 
     const evento = await prisma.evento_club.findUnique({ where: { id: eventoId } })
     if (!evento) return NextResponse.json({ error: 'Evento no encontrado' }, { status: 404 })
 
-    const nombreUsuario = user.firstName 
-    const nuevasParejas = evento.parejas.filter((p) => !p.includes(nombreUsuario))
+    let nuevasParejas: string[] = []
+
+    if (evento.tipo === "torneo") {
+      if (!user.firstName) {
+        return NextResponse.json({ error: 'El usuario no tiene nombre registrado' }, { status: 400 })
+      }
+
+      nuevasParejas = evento.parejas.filter((p) => !p.includes(user.firstName!))
+    } else {
+      // Cancha abierta → se guarda el userId como string
+      nuevasParejas = evento.parejas.filter((p) => p !== String(userId))
+    }
+
 
     const inscripciones = Array.isArray(evento.inscripciones)
       ? (evento.inscripciones as number[])

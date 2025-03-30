@@ -413,7 +413,7 @@ export default function PaginaJuega() {
                 return (
                   <div
                     key={match.id}
-                    className="flex items-center justify-between p-4 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300 cursor-pointer"
+                    className="relative flex items-center justify-between p-4 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300 cursor-pointer"
                     onClick={() => handleMatchClick(match.id)}
                   >
                     <div>
