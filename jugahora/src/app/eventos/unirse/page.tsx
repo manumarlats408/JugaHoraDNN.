@@ -531,8 +531,9 @@ export default function PaginaEventos() {
                       </p>
                       <p className="text-sm text-gray-500 flex items-center">
                         <Users className="w-4 h-4 mr-1" />
-                        {evento.parejas.length}/{evento.maxParejas} parejas
+                        {evento.parejas.length}/{evento.maxParejas} {evento.tipo === "cancha_abierta" ? "personas" : "parejas"}
                       </p>
+
                       <p className="text-sm text-green-600 font-semibold flex items-center">
                         <DollarSign className="w-4 h-4 mr-1" />${evento.price}
                       </p>
