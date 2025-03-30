@@ -85,6 +85,7 @@ export default function PaginaEventos() {
   const [loadingEventoDetails, setLoadingEventoDetails] = useState<{ [key: number]: boolean }>({})
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedEventoId, setSelectedEventoId] = useState<number | null>(null)
+  const [selectedEventoTipo, setSelectedEventoTipo] = useState<string | null>(null)
   const [joinedUsers, setJoinedUsers] = useState<string[]>([])
   const [isUserModalOpen, setIsUserModalOpen] = useState(false)
   const [isInscripcionModalOpen, setIsInscripcionModalOpen] = useState(false)
@@ -322,13 +323,16 @@ export default function PaginaEventos() {
     }
   }
 
-  const handleEventoClick = async (eventoId: number) => {
+  const handleEventoClick = async (eventoId: number, tipo: string) => {
+    setSelectedEventoId(eventoId)
+    setSelectedEventoTipo(tipo)
     setLoadingEventoDetails((prev) => ({ ...prev, [eventoId]: true }))
+  
     try {
       const response = await fetch(`/api/eventos/${eventoId}/parejas`)
       if (response.ok) {
         const parejas = await response.json()
-        setJoinedUsers(parejas) // Asumimos que la API devuelve un array de strings
+        setJoinedUsers(parejas)
         setIsUserModalOpen(true)
       } else {
         console.error("Error al obtener las parejas del evento:", await response.text())
@@ -339,6 +343,7 @@ export default function PaginaEventos() {
       setLoadingEventoDetails((prev) => ({ ...prev, [eventoId]: false }))
     }
   }
+  
 
   const isUserInscrito = (evento: Evento) => {
     if (!user) return false
@@ -503,8 +508,9 @@ export default function PaginaEventos() {
                 return (
                   <div
                     key={evento.id}
-                    className="flex items-center justify-between p-4 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300 cursor-pointer"
-                    onClick={() => handleEventoClick(evento.id)}
+                    className="relative flex items-center justify-between p-4 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300 cursor-pointer"
+                    onClick={() => handleEventoClick(evento.id, evento.tipo)}
+
                   >
                     <div>
                       <p className="font-semibold text-gray-800">{evento.nombre}</p>
@@ -705,9 +711,9 @@ export default function PaginaEventos() {
       {/* Modal para ver parejas inscritas */}
       <Dialog open={isUserModalOpen} onOpenChange={setIsUserModalOpen}>
         <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Parejas Inscritas</DialogTitle>
-          </DialogHeader>
+        <DialogHeader>
+          <DialogTitle>{selectedEventoTipo === "torneo" ? "Parejas Inscritas" : "Personas Inscritas"}</DialogTitle>
+        </DialogHeader>
           <div className="py-4">
             {joinedUsers.length > 0 ? (
               <ul className="space-y-2">
