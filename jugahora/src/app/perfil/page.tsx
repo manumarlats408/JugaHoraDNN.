@@ -48,7 +48,10 @@ interface Friend {
   firstName: string;
   lastName: string;
   email: string;
+  nivel?: string;
+  progress?: number;
 }
+
 
 const menuItems = [
   { href: '/menu', label: 'Menu', icon: Home },
@@ -678,6 +681,49 @@ const rachas = calcularRachas(partidos);
 
           </CardContent>
         </Card>
+
+        <Card className="w-full max-w-lg shadow-lg border-green-100 mb-6">
+          <CardHeader className="bg-green-50 border-b border-green-100">
+            <CardTitle className="text-2xl font-bold text-green-800">Ranking de Amigos</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6 space-y-4">
+            {friends.length > 0 ? (
+              <ul className="space-y-3">
+                {Array.from(
+                  new Map(
+                    friends
+                      .filter((f) => f.nivel !== undefined && f.progress !== undefined)
+                      .map((f) => [f.email, f])
+                  ).values()
+                )
+                  .sort((a, b) => {
+                    const nivelA = parseInt(a.nivel ?? '8');
+                    const nivelB = parseInt(b.nivel ?? '8');
+                    if (nivelA !== nivelB) return nivelA - nivelB; // menor nivel es mejor
+                    return (b.progress ?? 0) - (a.progress ?? 0); // más progreso es mejor
+                  })
+                  .map((friend, index) => (
+                    <li
+                      key={friend.id}
+                      className="bg-white rounded-lg shadow p-3 flex justify-between items-center border border-green-100"
+                    >
+                      <div>
+                        <p className="font-bold text-gray-800">
+                          #{index + 1} - {friend.firstName} {friend.lastName}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          Nivel: {friend.nivel ?? '-'} | Progreso: {friend.progress ?? 0}%
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+              </ul>
+            ) : (
+              <p className="text-gray-500">Agrega amigos para ver el ranking.</p>
+            )}
+          </CardContent>
+        </Card>
+
         
         <Card className="w-full max-w-lg shadow-lg border-green-100 mb-6">
           <CardHeader className="bg-green-50 border-b border-green-100">
