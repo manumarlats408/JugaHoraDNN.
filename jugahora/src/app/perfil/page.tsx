@@ -687,6 +687,11 @@ const rachas = calcularRachas(partidos);
           </CardHeader>
           <CardContent className="pt-6 space-y-4">
             <div>
+              <p className="text-gray-600 mb-2">
+                A medida que anotes tus partidos, tus estadisticas comenzaran a crecer!
+              </p>
+            </div>
+            <div>
               <p><strong>Total de Partidos Jugados:</strong> {partidos.length}</p>
               <p><strong>Total de Partidos Ganados:</strong> {partidos.filter((p) => p.ganado).length}</p>
               <p><strong>Total de Partidos Perdidos:</strong> {partidos.filter((p) => !p.ganado).length}</p>
