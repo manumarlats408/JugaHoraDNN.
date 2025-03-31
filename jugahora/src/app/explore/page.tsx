@@ -18,25 +18,37 @@ export default function ExploreProfiles() {
   const [profiles, setProfiles] = useState<User[]>([]);
   const [filteredProfiles, setFilteredProfiles] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [friends, setFriends] = useState<User[]>([])
   const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
 
   useEffect(() => {
-    const fetchProfiles = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch('/api/users');
-        const data = await response.json();
-        setProfiles(data);
-        setFilteredProfiles(data);
+        const [usersRes, friendsRes] = await Promise.all([
+          fetch('/api/users'),
+          fetch('/api/friends/list-friends', { credentials: 'include' }),
+        ])
+  
+        const users = await usersRes.json()
+        const friendsData = await friendsRes.json()
+  
+        setProfiles(users)
+        setFriends(friendsData)
+  
+        // Aplicar filtro inicial sin amigos
+        const friendIds = new Set(friendsData.map((f: User) => f.id))
+        const filtered = users.filter((profile: User) => !friendIds.has(profile.id))
+        setFilteredProfiles(filtered)
       } catch (error) {
-        console.error('Error al cargar los perfiles:', error);
+        console.error('Error al cargar datos:', error)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
-
-    fetchProfiles();
-  }, []);
+    }
+  
+    fetchData()
+  }, [])
 
   const handleSendRequest = async (friendId: number) => {
     try {
@@ -58,13 +70,19 @@ export default function ExploreProfiles() {
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.toLowerCase();
-    setSearchTerm(value);
-    const filtered = profiles.filter(profile =>
-      `${profile.firstName} ${profile.lastName}`.toLowerCase().includes(value)
-    );
-    setFilteredProfiles(filtered);
-  };
+    const value = e.target.value.toLowerCase()
+    setSearchTerm(value)
+  
+    const friendIds = new Set(friends.map((f) => f.id))
+    const filtered = profiles
+      .filter(profile => !friendIds.has(profile.id)) // excluir amigos
+      .filter(profile =>
+        `${profile.firstName} ${profile.lastName}`.toLowerCase().includes(value)
+      )
+  
+    setFilteredProfiles(filtered)
+  }
+  
 
   if (loading) return <p className="p-4">Cargando perfiles...</p>;
 
