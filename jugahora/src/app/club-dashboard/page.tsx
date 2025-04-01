@@ -1,94 +1,73 @@
 "use client"
 
 import { Sidebar } from "@/components/layout/sidebar"
-import { useEffect, useState} from "react"
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatearPrecio } from "@/lib/utils"
 import Link from "next/link"
-import { CalendarIcon, Package, DollarSign, Users } from "lucide-react"
+import { CalendarIcon, Package, DollarSign, Users, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import type { Articulo, Movimiento, Partido, Club, Evento } from "@/lib/tipos"
-import { LogOut } from "lucide-react"
-import { useRouter } from 'next/navigation'
+import { useRouter } from "next/navigation"
 
 export default function DashboardPage() {
   const [articulos, setArticulos] = useState<Articulo[]>([])
   const [movimientos, setMovimientos] = useState<Movimiento[]>([])
   const [partidos, setPartidos] = useState<Partido[]>([])
-  const [eventos, setEventos] = useState<Evento[]>([]) // 👉 NUEVO
+  const [eventos, setEventos] = useState<Evento[]>([])
   const [cargando, setCargando] = useState(true)
   const [clubData, setClubData] = useState<Club | null>(null)
   const [userName, setUserName] = useState<string | null>(null)
   const router = useRouter()
-  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     async function cargarDatos() {
       try {
         setCargando(true)
 
-        const fetchUserData = async () => {
-          try {
-            setIsLoading(true);
-            const response = await fetch('/api/auth', {
-              method: 'GET',
-              credentials: 'include',
-            });
-        
-            if (response.ok) {
-              const data = await response.json();
-              setUserName(data.entity.firstName || data.entity.name);
-              return data.entity;
-            } else {
-              throw new Error('Authentication failed');
-            }
-          } catch (error) {
-            console.error('Error fetching user data:', error);
-            router.push('/login');
-            return null;
-          } finally {
-            setIsLoading(false);
-          }
-        };
-        console.log(userName, isLoading, fetchUserData);
-
-        
-      
-    
-
-        // Cargar datos del club
+        // Autenticación - verificar si el usuario está logueado
         const authResponse = await fetch("/api/auth", {
           method: "GET",
           credentials: "include",
         })
 
-        if (authResponse.ok) {
-          const data = await authResponse.json()
-          setClubData(data.entity)
+        if (!authResponse.ok) {
+          // Si no está autenticado, redirigir al login
+          console.error("Error de autenticación")
+          router.push("/login")
+          return // Detener la carga de datos
+        }
 
-          if (data.entity?.id) {
-            // Cargar partidos
-            const partidosResponse = await fetch(`/api/matches?clubId=${data.entity.id}`, {
-              credentials: "include",
-            })
-            if (partidosResponse.ok) {
-              const partidosData = await partidosResponse.json()
-              setPartidos(partidosData)
-            }
+        // Usuario autenticado, obtener datos
+        const userData = await authResponse.json()
+        setUserName(userData.entity.firstName || userData.entity.name)
+        setClubData(userData.entity)
 
-            // 👉 Cargar eventos
-            const eventosResponse = await fetch(`/api/eventos?clubId=${data.entity.id}`, {
-              credentials: "include",
-            })
-            if (eventosResponse.ok) {
-              const eventosData = await eventosResponse.json()
-              setEventos(eventosData)
-            }
+        // Solo cargar el resto de los datos si el usuario está autenticado
+        if (userData.entity?.id) {
+          // Cargar partidos
+          const partidosResponse = await fetch(`/api/matches?clubId=${userData.entity.id}`, {
+            credentials: "include",
+          })
+          if (partidosResponse.ok) {
+            const partidosData = await partidosResponse.json()
+            setPartidos(partidosData)
+          }
+
+          // Cargar eventos
+          const eventosResponse = await fetch(`/api/eventos?clubId=${userData.entity.id}`, {
+            credentials: "include",
+          })
+          if (eventosResponse.ok) {
+            const eventosData = await eventosResponse.json()
+            setEventos(eventosData)
           }
         }
 
         // Cargar artículos
-        const articulosResponse = await fetch("/api/articulos")
+        const articulosResponse = await fetch("/api/articulos", {
+          credentials: "include", // Asegurar que se envían las cookies
+        })
         if (articulosResponse.ok) {
           const articulosData = await articulosResponse.json()
           setArticulos(articulosData)
@@ -101,6 +80,7 @@ export default function DashboardPage() {
 
         const movimientosResponse = await fetch(
           `/api/movimientos?desde=${fechaDesde.toISOString().split("T")[0]}&hasta=${fechaHasta.toISOString().split("T")[0]}`,
+          { credentials: "include" },
         )
         if (movimientosResponse.ok) {
           const movimientosData = await movimientosResponse.json()
@@ -108,14 +88,14 @@ export default function DashboardPage() {
         }
       } catch (error) {
         console.error("Error al cargar datos del dashboard:", error)
+        router.push("/login") // Redirigir en caso de error
       } finally {
         setCargando(false)
       }
     }
 
     cargarDatos()
-    
-  }, [])
+  }, [router])
 
   const handleLogout = async () => {
     try {
@@ -123,7 +103,7 @@ export default function DashboardPage() {
         method: "GET",
         credentials: "include",
       })
-      window.location.href = "/"
+      router.push("/")
     } catch (error) {
       console.error("Error al cerrar sesión:", error)
     }
@@ -136,10 +116,21 @@ export default function DashboardPage() {
   const saldoNeto = totalIngresos - totalEgresos
   const partidosProximos = partidos.length
 
+  // Si está cargando, mostrar pantalla de carga
   if (cargando) {
     return (
-      <div className="flex justify-center items-center min-h-[50vh]">
+      <div className="flex justify-center items-center min-h-screen">
         <p className="text-lg text-gray-600">Cargando información del dashboard...</p>
+      </div>
+    )
+  }
+
+  // Si llegamos a este punto y no hay nombre de usuario, redirigir al login
+  if (!userName) {
+    router.push("/login")
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <p className="text-lg text-gray-600">Redirigiendo al login...</p>
       </div>
     )
   }
@@ -151,9 +142,9 @@ export default function DashboardPage() {
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">Dashboard {clubData?.name ? `de ${clubData.name}` : ""}</h1>
           <Button variant="outline" className="flex items-center gap-2" onClick={handleLogout}>
-          <LogOut className="h-4 w-4" />
-          Cerrar sesión
-        </Button>
+            <LogOut className="h-4 w-4" />
+            Cerrar sesión
+          </Button>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -218,123 +209,122 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
           </Link>
-      
 
-        <Card className="hover:shadow-md transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium">Usuarios Activos</CardTitle>
-            <Users className="h-4 w-4 text-purple-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">--</div>
-            <p className="text-xs text-muted-foreground">Información no disponible</p>
-          </CardContent>
-        </Card>
-      </div>
+          <Card className="hover:shadow-md transition-shadow">
+            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+              <CardTitle className="text-sm font-medium">Usuarios Activos</CardTitle>
+              <Users className="h-4 w-4 text-purple-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">--</div>
+              <p className="text-xs text-muted-foreground">Información no disponible</p>
+            </CardContent>
+          </Card>
+        </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card>
-          <CardHeader>
-            <CardTitle>Últimos Partidos</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {partidos.length > 0 ? (
-              <div className="space-y-4">
-                {partidos.slice(0, 3).map((partido) => (
-                  <div key={partido.id} className="flex justify-between items-center border-b pb-2">
-                    <div>
-                      <p className="font-medium">{partido.court}</p>
-                      <p className="text-sm text-gray-500">
-                        {new Date(partido.date).toLocaleDateString()}, {partido.startTime}
-                      </p>
-                    </div>
-                    <span className="text-sm font-semibold text-green-600">${partido.price}</span>
-                  </div>
-                ))}
-                <div className="pt-2">
-                  <Button variant="outline" size="sm" asChild>
-                    <Link href="/partidos">Ver todos los partidos</Link>
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <p className="text-center text-gray-500 py-4">No hay partidos programados</p>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Artículos Populares</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {articulos.length > 0 ? (
-              <div className="space-y-4">
-                {articulos
-                  .filter((a) => a.activo)
-                  .slice(0, 3)
-                  .map((articulo) => (
-                    <div key={articulo.id} className="flex justify-between items-center border-b pb-2">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <Card>
+            <CardHeader>
+              <CardTitle>Últimos Partidos</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {partidos.length > 0 ? (
+                <div className="space-y-4">
+                  {partidos.slice(0, 3).map((partido) => (
+                    <div key={partido.id} className="flex justify-between items-center border-b pb-2">
                       <div>
-                        <p className="font-medium">{articulo.nombre}</p>
-                        <p className="text-sm text-gray-500">Código: {articulo.codigo}</p>
+                        <p className="font-medium">{partido.court}</p>
+                        <p className="text-sm text-gray-500">
+                          {new Date(partido.date).toLocaleDateString()}, {partido.startTime}
+                        </p>
                       </div>
-                      <span className="text-sm font-semibold text-green-600">
-                        {formatearPrecio(articulo.precioVenta)}
-                      </span>
+                      <span className="text-sm font-semibold text-green-600">${partido.price}</span>
                     </div>
                   ))}
-                <div className="pt-2">
-                  <Button variant="outline" size="sm" asChild>
-                    <Link href="/inventario">Ver inventario completo</Link>
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <p className="text-center text-gray-500 py-4">No hay artículos disponibles</p>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Últimos Movimientos</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {movimientos.length > 0 ? (
-              <div className="space-y-4">
-                {movimientos.slice(0, 3).map((movimiento) => (
-                  <div key={movimiento.id} className="flex justify-between items-center border-b pb-2">
-                    <div>
-                      <p className="font-medium">{movimiento.concepto}</p>
-                      <p className="text-sm text-gray-500">
-                        {new Date(movimiento.fechaMovimiento).toLocaleDateString()}
-                      </p>
-                    </div>
-                    {movimiento.ingreso ? (
-                      <span className="text-sm font-semibold text-green-600">
-                        +{formatearPrecio(movimiento.ingreso)}
-                      </span>
-                    ) : (
-                      <span className="text-sm font-semibold text-red-600">
-                        -{formatearPrecio(movimiento.egreso || 0)}
-                      </span>
-                    )}
+                  <div className="pt-2">
+                    <Button variant="outline" size="sm" asChild>
+                      <Link href="/partidos">Ver todos los partidos</Link>
+                    </Button>
                   </div>
-                ))}
-                <div className="pt-2">
-                  <Button variant="outline" size="sm" asChild>
-                    <Link href="/finanzas">Ver todos los movimientos</Link>
-                  </Button>
                 </div>
-              </div>
-            ) : (
-              <p className="text-center text-gray-500 py-4">No hay movimientos recientes</p>
-            )}
-          </CardContent>
-        </Card>
+              ) : (
+                <p className="text-center text-gray-500 py-4">No hay partidos programados</p>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Artículos Populares</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {articulos.length > 0 ? (
+                <div className="space-y-4">
+                  {articulos
+                    .filter((a) => a.activo)
+                    .slice(0, 3)
+                    .map((articulo) => (
+                      <div key={articulo.id} className="flex justify-between items-center border-b pb-2">
+                        <div>
+                          <p className="font-medium">{articulo.nombre}</p>
+                          <p className="text-sm text-gray-500">Código: {articulo.codigo}</p>
+                        </div>
+                        <span className="text-sm font-semibold text-green-600">
+                          {formatearPrecio(articulo.precioVenta)}
+                        </span>
+                      </div>
+                    ))}
+                  <div className="pt-2">
+                    <Button variant="outline" size="sm" asChild>
+                      <Link href="/inventario">Ver inventario completo</Link>
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-center text-gray-500 py-4">No hay artículos disponibles</p>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Últimos Movimientos</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {movimientos.length > 0 ? (
+                <div className="space-y-4">
+                  {movimientos.slice(0, 3).map((movimiento) => (
+                    <div key={movimiento.id} className="flex justify-between items-center border-b pb-2">
+                      <div>
+                        <p className="font-medium">{movimiento.concepto}</p>
+                        <p className="text-sm text-gray-500">
+                          {new Date(movimiento.fechaMovimiento).toLocaleDateString()}
+                        </p>
+                      </div>
+                      {movimiento.ingreso ? (
+                        <span className="text-sm font-semibold text-green-600">
+                          +{formatearPrecio(movimiento.ingreso)}
+                        </span>
+                      ) : (
+                        <span className="text-sm font-semibold text-red-600">
+                          -{formatearPrecio(movimiento.egreso || 0)}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                  <div className="pt-2">
+                    <Button variant="outline" size="sm" asChild>
+                      <Link href="/finanzas">Ver todos los movimientos</Link>
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-center text-gray-500 py-4">No hay movimientos recientes</p>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </div>
     </div>
   )
 }
