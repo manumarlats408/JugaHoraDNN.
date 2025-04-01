@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import { useClickAway } from 'react-use';
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -50,6 +51,7 @@ interface Friend {
   email: string;
   nivel?: string;
   progress?: number;
+  phoneNumber?: string;
 }
 
 
@@ -66,6 +68,8 @@ export default function PerfilPage() {
   const [partidos, setPartidos] = useState<Partido[]>([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [fecha, setFecha] = useState('')
+  const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
+  const detailRef = useRef(null);
   const [jugadores, setJugadores] = useState<string[]>([])
   const [numSets, setNumSets] = useState('2')
   const [isAddingPartido, setIsAddingPartido] = useState(false)
@@ -237,6 +241,11 @@ useEffect(() => {
     calcularEficaciaCompañeros();
   }
 }, [partidos, userData]);
+
+// Cerrar al hacer clic fuera
+useClickAway(detailRef, () => {
+  if (selectedFriend) setSelectedFriend(null);
+});
 
 // Procesar los datos para acumular partidos jugados y ganados
 const procesarHistorial = (partidos: Partido[]) => {
@@ -646,26 +655,25 @@ const rachas = calcularRachas(partidos);
           </CardHeader>
 
           <CardContent className="pt-6 space-y-4">
-            <div className="mb-4">
-              <p className="text-gray-600 mb-2">
-                Aquí puedes ver tu lista de amigos y también explorar nuevos perfiles.
-              </p>
-              <Button
-                onClick={() => (window.location.href = '/explore')}
-                className="bg-green-500 hover:bg-green-600 text-white"
-              >
-                Explorar Nuevos Perfiles
-              </Button>
-            </div>
+            <p className="text-gray-600 mb-2">
+              Aquí puedes ver tu lista de amigos y también explorar nuevos perfiles.
+            </p>
+            <Button
+              onClick={() => router.push('/explore')}
+              className="bg-green-500 hover:bg-green-600 text-white"
+            >
+              Explorar Nuevos Perfiles
+            </Button>
 
-            {/* Lista de Amigos sin duplicados */}
+            {/* Lista de Amigos */}
             <div>
               {friends.length > 0 ? (
-                <ul>
+                <ul className="space-y-2 mt-4">
                   {Array.from(new Map(friends.map((friend) => [friend.email, friend])).values()).map((friend) => (
                     <li
                       key={friend.id}
-                      className="border-b py-2 flex justify-between items-center text-gray-800"
+                      className="border-b py-2 flex justify-between items-center text-gray-800 cursor-pointer hover:bg-green-50 px-2 rounded"
+                      onClick={() => setSelectedFriend(friend)}
                     >
                       <span>
                         <strong>{friend.firstName} {friend.lastName}</strong> ({friend.email})
@@ -674,11 +682,41 @@ const rachas = calcularRachas(partidos);
                   ))}
                 </ul>
               ) : (
-                <p className="text-gray-500">No tienes amigos agregados.</p>
+                <p className="text-gray-500 mt-4">No tienes amigos agregados.</p>
               )}
             </div>
 
-
+            {/* Detalle del amigo seleccionado */}
+            {selectedFriend && (
+              <div
+                ref={detailRef}
+                className="relative mt-6 p-4 bg-white border border-green-200 rounded shadow-md transition-all duration-300 ease-in-out transform scale-100 opacity-100"
+              >
+                <button
+                  className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+                  onClick={() => setSelectedFriend(null)}
+                >
+                  <X size={20} />
+                </button>
+                <h3 className="text-lg font-bold text-green-700 mb-2">Detalles del Amigo</h3>
+                <div className="flex items-center mb-2">
+                  <Mail className="w-4 h-4 mr-2 text-gray-500" />
+                  <span>{selectedFriend.email}</span>
+                </div>
+                {selectedFriend.firstName && selectedFriend.lastName && (
+                  <div className="flex items-center mb-2">
+                    <User className="w-4 h-4 mr-2 text-gray-500" />
+                    <span>{selectedFriend.firstName} {selectedFriend.lastName}</span>
+                  </div>
+                )}
+                {selectedFriend.phoneNumber && (
+                  <div className="flex items-center mb-2">
+                    <Phone className="w-4 h-4 mr-2 text-gray-500" />
+                    <span>{selectedFriend.phoneNumber}</span>
+                  </div>
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
 

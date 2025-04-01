@@ -41,6 +41,7 @@ export async function GET(req: Request) {
             email: true,
             nivel: true,
             progress: true,
+            phoneNumber: true,
           },
         },
         receiver: {
@@ -51,6 +52,7 @@ export async function GET(req: Request) {
             email: true,
             nivel: true,
             progress: true,
+            phoneNumber: true,
           },
         },
       },      
