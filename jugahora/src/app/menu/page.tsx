@@ -178,9 +178,7 @@ export default function MenuPage() {
 
       <footer className="py-6 px-4 md:px-6 bg-white border-t border-gray-200">
         <div className="container mx-auto flex flex-col sm:flex-row justify-between items-center">
-          <p className="text-xs text-gray-500 mb-2 sm:mb-0">
-            © 2024 JugáHora. Todos los derechos reservados.
-          </p>
+          <p className="text-xs text-gray-500 mb-2 sm:mb-0">© 2024 JugáHora. Todos los derechos reservados.</p>
           <nav className="flex gap-4">
             <Link className="text-xs text-gray-500 hover:text-green-600 transition-colors" href="/menu">
               Términos de Servicio
@@ -188,7 +186,7 @@ export default function MenuPage() {
             <Link className="text-xs text-gray-500 hover:text-green-600 transition-colors" href="/menu">
               Privacidad
             </Link>
-            <FeedbackForm/>
+            <FeedbackForm />
           </nav>
         </div>
       </footer>

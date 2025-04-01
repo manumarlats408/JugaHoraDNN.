@@ -16,7 +16,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { MessageSquare } from "lucide-react"
-import { toast } from "@/components/ui/use-toast"
 
 export function FeedbackForm() {
   const [isOpen, setIsOpen] = useState(false)
@@ -26,6 +25,7 @@ export function FeedbackForm() {
     email: "",
     message: "",
   })
+  const [statusMessage, setStatusMessage] = useState<{ type: "success" | "error"; message: string } | null>(null)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -35,6 +35,7 @@ export function FeedbackForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
+    setStatusMessage(null)
 
     try {
       const response = await fetch("/api/feedback", {
@@ -46,22 +47,23 @@ export function FeedbackForm() {
       })
 
       if (response.ok) {
-        toast({
-          title: "¡Gracias por tu feedback!",
-          description: "Hemos recibido tu mensaje correctamente.",
+        setStatusMessage({
+          type: "success",
+          message: "¡Gracias por tu feedback! Hemos recibido tu mensaje correctamente.",
         })
         setFormData({ name: "", email: "", message: "" })
-        setIsOpen(false)
+        setTimeout(() => {
+          setIsOpen(false)
+          setStatusMessage(null)
+        }, 2000)
       } else {
         const data = await response.json()
         throw new Error(data.error || "Error al enviar el feedback")
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description:
-          error instanceof Error ? error.message : "Hubo un problema al enviar tu feedback. Inténtalo de nuevo.",
-        variant: "destructive",
+      setStatusMessage({
+        type: "error",
+        message: error instanceof Error ? error.message : "Hubo un problema al enviar tu feedback. Inténtalo de nuevo.",
       })
     } finally {
       setIsSubmitting(false)
@@ -84,6 +86,17 @@ export function FeedbackForm() {
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+          {statusMessage && (
+            <div
+              className={`p-3 rounded-md ${
+                statusMessage.type === "success"
+                  ? "bg-green-50 text-green-700 border border-green-200"
+                  : "bg-red-50 text-red-700 border border-red-200"
+              }`}
+            >
+              {statusMessage.message}
+            </div>
+          )}
           <div className="space-y-2">
             <label htmlFor="name" className="text-sm font-medium">
               Nombre
