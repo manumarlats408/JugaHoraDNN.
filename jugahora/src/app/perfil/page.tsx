@@ -760,11 +760,7 @@ const rachas = calcularRachas(partidos);
         </CollapsibleSection>
 
 
-        <Card className="w-full max-w-lg shadow-lg border-green-100 mb-6">
-          <CardHeader className="bg-green-50 border-b border-green-100">
-            <CardTitle className="text-2xl font-bold text-green-800">Ranking de Amigos</CardTitle>
-          </CardHeader>
-          <CardContent className="pt-6 space-y-4">
+        <CollapsibleSection title="Ranking de Amigos">
             {friends.length > 0 ? (
               <ul className="space-y-3">
                 {Array.from(
@@ -799,17 +795,10 @@ const rachas = calcularRachas(partidos);
             ) : (
               <p className="text-gray-500">Agrega amigos para ver el ranking.</p>
             )}
-          </CardContent>
-        </Card>
+        </CollapsibleSection>
 
         
-        <Card className="w-full max-w-lg shadow-lg border-green-100 mb-6">
-          <CardHeader className="bg-green-50 border-b border-green-100">
-            <CardTitle className="text-2xl font-bold text-green-800">
-              Estadísticas de Partidos
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-6 space-y-4">
+        <CollapsibleSection title="Estadísticas de Partidos">
             <div>
               <p className="text-gray-600 mb-2">
                 A medida que anotes tus partidos, tus estadisticas comenzaran a crecer!
@@ -938,19 +927,31 @@ const rachas = calcularRachas(partidos);
               </div>
             </div>
 
-          </CardContent>
-        </Card>
+          </CollapsibleSection>
 
-        <Card className="w-full max-w-lg shadow-lg border-green-100">
-          <CardHeader className="bg-green-50 border-b border-green-100">
-            <CardTitle className="text-2xl font-bold text-green-800 flex items-center justify-between">
-              <span>Historial de Partidos</span>
+          <CollapsibleSection title="Historial de Partidos">
+            {partidos.length > 0 ? (
+              partidos.map((partido) => (
+                <div key={partido.id} className="border-b border-gray-200 pb-2">
+                  <p><strong>Fecha:</strong> {new Date(partido.fecha).toLocaleDateString()}</p>
+                  <p><strong>Jugadores:</strong> {partido.jugadores}</p>
+                  <p><strong>Resultado:</strong> {partido.resultado}</p>
+                  <p><strong>Estado:</strong> {partido.ganado ? 'Ganado' : 'Perdido'}</p>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500">No hay partidos registrados aún.</p>
+            )}
+
+            {/* Botón para abrir el diálogo, ahora ubicado al final */}
+            <div className="mt-4 flex justify-end">
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="outline" size="icon">
+                  <Button variant="outline" size="icon" title="Agregar Partido">
                     <Plus className="h-4 w-4" />
                   </Button>
                 </DialogTrigger>
+
                 <DialogContent className="sm:max-w-[425px]">
                   <DialogHeader>
                     <DialogTitle>Añadir Nuevo Partido</DialogTitle>
@@ -1066,23 +1067,22 @@ const rachas = calcularRachas(partidos);
                   </DialogClose>
                 </DialogContent>
               </Dialog>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-6 space-y-4">
-            {partidos.length > 0 ? (
-              partidos.map((partido) => (
-                <div key={partido.id} className="border-b border-gray-200 pb-2">
-                  <p><strong>Fecha:</strong> {new Date(partido.fecha).toLocaleDateString()}</p>
-                  <p><strong>Jugadores:</strong> {partido.jugadores}</p>
-                  <p><strong>Resultado:</strong> {partido.resultado}</p>
-                  <p><strong>Estado:</strong> {partido.ganado ? 'Ganado' : 'Perdido'}</p>
-                </div>
-              ))
-            ) : (
-              <p>No hay partidos registrados aún.</p>
-            )}
-          </CardContent>
-        </Card>
+              </div>
+              <CardContent className="pt-6 space-y-4">
+                {partidos.length > 0 ? (
+                  partidos.map((partido) => (
+                    <div key={partido.id} className="border-b border-gray-200 pb-2">
+                      <p><strong>Fecha:</strong> {new Date(partido.fecha).toLocaleDateString()}</p>
+                      <p><strong>Jugadores:</strong> {partido.jugadores}</p>
+                      <p><strong>Resultado:</strong> {partido.resultado}</p>
+                      <p><strong>Estado:</strong> {partido.ganado ? 'Ganado' : 'Perdido'}</p>
+                    </div>
+                  ))
+                ) : (
+                  <p>No hay partidos registrados aún.</p>
+                )}
+              </CardContent>
+        </CollapsibleSection>
 
         </main>
 
