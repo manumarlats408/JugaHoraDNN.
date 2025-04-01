@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { useClickAway } from 'react-use';
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -52,6 +51,10 @@ interface Friend {
   nivel?: string;
   progress?: number;
   phoneNumber?: string;
+  age?: number
+  preferredSide?: string
+  strengths?: string[]
+  weaknesses?: string[]
 }
 
 
@@ -69,7 +72,7 @@ export default function PerfilPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [fecha, setFecha] = useState('')
   const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
-  const detailRef = useRef(null);
+  const detailRef = useRef<HTMLDivElement>(null);
   const [jugadores, setJugadores] = useState<string[]>([])
   const [numSets, setNumSets] = useState('2')
   const [isAddingPartido, setIsAddingPartido] = useState(false)
@@ -242,10 +245,20 @@ useEffect(() => {
   }
 }, [partidos, userData]);
 
-// Cerrar al hacer clic fuera
-useClickAway(detailRef, () => {
-  if (selectedFriend) setSelectedFriend(null);
-});
+useEffect(() => {
+  function handleClickOutside(event: MouseEvent) {
+    if (detailRef.current && !detailRef.current.contains(event.target as Node)) {
+      setSelectedFriend(null);
+    }
+  }
+  if (selectedFriend) {
+    document.addEventListener('mousedown', handleClickOutside);
+  }
+  return () => {
+    document.removeEventListener('mousedown', handleClickOutside);
+  };
+}, [selectedFriend]);
+
 
 // Procesar los datos para acumular partidos jugados y ganados
 const procesarHistorial = (partidos: Partido[]) => {
@@ -669,15 +682,78 @@ const rachas = calcularRachas(partidos);
             <div>
               {friends.length > 0 ? (
                 <ul className="space-y-2 mt-4">
-                  {Array.from(new Map(friends.map((friend) => [friend.email, friend])).values()).map((friend) => (
-                    <li
-                      key={friend.id}
-                      className="border-b py-2 flex justify-between items-center text-gray-800 cursor-pointer hover:bg-green-50 px-2 rounded"
-                      onClick={() => setSelectedFriend(friend)}
-                    >
-                      <span>
-                        <strong>{friend.firstName} {friend.lastName}</strong> ({friend.email})
-                      </span>
+                  {Array.from(new Map(friends.map((f) => [f.email, f])).values()).map((friend) => (
+                    <li key={friend.id} className="relative">
+                      {/* Nombre + Email (clickable) */}
+                      <div
+                        className="border-b py-2 flex justify-between items-center text-gray-800 cursor-pointer hover:bg-green-50 px-2 rounded"
+                        onClick={() =>
+                          setSelectedFriend((prev) => (prev?.id === friend.id ? null : friend))
+                        }
+                      >
+                        <span>
+                          <strong>{friend.firstName} {friend.lastName}</strong> ({friend.email})
+                        </span>
+                      </div>
+
+                      {/* Detalles si está seleccionado */}
+                      {selectedFriend?.id === friend.id && (
+                        <div
+                          ref={detailRef}
+                          className="relative mt-2 p-4 bg-white border border-green-200 rounded shadow transition-all duration-300 ease-in-out"
+                        >
+                          <button
+                            className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+                            onClick={() => setSelectedFriend(null)}
+                          >
+                            <X size={20} />
+                          </button>
+
+                          {selectedFriend.phoneNumber && (
+                            <div className="flex items-center mb-2">
+                              <Phone className="w-4 h-4 mr-2 text-gray-500" />
+                              <span>{selectedFriend.phoneNumber}</span>
+                            </div>
+                          )}
+
+                          {selectedFriend.age && (
+                            <div className="flex items-center mb-2">
+                              <Clock className="w-4 h-4 mr-2 text-gray-500" />
+                              <span>{selectedFriend.age} años</span>
+                            </div>
+                          )}
+
+                          {selectedFriend.preferredSide && (
+                            <div className="flex items-center mb-2">
+                              <User className="w-4 h-4 mr-2 text-gray-500" />
+                              <span>Lado preferido: {selectedFriend.preferredSide}</span>
+                            </div>
+                          )}
+
+                          {selectedFriend.strengths && selectedFriend.strengths.length > 0 && (
+                            <div className="mb-2">
+                              <p className="font-semibold text-gray-700">Fortalezas:</p>
+                              <ul className="list-disc pl-6 text-sm text-gray-600">
+                                {selectedFriend.strengths.map((s, i) => (
+                                  <li key={i}>{s}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+
+                          {selectedFriend.weaknesses && selectedFriend.weaknesses.length > 0 && (
+                            <div className="mb-2">
+                              <p className="font-semibold text-gray-700">Debilidades:</p>
+                              <ul className="list-disc pl-6 text-sm text-gray-600">
+                                {selectedFriend.weaknesses.map((w, i) => (
+                                  <li key={i}>{w}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+
+                        </div>
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -685,40 +761,9 @@ const rachas = calcularRachas(partidos);
                 <p className="text-gray-500 mt-4">No tienes amigos agregados.</p>
               )}
             </div>
-
-            {/* Detalle del amigo seleccionado */}
-            {selectedFriend && (
-              <div
-                ref={detailRef}
-                className="relative mt-6 p-4 bg-white border border-green-200 rounded shadow-md transition-all duration-300 ease-in-out transform scale-100 opacity-100"
-              >
-                <button
-                  className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-                  onClick={() => setSelectedFriend(null)}
-                >
-                  <X size={20} />
-                </button>
-                <h3 className="text-lg font-bold text-green-700 mb-2">Detalles del Amigo</h3>
-                <div className="flex items-center mb-2">
-                  <Mail className="w-4 h-4 mr-2 text-gray-500" />
-                  <span>{selectedFriend.email}</span>
-                </div>
-                {selectedFriend.firstName && selectedFriend.lastName && (
-                  <div className="flex items-center mb-2">
-                    <User className="w-4 h-4 mr-2 text-gray-500" />
-                    <span>{selectedFriend.firstName} {selectedFriend.lastName}</span>
-                  </div>
-                )}
-                {selectedFriend.phoneNumber && (
-                  <div className="flex items-center mb-2">
-                    <Phone className="w-4 h-4 mr-2 text-gray-500" />
-                    <span>{selectedFriend.phoneNumber}</span>
-                  </div>
-                )}
-              </div>
-            )}
           </CardContent>
         </Card>
+
 
         <Card className="w-full max-w-lg shadow-lg border-green-100 mb-6">
           <CardHeader className="bg-green-50 border-b border-green-100">
