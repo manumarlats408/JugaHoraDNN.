@@ -8,6 +8,7 @@ import Link from "next/link"
 import { CalendarIcon, Package, DollarSign, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import type { Articulo, Movimiento, Partido, Club, Evento } from "@/lib/tipos"
+import { LogOut } from "lucide-react"
 
 export default function DashboardPage() {
   const [articulos, setArticulos] = useState<Articulo[]>([])
@@ -82,6 +83,18 @@ export default function DashboardPage() {
     cargarDatos()
   }, [])
 
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/logout", {
+        method: "GET",
+        credentials: "include",
+      })
+      window.location.href = "/"
+    } catch (error) {
+      console.error("Error al cerrar sesión:", error)
+    }
+  }
+
   // Estadísticas
   const articulosActivos = articulos.filter((a) => a.activo).length
   const totalIngresos = movimientos.reduce((total, m) => total + (m.ingreso || 0), 0)
@@ -103,6 +116,10 @@ export default function DashboardPage() {
       <div className="flex-1 ml-[4rem] p-6 space-y-6 overflow-auto">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">Dashboard {clubData?.name ? `de ${clubData.name}` : ""}</h1>
+          <Button variant="outline" className="flex items-center gap-2" onClick={handleLogout}>
+          <LogOut className="h-4 w-4" />
+          Cerrar sesión
+        </Button>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
