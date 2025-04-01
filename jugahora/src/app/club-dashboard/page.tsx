@@ -34,19 +34,26 @@ export default function DashboardPage() {
               method: 'GET',
               credentials: 'include',
             });
+        
             if (response.ok) {
               const data = await response.json();
               setUserName(data.entity.firstName || data.entity.name);
+              return data.entity;
             } else {
               throw new Error('Authentication failed');
             }
           } catch (error) {
             console.error('Error fetching user data:', error);
             router.push('/login');
+            return null;
           } finally {
             setIsLoading(false);
           }
         };
+        console.log(userName, isLoading);
+        
+        
+      
     
 
         // Cargar datos del club
@@ -107,6 +114,7 @@ export default function DashboardPage() {
     }
 
     cargarDatos()
+    
   }, [])
 
   const handleLogout = async () => {

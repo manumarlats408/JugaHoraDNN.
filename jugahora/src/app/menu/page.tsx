@@ -51,6 +51,7 @@ export default function MenuPage() {
 
     fetchUserData();
   }, [router]);
+  
 
   const handleLogout = async () => {
     try {
