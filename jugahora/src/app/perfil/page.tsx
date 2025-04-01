@@ -17,6 +17,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 import { Doughnut } from 'react-chartjs-2';
 ChartJS.register(ArcElement, LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend);
 import { Line } from 'react-chartjs-2';
+import CollapsibleSection from '@/components/CollapsibleSection'
 
 
 interface User {
@@ -662,12 +663,7 @@ const rachas = calcularRachas(partidos);
           </CardContent>
         </Card>
 
-        <Card className="w-full max-w-lg shadow-lg border-green-100 mb-6">
-          <CardHeader className="bg-green-50 border-b border-green-100">
-            <CardTitle className="text-2xl font-bold text-green-800">Amigos</CardTitle>
-          </CardHeader>
-
-          <CardContent className="pt-6 space-y-4">
+        <CollapsibleSection title="Amigos">
             <p className="text-gray-600 mb-2">
               Aquí puedes ver tu lista de amigos y también explorar nuevos perfiles.
             </p>
@@ -761,8 +757,7 @@ const rachas = calcularRachas(partidos);
                 <p className="text-gray-500 mt-4">No tienes amigos agregados.</p>
               )}
             </div>
-          </CardContent>
-        </Card>
+        </CollapsibleSection>
 
 
         <Card className="w-full max-w-lg shadow-lg border-green-100 mb-6">
