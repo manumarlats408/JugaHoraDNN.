@@ -1067,21 +1067,7 @@ const rachas = calcularRachas(partidos);
                   </DialogClose>
                 </DialogContent>
               </Dialog>
-              </div>
-              <CardContent className="pt-6 space-y-4">
-                {partidos.length > 0 ? (
-                  partidos.map((partido) => (
-                    <div key={partido.id} className="border-b border-gray-200 pb-2">
-                      <p><strong>Fecha:</strong> {new Date(partido.fecha).toLocaleDateString()}</p>
-                      <p><strong>Jugadores:</strong> {partido.jugadores}</p>
-                      <p><strong>Resultado:</strong> {partido.resultado}</p>
-                      <p><strong>Estado:</strong> {partido.ganado ? 'Ganado' : 'Perdido'}</p>
-                    </div>
-                  ))
-                ) : (
-                  <p>No hay partidos registrados aún.</p>
-                )}
-              </CardContent>
+            </div>
         </CollapsibleSection>
 
         </main>
