@@ -66,6 +66,7 @@ const menuItems = [
   { href: '/jugar', label: 'Unirme a un partido', icon: Users },
 ]
 
+
 export default function PerfilPage() {
   const [userData, setUserData] = useState<User | null>(null)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -259,6 +260,7 @@ useEffect(() => {
     document.removeEventListener('mousedown', handleClickOutside);
   };
 }, [selectedFriend]);
+
 
 
 // Procesar los datos para acumular partidos jugados y ganados
@@ -663,7 +665,7 @@ const rachas = calcularRachas(partidos);
           </CardContent>
         </Card>
 
-        <CollapsibleSection title="Amigos">
+        <CollapsibleSection title="Amigos" defaultOpen={false}>
             <p className="text-gray-600 mb-2">
               Aquí puedes ver tu lista de amigos y también explorar nuevos perfiles.
             </p>
@@ -760,7 +762,7 @@ const rachas = calcularRachas(partidos);
         </CollapsibleSection>
 
 
-        <CollapsibleSection title="Ranking de Amigos">
+        <CollapsibleSection title="Ranking de Amigos"  defaultOpen={false}>
             {friends.length > 0 ? (
               <ul className="space-y-3">
                 {Array.from(
@@ -798,7 +800,7 @@ const rachas = calcularRachas(partidos);
         </CollapsibleSection>
 
         
-        <CollapsibleSection title="Estadísticas de Partidos">
+        <CollapsibleSection title="Estadísticas de Partidos" defaultOpen={false}>
             <div>
               <p className="text-gray-600 mb-2">
                 A medida que anotes tus partidos, tus estadisticas comenzaran a crecer!
@@ -929,7 +931,7 @@ const rachas = calcularRachas(partidos);
 
           </CollapsibleSection>
 
-          <CollapsibleSection title="Historial de Partidos">
+          <CollapsibleSection title="Historial de Partidos" defaultOpen={false}>
             {partidos.length > 0 ? (
               partidos.map((partido) => (
                 <div key={partido.id} className="border-b border-gray-200 pb-2">
