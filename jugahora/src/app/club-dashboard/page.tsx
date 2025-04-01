@@ -1,7 +1,7 @@
 "use client"
 
 import { Sidebar } from "@/components/layout/sidebar"
-import { useEffect, useState } from "react"
+import { useEffect, useState} from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatearPrecio } from "@/lib/utils"
 import Link from "next/link"
@@ -9,6 +9,7 @@ import { CalendarIcon, Package, DollarSign, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import type { Articulo, Movimiento, Partido, Club, Evento } from "@/lib/tipos"
 import { LogOut } from "lucide-react"
+import { useRouter } from 'next/navigation'
 
 export default function DashboardPage() {
   const [articulos, setArticulos] = useState<Articulo[]>([])
@@ -17,11 +18,36 @@ export default function DashboardPage() {
   const [eventos, setEventos] = useState<Evento[]>([]) // 👉 NUEVO
   const [cargando, setCargando] = useState(true)
   const [clubData, setClubData] = useState<Club | null>(null)
+  const [userName, setUserName] = useState<string | null>(null)
+  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     async function cargarDatos() {
       try {
         setCargando(true)
+
+        const fetchUserData = async () => {
+          try {
+            setIsLoading(true);
+            const response = await fetch('/api/auth', {
+              method: 'GET',
+              credentials: 'include',
+            });
+            if (response.ok) {
+              const data = await response.json();
+              setUserName(data.entity.firstName || data.entity.name);
+            } else {
+              throw new Error('Authentication failed');
+            }
+          } catch (error) {
+            console.error('Error fetching user data:', error);
+            router.push('/login');
+          } finally {
+            setIsLoading(false);
+          }
+        };
+    
 
         // Cargar datos del club
         const authResponse = await fetch("/api/auth", {
