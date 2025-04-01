@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { Menu, X, Home, User, Calendar, Users, LogOut, Trophy } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { FeedbackForm } from '@/components/feedback-form'
 import Image from 'next/image'
 
 const menuItems = [
@@ -187,6 +188,7 @@ export default function MenuPage() {
             <Link className="text-xs text-gray-500 hover:text-green-600 transition-colors" href="/menu">
               Privacidad
             </Link>
+            <FeedbackForm/>
           </nav>
         </div>
       </footer>
