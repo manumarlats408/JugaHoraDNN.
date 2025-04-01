@@ -50,8 +50,8 @@ export default function DashboardPage() {
             setIsLoading(false);
           }
         };
-        console.log(userName, isLoading);
-        
+        console.log(userName, isLoading, fetchUserData);
+
         
       
     
