@@ -46,7 +46,7 @@ export async function POST(
         });
       } else {
         if (match.categoria == null || jugador.nivel !== match.categoria) {
-          throw new Error(`Este partido es para nivel ${match.categoria}. Tu nivel actual es ${jugador.nivel}.`);
+          throw new Error(`Este partido es para categoria ${match.categoria}. Tu categoria actual es ${jugador.nivel}.`);
         }
       }
 

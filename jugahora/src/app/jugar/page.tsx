@@ -421,7 +421,7 @@ export default function PaginaJuega() {
                       <p className="font-semibold text-gray-800">{match.nombreClub}</p>
                       {match.players === 0 && (
                         <p className="text-sm text-blue-600 font-medium mb-1">
-                          🎯 Si sos el primer jugador, el partido se ajustará a tu nivel.
+                          🎯 Si sos el primer jugador, el partido se ajustará a tu categoria.
                         </p>
                       )}
                       <p className="text-sm text-gray-500 flex items-center">
@@ -451,11 +451,11 @@ export default function PaginaJuega() {
                       {match.players > 0 && match.categoria && (
                         <p className="text-sm text-gray-500 flex items-center">
                           <Trophy className="w-4 h-4 mr-1" />
-                          Nivel requerido: {match.categoria}
+                          Categoria : {match.categoria}
                         </p>
                       )}
                       <p className="text-sm text-blue-700">
-                        Clickea en cualquier partido para ver los jugadores que ya están unidos y conocer sus preferencias de lado!
+                        Clickea en la tarjeta del partido para ver los jugadores que ya están unidos y conocer sus preferencias de lado!
                       </p>
                     </div>
 
