@@ -42,6 +42,7 @@ const elementosMenu = [
   { href: '/perfil', etiqueta: 'Perfil', icono: User },
   { href: '/reserva', etiqueta: 'Reservar', icono: Calendar },
   { href: '/jugar', etiqueta: 'Unirme a un partido', icono: Users },
+  { href: '/eventos/unirse', etiqueta: 'Unirme a un evento', icono: Trophy },
 ]
 
 export default function PaginaJuega() {

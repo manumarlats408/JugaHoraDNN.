@@ -67,7 +67,8 @@ const elementosMenu = [
   { href: "/menu", etiqueta: "Menú", icono: Home },
   { href: "/perfil", etiqueta: "Perfil", icono: User },
   { href: "/reserva", etiqueta: "Reservar", icono: Calendar },
-  { href: "/eventos/unirse", etiqueta: "Unirse a un evento", icono: Users },
+  { href: "/jugar", etiqueta: "Unirme a un partido", icono: Users },
+  { href: "/eventos/unirse", etiqueta: "Unirse a un evento", icono: Trophy },
 ]
 
 export default function PaginaEventos() {
