@@ -448,15 +448,15 @@ export default function PaginaJuega() {
                         <DollarSign className="w-4 h-4 mr-1" />
                         {match.price} en total
                       </p>
-                      <p className="text-sm text-blue-700">
-                        Clickea en cualquier partido para ver los jugadores que ya están unidos y conocer sus preferencias de lado!
-                      </p>
                       {match.players > 0 && match.categoria && (
                         <p className="text-sm text-gray-500 flex items-center">
                           <Trophy className="w-4 h-4 mr-1" />
                           Nivel requerido: {match.categoria}
                         </p>
                       )}
+                      <p className="text-sm text-blue-700">
+                        Clickea en cualquier partido para ver los jugadores que ya están unidos y conocer sus preferencias de lado!
+                      </p>
                     </div>
 
                     <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>
