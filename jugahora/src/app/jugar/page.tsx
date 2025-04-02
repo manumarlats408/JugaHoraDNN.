@@ -34,6 +34,7 @@ type User = {
   firstName?: string
   lastName?: string
   name?: string
+  preferredSide?: string
 }
 
 const elementosMenu = [
@@ -447,6 +448,9 @@ export default function PaginaJuega() {
                         <DollarSign className="w-4 h-4 mr-1" />
                         {match.price} en total
                       </p>
+                      <p className="text-sm text-blue-700">
+                        Clickea en cualquier partido para ver los jugadores que ya están unidos y conocer sus preferencias de lado!
+                      </p>
                       {match.players > 0 && match.categoria && (
                         <p className="text-sm text-gray-500 flex items-center">
                           <Trophy className="w-4 h-4 mr-1" />
@@ -590,29 +594,40 @@ export default function PaginaJuega() {
         </DialogContent>
       </Dialog>
       <Dialog open={isUserModalOpen} onOpenChange={setIsUserModalOpen}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Usuarios Unidos al Partido</DialogTitle>
-        </DialogHeader>
-        <div className="py-4">
-          {joinedUsers.length > 0 ? (
-            <ul className="space-y-2">
-              {joinedUsers.map((user) => (
-                <li key={user.id} className="flex items-center space-x-2">
-                  <Users className="h-4 w-4" />
-                  <span>{`${user.firstName} ${user.lastName}`}</span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-center text-gray-500">No hay usuarios unidos a este partido.</p>
-          )}
-        </div>
-        <DialogFooter>
-          <Button onClick={() => setIsUserModalOpen(false)}>Cerrar</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Usuarios unidos al partido</DialogTitle>
+            <DialogDescription>
+              Lista de jugadores unidos al partido y sus preferencias de lado
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            {joinedUsers.length > 0 ? (
+              <ul className="space-y-3">
+                {joinedUsers.map((user) => (
+                  <li key={user.id} className="flex items-start p-2 border border-gray-100 rounded-md hover:bg-gray-50">
+                    <Users className="h-5 w-5 text-green-600 mr-2 mt-0.5" />
+                    <div>
+                      <span className="font-medium">{`${user.firstName || ''} ${user.lastName || ''}`}</span>
+                      <div className="text-sm text-gray-500 mt-1">
+                        <span className="flex items-center">
+                          <span className="font-medium mr-1">Preferencia de lado:</span> 
+                          {user.preferredSide}
+                        </span>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-center text-gray-500">No hay usuarios unidos a este partido.</p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setIsUserModalOpen(false)}>Cerrar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
     </div>
   )
