@@ -445,7 +445,7 @@ export default function PaginaJuega() {
                       </p>
                       <p className="text-sm text-gray-500 flex items-center">
                         <DollarSign className="w-4 h-4 mr-1" />
-                        {match.price} por jugador
+                        {match.price} en total
                       </p>
                       {match.players > 0 && match.categoria && (
                         <p className="text-sm text-gray-500 flex items-center">
