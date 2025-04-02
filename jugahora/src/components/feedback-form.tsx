@@ -4,7 +4,6 @@ import type React from "react"
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import {
   Dialog,
@@ -20,16 +19,11 @@ import { MessageSquare } from "lucide-react"
 export function FeedbackForm() {
   const [isOpen, setIsOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    message: "",
-  })
+  const [message, setMessage] = useState("")
   const [statusMessage, setStatusMessage] = useState<{ type: "success" | "error"; message: string } | null>(null)
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setMessage(e.target.value)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -43,7 +37,7 @@ export function FeedbackForm() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ message }),
       })
 
       if (response.ok) {
@@ -51,7 +45,7 @@ export function FeedbackForm() {
           type: "success",
           message: "¡Gracias por tu feedback! Hemos recibido tu mensaje correctamente.",
         })
-        setFormData({ name: "", email: "", message: "" })
+        setMessage("")
         setTimeout(() => {
           setIsOpen(false)
           setStatusMessage(null)
@@ -102,43 +96,16 @@ export function FeedbackForm() {
             </div>
           )}
           <div className="space-y-2">
-            <label htmlFor="name" className="text-sm font-medium">
-              Nombre
-            </label>
-            <Input
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              className="border-gray-300 focus:border-green-500 focus:ring-green-500"
-            />
-          </div>
-          <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium">
-              Email
-            </label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="border-gray-300 focus:border-green-500 focus:ring-green-500"
-            />
-          </div>
-          <div className="space-y-2">
             <label htmlFor="message" className="text-sm font-medium">
-              Mensaje
+              Tu recomendación
             </label>
             <Textarea
               id="message"
-              name="message"
-              value={formData.message}
+              value={message}
               onChange={handleChange}
               required
-              className="min-h-[100px] border-gray-300 focus:border-green-500 focus:ring-green-500"
+              placeholder="Escribe aquí tu sugerencia o recomendación..."
+              className="min-h-[150px] border-gray-300 focus:border-green-500 focus:ring-green-500"
             />
           </div>
           <DialogFooter>
