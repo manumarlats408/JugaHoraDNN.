@@ -9,9 +9,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
-import { Menu, X, Home, User, Calendar, Users, LogOut, Clock, MapPin, Hash, Search, DollarSign, Trophy } from 'lucide-react'
+import { Menu, X, Home, User, Users, LogOut, Clock, MapPin, Hash, Search, DollarSign, Trophy } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { Dialog, DialogContent, DialogHeader,  DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import { format } from "date-fns"
+import { Calendar} from "lucide-react"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Calendar as DatePickerCalendar } from "@/components/ui/calendar"
+
+
+
 
 type Match = {
   id: number
@@ -60,6 +67,7 @@ export default function PaginaJuega() {
   const [loadingMatchDetails, setLoadingMatchDetails] = useState<{ [key: number]: boolean }>({})
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null)
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [joinedUsers, setJoinedUsers] = useState<User[]>([])
   const [isUserModalOpen, setIsUserModalOpen] = useState(false)
   const referenciaMenu = useRef<HTMLDivElement>(null)
@@ -387,21 +395,49 @@ export default function PaginaJuega() {
                 <div className="flex-1 min-w-[200px]">
                   <Label htmlFor="date" className="mb-2 block">Fecha</Label>
                   <div className="flex items-center space-x-2">
-                    <Input
-                      id="date"
-                      type="date"
-                      value={dateFilter}
-                      onChange={(e) => setDateFilter(e.target.value)}
-                    />
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={`w-full justify-start text-left font-normal ${
+                            !selectedDate ? "text-muted-foreground" : ""
+                          }`}
+                        >
+                          <Calendar className="mr-2 h-4 w-4" />
+                          {selectedDate ? format(selectedDate, "dd/MM/yyyy") : "Seleccionar fecha"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <DatePickerCalendar
+                          mode="single"
+                          selected={selectedDate || undefined}
+                          onSelect={(date) => {
+                            if (date) {
+                              setSelectedDate(date)
+                              setDateFilter(date.toISOString().split("T")[0])
+                            } else {
+                              setSelectedDate(null)
+                              setDateFilter('')
+                            }
+                          }}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+
                     <Button
                       variant="outline"
-                      onClick={() => setDateFilter('')} // Restablece el filtro de fecha
+                      onClick={() => {
+                        setSelectedDate(null)
+                        setDateFilter('')
+                      }}
                       className="px-2"
                     >
                       Borrar
                     </Button>
                   </div>
                 </div>
+
                 <div className="flex-1 min-w-[200px]">
                   <Label htmlFor="price" className="mb-2 block">Precio máximo</Label>
                   <div className="space-y-4">
