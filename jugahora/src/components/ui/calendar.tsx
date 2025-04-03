@@ -3,11 +3,21 @@
 import * as React from "react"
 import { DayPicker } from "react-day-picker"
 import { es } from "date-fns/locale"
+import type { Locale } from "date-fns"  // Importamos el tipo Locale
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
+
+// Tipamos customEsLocale como Partial<Locale> y forzamos que weekStartsOn sea el literal 1
+const customEsLocale: Partial<Locale> = {
+  ...es,
+  options: {
+    ...es.options,
+    weekStartsOn: 1 as const,
+  },
+}
 
 function Calendar({
   className,
@@ -19,8 +29,8 @@ function Calendar({
     <DayPicker
       showOutsideDays={showOutsideDays}
       className={cn("p-3", className)}
-      locale={es}
-      weekStartsOn={1} // Asegura que la semana comience el lunes
+      locale={customEsLocale}
+      // Podés remover la prop weekStartsOn aquí, ya que la configuración la pasás en el locale
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
