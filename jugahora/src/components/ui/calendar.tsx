@@ -40,14 +40,15 @@ function Calendar({
           "h-6 w-6 p-0 text-muted-foreground"
         ),
         table: "w-full border-collapse",
-        head_row: "flex",
-        head_cell: "w-9 h-9 text-xs font-normal text-center text-muted-foreground",
-        row: "flex w-full",
+        head_row: "grid grid-cols-7", // <-- ¡Clave!
+        head_cell: "text-muted-foreground w-9 h-9 font-normal text-[0.75rem] text-center",
+        row: "grid grid-cols-7", // <-- ¡Clave!
         cell: "w-9 h-9 text-center text-sm p-0 relative",
         day: cn(
           buttonVariants({ variant: "ghost" }),
-          "h-9 w-9 p-0 font-normal"
+          "h-9 w-9 p-0 font-normal aria-selected:opacity-100"
         ),
+        
         day_selected: "bg-primary text-primary-foreground",
         day_today: "border border-primary text-primary",
         day_outside: "text-muted-foreground opacity-50",
