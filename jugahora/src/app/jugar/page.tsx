@@ -420,6 +420,7 @@ export default function PaginaJuega() {
                               setDateFilter('')
                             }
                           }}
+                          showOutsideDays={false}
                           initialFocus
                         />
                       </PopoverContent>
