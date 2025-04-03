@@ -126,13 +126,14 @@ export default function PaginaJuega() {
   }, [router])
 
   useEffect(() => {
-    const filtered = matches.filter(match => {
-      const matchDate = new Date(match.date).toISOString().split('T')[0]
-      const matchesSearch = match.nombreClub.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            match.direccionClub.toLowerCase().includes(searchTerm.toLowerCase())
-      const matchesDate = dateFilter === '' || matchDate === dateFilter
+    const filtered = matches.filter((match) => {
+      const matchDate = match.date.split('T')[0]  // Cambiado de new Date(match.date).toISOString().split('T')[0]
+      const matchesSearch =
+        match.nombreClub.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        match.direccionClub.toLowerCase().includes(searchTerm.toLowerCase())
+      const matchesDate = dateFilter === "" || matchDate === dateFilter
       const matchesPrice = match.price <= priceFilter
-      
+  
       return matchesSearch && matchesDate && matchesPrice
     })
     setFilteredMatches(filtered)
@@ -225,6 +226,20 @@ export default function PaginaJuega() {
     } finally {
       setLoadingMatches(prev => ({ ...prev, [idPartido]: false }));
     }
+  };
+
+  // Función para formatear la fecha correctamente sin desfase
+  const formatearFecha = (fechaString: string) => {
+    // Parsear la fecha sin aplicar zona horaria
+    const partes = fechaString.split('T')[0].split('-');
+    if (partes.length !== 3) return fechaString;
+    
+    const año = parseInt(partes[0]);
+    const mes = parseInt(partes[1]);
+    const dia = parseInt(partes[2]);
+    
+    // Crear fecha local sin conversión de zona horaria
+    return `${dia}/${mes}/${año}`;
   };
 
   const handleMatchClick = async (matchId: number) => {
@@ -427,7 +442,7 @@ export default function PaginaJuega() {
                       )}
                       <p className="text-sm text-gray-500 flex items-center">
                         <Calendar className="w-4 h-4 mr-1" />
-                        {new Date(match.date).toLocaleDateString('es-AR')}
+                        {formatearFecha(match.date)}
                       </p>
                       <p className="text-sm text-gray-500 flex items-center">
                         <Clock className="w-4 h-4 mr-1" />
