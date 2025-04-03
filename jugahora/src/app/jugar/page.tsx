@@ -14,6 +14,7 @@ import { toast } from 'react-hot-toast'
 import { Dialog, DialogContent, DialogHeader,  DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { format } from "date-fns"
+import { es } from "date-fns/locale"
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 import { CalendarIcon } from 'lucide-react'
 
@@ -416,12 +417,13 @@ export default function PaginaJuega() {
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0">
-                      <CalendarComponent
-                        mode="single"
-                        selected={dateFilter ? new Date(dateFilter) : undefined}
-                        onSelect={handleDateSelect}
-                        initialFocus
-                      />
+                        <CalendarComponent
+                          mode="single"
+                          selected={dateFilter ? new Date(dateFilter) : undefined}
+                          onSelect={handleDateSelect}
+                          initialFocus
+                          locale={es}
+                        />
                       </PopoverContent>
                     </Popover>
                     <Button
