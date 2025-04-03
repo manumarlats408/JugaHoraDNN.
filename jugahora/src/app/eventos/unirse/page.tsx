@@ -14,7 +14,6 @@ import {
   X,
   Home,
   User,
-  Calendar,
   Users,
   LogOut,
   Clock,
@@ -22,7 +21,6 @@ import {
   Search,
   DollarSign,
   Trophy,
-  CalendarIcon,
   Hash,
 } from "lucide-react"
 import { toast } from "react-hot-toast"
@@ -34,6 +32,11 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog"
+import { Calendar } from "lucide-react"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Calendar as DatePickerCalendar} from "@/components/ui/calendar"
+import { format } from "date-fns"
+
 
 type Evento = {
   id: number
@@ -93,6 +96,7 @@ export default function PaginaEventos() {
   const [nombre1, setNombre1] = useState("")
   const [nombre2, setNombre2] = useState("")
   const referenciaMenu = useRef<HTMLDivElement>(null)
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const router = useRouter()
 
   const alternarMenu = () => setMenuAbierto(!menuAbierto)
@@ -483,16 +487,52 @@ export default function PaginaEventos() {
                   </div>
                 </div>
                 <div className="flex-1 min-w-[200px]">
-                  <Label htmlFor="date" className="mb-2 block">
-                    Fecha
-                  </Label>
+                  <Label htmlFor="date" className="mb-2 block">Fecha</Label>
                   <div className="flex items-center space-x-2">
-                    <Input id="date" type="date" value={dateFilter} onChange={(e) => setDateFilter(e.target.value)} />
-                    <Button variant="outline" onClick={() => setDateFilter("")} className="px-2">
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={`w-full justify-start text-left font-normal ${
+                            !selectedDate ? "text-muted-foreground" : ""
+                          }`}
+                        >
+                          <Calendar className="mr-2 h-4 w-4" />
+                          {selectedDate ? format(selectedDate, "dd/MM/yyyy") : "Seleccionar fecha"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <DatePickerCalendar
+                          mode="single"
+                          selected={selectedDate || undefined}
+                          onSelect={(date) => {
+                            if (date) {
+                              setSelectedDate(date)
+                              setDateFilter(date.toISOString().split("T")[0])
+                            } else {
+                              setSelectedDate(null)
+                              setDateFilter('')
+                            }
+                          }}
+                          showOutsideDays={false}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setSelectedDate(null)
+                        setDateFilter("")
+                      }}
+                      className="px-2"
+                    >
                       Borrar
                     </Button>
                   </div>
                 </div>
+
                 <div className="flex-1 min-w-[200px]">
                   <Label htmlFor="price" className="mb-2 block">
                     Precio máximo
@@ -530,7 +570,7 @@ export default function PaginaEventos() {
                     <div>
                       <p className="font-semibold text-gray-800">{evento.nombre}</p>
                       <p className="text-sm text-gray-500 flex items-center">
-                        <CalendarIcon className="w-4 h-4 mr-1" />
+                        <Calendar className="w-4 h-4 mr-1" />
                         {formatearFecha(evento.date)}
                       </p>
                       <p className="text-sm text-gray-500 flex items-center">
