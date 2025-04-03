@@ -12,11 +12,7 @@ import { Slider } from "@/components/ui/slider"
 import { Menu, X, Home, User, Calendar, Users, LogOut, Clock, MapPin, Hash, Search, DollarSign, Trophy } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { Dialog, DialogContent, DialogHeader,  DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { format } from "date-fns"
-import { es } from "date-fns/locale"
-import { Calendar as CalendarComponent } from "@/components/ui/calendar"
-import { CalendarIcon } from 'lucide-react'
+import { SimpleDatePicker } from "@/components/simple-date-picker";
 
 type Match = {
   id: number
@@ -60,7 +56,6 @@ export default function PaginaJuega() {
   const [dateFilter, setDateFilter] = useState('')
   const [priceFilter, setPriceFilter] = useState<number>(0)
   const [minPrice, setMinPrice] = useState<number>(0)
-  const [datePickerOpen, setDatePickerOpen] = useState(false)
   const [maxPrice, setMaxPrice] = useState<number>(100)
   const [loadingMatches, setLoadingMatches] = useState<{ [key: number]: boolean }>({})
   const [loadingMatchDetails, setLoadingMatchDetails] = useState<{ [key: number]: boolean }>({})
@@ -248,17 +243,6 @@ export default function PaginaJuega() {
     return `${dia}/${mes}/${año}`;
   };
 
-  const handleDateSelect = (date: Date | undefined) => {
-    if (!date) {
-      setDateFilter("");
-      return;
-    }
-    
-    const formattedDate = format(date, "yyyy-MM-dd");
-    setDateFilter(formattedDate);
-    setDatePickerOpen(false);
-  };
-
   const handleMatchClick = async (matchId: number) => {
     setLoadingMatchDetails(prev => ({ ...prev, [matchId]: true }))
     try {
@@ -406,26 +390,14 @@ export default function PaginaJuega() {
                     Fecha
                   </Label>
                   <div className="flex items-center space-x-2">
-                    <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="w-full justify-start text-left font-normal"
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {dateFilter ? formatearFecha(dateFilter) : "Seleccionar fecha"}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
-                        <CalendarComponent
-                          mode="single"
-                          selected={dateFilter ? new Date(dateFilter) : undefined}
-                          onSelect={handleDateSelect}
-                          initialFocus
-                          locale={es}
-                        />
-                      </PopoverContent>
-                    </Popover>
+                  <Label htmlFor="date" className="mb-2 block">
+                      Fecha
+                    </Label>
+                    <SimpleDatePicker
+                      value={dateFilter}
+                      onChange={setDateFilter}
+                      onClear={() => setDateFilter("")}
+                    />
                     <Button
                       variant="outline"
                       onClick={() => setDateFilter("")}
