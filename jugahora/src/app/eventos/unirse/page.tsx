@@ -157,7 +157,7 @@ export default function PaginaEventos() {
 
   useEffect(() => {
     const filtered = eventos.filter((evento) => {
-      const eventoDate = new Date(evento.date).toISOString().split("T")[0]
+      const eventoDate = evento.date.split('T')[0]
       const matchesSearch =
         evento.Club.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (evento.Club.address && evento.Club.address.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -181,6 +181,20 @@ export default function PaginaEventos() {
       toast.error("Error al cerrar sesión")
     }
   }
+
+  // Función para formatear la fecha correctamente sin desfase
+  const formatearFecha = (fechaString: string) => {
+    // Parsear la fecha sin aplicar zona horaria
+    const partes = fechaString.split('T')[0].split('-');
+    if (partes.length !== 3) return fechaString;
+    
+    const año = parseInt(partes[0]);
+    const mes = parseInt(partes[1]);
+    const dia = parseInt(partes[2]);
+    
+    // Crear fecha local sin conversión de zona horaria
+    return `${dia}/${mes}/${año}`;
+  };
 
   const handleUnirseEvento = (eventoId: number) => {
     if (!user) {
@@ -517,7 +531,7 @@ export default function PaginaEventos() {
                       <p className="font-semibold text-gray-800">{evento.nombre}</p>
                       <p className="text-sm text-gray-500 flex items-center">
                         <CalendarIcon className="w-4 h-4 mr-1" />
-                        {new Date(evento.date).toLocaleDateString("es-AR")}
+                        {formatearFecha(evento.date)}
                       </p>
                       <p className="text-sm text-gray-500 flex items-center">
                         <Clock className="w-4 h-4 mr-1" />
