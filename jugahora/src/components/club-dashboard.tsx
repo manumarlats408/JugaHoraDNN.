@@ -391,51 +391,33 @@ export function ClubDashboard() {
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button
-                          type="button"
                           variant="outline"
                           className={`w-full justify-start text-left font-normal ${
                             !editSelectedDate ? "text-muted-foreground" : ""
                           }`}
-                          onClick={(e) => {
-                            // Detener la propagación para evitar que el Dialog interfiera
-                            e.stopPropagation();
-                          }}
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
                           {editSelectedDate ? format(editSelectedDate, "dd/MM/yyyy") : "Seleccionar fecha"}
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent 
-                        className="w-auto p-0" 
-                        align="start"
-                        onInteractOutside={(e) => {
-                          // Evitar que se cierre el popover al hacer clic en el Dialog
-                          e.preventDefault();
-                        }}
-                        onOpenAutoFocus={(e) => {
-                          // Evitar el enfoque automático que puede causar problemas
-                          e.preventDefault();
-                        }}
-                      >
+                      <PopoverContent className="w-auto p-0 z-50" align="start">
                         <DatePickerCalendar
                           mode="single"
                           selected={editSelectedDate || undefined}
                           onSelect={(date) => {
                             if (date) {
-                              setEditSelectedDate(date);
+                              setEditSelectedDate(date)
                               
                               // Convertimos a formato yyyy-mm-dd sin desfase
-                              const year = date.getFullYear();
-                              const month = String(date.getMonth() + 1).padStart(2, "0");
-                              const day = String(date.getDate()).padStart(2, "0");
-                              const formattedDate = `${year}-${month}-${day}`;
+                              const year = date.getFullYear()
+                              const month = String(date.getMonth() + 1).padStart(2, "0")
+                              const day = String(date.getDate()).padStart(2, "0")
+                              const formattedDate = `${year}-${month}-${day}`
                               
-                              setEditMatch((prev) => prev ? { ...prev, date: formattedDate } : null);
-                              
-                              // Cerrar manualmente el popover después de seleccionar
-                              document.body.click();
+                              setEditMatch((prev) => prev ? { ...prev, date: formattedDate } : null)
                             }
                           }}
+                          showOutsideDays={false}
                           initialFocus
                         />
                       </PopoverContent>
