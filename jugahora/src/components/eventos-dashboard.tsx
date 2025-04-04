@@ -182,6 +182,18 @@ export function EventosDashboard() {
     }
   }
 
+  const formatearFecha = (fechaString: string) => {
+    const partes = fechaString.split("T")[0].split("-")
+    if (partes.length !== 3) return fechaString
+  
+    const año = partes[0]
+    const mes = partes[1]
+    const dia = partes[2]
+  
+    return `${dia}/${mes}/${año}`
+  }
+
+
   const handleDelete = async (id: number) => {
     try {
       const res = await fetch(`/api/eventos/${id}`, { method: "DELETE" })
@@ -454,7 +466,7 @@ export function EventosDashboard() {
                       <div>
                         <p className="font-semibold text-gray-800">{evento.nombre}</p>
                         <p className="text-sm text-gray-500 flex items-center">
-                          <CalendarIcon className="w-4 h-4 mr-1" /> {evento.date.split("T")[0]}
+                          <CalendarIcon className="w-4 h-4 mr-1" /> {formatearFecha(evento.date)}
                         </p>
                         <p className="text-sm text-gray-500 flex items-center">
                           <Clock className="w-4 h-4 mr-1" /> {evento.startTime} - {evento.endTime}
