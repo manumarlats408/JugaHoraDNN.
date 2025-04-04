@@ -204,7 +204,7 @@ export function ClubDashboard() {
   const handleEditMatch = (match: Match) => {
     setEditMatch(match)
     const [year, month, day] = match.date.split("T")[0].split("-").map(Number)
-    setSelectedDate(new Date(year, month - 1, day))
+    setEditSelectedDate(new Date(year, month - 1, day))
 
     setIsEditModalOpen(true)
   }
@@ -395,7 +395,7 @@ export function ClubDashboard() {
                         setEditMatch((prev) => prev ? { ...prev, date: newDate } : null);
                         if (newDate) {
                           const [year, month, day] = newDate.split('-').map(Number);
-                          setSelectedDate(new Date(year, month - 1, day));
+                          setEditSelectedDate(new Date(year, month - 1, day));
                         }
                       }}
                     />
