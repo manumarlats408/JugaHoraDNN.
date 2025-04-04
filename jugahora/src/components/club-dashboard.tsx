@@ -20,6 +20,9 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Calendar as DatePickerCalendar } from "@/components/ui/calendar"
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
+import { format } from "date-fns"
 
 
 type Match = {
@@ -52,6 +55,7 @@ export function ClubDashboard() {
   const [newMatch, setNewMatch] = useState({ date: "", startTime: "", endTime: "", court: "", price: "" })
   const [editMatch, setEditMatch] = useState<Match | null>(null)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [editSelectedDate, setEditSelectedDate] = useState<Date | null>(null)
   const [clubData, setClubData] = useState<Club | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
@@ -203,8 +207,11 @@ export function ClubDashboard() {
 
   const handleEditMatch = (match: Match) => {
     setEditMatch(match)
+    const [year, month, day] = match.date.split("T")[0].split("-").map(Number)
+    setEditSelectedDate(new Date(year, month - 1, day))
     setIsEditModalOpen(true)
   }
+  
   
   const handleSaveEdit = async () => {
     if (!editMatch) return
@@ -314,13 +321,37 @@ export function ClubDashboard() {
                   <Label htmlFor="startTime" className="text-right">
                     Hora de Inicio
                   </Label>
-                  <Input
-                    id="startTime"
-                    type="time"
-                    className="col-span-3"
-                    value={newMatch.startTime}
-                    onChange={(e) => handleInputChange(e)}
-                  />
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal col-span-3"
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {editSelectedDate ? format(editSelectedDate, "dd/MM/yyyy") : "Seleccionar fecha"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <DatePickerCalendar
+                        mode="single"
+                        selected={editSelectedDate || undefined}
+                        onSelect={(date) => {
+                          if (!date) return
+                          setEditSelectedDate(date)
+
+                          const year = date.getFullYear()
+                          const month = String(date.getMonth() + 1).padStart(2, "0")
+                          const day = String(date.getDate()).padStart(2, "0")
+                          const formattedDate = `${year}-${month}-${day}`
+
+                          setEditMatch((prev) => prev ? { ...prev, date: formattedDate } : null)
+                        }}
+                        showOutsideDays={false}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="endTime" className="text-right">
