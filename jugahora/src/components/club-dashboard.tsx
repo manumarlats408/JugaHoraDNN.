@@ -392,29 +392,32 @@ export function ClubDashboard() {
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"
-                          className="w-full justify-start text-left font-normal"
+                          className={`w-full justify-start text-left font-normal ${
+                            !editSelectedDate ? "text-muted-foreground" : ""
+                          }`}
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
                           {editSelectedDate ? format(editSelectedDate, "dd/MM/yyyy") : "Seleccionar fecha"}
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
+                      <PopoverContent className="w-auto p-0 z-50" align="start">
                         <DatePickerCalendar
                           mode="single"
                           selected={editSelectedDate || undefined}
                           onSelect={(date) => {
-                            if (!date) return
-                          
-                            setEditSelectedDate(date)
-                          
-                            // Convertimos a formato yyyy-mm-dd sin desfase
-                            const year = date.getFullYear()
-                            const month = String(date.getMonth() + 1).padStart(2, "0")
-                            const day = String(date.getDate()).padStart(2, "0")
-                            const formattedDate = `${year}-${month}-${day}`
-                          
-                            setEditMatch((prev) => prev ? { ...prev, date: formattedDate } : null)
+                            if (date) {
+                              setEditSelectedDate(date)
+                              
+                              // Convertimos a formato yyyy-mm-dd sin desfase
+                              const year = date.getFullYear()
+                              const month = String(date.getMonth() + 1).padStart(2, "0")
+                              const day = String(date.getDate()).padStart(2, "0")
+                              const formattedDate = `${year}-${month}-${day}`
+                              
+                              setEditMatch((prev) => prev ? { ...prev, date: formattedDate } : null)
+                            }
                           }}
+                          showOutsideDays={false}
                           initialFocus
                         />
                       </PopoverContent>
