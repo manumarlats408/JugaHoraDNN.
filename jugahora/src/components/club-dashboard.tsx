@@ -390,15 +390,14 @@ export function ClubDashboard() {
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="date" className="text-right">Fecha</Label>
-                  <Popover modal={false}>
+                  <Popover>
                     <PopoverTrigger asChild>
                     <Button
                       variant="outline"
                       className="w-full justify-between font-normal"
                     >
-                      <CalendarIcon className="ml-2 h-4 w-4" />
                       {editSelectedDate ? format(editSelectedDate, "dd/MM/yyyy") : "Seleccionar fecha"}
-                      
+                      <CalendarIcon className="ml-2 h-4 w-4" />
                     </Button>
 
                     </PopoverTrigger>
@@ -421,7 +420,6 @@ export function ClubDashboard() {
                       }}
                       showOutsideDays={false}
                       initialFocus
-
                     />
                     </PopoverContent>
                   </Popover>
