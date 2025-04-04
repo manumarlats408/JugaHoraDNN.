@@ -206,9 +206,7 @@ export function ClubDashboard() {
 
   const handleEditMatch = (match: Match) => {
     setEditMatch(match)
-    const [year, month, day] = match.date.split("T")[0].split("-").map(Number)
-    setEditSelectedDate(new Date(year, month - 1, day))
-
+    setEditSelectedDate(new Date(match.date)) // ← sincronizar fecha en el calendario
     setIsEditModalOpen(true)
   }
   
@@ -398,25 +396,18 @@ export function ClubDashboard() {
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
-                    <DatePickerCalendar
-                      mode="single"
-                      selected={editSelectedDate || undefined}
-                      onSelect={(date) => {
-                        if (!date) return
-
-                        setEditSelectedDate(date)
-
-                        // Convertimos a formato yyyy-mm-dd sin desfase
-                        const year = date.getFullYear()
-                        const month = String(date.getMonth() + 1).padStart(2, "0")
-                        const day = String(date.getDate()).padStart(2, "0")
-                        const formattedDate = `${year}-${month}-${day}`
-
-                        setEditMatch((prev) => prev ? { ...prev, date: formattedDate } : null)
-                      }}
-                      showOutsideDays={false}
-                      initialFocus
-                    />
+                      <DatePickerCalendar
+                        mode="single"
+                        selected={editSelectedDate || undefined}
+                        onSelect={(date) => {
+                          if (!date) return
+                          setEditSelectedDate(date)
+                          const isoDate = date.toISOString().split("T")[0]
+                          setEditMatch((prev) => prev ? { ...prev, date: isoDate } : null)
+                        }}
+                        showOutsideDays={false}
+                        initialFocus
+                      />
                     </PopoverContent>
                   </Popover>
                 </div>
