@@ -309,18 +309,6 @@ export function ClubDashboard() {
                   <Label htmlFor="date" className="text-right">
                     Fecha
                   </Label>
-                  <Input
-                    id="date"
-                    type="date"
-                    className="col-span-3"
-                    value={newMatch.date}
-                    onChange={(e) => handleInputChange(e)}
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="startTime" className="text-right">
-                    Hora de Inicio
-                  </Label>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
@@ -351,6 +339,18 @@ export function ClubDashboard() {
                       />
                     </PopoverContent>
                   </Popover>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="startTime" className="text-right">
+                    Hora de Inicio
+                  </Label>
+                  <Input
+                    id="startTime"
+                    type="time"
+                    className="col-span-3"
+                    value={newMatch.startTime}
+                    onChange={(e) => handleInputChange(e)}
+                  />
 
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
