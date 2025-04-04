@@ -20,6 +20,9 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Calendar as DatePickerCalendar } from "@/components/ui/calendar"
+import { format } from "date-fns"
 
 type Match = {
   id: number
@@ -50,6 +53,7 @@ export function ClubDashboard() {
   const [matches, setMatches] = useState<Match[]>([])
   const [newMatch, setNewMatch] = useState({ date: "", startTime: "", endTime: "", court: "", price: "" })
   const [editMatch, setEditMatch] = useState<Match | null>(null)
+  const [editSelectedDate, setEditSelectedDate] = useState<Date | null>(null)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [clubData, setClubData] = useState<Club | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -82,6 +86,17 @@ export function ClubDashboard() {
       console.error("Error al conectar con la API para obtener los partidos:", error)
     }
   }, [clubData])
+
+  const formatearFecha = (fechaString: string) => {
+    const partes = fechaString.split("T")[0].split("-")
+    if (partes.length !== 3) return fechaString
+  
+    const año = partes[0]
+    const mes = partes[1]
+    const dia = partes[2]
+  
+    return `${dia}/${mes}/${año}`
+  }
 
   const handleMatchClick = async (match: Match) => {
     setLoadingMatches((prev) => ({ ...prev, [match.id]: true }))
@@ -191,9 +206,10 @@ export function ClubDashboard() {
 
   const handleEditMatch = (match: Match) => {
     setEditMatch(match)
+    setEditSelectedDate(new Date(match.date)) // ← sincronizar fecha en el calendario
     setIsEditModalOpen(true)
   }
-
+  
   const handleSaveEdit = async () => {
     if (!editMatch) return
 
@@ -368,17 +384,34 @@ export function ClubDashboard() {
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="date" className="text-right">
-                    Fecha
-                  </Label>
-                  <Input
-                    id="date"
-                    type="date"
-                    className="col-span-3"
-                    value={editMatch ? new Date(editMatch.date).toISOString().split("T")[0] : ""}
-                    onChange={(e) => handleInputChange(e, true)}
-                  />
+                  <Label htmlFor="date" className="text-right">Fecha</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal col-span-3"
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {editSelectedDate ? format(editSelectedDate, "dd/MM/yyyy") : "Seleccionar fecha"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <DatePickerCalendar
+                        mode="single"
+                        selected={editSelectedDate || undefined}
+                        onSelect={(date) => {
+                          if (!date) return
+                          setEditSelectedDate(date)
+                          const isoDate = date.toISOString().split("T")[0]
+                          setEditMatch((prev) => prev ? { ...prev, date: isoDate } : null)
+                        }}
+                        showOutsideDays={false}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
+
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="startTime" className="text-right">
                     Hora de Inicio
@@ -469,10 +502,10 @@ export function ClubDashboard() {
                     onClick={() => handleMatchClick(match)}
                   >
                     <div>
-                      <p className="font-semibold text-gray-800">{match.date.split("T")[0]}</p>
+                      <p className="font-semibold text-gray-800">{formatearFecha(match.date)}</p>
                       <p className="text-sm text-gray-500 flex items-center">
                         <CalendarIcon className="w-4 h-4 mr-1" />
-                        {match.date.split("T")[0]}
+                        {formatearFecha(match.date)}
                       </p>
                       <p className="text-sm text-gray-500 flex items-center">
                         <Clock className="w-4 h-4 mr-1" />
