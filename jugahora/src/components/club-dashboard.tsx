@@ -385,67 +385,68 @@ export function ClubDashboard() {
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="date" className="text-right">Fecha</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-between font-normal col-span-3"
-                    >
-                      {editSelectedDate ? format(editSelectedDate, "dd/MM/yyyy") : "Seleccionar fecha"}
-                      <CalendarIcon className="h-4 w-4 ml-2" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <DatePickerCalendar
-                      mode="single"
-                      selected={editSelectedDate || undefined}
-                      onSelect={(date) => {
-                        if (!date) return;
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="date" className="text-right">Fecha</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-between text-left font-normal col-span-3"
+                      >
+                        {editSelectedDate ? format(editSelectedDate, "dd/MM/yyyy") : "Seleccionar fecha"}
+                        <CalendarIcon className="ml-2 h-4 w-4" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <DatePickerCalendar
+                        mode="single"
+                        selected={editSelectedDate || undefined}
+                        onSelect={(date) => {
+                          if (!date) return;
 
-                        setEditSelectedDate(date);
+                          setEditSelectedDate(date);
+                          const year = date.getFullYear();
+                          const month = String(date.getMonth() + 1).padStart(2, "0");
+                          const day = String(date.getDate()).padStart(2, "0");
+                          const formattedDate = `${year}-${month}-${day}`;
 
-                        const year = date.getFullYear();
-                        const month = String(date.getMonth() + 1).padStart(2, "0");
-                        const day = String(date.getDate()).padStart(2, "0");
+                          setEditMatch((prev) => prev ? { ...prev, date: formattedDate } : null);
+                        }}
+                        showOutsideDays={false}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
 
-                        const formattedDate = `${year}-${month}-${day}`;
-
-                        setEditMatch((prev) => prev ? { ...prev, date: formattedDate } : null);
-                      }}
-                      showOutsideDays={false}
-                      initialFocus
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="startTime" className="text-right">Hora de Inicio</Label>
+                  <div className="relative col-span-3">
+                    <Input
+                      id="startTime"
+                      type="time"
+                      className="pr-10"
+                      value={editMatch?.startTime || ""}
+                      onChange={(e) => handleInputChange(e, true)}
                     />
-                  </PopoverContent>
-                </Popover>
-              </div>
-
+                    <Clock className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  </div>
+                </div>
 
                 <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="startTime" className="text-right">
-                    Hora de Inicio
-                  </Label>
-                  <Input
-                    id="startTime"
-                    type="time"
-                    className="col-span-3"
-                    value={editMatch?.startTime || ""}
-                    onChange={(e) => handleInputChange(e, true)}
-                  />
+                  <Label htmlFor="endTime" className="text-right">Hora de Fin</Label>
+                  <div className="relative col-span-3">
+                    <Input
+                      id="endTime"
+                      type="time"
+                      className="pr-10"
+                      value={editMatch?.endTime || ""}
+                      onChange={(e) => handleInputChange(e, true)}
+                    />
+                    <Clock className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  </div>
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="endTime" className="text-right">
-                    Hora de Fin
-                  </Label>
-                  <Input
-                    id="endTime"
-                    type="time"
-                    className="col-span-3"
-                    value={editMatch?.endTime || ""}
-                    onChange={(e) => handleInputChange(e, true)}
-                  />
-                </div>
+
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="court" className="text-right">
                     Cancha
