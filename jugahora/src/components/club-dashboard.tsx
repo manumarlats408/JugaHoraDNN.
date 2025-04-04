@@ -20,9 +20,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Calendar as DatePickerCalendar } from "@/components/ui/calendar"
-import { format } from "date-fns"
+
 
 type Match = {
   id: number
@@ -53,7 +51,6 @@ export function ClubDashboard() {
   const [matches, setMatches] = useState<Match[]>([])
   const [newMatch, setNewMatch] = useState({ date: "", startTime: "", endTime: "", court: "", price: "" })
   const [editMatch, setEditMatch] = useState<Match | null>(null)
-  const [editSelectedDate, setEditSelectedDate] = useState<Date | null>(null)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [clubData, setClubData] = useState<Club | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -388,58 +385,20 @@ export function ClubDashboard() {
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="date" className="text-right">Fecha</Label>
                   <div className="col-span-3">
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          className={`w-full justify-start text-left font-normal ${
-                            !editSelectedDate ? "text-muted-foreground" : ""
-                          }`}
-                          onClick={(e) => {
-                            // Detener la propagación para evitar que el Dialog interfiera
-                            e.stopPropagation();
-                          }}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {editSelectedDate ? format(editSelectedDate, "dd/MM/yyyy") : "Seleccionar fecha"}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent 
-                        className="w-auto p-0" 
-                        align="start"
-                        onInteractOutside={(e) => {
-                          // Evitar que se cierre el popover al hacer clic en el Dialog
-                          e.preventDefault();
-                        }}
-                        onOpenAutoFocus={(e) => {
-                          // Evitar el enfoque automático que puede causar problemas
-                          e.preventDefault();
-                        }}
-                      >
-                        <DatePickerCalendar
-                          mode="single"
-                          selected={editSelectedDate || undefined}
-                          onSelect={(date) => {
-                            if (date) {
-                              setEditSelectedDate(date);
-                              
-                              // Convertimos a formato yyyy-mm-dd sin desfase
-                              const year = date.getFullYear();
-                              const month = String(date.getMonth() + 1).padStart(2, "0");
-                              const day = String(date.getDate()).padStart(2, "0");
-                              const formattedDate = `${year}-${month}-${day}`;
-                              
-                              setEditMatch((prev) => prev ? { ...prev, date: formattedDate } : null);
-                              
-                              // Cerrar manualmente el popover después de seleccionar
-                              document.body.click();
-                            }
-                          }}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    <Input
+                      id="date"
+                      type="date"
+                      className="col-span-3"
+                      value={editMatch?.date ? editMatch.date.split('T')[0] : ''}
+                      onChange={(e) => {
+                        const newDate = e.target.value;
+                        setEditMatch((prev) => prev ? { ...prev, date: newDate } : null);
+                        if (newDate) {
+                          const [year, month, day] = newDate.split('-').map(Number);
+                          setEditSelectedDate(new Date(year, month - 1, day));
+                        }
+                      }}
+                    />
                   </div>
                 </div>
 
