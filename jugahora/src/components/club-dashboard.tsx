@@ -309,13 +309,36 @@ export function ClubDashboard() {
                   <Label htmlFor="date" className="text-right">
                     Fecha
                   </Label>
-                  <Input
-                    id="date"
-                    type="date"
-                    className="col-span-3"
-                    value={newMatch.date}
-                    onChange={(e) => handleInputChange(e)}
-                  />
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal col-span-3"
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {editSelectedDate ? format(editSelectedDate, "dd/MM/yyyy") : "Seleccionar fecha"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <DatePickerCalendar
+                        mode="single"
+                        selected={editSelectedDate || undefined}
+                        onSelect={(date) => {
+                          if (!date) return
+                          setEditSelectedDate(date)
+
+                          const year = date.getFullYear()
+                          const month = String(date.getMonth() + 1).padStart(2, "0")
+                          const day = String(date.getDate()).padStart(2, "0")
+                          const formattedDate = `${year}-${month}-${day}`
+
+                          setEditMatch((prev) => prev ? { ...prev, date: formattedDate } : null)
+                        }}
+                        showOutsideDays={false}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="startTime" className="text-right">
@@ -391,37 +414,13 @@ export function ClubDashboard() {
                 <Label htmlFor="date" className="text-right">
                     Fecha
                   </Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="w-full justify-start text-left font-normal col-span-3"
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {editSelectedDate ? format(editSelectedDate, "dd/MM/yyyy") : "Seleccionar fecha"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <DatePickerCalendar
-                        mode="single"
-                        selected={editSelectedDate || undefined}
-                        onSelect={(date) => {
-                          if (!date) return
-                          setEditSelectedDate(date)
-
-                          const year = date.getFullYear()
-                          const month = String(date.getMonth() + 1).padStart(2, "0")
-                          const day = String(date.getDate()).padStart(2, "0")
-                          const formattedDate = `${year}-${month}-${day}`
-
-                          setEditMatch((prev) => prev ? { ...prev, date: formattedDate } : null)
-                        }}
-                        showOutsideDays={false}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-
+                  <Input
+                    id="date"
+                    type="date"
+                    className="col-span-3"
+                    value={editMatch ? new Date(editMatch.date).toISOString().split("T")[0] : ""}
+                    onChange={(e) => handleInputChange(e, true)}
+                  />
                 </div>
 
                 <div className="grid grid-cols-4 items-center gap-4">
