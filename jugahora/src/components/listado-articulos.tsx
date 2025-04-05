@@ -81,7 +81,7 @@ export function ListadoArticulos() {
           description: "Artículos importados correctamente",
         })
         // Recargar artículos
-        const respuesta = await fetch("/api/importar-articulos")
+        const respuesta = await fetch("/api/articulos")
         if (!respuesta.ok) throw new Error("Error al recargar los artículos")
         const datos = await respuesta.json()
         setArticulos(datos)
