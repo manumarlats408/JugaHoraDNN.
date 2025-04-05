@@ -21,7 +21,9 @@ export function ListadoArticulos() {
   useEffect(() => {
     async function cargarArticulos() {
       try {
-        const respuesta = await fetch("/api/articulos")
+        const respuesta = await fetch("/api/articulos", {
+          credentials: "include",
+        })
         if (!respuesta.ok) throw new Error("Error al cargar los artículos")
         const datos = await respuesta.json()
         setArticulos(datos)
@@ -81,7 +83,9 @@ export function ListadoArticulos() {
           description: "Artículos importados correctamente",
         })
         // Recargar artículos
-        const respuesta = await fetch("/api/articulos")
+        const respuesta = await fetch("/api/articulos", {
+          credentials: "include",
+        })
         if (!respuesta.ok) throw new Error("Error al recargar los artículos")
           const datos = await respuesta.json()
           setArticulos(datos)

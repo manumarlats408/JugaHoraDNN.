@@ -29,7 +29,9 @@ export function TablaArticulos({ articulos, cargando, onActualizar }: TablaArtic
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ activo: !activo }),
+        credentials: "include",
       })
+      
 
       if (!response.ok) {
         throw new Error("Error al actualizar el artículo")
