@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { LayoutGrid, FileText, CalendarIcon, Users, Settings, DollarSign } from "lucide-react"
+import { LayoutGrid, FileText, CalendarIcon, Users, Settings, DollarSign, Trophy } from "lucide-react"
 
 export function Sidebar() {
   return (
@@ -21,6 +21,10 @@ export function Sidebar() {
 
         <Link href="/partidos" className="flex items-center justify-center w-10 h-10 rounded-md hover:bg-gray-100">
           <CalendarIcon size={20} className="text-gray-600" />
+        </Link>
+
+        <Link href="/eventos" className="flex items-center justify-center w-10 h-10 rounded-md hover:bg-gray-100">
+          <Trophy size={20} className="text-gray-600" />
         </Link>
 
         <Link href="/usuarios" className="flex items-center justify-center w-10 h-10 rounded-md hover:bg-gray-100">
