@@ -32,10 +32,13 @@ export async function importarArticulos(formData: FormData) {
     const data = await respuesta.json()
     return { success: true, data }
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error en importarArticulos:", error)
-    return { success: false, error: error.message || "Error desconocido" }
+  
+    const mensaje = error instanceof Error ? error.message : "Error desconocido"
+    return { success: false, error: mensaje }
   }
+  
 }
 
 
