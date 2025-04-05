@@ -5,7 +5,7 @@ import * as XLSX from "xlsx"
 
 // Define an interface for the Excel row structure
 interface ExcelRow {
-  [key: string]: any
+  [key: string]: string | number | boolean | null | undefined
   Código?: string
   codigo?: string
   Nombre?: string
@@ -17,7 +17,7 @@ interface ExcelRow {
   Tipo?: string
   tipo?: string
   "Mostrar Stock"?: string | boolean
-  mostrarEnStock?: string | boolean // Cambiado a mostrarEnStock
+  mostrarStock?: string | boolean
   Activo?: string | boolean
   activo?: string | boolean
 }
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
         precioCompra: Number.parseFloat(String(row["Precio Compra"] || row["precioCompra"] || 0)),
         precioVenta: Number.parseFloat(String(row["Precio Venta"] || row["precioVenta"] || 0)),
         tipo: row["Tipo"] || row["tipo"] || "",
-        mostrarEnStock: row["Mostrar Stock"] === "Sí" || row["mostrarEnStock"] === true, // Cambiado a mostrarEnStock
+        mostrarStock: row["Mostrar Stock"] === "Sí" || row["mostrarStock"] === true,
         activo: row["Activo"] === "Sí" || row["activo"] === true,
         clubId,
       }
