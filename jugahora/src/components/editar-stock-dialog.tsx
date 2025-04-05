@@ -24,7 +24,7 @@ export function EditarStockDialog({ articulo, onArticuloActualizado }: EditarSto
   const [cargando, setCargando] = useState(false)
 
   const [formData, setFormData] = useState({
-    mostrarEnStock: articulo.mostrarEnStock,
+    mostrarEnStock: articulo.mostrarStock,
     activo: articulo.activo,
     precioCompra: articulo.precioCompra.toString(),
     precioVenta: articulo.precioVenta.toString(),
