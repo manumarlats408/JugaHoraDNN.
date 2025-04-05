@@ -83,11 +83,11 @@ export function ListadoArticulos() {
         // Recargar artículos
         const respuesta = await fetch("/api/articulos")
         if (!respuesta.ok) throw new Error("Error al recargar los artículos")
-        const datos = await respuesta.json()
-        setArticulos(datos)
-      } else {
-        throw new Error(resultado.error || "Error desconocido al importar")
-      }
+          const datos = await respuesta.json()
+          setArticulos(datos)
+        } else {
+          throw new Error(resultado.error || "Error desconocido al importar")
+        }
     } catch (error) {
         console.error("Error en importación:", error)
       toast({

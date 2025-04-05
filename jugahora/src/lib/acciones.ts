@@ -17,40 +17,27 @@ export async function actualizarArticulo(articulo: Articulo) {
 
 export async function importarArticulos(formData: FormData) {
   try {
-    // En un Server Action no podemos usar window.location.origin
-    // Usamos directamente la ruta relativa
-    const response = await fetch("/api/importar-articulos", {
+    const url = `${window.location.origin}/api/importar-articulos`
+    
+    const respuesta = await fetch(url, {
       method: "POST",
       body: formData,
     })
 
-    if (!response.ok) {
-      const errorData = await response.json()
-      return {
-        success: false,
-        error: errorData.message || `Error ${response.status}: ${response.statusText}`,
-      }
+    if (!respuesta.ok) {
+      const error = await respuesta.text()
+      return { success: false, error }
     }
 
-    const data = await response.json()
+    const data = await respuesta.json()
     return { success: true, data }
-  } catch (error: unknown) {
+
+  } catch (error: any) {
     console.error("Error en importarArticulos:", error)
-
-    let errorMessage = "Error desconocido al importar artículos"
-
-    if (error instanceof Error) {
-      errorMessage = error.message
-    } else if (typeof error === "string") {
-      errorMessage = error
-    }
-
-    return {
-      success: false,
-      error: errorMessage,
-    }
+    return { success: false, error: error.message || "Error desconocido" }
   }
 }
+
 
 
 export async function exportarArticulos() {
