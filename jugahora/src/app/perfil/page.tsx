@@ -9,7 +9,7 @@ import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, Dialog
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Menu, X, Home, User, Calendar, Users, LogOut, Mail, Phone, MapPin, Clock, Plus, Loader2 } from 'lucide-react'
+import { Menu, X, Home, User, Calendar, Users, LogOut, Mail, Phone, MapPin, Clock, Plus, Loader2, Trophy} from 'lucide-react'
 import Image from 'next/image'
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, LineElement, PointElement, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
@@ -64,6 +64,7 @@ const menuItems = [
   { href: '/perfil', label: 'Perfil', icon: User },
   { href: '/reserva', label: 'Reservar', icon: Calendar },
   { href: '/jugar', label: 'Unirme a un partido', icon: Users },
+  { href: '/eventos/unirse', label: 'Unirme a un evento', icon: Trophy },
 ]
 
 

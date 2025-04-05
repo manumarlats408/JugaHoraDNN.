@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import 'react-day-picker/dist/style.css'; // <- ✅ Importante para estilos base del calendario
 import "./globals.css";
 import { Toaster } from 'react-hot-toast';
 
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
     google: '1Cq72fol-031V-8akJf5Q5y93beVuAV4l-zxyXXZzk0',
   },
   icons: {
-    icon: '/favicon.ico',  // Ruta al favicon en la carpeta 'public'
+    icon: '/favicon.ico',
   },
 };
 
@@ -31,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="es">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
