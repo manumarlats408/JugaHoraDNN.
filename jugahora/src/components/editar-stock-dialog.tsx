@@ -62,7 +62,7 @@ export function EditarStockDialog({ articulo, onArticuloActualizado }: EditarSto
 
       const articuloActualizado: Articulo = {
         ...articulo,
-        mostrarEnStock: formData.mostrarEnStock,
+        mostrarStock: formData.mostrarEnStock,
         activo: formData.activo,
         precioCompra: Number(formData.precioCompra),
         precioVenta: Number(formData.precioVenta),
