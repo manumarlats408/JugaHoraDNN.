@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server"
 import { PrismaClient } from "@prisma/client"
-const prisma = new PrismaClient()
 import * as XLSX from "xlsx"
+
+const prisma = new PrismaClient()
 
 export async function GET(req: Request) {
   try {
@@ -9,16 +9,15 @@ export async function GET(req: Request) {
     const clubId = Number(searchParams.get("clubId"))
 
     if (!clubId) {
-      return NextResponse.json({ error: "Falta el parámetro clubId" }, { status: 400 })
+      return new Response(JSON.stringify({ error: "Falta el parámetro clubId" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      })
     }
 
     const articulos = await prisma.articulo.findMany({
-      where: {
-        clubId: clubId,
-      },
-      orderBy: {
-        codigo: "asc",
-      },
+      where: { clubId },
+      orderBy: { codigo: "asc" },
     })
 
     const worksheet = XLSX.utils.json_to_sheet(
@@ -38,7 +37,8 @@ export async function GET(req: Request) {
 
     const buffer = XLSX.write(workbook, { type: "buffer", bookType: "xlsx" })
 
-    return new NextResponse(buffer, {
+    return new Response(buffer, {
+      status: 200,
       headers: {
         "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         "Content-Disposition": "attachment; filename=articulos.xlsx",
@@ -46,6 +46,9 @@ export async function GET(req: Request) {
     })
   } catch (error) {
     console.error("Error al exportar artículos:", error)
-    return NextResponse.json({ error: "Error al exportar los artículos" }, { status: 500 })
+    return new Response(JSON.stringify({ error: "Error al exportar los artículos" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    })
   }
 }
