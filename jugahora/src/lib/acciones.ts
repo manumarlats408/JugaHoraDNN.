@@ -1,12 +1,12 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import { actualizarArticulo as actualizarArticuloDB } from "@/lib/db"
+import { actualizarArticuloDB } from "@/lib/db"
 import type { Articulo } from "@/lib/tipos"
 
 export async function actualizarArticulo(articulo: Articulo) {
   try {
-    await actualizarArticuloDB(String(articulo.id), articulo)
+    await actualizarArticuloDB(articulo.id, articulo)
     revalidatePath("/")
     return { success: true }
   } catch (error) {
