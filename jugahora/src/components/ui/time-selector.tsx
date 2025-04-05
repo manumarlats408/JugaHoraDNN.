@@ -4,12 +4,11 @@ import React from "react"
 
 interface TimeSelectorProps {
   id: string
-  label: string
   value: string
   onChange: (value: string) => void
 }
 
-export function TimeSelector({ id, label, value, onChange }: TimeSelectorProps) {
+export function TimeSelector({ id, value, onChange }: TimeSelectorProps) {
   const hours = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, "0"))
   const minutes = ["00", "15", "30", "45"]
 
@@ -17,9 +16,6 @@ export function TimeSelector({ id, label, value, onChange }: TimeSelectorProps) 
 
   return (
     <div className="grid grid-cols-4 items-center gap-4">
-      <label htmlFor={id} className="text-right">
-        {label}
-      </label>
       <div className="col-span-3 flex space-x-2">
         <select
           id={`${id}-hour`}

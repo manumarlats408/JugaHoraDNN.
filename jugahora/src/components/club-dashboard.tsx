@@ -317,7 +317,6 @@ export function ClubDashboard() {
                   </Label>
                   <TimeSelector
                     id="startTime"
-                    label="Hora de Inicio"
                     value={newMatch.startTime}
                     onChange={(val) => setNewMatch((prev) => ({ ...prev, startTime: val }))}
                   />
@@ -328,7 +327,6 @@ export function ClubDashboard() {
                   </Label>
                   <TimeSelector
                     id="endTime"
-                    label="Hora de Fin"
                     value={newMatch.endTime}
                     onChange={(val) => setNewMatch((prev) => ({ ...prev, endTime: val }))}
                   />
@@ -397,7 +395,6 @@ export function ClubDashboard() {
                   </Label>
                   <TimeSelector
                     id="startTime"
-                    label="Hora de Inicio"
                     value={editMatch?.startTime || ""}
                     onChange={(val) =>
                       setEditMatch((prev) => (prev ? { ...prev, startTime: val } : prev))
@@ -410,7 +407,6 @@ export function ClubDashboard() {
                   </Label>
                   <TimeSelector
                     id="endTime"
-                    label="Hora de Fin"
                     value={editMatch?.endTime || ""}
                     onChange={(val) =>
                       setEditMatch((prev) => (prev ? { ...prev, endTime: val } : prev))
