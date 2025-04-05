@@ -1,15 +1,15 @@
-export interface Articulo {
-  id: number
+export type Articulo = {
   codigo: string
   nombre: string
   precioCompra: number
   precioVenta: number
-  tipo: string
+  tipo: "Ambos" | "Venta"
   mostrarStock: boolean
   activo: boolean
   updatedAt: string
   clubId: number
 }
+
 
   export interface Partido {
     id: string

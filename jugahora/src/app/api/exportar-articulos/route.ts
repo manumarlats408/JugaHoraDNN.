@@ -3,16 +3,24 @@ import { PrismaClient } from "@prisma/client"
 const prisma = new PrismaClient()
 import * as XLSX from "xlsx"
 
-
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const { searchParams } = new URL(req.url)
+    const clubId = Number(searchParams.get("clubId"))
+
+    if (!clubId) {
+      return NextResponse.json({ error: "Falta el parámetro clubId" }, { status: 400 })
+    }
+
     const articulos = await prisma.articulo.findMany({
+      where: {
+        clubId: clubId,
+      },
       orderBy: {
         codigo: "asc",
       },
     })
 
-    // Create a worksheet
     const worksheet = XLSX.utils.json_to_sheet(
       articulos.map((articulo) => ({
         Código: articulo.codigo,
@@ -20,19 +28,16 @@ export async function GET() {
         "Precio Compra": articulo.precioCompra,
         "Precio Venta": articulo.precioVenta,
         Tipo: articulo.tipo,
-        "Mostrar Stock": articulo.mostrarStock ? "Sí" : "No", // Cambiado a mostrarEnStock
+        "Mostrar Stock": articulo.mostrarStock ? "Sí" : "No",
         Activo: articulo.activo ? "Sí" : "No",
-      })),
+      }))
     )
 
-    // Create a workbook
     const workbook = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(workbook, worksheet, "Articulos")
 
-    // Generate buffer
     const buffer = XLSX.write(workbook, { type: "buffer", bookType: "xlsx" })
 
-    // Return the Excel file
     return new NextResponse(buffer, {
       headers: {
         "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -40,8 +45,7 @@ export async function GET() {
       },
     })
   } catch (error) {
-    console.error("Error exporting articulos:", error)
+    console.error("Error al exportar artículos:", error)
     return NextResponse.json({ error: "Error al exportar los artículos" }, { status: 500 })
   }
 }
-

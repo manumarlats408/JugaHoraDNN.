@@ -1,25 +1,17 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { PrismaClient } from "@prisma/client"
-const prisma = new PrismaClient()
 import * as XLSX from "xlsx"
 
-// Define an interface for the Excel row structure
+const prisma = new PrismaClient()
+
 interface ExcelRow {
-  [key: string]: string | number | boolean | null | undefined
   Código?: string
-  codigo?: string
   Nombre?: string
-  nombre?: string
   "Precio Compra"?: number | string
-  precioCompra?: number | string
   "Precio Venta"?: number | string
-  precioVenta?: number | string
   Tipo?: string
-  tipo?: string
-  "Mostrar Stock"?: string | boolean
-  mostrarStock?: string | boolean
-  Activo?: string | boolean
-  activo?: string | boolean
+  "En Stock"?: string
+  Activo?: string
 }
 
 export async function POST(request: NextRequest) {
@@ -31,75 +23,47 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No se ha proporcionado ningún archivo" }, { status: 400 })
     }
 
-    // Read the file
     const buffer = await file.arrayBuffer()
     const workbook = XLSX.read(buffer, { type: "array" })
-
-    // Get the first worksheet
     const worksheet = workbook.Sheets[workbook.SheetNames[0]]
-
-    // Convert to JSON and cast to our ExcelRow type
     const data = XLSX.utils.sheet_to_json(worksheet) as ExcelRow[]
 
-    // Get the current clubId (in a real app, this would come from authentication)
-    // For now, we'll use a default value of 1
-    const clubId = 1
+    const clubId = 1 // reemplazar por el club actual
 
-    // Process and save each row
     for (const row of data) {
       const articulo = {
-        codigo: row["Código"] || row["codigo"] || "",
-        nombre: row["Nombre"] || row["nombre"] || "",
-        precioCompra: Number.parseFloat(String(row["Precio Compra"] || row["precioCompra"] || 0)),
-        precioVenta: Number.parseFloat(String(row["Precio Venta"] || row["precioVenta"] || 0)),
-        tipo: row["Tipo"] || row["tipo"] || "",
-        mostrarStock: row["Mostrar Stock"] === "Sí" || row["mostrarStock"] === true,
-        activo: row["Activo"] === "Sí" || row["activo"] === true,
+        codigo: row["Código"] || "",
+        nombre: row["Nombre"] || "",
+        precioCompra: Number(row["Precio Compra"]) || 0,
+        precioVenta: Number(row["Precio Venta"]) || 0,
+        tipo: row["Tipo"] === "Ambos" ? "Ambos" : "Venta",
+        mostrarStock: row["En Stock"] === "Sí",
+        activo: row["Activo"] === "Sí",
         clubId,
       }
 
-      // Check if the article already exists
-      const existingArticulo = await prisma.articulo.findFirst({
+      const existente = await prisma.articulo.findFirst({
         where: {
           codigo: articulo.codigo,
           clubId,
         },
       })
 
-      if (existingArticulo) {
-        // Update existing article
+      if (existente) {
         await prisma.articulo.update({
-          where: { id: existingArticulo.id },
+          where: { id: existente.id },
           data: articulo,
         })
       } else {
-        // Create new article
         await prisma.articulo.create({
           data: articulo,
         })
       }
     }
 
-    // Return success
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error("Error importing articulos:", error)
+    console.error("Error al importar:", error)
     return NextResponse.json({ error: "Error al importar los artículos" }, { status: 500 })
   }
 }
-
-export async function GET() {
-  try {
-    const articulos = await prisma.articulo.findMany({
-      orderBy: {
-        codigo: "asc",
-      },
-    })
-
-    return NextResponse.json(articulos)
-  } catch (error) {
-    console.error("Error fetching articulos:", error)
-    return NextResponse.json({ error: "Error al cargar los artículos" }, { status: 500 })
-  }
-}
-
