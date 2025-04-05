@@ -19,6 +19,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toast } from "react-hot-toast"
+import { TimeSelector } from "@/components/ui/time-selector"
+
 
 
 type Evento = {
@@ -281,11 +283,19 @@ export function EventosDashboard() {
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="startTime" className="text-right">Hora de Inicio</Label>
-                  <Input id="startTime" name="startTime" type="time" className="col-span-3" value={newEvento.startTime} onChange={handleInputChange} />
+                  <TimeSelector
+                    id="startTime"
+                    value={newEvento.startTime}
+                    onChange={(val) => setNewEvento((prev) => ({ ...prev, startTime: val }))}
+                  />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="endTime" className="text-right">Hora de Fin</Label>
-                  <Input id="endTime" name="endTime" type="time" className="col-span-3" value={newEvento.endTime} onChange={handleInputChange} />
+                  <TimeSelector
+                    id="endTime"
+                    value={newEvento.endTime}
+                    onChange={(val) => setNewEvento((prev) => ({ ...prev, endTime: val }))}
+                  />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="categoria" className="text-right">Categoría</Label>
@@ -351,11 +361,23 @@ export function EventosDashboard() {
         </div>
         <div className="grid grid-cols-4 items-center gap-4">
           <Label htmlFor="startTime" className="text-right">Hora de Inicio</Label>
-          <Input id="startTime" name="startTime" className="col-span-3" value={editEvento.startTime} onChange={(e) => handleInputChange(e, true)} />
+          <TimeSelector
+            id="startTime"
+            value={editEvento?.startTime || ""}
+            onChange={(val) =>
+              setEditEvento((prev) => (prev ? { ...prev, startTime: val } : prev))
+            }
+          />
         </div>
         <div className="grid grid-cols-4 items-center gap-4">
           <Label htmlFor="endTime" className="text-right">Hora de Fin</Label>
-          <Input id="endTime" name="endTime" className="col-span-3" value={editEvento.endTime} onChange={(e) => handleInputChange(e, true)} />
+          <TimeSelector
+            id="endTime"
+            value={editEvento?.endTime || ""}
+            onChange={(val) =>
+              setEditEvento((prev) => (prev ? { ...prev, endTime: val } : prev))
+            }
+          />
         </div>
         <div className="grid grid-cols-4 items-center gap-4">
           <Label htmlFor="categoria" className="text-right">Categoría</Label>
