@@ -1,8 +1,10 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { PrismaClient } from "@prisma/client"
 import * as XLSX from "xlsx"
+import jwt from "jsonwebtoken"
 
 const prisma = new PrismaClient()
+const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key"
 
 interface ExcelRow {
   Código?: string
@@ -23,12 +25,32 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No se ha proporcionado ningún archivo" }, { status: 400 })
     }
 
+    // ✅ Obtener token de cookie y extraer clubId
+    const cookieHeader = request.headers.get("cookie") || ""
+    const token = cookieHeader.split("; ").find(c => c.startsWith("token="))?.split("=")[1]
+
+    if (!token) {
+      return NextResponse.json({ error: "No autorizado: token no encontrado" }, { status: 401 })
+    }
+
+    let decoded: any
+    try {
+      decoded = jwt.verify(token, JWT_SECRET)
+    } catch (err) {
+      return NextResponse.json({ error: "Token inválido" }, { status: 401 })
+    }
+
+    if (!decoded.isClub || !decoded.id) {
+      return NextResponse.json({ error: "Solo los clubes pueden importar artículos" }, { status: 403 })
+    }
+
+    const clubId = decoded.id
+
+    // 🧠 Procesar archivo Excel
     const buffer = await file.arrayBuffer()
     const workbook = XLSX.read(buffer, { type: "array" })
     const worksheet = workbook.Sheets[workbook.SheetNames[0]]
     const data = XLSX.utils.sheet_to_json(worksheet) as ExcelRow[]
-
-    const clubId = 1 // reemplazar por el club actual
 
     for (const row of data) {
       const articulo = {
