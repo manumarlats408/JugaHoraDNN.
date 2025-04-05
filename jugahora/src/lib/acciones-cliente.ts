@@ -1,24 +1,7 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
-import { actualizarArticuloDB } from "@/lib/db"
-import type { Articulo } from "@/lib/tipos"
-
-export async function actualizarArticulo(articulo: Articulo) {
-  try {
-    await actualizarArticuloDB(articulo.id, articulo)
-    revalidatePath("/")
-    return { success: true }
-  } catch (error) {
-    console.error("Error al actualizar artículo:", error)
-    return { success: false, error: "Error al actualizar el artículo" }
-  }
-}
-
 export async function importarArticulos(formData: FormData) {
   try {
-    const url = `${window.location.origin}/api/importar-articulos`
-    
+    const url = "/api/importar-articulos"
+
     const respuesta = await fetch(url, {
       method: "POST",
       body: formData,
@@ -34,14 +17,10 @@ export async function importarArticulos(formData: FormData) {
 
   } catch (error: unknown) {
     console.error("Error en importarArticulos:", error)
-  
     const mensaje = error instanceof Error ? error.message : "Error desconocido"
     return { success: false, error: mensaje }
   }
-  
 }
-
-
 
 export async function exportarArticulos() {
   try {
@@ -52,7 +31,6 @@ export async function exportarArticulos() {
       throw new Error(error.error || "Error al exportar artículos")
     }
 
-    // Obtener el blob y crear un enlace de descarga
     const blob = await respuesta.blob()
     const url = window.URL.createObjectURL(blob)
     const a = document.createElement("a")
@@ -72,4 +50,3 @@ export async function exportarArticulos() {
     }
   }
 }
-

@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { useToast } from "@/hooks/use-toast"
-import { actualizarArticulo } from "@/lib/acciones"
+import { actualizarArticulo } from "@/lib/acciones-cliente"
 import type { Articulo } from "@/lib/tipos"
 import { Edit } from "lucide-react"
 
