@@ -1,4 +1,5 @@
 export type Articulo = {
+  id: number
   codigo: string
   nombre: string
   precioCompra: number
