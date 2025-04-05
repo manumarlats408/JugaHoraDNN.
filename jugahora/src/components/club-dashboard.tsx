@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { TimeSelector } from "@/components/ui/time-selector"
 
 
 type Match = {
@@ -314,24 +315,22 @@ export function ClubDashboard() {
                   <Label htmlFor="startTime" className="text-right">
                     Hora de Inicio
                   </Label>
-                  <Input
+                  <TimeSelector
                     id="startTime"
-                    type="time"
-                    className="col-span-3"
+                    label="Hora de Inicio"
                     value={newMatch.startTime}
-                    onChange={(e) => handleInputChange(e)}
+                    onChange={(val) => setNewMatch((prev) => ({ ...prev, startTime: val }))}
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="endTime" className="text-right">
                     Hora de Fin
                   </Label>
-                  <Input
+                  <TimeSelector
                     id="endTime"
-                    type="time"
-                    className="col-span-3"
+                    label="Hora de Fin"
                     value={newMatch.endTime}
-                    onChange={(e) => handleInputChange(e)}
+                    onChange={(val) => setNewMatch((prev) => ({ ...prev, endTime: val }))}
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
@@ -396,24 +395,26 @@ export function ClubDashboard() {
                   <Label htmlFor="startTime" className="text-right">
                     Hora de Inicio
                   </Label>
-                  <Input
+                  <TimeSelector
                     id="startTime"
-                    type="time"
-                    className="col-span-3"
+                    label="Hora de Inicio"
                     value={editMatch?.startTime || ""}
-                    onChange={(e) => handleInputChange(e, true)}
+                    onChange={(val) =>
+                      setEditMatch((prev) => (prev ? { ...prev, startTime: val } : prev))
+                    }
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="endTime" className="text-right">
                     Hora de Fin
                   </Label>
-                  <Input
+                  <TimeSelector
                     id="endTime"
-                    type="time"
-                    className="col-span-3"
+                    label="Hora de Fin"
                     value={editMatch?.endTime || ""}
-                    onChange={(e) => handleInputChange(e, true)}
+                    onChange={(val) =>
+                      setEditMatch((prev) => (prev ? { ...prev, endTime: val } : prev))
+                    }
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
