@@ -1,65 +1,105 @@
-import { NextRequest, NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
+import { type NextRequest, NextResponse } from "next/server"
+import { PrismaClient } from "@prisma/client"
+const prisma = new PrismaClient()
 import * as XLSX from "xlsx"
 
-interface Articulo {
-  Codigo: string;
-  Nombre: string;
-  PrecioCompra: string;
-  PrecioVenta: string;
-  Tipo: string;
-  MostrarStock: string;
-  Activo: string;
+// Define an interface for the Excel row structure
+interface ExcelRow {
+  [key: string]: any
+  Código?: string
+  codigo?: string
+  Nombre?: string
+  nombre?: string
+  "Precio Compra"?: number | string
+  precioCompra?: number | string
+  "Precio Venta"?: number | string
+  precioVenta?: number | string
+  Tipo?: string
+  tipo?: string
+  "Mostrar Stock"?: string | boolean
+  mostrarEnStock?: string | boolean // Cambiado a mostrarEnStock
+  Activo?: string | boolean
+  activo?: string | boolean
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
-    const formData = await req.formData()
-    const file = formData.get("archivo") as Blob
+    const formData = await request.formData()
+    const file = formData.get("archivo") as File
 
     if (!file) {
-      return NextResponse.json({ error: "No se subió ningún archivo" }, { status: 400 })
+      return NextResponse.json({ error: "No se ha proporcionado ningún archivo" }, { status: 400 })
     }
 
+    // Read the file
     const buffer = await file.arrayBuffer()
-    const workbook = XLSX.read(buffer, { type: "buffer" })
-    const sheet = workbook.Sheets[workbook.SheetNames[0]]
-    
-    // Convertimos la hoja en un arreglo de objetos con la estructura definida
-    const datos: Articulo[] = XLSX.utils.sheet_to_json(sheet)
+    const workbook = XLSX.read(buffer, { type: "array" })
 
-    // Mapeamos los datos para prepararlos para la base de datos
-    const nuevosArticulos = datos.map((articulo) => {
-      // Validamos los valores antes de asignarlos
-      const precioCompra = parseFloat(articulo.PrecioCompra)
-      const precioVenta = parseFloat(articulo.PrecioVenta)
+    // Get the first worksheet
+    const worksheet = workbook.Sheets[workbook.SheetNames[0]]
 
-      // Validación básica para evitar NaN
-      if (isNaN(precioCompra) || isNaN(precioVenta)) {
-        throw new Error(`Precio inválido para el artículo ${articulo.Nombre}`)
+    // Convert to JSON and cast to our ExcelRow type
+    const data = XLSX.utils.sheet_to_json(worksheet) as ExcelRow[]
+
+    // Get the current clubId (in a real app, this would come from authentication)
+    // For now, we'll use a default value of 1
+    const clubId = 1
+
+    // Process and save each row
+    for (const row of data) {
+      const articulo = {
+        codigo: row["Código"] || row["codigo"] || "",
+        nombre: row["Nombre"] || row["nombre"] || "",
+        precioCompra: Number.parseFloat(String(row["Precio Compra"] || row["precioCompra"] || 0)),
+        precioVenta: Number.parseFloat(String(row["Precio Venta"] || row["precioVenta"] || 0)),
+        tipo: row["Tipo"] || row["tipo"] || "",
+        mostrarEnStock: row["Mostrar Stock"] === "Sí" || row["mostrarEnStock"] === true, // Cambiado a mostrarEnStock
+        activo: row["Activo"] === "Sí" || row["activo"] === true,
+        clubId,
       }
 
-      return {
-        codigo: articulo.Codigo,
-        nombre: articulo.Nombre,
-        precioCompra,
-        precioVenta,
-        tipo: articulo.Tipo,
-        mostrarStock: articulo.MostrarStock === "Sí",
-        activo: articulo.Activo === "Sí",
-        clubId: 1,
+      // Check if the article already exists
+      const existingArticulo = await prisma.articulo.findFirst({
+        where: {
+          codigo: articulo.codigo,
+          clubId,
+        },
+      })
+
+      if (existingArticulo) {
+        // Update existing article
+        await prisma.articulo.update({
+          where: { id: existingArticulo.id },
+          data: articulo,
+        })
+      } else {
+        // Create new article
+        await prisma.articulo.create({
+          data: articulo,
+        })
       }
-    })
+    }
 
-    // Insertamos los nuevos artículos en la base de datos
-    await prisma.articulo.createMany({
-      data: nuevosArticulos,
-      skipDuplicates: true,
-    })
-
+    // Return success
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error("Error al importar artículos:", error)
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Error al importar artículos" }, { status: 500 })
+    console.error("Error importing articulos:", error)
+    return NextResponse.json({ error: "Error al importar los artículos" }, { status: 500 })
   }
 }
+
+export async function GET() {
+  try {
+    const articulos = await prisma.articulo.findMany({
+      orderBy: {
+        codigo: "asc",
+      },
+    })
+
+    return NextResponse.json(articulos)
+  } catch (error) {
+    console.error("Error fetching articulos:", error)
+    return NextResponse.json({ error: "Error al cargar los artículos" }, { status: 500 })
+  }
+}
+

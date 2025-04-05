@@ -2,11 +2,11 @@
 
 import { useState } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Switch } from "@/components/ui/switch"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Button } from "@/components/ui/button"
+import { MoreHorizontal, Edit, Trash } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
-import { EditarStockDialog } from "@/components/editar-stock-dialog"
-import { formatearFecha, formatearPrecio } from "@/lib/utils"
-import { actualizarArticulo } from "@/lib/acciones"
+import { Switch } from "@/components/ui/switch"
 import { useToast } from "@/hooks/use-toast"
 import type { Articulo } from "@/lib/tipos"
 
@@ -18,29 +18,36 @@ interface TablaArticulosProps {
 
 export function TablaArticulos({ articulos, cargando, onActualizar }: TablaArticulosProps) {
   const { toast } = useToast()
-  const [actualizando, setActualizando] = useState<string | null>(null)
+  const [actualizando, setActualizando] = useState<number | null>(null)
 
-  const handleCambioActivo = async (articulo: Articulo, valor: boolean) => {
+  const handleToggleActivo = async (id: number, activo: boolean) => {
     try {
-      setActualizando(articulo.id)
-      const articuloActualizado = { ...articulo, activo: valor }
+      setActualizando(id)
+      const response = await fetch(`/api/articulos/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ activo: !activo }),
+      })
 
-      const resultado = await actualizarArticulo(articuloActualizado)
-
-      if (resultado.success) {
-        // Actualizar la lista local
-        const nuevosArticulos = articulos.map((a) => (a.id === articulo.id ? { ...a, activo: valor } : a))
-        onActualizar(nuevosArticulos)
-
-        toast({
-          title: "Éxito",
-          description: "Artículo actualizado correctamente",
-        })
-      } else {
-        throw new Error(resultado.error)
+      if (!response.ok) {
+        throw new Error("Error al actualizar el artículo")
       }
+
+      // Update the local state
+      const articulosActualizados = articulos.map((articulo) =>
+        articulo.id === id ? { ...articulo, activo: !activo } : articulo,
+      )
+
+      onActualizar(articulosActualizados)
+
+      toast({
+        title: "Éxito",
+        description: `Artículo ${!activo ? "activado" : "desactivado"} correctamente`,
+      })
     } catch (error) {
-        console.error(error)
+      console.error(error)
       toast({
         title: "Error",
         description: "No se pudo actualizar el artículo",
@@ -49,107 +56,79 @@ export function TablaArticulos({ articulos, cargando, onActualizar }: TablaArtic
     } finally {
       setActualizando(null)
     }
-  }
-
-  const handleCambioStock = async (articulo: Articulo, valor: boolean) => {
-    try {
-      setActualizando(articulo.id)
-      const articuloActualizado = { ...articulo, mostrarEnStock: valor }
-
-      const resultado = await actualizarArticulo(articuloActualizado)
-
-      if (resultado.success) {
-        // Actualizar la lista local
-        const nuevosArticulos = articulos.map((a) => (a.id === articulo.id ? { ...a, mostrarEnStock: valor } : a))
-        onActualizar(nuevosArticulos)
-
-        toast({
-          title: "Éxito",
-          description: "Artículo actualizado correctamente",
-        })
-      } else {
-        throw new Error(resultado.error)
-      }
-    } catch (error) {
-        console.error(error)
-      toast({
-        title: "Error",
-        description: "No se pudo actualizar el artículo",
-        variant: "destructive",
-      })
-    } finally {
-      setActualizando(null)
-    }
-  }
-
-  const handleArticuloActualizado = (articuloActualizado: Articulo) => {
-    // Actualizar la lista local
-    const nuevosArticulos = articulos.map((a) => (a.id === articuloActualizado.id ? articuloActualizado : a))
-    onActualizar(nuevosArticulos)
   }
 
   if (cargando) {
     return (
-      <div className="space-y-3">
-        {[...Array(5)].map((_, i) => (
-          <Skeleton key={i} className="w-full h-12" />
+      <div className="space-y-2">
+        {Array.from({ length: 5 }).map((_, index) => (
+          <Skeleton key={index} className="h-12 w-full" />
         ))}
       </div>
     )
   }
 
+  if (articulos.length === 0) {
+    return (
+      <div className="text-center py-10">
+        <p className="text-gray-500">No se encontraron artículos</p>
+      </div>
+    )
+  }
+
   return (
-    <div className="overflow-x-auto">
+    <div className="border rounded-lg overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[100px]">Código</TableHead>
+            <TableHead>Código</TableHead>
             <TableHead>Nombre</TableHead>
-            <TableHead>Precio compra</TableHead>
-            <TableHead>Precio venta</TableHead>
+            <TableHead className="text-right">Precio Compra</TableHead>
+            <TableHead className="text-right">Precio Venta</TableHead>
             <TableHead>Tipo</TableHead>
-            <TableHead>Mostrar en stock</TableHead>
+            <TableHead>Mostrar Stock</TableHead>
             <TableHead>Activo</TableHead>
-            <TableHead>Últ. modificación</TableHead>
-            <TableHead className="text-right">Acciones</TableHead>
+            <TableHead className="w-[80px]"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {articulos.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={9} className="text-center py-6 text-gray-500">
-                No se encontraron artículos
+          {articulos.map((articulo) => (
+            <TableRow key={articulo.id}>
+              <TableCell className="font-medium">{articulo.codigo}</TableCell>
+              <TableCell>{articulo.nombre}</TableCell>
+              <TableCell className="text-right">${articulo.precioCompra.toFixed(2)}</TableCell>
+              <TableCell className="text-right">${articulo.precioVenta.toFixed(2)}</TableCell>
+              <TableCell>{articulo.tipo}</TableCell>
+              <TableCell>{articulo.mostrarStock ? "Sí" : "No"}</TableCell>
+              <TableCell>
+                <Switch
+                  checked={articulo.activo}
+                  disabled={actualizando === articulo.id}
+                  onCheckedChange={() => handleToggleActivo(articulo.id, articulo.activo)}
+                />
+              </TableCell>
+              <TableCell>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <MoreHorizontal className="h-4 w-4" />
+                      <span className="sr-only">Abrir menú</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem className="cursor-pointer">
+                      <Edit className="mr-2 h-4 w-4" />
+                      <span>Editar</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="cursor-pointer text-red-600">
+                      <Trash className="mr-2 h-4 w-4" />
+                      <span>Eliminar</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </TableCell>
             </TableRow>
-          ) : (
-            articulos.map((articulo) => (
-              <TableRow key={articulo.id}>
-                <TableCell className="font-medium">{articulo.codigo}</TableCell>
-                <TableCell>{articulo.nombre}</TableCell>
-                <TableCell>{formatearPrecio(articulo.precioCompra)}</TableCell>
-                <TableCell>{formatearPrecio(articulo.precioVenta)}</TableCell>
-                <TableCell>{articulo.tipo}</TableCell>
-                <TableCell>
-                  <Switch
-                    checked={articulo.mostrarEnStock}
-                    disabled={actualizando === articulo.id}
-                    onCheckedChange={(valor) => handleCambioStock(articulo, valor)}
-                  />
-                </TableCell>
-                <TableCell>
-                  <Switch
-                    checked={articulo.activo}
-                    disabled={actualizando === articulo.id}
-                    onCheckedChange={(valor) => handleCambioActivo(articulo, valor)}
-                  />
-                </TableCell>
-                <TableCell>{formatearFecha(articulo.ultimaModificacion)}</TableCell>
-                <TableCell className="text-right">
-                  <EditarStockDialog articulo={articulo} onArticuloActualizado={handleArticuloActualizado} />
-                </TableCell>
-              </TableRow>
-            ))
-          )}
+          ))}
         </TableBody>
       </Table>
     </div>

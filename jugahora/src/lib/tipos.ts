@@ -1,14 +1,16 @@
 export interface Articulo {
-    id: string
-    codigo: string
-    nombre: string
-    precioCompra: number
-    precioVenta: number
-    tipo: "Compra" | "Venta" | "Ambos"
-    mostrarEnStock: boolean
-    activo: boolean
-    ultimaModificacion: string
-  }
+  id: number
+  codigo: string
+  nombre: string
+  precioCompra: number
+  precioVenta: number
+  tipo: string
+  mostrarStock: boolean
+  activo: boolean
+  updatedAt: string
+  clubId: number
+}
+
   export interface Partido {
     id: string
     court: string
