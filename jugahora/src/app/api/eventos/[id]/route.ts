@@ -47,14 +47,14 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
           saludo: `Hola <strong>${jugador.firstName || "jugador"}</strong>,`,
           descripcion: `Te informamos que el evento <strong>${evento.nombre}</strong> en <strong>${evento.Club?.name || "tu club"}</strong> ha sido cancelado.`,
           detalles: [
-            { label: "📆 Fecha", valor: formatearFechaDDMMYYYY(evento.date) },
+            { label: "📆 Día", valor: formatearFechaDDMMYYYY(evento.date) },
             { label: "⏰ Hora", valor: `${evento.startTime} - ${evento.endTime}` },
-            { label: "📝 Tipo", valor: evento.tipo },
+            { label: "📌 Tipo", valor: evento.tipo },
           ],
-          footer: "Lamentamos los inconvenientes. ¡Gracias por utilizar JugáHora!",
+          footer: `Lamentamos los inconvenientes. Esperamos verte pronto en otro evento. Gracias por utilizar JugáHora.`,
         }),
-        
-      })
+      });
+      
     }
 
     return NextResponse.json({ message: 'Evento eliminado correctamente y jugadores notificados' })
@@ -166,14 +166,21 @@ export async function PATCH(request: Request, { params }: { params: { id: string
         html: generarEmailHTML({
           titulo: "📢 Evento Modificado",
           saludo: `Hola <strong>${jugador.firstName || "jugador"}</strong>,`,
-          descripcion: `El evento <strong>${oldEvento.nombre}</strong> en <strong>${oldEvento.Club?.name || "tu club"}</strong> ha sido actualizado.`,
+          descripcion: `El evento <strong>${oldEvento.nombre}</strong> en <strong>${oldEvento.Club?.name || "tu club"}</strong> ha sido actualizado. A continuación te detallamos los cambios realizados.`,
           detalles: [
-            { label: "🔄 Cambios realizados", valor: `<ul style="text-align:left;">${cambios.map(c => `<li>${c}</li>`).join("")}</ul>` },
+            { label: "🔄 Cambios realizados", valor: `<ul style="text-align:left; margin: 0;">${cambios.map(c => `<li>${c}</li>`).join("")}</ul>` },
+            { label: "📅 Día", valor: formatearFechaDDMMYYYY(date) },
+            { label: "⏰ Hora", valor: `${startTime} - ${endTime}` },
+            { label: "🎯 Categoría", valor: categoria },
+            { label: "🎭 Género", valor: genero },
+            { label: "📌 Tipo", valor: tipo + (tipo === "torneo" && formato ? ` - Formato ${formato}` : "") },
+            { label: "👥 Cupo", valor: `${maxParejas} ${tipo === "torneo" ? "parejas" : "personas"}` },
+            { label: "💰 Precio", valor: `$${price}` },
           ],
-          footer: "Pedimos disculpas por el error. Esperamos que puedas asistir de todas formas. Si no puedes, podés darte de baja del evento desde la plataforma.",
+          footer: `Pedimos disculpas por el cambio. Esperamos que puedas asistir igualmente. Si no podés, podés darte de baja del evento desde la plataforma.`,
         }),
-        
-      })
+      });
+      
     }
 
     return NextResponse.json(updatedEvento)
