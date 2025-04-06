@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import sendgrid from "@sendgrid/mail";
+import { generarEmailHTML, formatearFechaDDMMYYYY } from "@/lib/emailUtils";
+
 
 sendgrid.setApiKey(process.env.SENDGRID_API_KEY as string);
 
@@ -36,20 +38,19 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
         to: jugador.email,
         from: process.env.SENDGRID_FROM_EMAIL as string,
         subject: "⚠️ Partido Cancelado",
-        html: `
-          <h2>⚠️ Partido Cancelado</h2>
-          <p>Hola ${jugador.firstName || "jugador"},</p>
-          <p>Te informamos que el partido en <strong>${match.Club?.name || "tu club"}</strong> ha sido cancelado.</p>
-          <h3>📅 Detalles del Partido:</h3>
-          <ul>
-            <li><strong>📆 Día:</strong> ${match.date.toISOString().split("T")[0]}</li>
-            <li><strong>⏰ Hora:</strong> ${match.startTime} - ${match.endTime}</li>
-            <li><strong>🏟️ Cancha:</strong> ${match.court}</li>
-          </ul>
-          <p>Lamentamos los inconvenientes. Esperamos verte en otro partido pronto.</p>
-          <p>Gracias por utilizar <strong>JugáHora</strong>.</p>
-        `,
+        html: generarEmailHTML({
+          titulo: "⚠️ Partido Cancelado",
+          saludo: `Hola ${jugador.firstName || "jugador"},`,
+          descripcion: `Te informamos que el partido en ${match.Club?.name || "tu club"} ha sido cancelado.`,
+          detalles: [
+            { label: "📆 Día", valor: formatearFechaDDMMYYYY(match.date) },
+            { label: "⏰ Hora", valor: `${match.startTime} - ${match.endTime}` },
+            { label: "🏟️ Cancha", valor: match.court },
+          ],
+          footer: "Lamentamos los inconvenientes. Esperamos verte en otro partido pronto.",
+        }),
       });
+      
     }
 
     console.log("Notificaciones enviadas a los jugadores.");
@@ -123,23 +124,22 @@ export async function PATCH(request: Request, { params }: { params: { id: string
         to: jugador.email,
         from: process.env.SENDGRID_FROM_EMAIL as string,
         subject: "📢 Partido Actualizado",
-        html: `
-          <h2>📢 Partido Modificado</h2>
-          <p>Hola ${jugador.firstName || "jugador"},</p>
-          <p>El partido en <strong>${oldMatch.Club?.name || "tu club"}</strong> ha sido actualizado.</p>
-          <h3>🔄 Cambios realizados:</h3>
-          <ul>${cambios.map(cambio => `<li>${cambio}</li>`).join("")}</ul>
-          <h3>📅 Detalles del Partido:</h3>
-          <ul>
-            <li><strong>📆 Día:</strong> ${new Date(date).toISOString().split("T")[0]}</li>
-            <li><strong>⏰ Hora:</strong> ${startTime} - ${endTime}</li>
-            <li><strong>🏟️ Cancha:</strong> ${court}</li>
-          </ul>
-          <p>Lamentamos cualquier inconveniente que esta modificación pueda causar. Esperamos que aún puedas participar en el partido. En caso de que no puedas asistir, tienes la opción de cancelar tu inscripción a través de la plataforma.</p>
-          <p>Gracias por utilizar <strong>JugáHora</strong>.</p>
-        `,
+        html: generarEmailHTML({
+          titulo: "📢 Partido Modificado",
+          saludo: `Hola ${jugador.firstName || "jugador"},`,
+          descripcion: `El partido en ${oldMatch.Club?.name || "tu club"} ha sido actualizado.`,
+          detalles: [
+            { label: "📆 Fecha", valor: formatearFechaDDMMYYYY(date) },
+            { label: "⏰ Hora", valor: `${startTime} - ${endTime}` },
+            { label: "🏟️ Cancha", valor: court },
+            ...(cambios.length > 0
+              ? [{ label: "📝 Cambios", valor: cambios.map(c => c.replace(/<\/?strong>/g, "")).join(" / ") }]
+              : []),
+          ],
+          footer:
+            "Lamentamos cualquier inconveniente que esta modificación pueda causar. Esperamos que aún puedas participar en el partido. En caso de que no puedas asistir, tenés la opción de cancelar tu inscripción desde la plataforma.",
+        }),
       });
-      
     }
 
     console.log("Notificaciones enviadas a los jugadores.");
