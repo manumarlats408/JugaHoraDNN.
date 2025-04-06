@@ -1,0 +1,13 @@
+name: Limpieza de Eventos Vencidos
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'  # Cada 30 minutos en UTC
+  workflow_dispatch:  # Para ejecutarlo manualmente desde GitHub
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Llamar a la API de limpieza
+        run: curl -X DELETE "https://www.jugahora.com.ar/api/eventos/cleanup"
