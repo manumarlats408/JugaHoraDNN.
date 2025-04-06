@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 import sendgrid from "@sendgrid/mail"
+import { generarEmailHTML, formatearFechaDDMMYYYY } from "@/lib/emailUtils"
 
 sendgrid.setApiKey(process.env.SENDGRID_API_KEY as string)
 
@@ -41,17 +42,18 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
         to: jugador.email,
         from: process.env.SENDGRID_FROM_EMAIL as string,
         subject: "⚠️ Evento Cancelado",
-        html: `
-          <h2>⚠️ Evento Cancelado</h2>
-          <p>Hola ${jugador.firstName || "jugador"},</p>
-          <p>Te informamos que el evento <strong>${evento.nombre}</strong> en <strong>${evento.Club?.name || "tu club"}</strong> ha sido cancelado.</p>
-          <ul>
-            <li><strong>📆 Fecha:</strong> ${new Date(evento.date).toISOString().split("T")[0]}</li>
-            <li><strong>⏰ Hora:</strong> ${evento.startTime} - ${evento.endTime}</li>
-            <li><strong>📝 Tipo:</strong> ${evento.tipo}</li>
-          </ul>
-          <p>Lamentamos los inconvenientes. ¡Gracias por utilizar <strong>JugáHora</strong>!</p>
-        `,
+        html: generarEmailHTML({
+          titulo: "⚠️ Evento Cancelado",
+          saludo: `Hola <strong>${jugador.firstName || "jugador"}</strong>,`,
+          descripcion: `Te informamos que el evento <strong>${evento.nombre}</strong> en <strong>${evento.Club?.name || "tu club"}</strong> ha sido cancelado.`,
+          detalles: [
+            { label: "📆 Fecha", valor: formatearFechaDDMMYYYY(evento.date) },
+            { label: "⏰ Hora", valor: `${evento.startTime} - ${evento.endTime}` },
+            { label: "📝 Tipo", valor: evento.tipo },
+          ],
+          footer: "Lamentamos los inconvenientes. ¡Gracias por utilizar JugáHora!",
+        }),
+        
       })
     }
 
@@ -161,15 +163,16 @@ export async function PATCH(request: Request, { params }: { params: { id: string
         to: jugador.email,
         from: process.env.SENDGRID_FROM_EMAIL as string,
         subject: "📢 Evento Actualizado",
-        html: `
-          <h2>📢 Evento Modificado</h2>
-          <p>Hola ${jugador.firstName || "jugador"},</p>
-          <p>El evento <strong>${oldEvento.nombre}</strong> en <strong>${oldEvento.Club?.name || "tu club"}</strong> ha sido actualizado.</p>
-          <h3>🔄 Cambios realizados:</h3>
-          <ul>${cambios.map(c => `<li>${c}</li>`).join("")}</ul>
-          <p>Pedimos disculpas por el error. Esperamos que puedas asistir de todas formas. Si no puedes, puedes darte de baja del evento desde la plataforma.</p>
-          <p>Gracias por utilizar <strong>JugáHora</strong>.</p>
-        `,
+        html: generarEmailHTML({
+          titulo: "📢 Evento Modificado",
+          saludo: `Hola <strong>${jugador.firstName || "jugador"}</strong>,`,
+          descripcion: `El evento <strong>${oldEvento.nombre}</strong> en <strong>${oldEvento.Club?.name || "tu club"}</strong> ha sido actualizado.`,
+          detalles: [
+            { label: "🔄 Cambios realizados", valor: `<ul style="text-align:left;">${cambios.map(c => `<li>${c}</li>`).join("")}</ul>` },
+          ],
+          footer: "Pedimos disculpas por el error. Esperamos que puedas asistir de todas formas. Si no puedes, podés darte de baja del evento desde la plataforma.",
+        }),
+        
       })
     }
 
