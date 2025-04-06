@@ -3,13 +3,14 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useState } from "react"
-import { LayoutGrid, FileText, CalendarIcon, Users, Settings, DollarSign, ChevronRight } from "lucide-react"
+import { LayoutGrid, FileText, CalendarIcon, Users, Settings, DollarSign, ChevronRight, Trophy } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const navItems = [
   { href: "/inventario", icon: FileText, label: "Inventario" },
   { href: "/finanzas", icon: DollarSign, label: "Finanzas" },
   { href: "/partidos", icon: CalendarIcon, label: "Partidos" },
+  { href: "/eventos", icon: Trophy, label: "Eventos" },
   { href: "/usuarios", icon: Users, label: "Usuarios" },
   { href: "/configuracion", icon: Settings, label: "Configuración" },
 ]
