@@ -11,8 +11,7 @@ interface ExcelRow {
   "Precio Compra"?: number | string
   "Precio Venta"?: number | string
   Tipo?: string
-  "En Stock"?: string
-  Activo?: string
+  "Cantidad Stock"?: number | string
 }
 
 export async function POST(request: NextRequest) {
@@ -24,7 +23,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No se ha proporcionado ningún archivo" }, { status: 400 })
     }
 
-    // Obtener token desde cookie
     const token = request.headers.get("cookie")?.split("; ").find((c) => c.startsWith("token="))?.split("=")[1]
 
     if (!token) {
@@ -32,7 +30,6 @@ export async function POST(request: NextRequest) {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { id: string | number; isClub: boolean }
-
     const clubId = typeof decoded.id === "string" ? parseInt(decoded.id) : decoded.id
 
     const buffer = await file.arrayBuffer()
@@ -42,13 +39,12 @@ export async function POST(request: NextRequest) {
 
     for (const row of data) {
       const articulo = {
-        codigo: row["Código"] || "",
-        nombre: row["Nombre"] || "",
+        codigo: row["Código"]?.toString().trim() || "",
+        nombre: row["Nombre"]?.toString().trim() || "",
         precioCompra: Number(row["Precio Compra"]) || 0,
         precioVenta: Number(row["Precio Venta"]) || 0,
         tipo: row["Tipo"] === "Ambos" ? "Ambos" : "Venta",
-        mostrarStock: row["En Stock"] === "Sí",
-        activo: row["Activo"] === "Sí",
+        cantidadStock: Number(row["Cantidad Stock"]) || 0,
         clubId,
       }
 

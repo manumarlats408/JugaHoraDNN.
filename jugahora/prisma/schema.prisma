@@ -120,8 +120,7 @@ model Articulo {
   precioCompra  Float
   precioVenta   Float
   tipo          String
-  mostrarStock  Boolean  @default(true)
-  activo        Boolean  @default(true)
+  cantidadStock Int?
   updatedAt     DateTime @updatedAt
   clubId        Int
   Club          Club     @relation(fields: [clubId], references: [id])

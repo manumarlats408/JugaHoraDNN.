@@ -27,8 +27,8 @@ export async function GET(req: Request) {
         "Precio Compra": articulo.precioCompra,
         "Precio Venta": articulo.precioVenta,
         Tipo: articulo.tipo,
-        "Mostrar Stock": articulo.mostrarStock ? "Sí" : "No",
-        Activo: articulo.activo ? "Sí" : "No",
+        "Cantidad en Stock": articulo.cantidadStock,
+
       }))
     )
 

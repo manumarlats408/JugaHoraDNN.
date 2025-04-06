@@ -5,8 +5,7 @@ export type Articulo = {
   precioCompra: number
   precioVenta: number
   tipo: "Ambos" | "Venta"
-  mostrarStock: boolean
-  activo: boolean
+  cantidadStock: number
   updatedAt: string
   clubId: number
 }
