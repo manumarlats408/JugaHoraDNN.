@@ -9,9 +9,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
-import { Menu, X, Home, User, Calendar, Users, LogOut, Clock, MapPin, Hash, Search, DollarSign, Trophy } from 'lucide-react'
+import { Menu, X, Home, User, Users, LogOut, Clock, MapPin, Hash, Search, DollarSign, Trophy } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { Dialog, DialogContent, DialogHeader,  DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import { format } from "date-fns"
+import { Calendar} from "lucide-react"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Calendar as DatePickerCalendar } from "@/components/ui/calendar"
+
+
+
 
 type Match = {
   id: number
@@ -34,6 +41,7 @@ type User = {
   firstName?: string
   lastName?: string
   name?: string
+  preferredSide?: string
 }
 
 const elementosMenu = [
@@ -41,6 +49,7 @@ const elementosMenu = [
   { href: '/perfil', etiqueta: 'Perfil', icono: User },
   { href: '/reserva', etiqueta: 'Reservar', icono: Calendar },
   { href: '/jugar', etiqueta: 'Unirme a un partido', icono: Users },
+  { href: '/eventos/unirse', etiqueta: 'Unirme a un evento', icono: Trophy },
 ]
 
 export default function PaginaJuega() {
@@ -58,6 +67,7 @@ export default function PaginaJuega() {
   const [loadingMatchDetails, setLoadingMatchDetails] = useState<{ [key: number]: boolean }>({})
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null)
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [joinedUsers, setJoinedUsers] = useState<User[]>([])
   const [isUserModalOpen, setIsUserModalOpen] = useState(false)
   const referenciaMenu = useRef<HTMLDivElement>(null)
@@ -124,13 +134,14 @@ export default function PaginaJuega() {
   }, [router])
 
   useEffect(() => {
-    const filtered = matches.filter(match => {
-      const matchDate = new Date(match.date).toISOString().split('T')[0]
-      const matchesSearch = match.nombreClub.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            match.direccionClub.toLowerCase().includes(searchTerm.toLowerCase())
-      const matchesDate = dateFilter === '' || matchDate === dateFilter
+    const filtered = matches.filter((match) => {
+      const matchDate = match.date.split('T')[0]  // Cambiado de new Date(match.date).toISOString().split('T')[0]
+      const matchesSearch =
+        match.nombreClub.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        match.direccionClub.toLowerCase().includes(searchTerm.toLowerCase())
+      const matchesDate = dateFilter === "" || matchDate === dateFilter
       const matchesPrice = match.price <= priceFilter
-      
+  
       return matchesSearch && matchesDate && matchesPrice
     })
     setFilteredMatches(filtered)
@@ -223,6 +234,20 @@ export default function PaginaJuega() {
     } finally {
       setLoadingMatches(prev => ({ ...prev, [idPartido]: false }));
     }
+  };
+
+  // Función para formatear la fecha correctamente sin desfase
+  const formatearFecha = (fechaString: string) => {
+    // Parsear la fecha sin aplicar zona horaria
+    const partes = fechaString.split('T')[0].split('-');
+    if (partes.length !== 3) return fechaString;
+    
+    const año = parseInt(partes[0]);
+    const mes = parseInt(partes[1]);
+    const dia = parseInt(partes[2]);
+    
+    // Crear fecha local sin conversión de zona horaria
+    return `${dia}/${mes}/${año}`;
   };
 
   const handleMatchClick = async (matchId: number) => {
@@ -370,21 +395,50 @@ export default function PaginaJuega() {
                 <div className="flex-1 min-w-[200px]">
                   <Label htmlFor="date" className="mb-2 block">Fecha</Label>
                   <div className="flex items-center space-x-2">
-                    <Input
-                      id="date"
-                      type="date"
-                      value={dateFilter}
-                      onChange={(e) => setDateFilter(e.target.value)}
-                    />
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={`w-full justify-start text-left font-normal ${
+                            !selectedDate ? "text-muted-foreground" : ""
+                          }`}
+                        >
+                          <Calendar className="mr-2 h-4 w-4" />
+                          {selectedDate ? format(selectedDate, "dd/MM/yyyy") : "Seleccionar fecha"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <DatePickerCalendar
+                          mode="single"
+                          selected={selectedDate || undefined}
+                          onSelect={(date) => {
+                            if (date) {
+                              setSelectedDate(date)
+                              setDateFilter(date.toISOString().split("T")[0])
+                            } else {
+                              setSelectedDate(null)
+                              setDateFilter('')
+                            }
+                          }}
+                          showOutsideDays={false}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+
                     <Button
                       variant="outline"
-                      onClick={() => setDateFilter('')} // Restablece el filtro de fecha
+                      onClick={() => {
+                        setSelectedDate(null)
+                        setDateFilter('')
+                      }}
                       className="px-2"
                     >
                       Borrar
                     </Button>
                   </div>
                 </div>
+
                 <div className="flex-1 min-w-[200px]">
                   <Label htmlFor="price" className="mb-2 block">Precio máximo</Label>
                   <div className="space-y-4">
@@ -413,19 +467,19 @@ export default function PaginaJuega() {
                 return (
                   <div
                     key={match.id}
-                    className="flex items-center justify-between p-4 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300 cursor-pointer"
+                    className="relative flex items-center justify-between p-4 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300 cursor-pointer"
                     onClick={() => handleMatchClick(match.id)}
                   >
                     <div>
                       <p className="font-semibold text-gray-800">{match.nombreClub}</p>
                       {match.players === 0 && (
                         <p className="text-sm text-blue-600 font-medium mb-1">
-                          🎯 Si sos el primer jugador, el partido se ajustará a tu nivel.
+                          🎯 Si sos el primer jugador, el partido se ajustará a tu categoria.
                         </p>
                       )}
                       <p className="text-sm text-gray-500 flex items-center">
                         <Calendar className="w-4 h-4 mr-1" />
-                        {new Date(match.date).toLocaleDateString('es-AR')}
+                        {formatearFecha(match.date)}
                       </p>
                       <p className="text-sm text-gray-500 flex items-center">
                         <Clock className="w-4 h-4 mr-1" />
@@ -445,14 +499,17 @@ export default function PaginaJuega() {
                       </p>
                       <p className="text-sm text-gray-500 flex items-center">
                         <DollarSign className="w-4 h-4 mr-1" />
-                        {match.price} por jugador
+                        {match.price} en total
                       </p>
                       {match.players > 0 && match.categoria && (
                         <p className="text-sm text-gray-500 flex items-center">
                           <Trophy className="w-4 h-4 mr-1" />
-                          Nivel requerido: {match.categoria}
+                          Categoria : {match.categoria}
                         </p>
                       )}
+                      <p className="text-sm text-blue-700">
+                        Clickea en la tarjeta del partido para ver los jugadores que ya están unidos y conocer sus preferencias de lado!
+                      </p>
                     </div>
 
                     <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>
@@ -590,29 +647,40 @@ export default function PaginaJuega() {
         </DialogContent>
       </Dialog>
       <Dialog open={isUserModalOpen} onOpenChange={setIsUserModalOpen}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Usuarios Unidos al Partido</DialogTitle>
-        </DialogHeader>
-        <div className="py-4">
-          {joinedUsers.length > 0 ? (
-            <ul className="space-y-2">
-              {joinedUsers.map((user) => (
-                <li key={user.id} className="flex items-center space-x-2">
-                  <Users className="h-4 w-4" />
-                  <span>{`${user.firstName} ${user.lastName}`}</span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-center text-gray-500">No hay usuarios unidos a este partido.</p>
-          )}
-        </div>
-        <DialogFooter>
-          <Button onClick={() => setIsUserModalOpen(false)}>Cerrar</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Usuarios unidos al partido</DialogTitle>
+            <DialogDescription>
+              Lista de jugadores unidos al partido y sus preferencias de lado
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            {joinedUsers.length > 0 ? (
+              <ul className="space-y-3">
+                {joinedUsers.map((user) => (
+                  <li key={user.id} className="flex items-start p-2 border border-gray-100 rounded-md hover:bg-gray-50">
+                    <Users className="h-5 w-5 text-green-600 mr-2 mt-0.5" />
+                    <div>
+                      <span className="font-medium">{`${user.firstName || ''} ${user.lastName || ''}`}</span>
+                      <div className="text-sm text-gray-500 mt-1">
+                        <span className="flex items-center">
+                          <span className="font-medium mr-1">Preferencia de lado:</span> 
+                          {user.preferredSide}
+                        </span>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-center text-gray-500">No hay usuarios unidos a este partido.</p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setIsUserModalOpen(false)}>Cerrar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
     </div>
   )

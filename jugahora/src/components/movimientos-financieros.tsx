@@ -1,5 +1,5 @@
 "use client"
-
+import { Sidebar } from "@/components/layout/sidebar"
 import { useState, useEffect } from "react"
 import { Search, Calendar } from "lucide-react"
 import { Input } from "@/components/ui/input"
@@ -15,6 +15,7 @@ export function MovimientosFinancieros() {
   const [fechaDesde, setFechaDesde] = useState<string>(
     new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split("T")[0],
   )
+  const [clubId] = useState<number | null>(null)
   const [fechaHasta, setFechaHasta] = useState<string>(new Date().toISOString().split("T")[0])
   const [cargando, setCargando] = useState(true)
   const { toast } = useToast()
@@ -64,7 +65,10 @@ export function MovimientosFinancieros() {
   }
 
   return (
-    <div className="py-6">
+    <div className="flex min-h-screen">
+          {/* Sidebar fijo */}
+      <Sidebar />
+    <div className="flex-1 ml-[4rem] p-6 space-y-6 overflow-auto">
       <div className="bg-white rounded-lg shadow-sm">
         <div className="p-6 border-b">
           <h1 className="text-2xl font-medium text-gray-600">MOVIMIENTOS FINANCIEROS</h1>
@@ -108,7 +112,7 @@ export function MovimientosFinancieros() {
                   <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
                 </div>
               </div>
-              <AgregarMovimientoDialog onMovimientoCreado={handleMovimientoCreado} />
+              <AgregarMovimientoDialog onMovimientoCreado={handleMovimientoCreado} clubId={clubId ?? 0}/>
             </div>
           </div>
 
@@ -121,6 +125,7 @@ export function MovimientosFinancieros() {
           />
         </div>
       </div>
+    </div>
     </div>
   )
 }

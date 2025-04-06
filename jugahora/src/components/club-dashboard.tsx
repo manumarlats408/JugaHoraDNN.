@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-
+import { Sidebar } from "@/components/layout/sidebar"
 import { useEffect, useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -20,6 +20,8 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { TimeSelector } from "@/components/ui/time-selector"
+
 
 type Match = {
   id: number
@@ -82,6 +84,17 @@ export function ClubDashboard() {
       console.error("Error al conectar con la API para obtener los partidos:", error)
     }
   }, [clubData])
+
+  const formatearFecha = (fechaString: string) => {
+    const partes = fechaString.split("T")[0].split("-")
+    if (partes.length !== 3) return fechaString
+  
+    const año = partes[0]
+    const mes = partes[1]
+    const dia = partes[2]
+  
+    return `${dia}/${mes}/${año}`
+  }
 
   const handleMatchClick = async (match: Match) => {
     setLoadingMatches((prev) => ({ ...prev, [match.id]: true }))
@@ -193,7 +206,7 @@ export function ClubDashboard() {
     setEditMatch(match)
     setIsEditModalOpen(true)
   }
-
+  
   const handleSaveEdit = async () => {
     if (!editMatch) return
 
@@ -265,7 +278,10 @@ export function ClubDashboard() {
   }
 
   return (
-    <div className="flex flex-col">
+    <div className="flex min-h-screen">
+              {/* Sidebar fijo */}
+              <Sidebar />
+            <div className="flex-1 ml-[4rem] p-6 space-y-6 overflow-auto">
       <main className="flex-1 p-4 md:p-6 space-y-8">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">Dashboard del Club {clubData.name}</h1>
@@ -299,24 +315,20 @@ export function ClubDashboard() {
                   <Label htmlFor="startTime" className="text-right">
                     Hora de Inicio
                   </Label>
-                  <Input
+                  <TimeSelector
                     id="startTime"
-                    type="time"
-                    className="col-span-3"
                     value={newMatch.startTime}
-                    onChange={(e) => handleInputChange(e)}
+                    onChange={(val) => setNewMatch((prev) => ({ ...prev, startTime: val }))}
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="endTime" className="text-right">
                     Hora de Fin
                   </Label>
-                  <Input
+                  <TimeSelector
                     id="endTime"
-                    type="time"
-                    className="col-span-3"
                     value={newMatch.endTime}
-                    onChange={(e) => handleInputChange(e)}
+                    onChange={(val) => setNewMatch((prev) => ({ ...prev, endTime: val }))}
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
@@ -365,7 +377,7 @@ export function ClubDashboard() {
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="date" className="text-right">
+                <Label htmlFor="date" className="text-right">
                     Fecha
                   </Label>
                   <Input
@@ -376,28 +388,29 @@ export function ClubDashboard() {
                     onChange={(e) => handleInputChange(e, true)}
                   />
                 </div>
+
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="startTime" className="text-right">
                     Hora de Inicio
                   </Label>
-                  <Input
+                  <TimeSelector
                     id="startTime"
-                    type="time"
-                    className="col-span-3"
                     value={editMatch?.startTime || ""}
-                    onChange={(e) => handleInputChange(e, true)}
+                    onChange={(val) =>
+                      setEditMatch((prev) => (prev ? { ...prev, startTime: val } : prev))
+                    }
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="endTime" className="text-right">
                     Hora de Fin
                   </Label>
-                  <Input
+                  <TimeSelector
                     id="endTime"
-                    type="time"
-                    className="col-span-3"
                     value={editMatch?.endTime || ""}
-                    onChange={(e) => handleInputChange(e, true)}
+                    onChange={(val) =>
+                      setEditMatch((prev) => (prev ? { ...prev, endTime: val } : prev))
+                    }
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
@@ -466,10 +479,10 @@ export function ClubDashboard() {
                     onClick={() => handleMatchClick(match)}
                   >
                     <div>
-                      <p className="font-semibold text-gray-800">{match.date.split("T")[0]}</p>
+                      <p className="font-semibold text-gray-800">{formatearFecha(match.date)}</p>
                       <p className="text-sm text-gray-500 flex items-center">
                         <CalendarIcon className="w-4 h-4 mr-1" />
-                        {match.date.split("T")[0]}
+                        {formatearFecha(match.date)}
                       </p>
                       <p className="text-sm text-gray-500 flex items-center">
                         <Clock className="w-4 h-4 mr-1" />
@@ -551,6 +564,7 @@ export function ClubDashboard() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+    </div>
     </div>
   )
 }

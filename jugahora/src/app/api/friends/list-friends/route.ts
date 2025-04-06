@@ -33,9 +33,37 @@ export async function GET(req: Request) {
         ],
       },
       include: {
-        sender: { select: { id: true, firstName: true, lastName: true, email: true } },
-        receiver: { select: { id: true, firstName: true, lastName: true, email: true } },
-      },
+        sender: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            nivel: true,
+            progress: true,
+            phoneNumber: true,
+            age: true,
+            preferredSide: true,
+            weaknesses : true,
+            strengths : true,
+          },
+        },
+        receiver: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            nivel: true,
+            progress: true,
+            phoneNumber: true,
+            age: true,
+            preferredSide: true,
+            weaknesses : true,
+            strengths : true,
+          },
+        },
+      },      
     });
 
     // Formatear la lista de amigos

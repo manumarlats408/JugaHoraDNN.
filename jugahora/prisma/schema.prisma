@@ -59,6 +59,9 @@ model Club {
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
   Partidos_club   Partidos_club[] // Relación con Partidos_club
+  Evento_club     Evento_club[]
+  Articulo           Articulo[]
+  MovimientoFinanciero         MovimientoFinanciero[]
 }
 
 model Partidos {
@@ -89,4 +92,51 @@ model Partidos_club {
 
   usuarios    Int[]     // Array of User IDs
   Club        Club      @relation(fields: [clubId], references: [id])
+}
+
+model Evento_club {
+  id           Int      @id @default(autoincrement())
+  date         DateTime
+  startTime    String
+  endTime      String
+  clubId       Int
+  nombre       String
+  tipo         String   // "torneo" o "cancha_abierta"
+  categoria    String?
+  genero       String   // "masculino", "femenino", "mixto"
+  maxParejas   Int?
+  formato      String?  // solo si tipo = "torneo": "grupos" o "eliminacion"
+  parejas      String[] // nombres de las parejas inscriptas
+  inscripciones Json?   // ✅ nueva columna para guardar { userId, pareja }
+  price        Float
+
+  Club         Club     @relation(fields: [clubId], references: [id])
+}
+
+model Articulo {
+  id            Int      @id @default(autoincrement())
+  codigo        String
+  nombre        String
+  precioCompra  Float
+  precioVenta   Float
+  tipo          String
+  cantidadStock Int?
+  updatedAt     DateTime @updatedAt
+  clubId        Int
+  Club          Club     @relation(fields: [clubId], references: [id])
+}
+
+
+model MovimientoFinanciero {
+  id              Int      @id @default(autoincrement())
+  concepto        String
+  jugador         String?
+  cancha          String?
+  fechaTurno      DateTime?
+  fechaMovimiento DateTime
+  metodoPago      String
+  egreso          Float?
+  ingreso         Float?
+  clubId          Int
+  Club            Club     @relation(fields: [clubId], references: [id])
 }

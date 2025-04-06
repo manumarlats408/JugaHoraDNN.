@@ -2,12 +2,13 @@
 
 import type React from "react"
 
+import { Sidebar } from "@/components/layout/sidebar"
 import { useState, useEffect } from "react"
 import { Search, Download, Upload } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { TablaArticulos } from "@/components/tabla-articulos"
-import { exportarArticulos, importarArticulos } from "@/lib/acciones"
+import { importarArticulos } from "@/lib/acciones-cliente"
 import { useToast } from "@/hooks/use-toast"
 import type { Articulo } from "@/lib/tipos"
 
@@ -20,7 +21,9 @@ export function ListadoArticulos() {
   useEffect(() => {
     async function cargarArticulos() {
       try {
-        const respuesta = await fetch("/api/articulos")
+        const respuesta = await fetch("/api/articulos", {
+          credentials: "include",
+        })
         if (!respuesta.ok) throw new Error("Error al cargar los artículos")
         const datos = await respuesta.json()
         setArticulos(datos)
@@ -46,15 +49,22 @@ export function ListadoArticulos() {
   )
 
   const handleImportar = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || e.target.files.length === 0) return
+    console.log("Iniciando importación de archivo")
+    if (!e.target.files || e.target.files.length === 0){
+      console.log("No se seleccionó ningún archivo")
+      return
+    }
 
     const file = e.target.files[0]
+    console.log("Archivo seleccionado:", file.name, file.type)
+
     if (file.type !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
       toast({
         title: "Formato incorrecto",
         description: "Por favor, sube un archivo XLSX",
         variant: "destructive",
       })
+      // Resetear el input file
       return
     }
 
@@ -62,8 +72,10 @@ export function ListadoArticulos() {
       setCargando(true)
       const formData = new FormData()
       formData.append("archivo", file)
+      console.log("FormData creado con archivo:", file.name)
 
       const resultado = await importarArticulos(formData)
+      console.log("Resultado de importación:", resultado)
 
       if (resultado.success) {
         toast({
@@ -71,14 +83,17 @@ export function ListadoArticulos() {
           description: "Artículos importados correctamente",
         })
         // Recargar artículos
-        const respuesta = await fetch("/api/articulos")
-        const datos = await respuesta.json()
-        setArticulos(datos)
-      } else {
-        throw new Error(resultado.error)
-      }
+        const respuesta = await fetch("/api/articulos", {
+          credentials: "include",
+        })
+        if (!respuesta.ok) throw new Error("Error al recargar los artículos")
+          const datos = await respuesta.json()
+          setArticulos(datos)
+        } else {
+          throw new Error(resultado.error || "Error desconocido al importar")
+        }
     } catch (error) {
-        console.error(error)
+        console.error("Error en importación:", error)
       toast({
         title: "Error",
         description: "No se pudieron importar los artículos",
@@ -94,13 +109,23 @@ export function ListadoArticulos() {
   const handleExportar = async () => {
     try {
       setCargando(true)
-      await exportarArticulos()
+      const respuesta = await fetch("/api/exportar-articulos")
+      const blob = await respuesta.blob()
+  
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = "articulos.xlsx"
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+  
       toast({
         title: "Éxito",
         description: "Artículos exportados correctamente",
       })
     } catch (error) {
-        console.error(error)
+      console.error(error)
       toast({
         title: "Error",
         description: "No se pudieron exportar los artículos",
@@ -110,9 +135,13 @@ export function ListadoArticulos() {
       setCargando(false)
     }
   }
+  
 
   return (
-    <div className="py-6">
+    <div className="flex min-h-screen">
+          {/* Sidebar fijo */}
+          <Sidebar />
+        <div className="flex-1 ml-[4rem] p-6 space-y-6 overflow-auto">
       <div className="bg-white rounded-lg shadow-sm">
         <div className="p-6 border-b">
           <h1 className="text-2xl font-medium text-gray-600">LISTADO DE CONCEPTOS / ARTÍCULOS</h1>
@@ -135,7 +164,7 @@ export function ListadoArticulos() {
             </div>
             <div className="flex gap-3">
               <div className="relative">
-                <input type="file" id="importar" className="hidden" accept=".xlsx" onChange={handleImportar} />
+                <input type="file" id="importar" className="hidden" accept=".xlsx, .xls" onChange={handleImportar} />
                 <Button variant="outline" className="flex items-center gap-2" asChild>
                   <label htmlFor="importar" className="cursor-pointer">
                     <Upload size={18} className="text-green-500" />
@@ -160,6 +189,7 @@ export function ListadoArticulos() {
           />
         </div>
       </div>
+    </div>
     </div>
   )
 }

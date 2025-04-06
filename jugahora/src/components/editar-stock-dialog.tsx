@@ -1,15 +1,13 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
 import { useToast } from "@/hooks/use-toast"
-import { actualizarArticulo } from "@/lib/acciones"
+import { actualizarArticulo } from "@/lib/acciones-servidor"
 import type { Articulo } from "@/lib/tipos"
 import { Edit } from "lucide-react"
 
@@ -24,8 +22,7 @@ export function EditarStockDialog({ articulo, onArticuloActualizado }: EditarSto
   const [cargando, setCargando] = useState(false)
 
   const [formData, setFormData] = useState({
-    mostrarEnStock: articulo.mostrarEnStock,
-    activo: articulo.activo,
+    cantidadStock: articulo.cantidadStock.toString(),
     precioCompra: articulo.precioCompra.toString(),
     precioVenta: articulo.precioVenta.toString(),
   })
@@ -35,23 +32,20 @@ export function EditarStockDialog({ articulo, onArticuloActualizado }: EditarSto
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSwitchChange = (name: string, checked: boolean) => {
-    setFormData((prev) => ({ ...prev, [name]: checked }))
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    // Validación básica
     if (
       isNaN(Number(formData.precioCompra)) ||
       isNaN(Number(formData.precioVenta)) ||
+      isNaN(Number(formData.cantidadStock)) ||
       Number(formData.precioCompra) < 0 ||
-      Number(formData.precioVenta) < 0
+      Number(formData.precioVenta) < 0 ||
+      Number(formData.cantidadStock) < 0
     ) {
       toast({
         title: "Error",
-        description: "Los precios deben ser valores numéricos válidos",
+        description: "Todos los valores deben ser numéricos válidos y mayores o iguales a cero",
         variant: "destructive",
       })
       return
@@ -62,8 +56,7 @@ export function EditarStockDialog({ articulo, onArticuloActualizado }: EditarSto
 
       const articuloActualizado: Articulo = {
         ...articulo,
-        mostrarEnStock: formData.mostrarEnStock,
-        activo: formData.activo,
+        cantidadStock: Number(formData.cantidadStock),
         precioCompra: Number(formData.precioCompra),
         precioVenta: Number(formData.precioVenta),
       }
@@ -76,16 +69,13 @@ export function EditarStockDialog({ articulo, onArticuloActualizado }: EditarSto
           description: "Artículo actualizado correctamente",
         })
 
-        // Cerrar diálogo
         setOpen(false)
-
-        // Notificar al componente padre
         onArticuloActualizado(articuloActualizado)
       } else {
         throw new Error(resultado.error)
       }
     } catch (error) {
-        console.error(error)
+      console.error(error)
       toast({
         title: "Error",
         description: "No se pudo actualizar el artículo",
@@ -143,25 +133,15 @@ export function EditarStockDialog({ articulo, onArticuloActualizado }: EditarSto
             </div>
           </div>
 
-          <div className="flex items-center justify-between">
-            <Label htmlFor="mostrarEnStock" className="cursor-pointer">
-              Mostrar en Stock
-            </Label>
-            <Switch
-              id="mostrarEnStock"
-              checked={formData.mostrarEnStock}
-              onCheckedChange={(checked) => handleSwitchChange("mostrarEnStock", checked)}
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <Label htmlFor="activo" className="cursor-pointer">
-              Artículo Activo
-            </Label>
-            <Switch
-              id="activo"
-              checked={formData.activo}
-              onCheckedChange={(checked) => handleSwitchChange("activo", checked)}
+          <div className="space-y-2">
+            <Label htmlFor="cantidadStock">Stock</Label>
+            <Input
+              id="cantidadStock"
+              name="cantidadStock"
+              value={formData.cantidadStock}
+              onChange={handleChange}
+              type="number"
+              min="0"
             />
           </div>
 
@@ -178,4 +158,3 @@ export function EditarStockDialog({ articulo, onArticuloActualizado }: EditarSto
     </Dialog>
   )
 }
-

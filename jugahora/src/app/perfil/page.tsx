@@ -9,7 +9,7 @@ import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, Dialog
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Menu, X, Home, User, Calendar, Users, LogOut, Mail, Phone, MapPin, Clock, Plus, Loader2 } from 'lucide-react'
+import { Menu, X, Home, User, Calendar, Users, LogOut, Mail, Phone, MapPin, Clock, Plus, Loader2, Trophy} from 'lucide-react'
 import Image from 'next/image'
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, LineElement, PointElement, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
@@ -17,6 +17,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 import { Doughnut } from 'react-chartjs-2';
 ChartJS.register(ArcElement, LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend);
 import { Line } from 'react-chartjs-2';
+import CollapsibleSection from '@/components/CollapsibleSection'
 
 
 interface User {
@@ -48,14 +49,24 @@ interface Friend {
   firstName: string;
   lastName: string;
   email: string;
+  nivel?: string;
+  progress?: number;
+  phoneNumber?: string;
+  age?: number
+  preferredSide?: string
+  strengths?: string[]
+  weaknesses?: string[]
 }
+
 
 const menuItems = [
   { href: '/menu', label: 'Menu', icon: Home },
   { href: '/perfil', label: 'Perfil', icon: User },
   { href: '/reserva', label: 'Reservar', icon: Calendar },
   { href: '/jugar', label: 'Unirme a un partido', icon: Users },
+  { href: '/eventos/unirse', label: 'Unirme a un evento', icon: Trophy },
 ]
+
 
 export default function PerfilPage() {
   const [userData, setUserData] = useState<User | null>(null)
@@ -63,6 +74,8 @@ export default function PerfilPage() {
   const [partidos, setPartidos] = useState<Partido[]>([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [fecha, setFecha] = useState('')
+  const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
+  const detailRef = useRef<HTMLDivElement>(null);
   const [jugadores, setJugadores] = useState<string[]>([])
   const [numSets, setNumSets] = useState('2')
   const [isAddingPartido, setIsAddingPartido] = useState(false)
@@ -234,6 +247,22 @@ useEffect(() => {
     calcularEficaciaCompañeros();
   }
 }, [partidos, userData]);
+
+useEffect(() => {
+  function handleClickOutside(event: MouseEvent) {
+    if (detailRef.current && !detailRef.current.contains(event.target as Node)) {
+      setSelectedFriend(null);
+    }
+  }
+  if (selectedFriend) {
+    document.addEventListener('mousedown', handleClickOutside);
+  }
+  return () => {
+    document.removeEventListener('mousedown', handleClickOutside);
+  };
+}, [selectedFriend]);
+
+
 
 // Procesar los datos para acumular partidos jugados y ganados
 const procesarHistorial = (partidos: Partido[]) => {
@@ -637,53 +666,147 @@ const rachas = calcularRachas(partidos);
           </CardContent>
         </Card>
 
-        <Card className="w-full max-w-lg shadow-lg border-green-100 mb-6">
-          <CardHeader className="bg-green-50 border-b border-green-100">
-            <CardTitle className="text-2xl font-bold text-green-800">Amigos</CardTitle>
-          </CardHeader>
-
-          <CardContent className="pt-6 space-y-4">
-            <div className="mb-4">
-              <p className="text-gray-600 mb-2">
-                Aquí puedes ver tu lista de amigos y también explorar nuevos perfiles.
-              </p>
-              <Button
-                onClick={() => (window.location.href = '/explore')}
-                className="bg-green-500 hover:bg-green-600 text-white"
-              >
-                Explorar Nuevos Perfiles
-              </Button>
-            </div>
+        <CollapsibleSection title="Amigos" defaultOpen={false}>
+            <p className="text-gray-600 mb-2">
+              Aquí puedes ver tu lista de amigos y también explorar nuevos perfiles.
+            </p>
+            <Button
+              onClick={() => router.push('/explore')}
+              className="bg-green-500 hover:bg-green-600 text-white"
+            >
+              Explorar Nuevos Perfiles
+            </Button>
 
             {/* Lista de Amigos */}
             <div>
               {friends.length > 0 ? (
-                <ul>
-                  {friends.map((friend) => (
-                    <li
-                      key={friend.id}
-                      className="border-b py-2 flex justify-between items-center text-gray-800"
-                    >
-                      <span>
-                        <strong>{friend.firstName} {friend.lastName}</strong> ({friend.email})
-                      </span>
+                <ul className="space-y-2 mt-4">
+                  {Array.from(new Map(friends.map((f) => [f.email, f])).values()).map((friend) => (
+                    <li key={friend.id} className="relative">
+                      {/* Nombre + Email (clickable) */}
+                      <div
+                        className="border-b py-2 flex justify-between items-center text-gray-800 cursor-pointer hover:bg-green-50 px-2 rounded"
+                        onClick={() =>
+                          setSelectedFriend((prev) => (prev?.id === friend.id ? null : friend))
+                        }
+                      >
+                        <span>
+                          <strong>{friend.firstName} {friend.lastName}</strong> ({friend.email})
+                        </span>
+                      </div>
+
+                      {/* Detalles si está seleccionado */}
+                      {selectedFriend?.id === friend.id && (
+                        <div
+                          ref={detailRef}
+                          className="relative mt-2 p-4 bg-white border border-green-200 rounded shadow transition-all duration-300 ease-in-out"
+                        >
+                          <button
+                            className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+                            onClick={() => setSelectedFriend(null)}
+                          >
+                            <X size={20} />
+                          </button>
+
+                          {selectedFriend.phoneNumber && (
+                            <div className="flex items-center mb-2">
+                              <Phone className="w-4 h-4 mr-2 text-gray-500" />
+                              <span>{selectedFriend.phoneNumber}</span>
+                            </div>
+                          )}
+
+                          {selectedFriend.age && (
+                            <div className="flex items-center mb-2">
+                              <Clock className="w-4 h-4 mr-2 text-gray-500" />
+                              <span>{selectedFriend.age} años</span>
+                            </div>
+                          )}
+
+                          {selectedFriend.preferredSide && (
+                            <div className="flex items-center mb-2">
+                              <User className="w-4 h-4 mr-2 text-gray-500" />
+                              <span>Lado preferido: {selectedFriend.preferredSide}</span>
+                            </div>
+                          )}
+
+                          {selectedFriend.strengths && selectedFriend.strengths.length > 0 && (
+                            <div className="mb-2">
+                              <p className="font-semibold text-gray-700">Fortalezas:</p>
+                              <ul className="list-disc pl-6 text-sm text-gray-600">
+                                {selectedFriend.strengths.map((s, i) => (
+                                  <li key={i}>{s}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+
+                          {selectedFriend.weaknesses && selectedFriend.weaknesses.length > 0 && (
+                            <div className="mb-2">
+                              <p className="font-semibold text-gray-700">Debilidades:</p>
+                              <ul className="list-disc pl-6 text-sm text-gray-600">
+                                {selectedFriend.weaknesses.map((w, i) => (
+                                  <li key={i}>{w}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+
+                        </div>
+                      )}
                     </li>
                   ))}
                 </ul>
               ) : (
-                <p className="text-gray-500">No tienes amigos agregados.</p>
+                <p className="text-gray-500 mt-4">No tienes amigos agregados.</p>
               )}
             </div>
-          </CardContent>
-        </Card>
+        </CollapsibleSection>
+
+
+        <CollapsibleSection title="Ranking de Amigos"  defaultOpen={false}>
+            {friends.length > 0 ? (
+              <ul className="space-y-3">
+                {Array.from(
+                  new Map(
+                    friends
+                      .filter((f) => f.nivel !== undefined && f.progress !== undefined)
+                      .map((f) => [f.email, f])
+                  ).values()
+                )
+                  .sort((a, b) => {
+                    const nivelA = parseInt(a.nivel ?? '8');
+                    const nivelB = parseInt(b.nivel ?? '8');
+                    if (nivelA !== nivelB) return nivelA - nivelB; // menor nivel es mejor
+                    return (b.progress ?? 0) - (a.progress ?? 0); // más progreso es mejor
+                  })
+                  .map((friend, index) => (
+                    <li
+                      key={friend.id}
+                      className="bg-white rounded-lg shadow p-3 flex justify-between items-center border border-green-100"
+                    >
+                      <div>
+                        <p className="font-bold text-gray-800">
+                          #{index + 1} - {friend.firstName} {friend.lastName}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          Nivel: {friend.nivel ?? '-'} | Progreso: {friend.progress ?? 0}%
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+              </ul>
+            ) : (
+              <p className="text-gray-500">Agrega amigos para ver el ranking.</p>
+            )}
+        </CollapsibleSection>
+
         
-        <Card className="w-full max-w-lg shadow-lg border-green-100 mb-6">
-          <CardHeader className="bg-green-50 border-b border-green-100">
-            <CardTitle className="text-2xl font-bold text-green-800">
-              Estadísticas de Partidos
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-6 space-y-4">
+        <CollapsibleSection title="Estadísticas de Partidos" defaultOpen={false}>
+            <div>
+              <p className="text-gray-600 mb-2">
+                A medida que anotes tus partidos, tus estadisticas comenzaran a crecer!
+              </p>
+            </div>
             <div>
               <p><strong>Total de Partidos Jugados:</strong> {partidos.length}</p>
               <p><strong>Total de Partidos Ganados:</strong> {partidos.filter((p) => p.ganado).length}</p>
@@ -807,19 +930,31 @@ const rachas = calcularRachas(partidos);
               </div>
             </div>
 
-          </CardContent>
-        </Card>
+          </CollapsibleSection>
 
-        <Card className="w-full max-w-lg shadow-lg border-green-100">
-          <CardHeader className="bg-green-50 border-b border-green-100">
-            <CardTitle className="text-2xl font-bold text-green-800 flex items-center justify-between">
-              <span>Historial de Partidos</span>
+          <CollapsibleSection title="Historial de Partidos" defaultOpen={false}>
+            {partidos.length > 0 ? (
+              partidos.map((partido) => (
+                <div key={partido.id} className="border-b border-gray-200 pb-2">
+                  <p><strong>Fecha:</strong> {new Date(partido.fecha).toLocaleDateString()}</p>
+                  <p><strong>Jugadores:</strong> {partido.jugadores}</p>
+                  <p><strong>Resultado:</strong> {partido.resultado}</p>
+                  <p><strong>Estado:</strong> {partido.ganado ? 'Ganado' : 'Perdido'}</p>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500">No hay partidos registrados aún.</p>
+            )}
+
+            {/* Botón para abrir el diálogo, ahora ubicado al final */}
+            <div className="mt-4 flex justify-end">
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="outline" size="icon">
+                  <Button variant="outline" size="icon" title="Agregar Partido">
                     <Plus className="h-4 w-4" />
                   </Button>
                 </DialogTrigger>
+
                 <DialogContent className="sm:max-w-[425px]">
                   <DialogHeader>
                     <DialogTitle>Añadir Nuevo Partido</DialogTitle>
@@ -935,33 +1070,8 @@ const rachas = calcularRachas(partidos);
                   </DialogClose>
                 </DialogContent>
               </Dialog>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-6 space-y-4">
-            {partidos.length > 0 ? (
-              partidos.map((partido) => (
-                <div key={partido.id} className="border-b border-gray-200 pb-2">
-                  <p><strong>Fecha:</strong> {new Date(partido.fecha).toLocaleDateString()}</p>
-                  <p><strong>Jugadores:</strong> {partido.jugadores}</p>
-                  <p><strong>Resultado:</strong> {partido.resultado}</p>
-                  <p><strong>Estado:</strong> {partido.ganado ? 'Ganado' : 'Perdido'}</p>
-                </div>
-              ))
-            ) : (
-              <p>No hay partidos registrados aún.</p>
-            )}
-          </CardContent>
-        </Card>
-
-        <section className="w-full max-w-lg mb-8">
-          <h2 className="text-xl font-bold text-green-800 mb-4">Explora Nuevos Amigos</h2>
-          <p className="text-sm text-gray-600 mb-4">
-            Conéctate con otros jugadores y envía solicitudes de amistad.
-          </p>
-          <Link href="/explore" className="inline-block">
-            <Button className="bg-green-600 hover:bg-green-700 text-white">Explorar Perfiles</Button>
-          </Link>
-        </section>
+            </div>
+        </CollapsibleSection>
 
         </main>
 
