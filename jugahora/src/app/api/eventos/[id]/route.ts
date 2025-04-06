@@ -118,7 +118,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
         tipo,
         formato: tipo === "torneo" ? formato : null,
         maxParejas: typeof maxParejas === "string" ? parseInt(maxParejas) : maxParejas,
-        price,
+        price: parseFloat(price),
       },
     })
 
@@ -145,7 +145,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
       cambios.push(`<strong>Formato:</strong> ${oldEvento.formato} ➝ ${formato}`)
     }
     if (oldEvento.maxParejas !== maxParejas) {
-      cambios.push(`<strong>Cupo:</strong> ${oldEvento.maxParejas} ➝ ${maxParejas}`)
+      cambios.push(`<strong>Parejas:</strong> ${oldEvento.maxParejas} ➝ ${maxParejas}`)
     }
     if (oldEvento.price !== price) {
       cambios.push(`<strong>Precio:</strong> $${oldEvento.price} ➝ $${price}`)
@@ -171,11 +171,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
             { label: "🔄 Cambios realizados", valor: `<ul style="text-align:left; margin: 0;">${cambios.map(c => `<li>${c}</li>`).join("")}</ul>` },
             { label: "📅 Día", valor: formatearFechaDDMMYYYY(date) },
             { label: "⏰ Hora", valor: `${startTime} - ${endTime}` },
-            { label: "🎯 Categoría", valor: categoria },
-            { label: "🎭 Género", valor: genero },
-            { label: "📌 Tipo", valor: tipo + (tipo === "torneo" && formato ? ` - Formato ${formato}` : "") },
-            { label: "👥 Cupo", valor: `${maxParejas} ${tipo === "torneo" ? "parejas" : "personas"}` },
-            { label: "💰 Precio", valor: `$${price}` },
+            { label: "📌 Tipo", valor: tipo},
           ],
           footer: `Pedimos disculpas por el cambio. Esperamos que puedas asistir igualmente. Si no podés, podés darte de baja del evento desde la plataforma.`,
         }),
