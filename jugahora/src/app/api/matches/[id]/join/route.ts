@@ -63,12 +63,12 @@ export async function POST(
       if (updatedMatch.players === updatedMatch.maxPlayers && match.Club?.email) {
         const jugadores = await prisma.user.findMany({
           where: { id: { in: updatedMatch.usuarios } },
-          select: { firstName: true, email: true },
+          select: { firstName: true, lastName: true, email: true },
         });
 
         const jugadoresLista = jugadores
-          .map(j => `${j.firstName || 'Jugador'} (${j.email})`)
-          .join("<br>");
+        .map(j => `${(j.firstName || 'Jugador')} ${(j.lastName || '')} (${j.email})`)
+        .join("<br>");
 
         // Email al club
         await sendgrid.send({
