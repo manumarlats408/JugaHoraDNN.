@@ -110,7 +110,7 @@ export default function DashboardPage() {
   }
 
   // Estadísticas
-  const articulosActivos =  articulos.length
+  const articulosInactivos = articulos.filter((a) => a.cantidadStock === 0).length;
   const totalIngresos = movimientos.reduce((total, m) => total + (m.ingreso || 0), 0)
   const totalEgresos = movimientos.reduce((total, m) => total + (m.egreso || 0), 0)
   const saldoNeto = totalIngresos - totalEgresos
@@ -188,7 +188,7 @@ export default function DashboardPage() {
                 <Package className="h-4 w-4 text-blue-500" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{articulosActivos}</div>
+                <div className="text-2xl font-bold">{articulosInactivos}</div>
                 <p className="text-xs text-muted-foreground">{articulos.length} artículos en total</p>
               </CardContent>
             </Card>
@@ -253,38 +253,52 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Artículos Populares</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {articulos.length > 0 ? (
-                <div className="space-y-4">
-                  {articulos
-                    .filter((a) => articulos.length)
-                    .slice(0, 3)
-                    .map((articulo) => (
-                      <div key={articulo.id} className="flex justify-between items-center border-b pb-2">
-                        <div>
-                          <p className="font-medium">{articulo.nombre}</p>
-                          <p className="text-sm text-gray-500">Código: {articulo.codigo}</p>
-                        </div>
-                        <span className="text-sm font-semibold text-green-600">
-                          {formatearPrecio(articulo.precioVenta)}
-                        </span>
-                      </div>
-                    ))}
-                  <div className="pt-2">
-                    <Button variant="outline" size="sm" asChild>
-                      <Link href="/inventario">Ver inventario completo</Link>
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <p className="text-center text-gray-500 py-4">No hay artículos disponibles</p>
-              )}
-            </CardContent>
-          </Card>
+    <Card>
+      <CardHeader>
+        <CardTitle>Artículos Populares</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          {[
+            {
+              id: '1',
+              nombre: 'Pelota Pro Pádel',
+              codigo: 'PRO-001',
+              precioVenta: 4500,
+            },
+            {
+              id: '2',
+              nombre: 'Paleta Carbon X',
+              codigo: 'PAL-205',
+              precioVenta: 38000,
+            },
+            {
+              id: '3',
+              nombre: 'Grips Antideslizantes',
+              codigo: 'GRP-099',
+              precioVenta: 1200,
+            },
+          ].map((articulo) => (
+            <div key={articulo.id} className="flex justify-between items-center border-b pb-2">
+              <div>
+                <p className="font-medium">{articulo.nombre}</p>
+                <p className="text-sm text-gray-500">Código: {articulo.codigo}</p>
+              </div>
+              <span className="text-sm font-semibold text-green-600">
+                {formatearPrecio(articulo.precioVenta)}
+              </span>
+            </div>
+          ))}
+
+          <div className="pt-2">
+            <Button variant="outline" size="sm" asChild>
+              <Link href="/inventario">Ver inventario completo</Link>
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+
 
           <Card>
             <CardHeader>
