@@ -110,7 +110,7 @@ export default function DashboardPage() {
   }
 
   // Estadísticas
-  const articulosActivos = articulos.filter((a) => a.activo).length
+  const articulosActivos =  articulos.length
   const totalIngresos = movimientos.reduce((total, m) => total + (m.ingreso || 0), 0)
   const totalEgresos = movimientos.reduce((total, m) => total + (m.egreso || 0), 0)
   const saldoNeto = totalIngresos - totalEgresos
@@ -261,7 +261,7 @@ export default function DashboardPage() {
               {articulos.length > 0 ? (
                 <div className="space-y-4">
                   {articulos
-                    .filter((a) => a.activo)
+                    .filter((a) => articulos.length)
                     .slice(0, 3)
                     .map((articulo) => (
                       <div key={articulo.id} className="flex justify-between items-center border-b pb-2">
