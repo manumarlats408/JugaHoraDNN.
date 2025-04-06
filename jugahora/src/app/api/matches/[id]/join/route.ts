@@ -126,7 +126,7 @@ export async function POST(
             from: process.env.SENDGRID_FROM_EMAIL as string,
             subject: "🎾 ¡Unite a este partido de tu nivel!",
             html: generarEmailHTML({
-              titulo: `🎾 ¡Un partido de nivel ${match.categoria} necesita un jugador!`,
+              titulo: `🎾 ¡Un partido de categoria ${match.categoria} necesita un jugador!`,
               saludo: `Hola <strong>${user.firstName || "jugador"}</strong>,`,
               descripcion: `Hay un lugar disponible en un partido que coincide con tu nivel.`,
               detalles: [
