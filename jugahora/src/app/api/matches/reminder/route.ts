@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import sendgrid from "@sendgrid/mail";
+import { generarEmailHTML, formatearFechaDDMMYYYY } from "@/lib/emailUtils";
 
 sendgrid.setApiKey(process.env.SENDGRID_API_KEY as string);
 
@@ -46,28 +47,18 @@ export async function GET() {
             to: jugador.email,
             from: process.env.SENDGRID_FROM_EMAIL as string,
             subject: "⏳ ¡Faltan 24 horas para tu partido de pádel!",
-            html: `
-              <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto; border: 1px solid #ddd; border-radius: 10px; padding: 20px; background-color: #f9f9f9;">
-                <h2 style="color: #1e88e5; text-align: center;">⏳ ¡Faltan 24 horas para tu partido!</h2>
-                <p>Hola <strong>${jugador.firstName || "jugador"}</strong>,</p>
-                <p>Tu partido en <strong>${partido.Club.name}</strong> está programado para mañana.</p>
-                
-                <div style="background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
-                  <h3 style="color: #43a047; text-align: center;">📅 Detalles del Partido</h3>
-                  <ul style="list-style: none; padding: 0; text-align: center;">
-                    <li><strong>📆 Día:</strong> ${fecha}</li>
-                    <li><strong>⏰ Hora:</strong> ${partido.startTime} - ${partido.endTime}</li>
-                    <li><strong>🏟️ Cancha:</strong> ${partido.court}</li>
-                  </ul>
-                </div>
-                
-                <div style="text-align: center; margin-top: 20px;">
-                  <p style="font-size: 14px; color: #666;">Nos vemos en la cancha 🏆</p>
-                  <p style="font-size: 12px; color: #999;">⚡ Powered by JugáHora</p>
-                </div>
-              </div>
-            `,
+            html: generarEmailHTML({
+              titulo: "⏳ ¡Faltan 24 horas para tu partido!",
+              saludo: `Hola ${jugador.firstName || "jugador"},`,
+              descripcion: `Tu partido en ${partido.Club.name} está programado para mañana.`,
+              detalles: [
+                { label: "📆 Día", valor: formatearFechaDDMMYYYY(partido.date) },
+                { label: "⏰ Hora", valor: `${partido.startTime} - ${partido.endTime}` },
+                { label: "🏟️ Cancha", valor: partido.court },
+              ],
+            }),
           });
+          
         }
         
 
@@ -87,32 +78,19 @@ export async function GET() {
             to: jugador.email,
             from: process.env.SENDGRID_FROM_EMAIL as string,
             subject: "⚠️ Faltan 12 horas para tu partido - No se permiten cancelaciones",
-            html: `
-              <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto; border: 1px solid #ddd; border-radius: 10px; padding: 20px; background-color: #f9f9f9;">
-                <h2 style="color: #d32f2f; text-align: center;">⚠️ ¡Faltan 12 horas para tu partido!</h2>
-                <p>Hola <strong>${jugador.firstName || "jugador"}</strong>,</p>
-                <p>Tu partido en <strong>${partido.Club.name}</strong> comienza pronto.</p>
-                
-                <div style="background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
-                  <h3 style="color: #ff9800; text-align: center;">📅 Detalles del Partido</h3>
-                  <ul style="list-style: none; padding: 0; text-align: center;">
-                    <li><strong>📆 Día:</strong> ${fecha}</li>
-                    <li><strong>⏰ Hora:</strong> ${partido.startTime} - ${partido.endTime}</li>
-                    <li><strong>🏟️ Cancha:</strong> ${partido.court}</li>
-                  </ul>
-                </div>
-                
-                <p style="text-align: center; color: #d32f2f; font-weight: bold; margin-top: 15px;">
-                  Las cancelaciones ya no están permitidas. En caso de no presentarte, podrías recibir una penalización.
-                </p>
-                
-                <div style="text-align: center; margin-top: 20px;">
-                  <p style="font-size: 14px; color: #666;">Nos vemos en la cancha 🏆</p>
-                  <p style="font-size: 12px; color: #999;">⚡ Powered by TuApp</p>
-                </div>
-              </div>
-            `,
+            html: generarEmailHTML({
+              titulo: "⚠️ ¡Faltan 12 horas para tu partido!",
+              saludo: `Hola ${jugador.firstName || "jugador"},`,
+              descripcion: `Tu partido en ${partido.Club.name} comienza pronto.`,
+              detalles: [
+                { label: "📆 Día", valor: formatearFechaDDMMYYYY(partido.date) },
+                { label: "⏰ Hora", valor: `${partido.startTime} - ${partido.endTime}` },
+                { label: "🏟️ Cancha", valor: partido.court },
+              ],
+              footer: "⚠️ Las cancelaciones ya no están permitidas. En caso de no presentarte, podrías recibir una penalización.",
+            }),
           });
+          
         }
         
 
