@@ -10,15 +10,19 @@ export async function actualizarArticuloDB(id: number, datos: Articulo) {
       precioCompra: datos.precioCompra,
       precioVenta: datos.precioVenta,
       tipo: datos.tipo,
-      mostrarStock: datos.mostrarStock,
-      activo: datos.activo,
-      updatedAt: new Date(), // Asegurate de convertir el string a Date si lo estás manejando manualmente
+      cantidadStock: datos.cantidadStock,
+      updatedAt: new Date(),
       clubId: datos.clubId,
     },
   })
 }
 
 export async function crearArticulo(data: Omit<Articulo, "id">) {
-    return await prisma.articulo.create({ data })
-  }
-  
+  return await prisma.articulo.create({
+    data: {
+      ...data,
+      cantidadStock: data.cantidadStock,
+      updatedAt: new Date(),
+    },
+  })
+}
