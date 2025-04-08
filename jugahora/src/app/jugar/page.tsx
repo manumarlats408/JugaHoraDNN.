@@ -637,7 +637,7 @@ export default function PaginaJuega() {
           <DialogHeader>
             <DialogTitle>Confirmar retiro del partido</DialogTitle>
             <DialogDescription>
-              Atención: Si te retiras del partido 1 hora y 30 minutos antes de la hora de inicio del partido no se hará el reembolso.
+              Atención: Si te retiras del partido 12 horas antes de la hora de inicio del partido podrías recibir una penalización.
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-end space-x-2">
