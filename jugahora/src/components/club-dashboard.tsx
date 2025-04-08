@@ -1,11 +1,11 @@
 "use client"
 
 import type React from "react"
-import { MobileSidebar } from "@/components/layout/mobile-sidebar"
+import { Sidebar } from "@/components/layout/sidebar"
 import { useEffect, useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Plus, Trash2, Edit, Users, Clock, Hash } from "lucide-react"
+import { CalendarIcon, Plus, Trash2, Edit, Users, Clock, Hash } from "lucide-react"
 import Calendar from "react-calendar"
 import "react-calendar/dist/Calendar.css"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -275,22 +275,20 @@ export function ClubDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Mobile-friendly sidebar */}
-      <MobileSidebar />
-
-      {/* Main content */}
-      <div className="w-full md:ml-[4rem] px-3 md:px-6 py-4 md:py-6">
-        <main className="max-w-full">
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+    <div className="flex flex-col md:flex-row min-h-screen">
+      {/* Sidebar fijo */}
+      <Sidebar />
+      <div className="flex-1 md:ml-[4rem] p-3 md:p-6 space-y-6 overflow-auto">
+        <main className="flex-1 p-2 md:p-6 space-y-4 md:space-y-8">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
             <h1 className="text-2xl md:text-3xl font-bold">Dashboard del Club {clubData.name}</h1>
             <Dialog>
               <DialogTrigger asChild>
-                <Button className="w-full sm:w-auto">
+                <Button>
                   <Plus className="mr-2 h-4 w-4" /> Crear Partido
                 </Button>
               </DialogTrigger>
-              <DialogContent className="w-[95vw] max-w-[425px]">
+              <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                   <DialogTitle>Crear Nuevo Partido</DialogTitle>
                   <DialogDescription>
@@ -298,38 +296,61 @@ export function ClubDashboard() {
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="date">Fecha</Label>
-                    <Input id="date" type="date" value={newMatch.date} onChange={(e) => handleInputChange(e)} />
+                  <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
+                    <Label htmlFor="date" className="sm:text-right">
+                      Fecha
+                    </Label>
+                    <Input
+                      id="date"
+                      type="date"
+                      className="col-span-1 sm:col-span-3"
+                      value={newMatch.date}
+                      onChange={(e) => handleInputChange(e)}
+                    />
                   </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="startTime">Hora de Inicio</Label>
+                  <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
+                    <Label htmlFor="startTime" className="sm:text-right">
+                      Hora de Inicio
+                    </Label>
                     <TimeSelector
                       id="startTime"
                       value={newMatch.startTime}
                       onChange={(val) => setNewMatch((prev) => ({ ...prev, startTime: val }))}
                     />
                   </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="endTime">Hora de Fin</Label>
+                  <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
+                    <Label htmlFor="endTime" className="sm:text-right">
+                      Hora de Fin
+                    </Label>
                     <TimeSelector
                       id="endTime"
                       value={newMatch.endTime}
                       onChange={(val) => setNewMatch((prev) => ({ ...prev, endTime: val }))}
                     />
                   </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="court">Cancha</Label>
-                    <Input id="court" value={newMatch.court} onChange={(e) => handleInputChange(e)} />
+                  <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
+                    <Label htmlFor="court" className="sm:text-right">
+                      Cancha
+                    </Label>
+                    <Input
+                      id="court"
+                      className="col-span-1 sm:col-span-3"
+                      value={newMatch.court}
+                      onChange={(e) => handleInputChange(e)}
+                    />
                   </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="price">Precio</Label>
+                  <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
+                    <Label htmlFor="price" className="sm:text-right">
+                      Precio
+                    </Label>
                     <Input
                       id="price"
-                      type="text"
-                      value={newMatch.price}
+                      type="text" // Cambiado de "number" a "text" para quitar las flechas
+                      className="col-span-1 sm:col-span-3"
+                      value={newMatch.price} // Permitir que se muestre vacío si es 0
                       onChange={(e) => handleInputChange(e)}
                       onInput={(e) => {
+                        // Permitir solo números
                         e.currentTarget.value = e.currentTarget.value.replace(/\D/g, "")
                       }}
                     />
@@ -344,7 +365,7 @@ export function ClubDashboard() {
 
           {editMatch && (
             <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-              <DialogContent className="w-[95vw] max-w-[425px]">
+              <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                   <DialogTitle>Editar Partido</DialogTitle>
                   <DialogDescription>
@@ -352,43 +373,62 @@ export function ClubDashboard() {
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="date">Fecha</Label>
+                  <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
+                    <Label htmlFor="date" className="sm:text-right">
+                      Fecha
+                    </Label>
                     <Input
                       id="date"
                       type="date"
+                      className="col-span-1 sm:col-span-3"
                       value={editMatch ? new Date(editMatch.date).toISOString().split("T")[0] : ""}
                       onChange={(e) => handleInputChange(e, true)}
                     />
                   </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="startTime">Hora de Inicio</Label>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
+                    <Label htmlFor="startTime" className="sm:text-right">
+                      Hora de Inicio
+                    </Label>
                     <TimeSelector
                       id="startTime"
                       value={editMatch?.startTime || ""}
                       onChange={(val) => setEditMatch((prev) => (prev ? { ...prev, startTime: val } : prev))}
                     />
                   </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="endTime">Hora de Fin</Label>
+                  <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
+                    <Label htmlFor="endTime" className="sm:text-right">
+                      Hora de Fin
+                    </Label>
                     <TimeSelector
                       id="endTime"
                       value={editMatch?.endTime || ""}
                       onChange={(val) => setEditMatch((prev) => (prev ? { ...prev, endTime: val } : prev))}
                     />
                   </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="court">Cancha</Label>
-                    <Input id="court" value={editMatch.court} onChange={(e) => handleInputChange(e, true)} />
+                  <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
+                    <Label htmlFor="court" className="sm:text-right">
+                      Cancha
+                    </Label>
+                    <Input
+                      id="court"
+                      className="col-span-1 sm:col-span-3"
+                      value={editMatch.court}
+                      onChange={(e) => handleInputChange(e, true)}
+                    />
                   </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="price">Precio</Label>
+                  <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
+                    <Label htmlFor="price" className="sm:text-right">
+                      Precio
+                    </Label>
                     <Input
                       id="price"
-                      type="text"
-                      value={editMatch?.price === 0 ? "" : editMatch?.price}
+                      type="text" // Cambiado de "number" a "text" para quitar las flechas
+                      className="col-span-1 sm:col-span-3"
+                      value={editMatch?.price === 0 ? "" : editMatch?.price} // Permitir que se muestre vacío si es 0
                       onChange={(e) => handleInputChange(e, true)}
                       onInput={(e) => {
+                        // Permitir solo números
                         e.currentTarget.value = e.currentTarget.value.replace(/\D/g, "")
                       }}
                     />
@@ -402,73 +442,61 @@ export function ClubDashboard() {
           )}
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <Card className="w-full overflow-hidden">
-              <CardHeader className="p-3 md:p-6">
-                <CardTitle className="text-lg md:text-xl">Calendario de Partidos</CardTitle>
+            <Card className="w-full">
+              <CardHeader>
+                <CardTitle>Calendario de Partidos</CardTitle>
                 <CardDescription>Vista mensual de los partidos programados</CardDescription>
               </CardHeader>
-              <CardContent className="p-2 md:p-6">
-                <div className="max-w-full overflow-x-auto">
-                  <Calendar
-                    value={currentDate}
-                    onChange={(date) => setSelectedDate(date as Date)}
-                    tileClassName={tileClassName}
-                    className="w-full text-sm md:text-base"
-                  />
-                </div>
-                <Button onClick={resetDateFilter} className="mt-4 w-full">
+              <CardContent>
+                <Calendar
+                  value={currentDate}
+                  onChange={(date) => setSelectedDate(date as Date)}
+                  tileClassName={tileClassName}
+                />
+                <Button onClick={resetDateFilter} className="mt-4">
                   Mostrar Todos los Partidos
                 </Button>
               </CardContent>
             </Card>
             <Card className="w-full md:col-span-2">
-              <CardHeader className="p-3 md:p-6">
-                <CardTitle className="text-lg md:text-xl">Partidos Próximos</CardTitle>
+              <CardHeader>
+                <CardTitle>Partidos Próximos</CardTitle>
                 <CardDescription>Administra los partidos programados</CardDescription>
               </CardHeader>
-              <CardContent className="p-2 md:p-6">
-                <div className="space-y-3">
+              <CardContent>
+                <div className="space-y-4">
                   {filteredMatches.map((match) => (
                     <div
                       key={match.id}
-                      className="flex flex-col sm:flex-row sm:items-center justify-between p-3 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300 cursor-pointer relative"
+                      className="flex flex-col sm:flex-row sm:items-center justify-between p-3 md:p-4 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300 cursor-pointer relative"
                       onClick={() => handleMatchClick(match)}
                     >
-                      <div className="grid grid-cols-2 sm:grid-cols-1 gap-1 sm:gap-0">
-                        <p className="font-semibold text-gray-800 col-span-2">{formatearFecha(match.date)}</p>
-                        <p className="text-xs md:text-sm text-gray-500 flex items-center">
-                          <Clock className="w-3 h-3 mr-1" />
+                      <div>
+                        <p className="font-semibold text-gray-800">{formatearFecha(match.date)}</p>
+                        <p className="text-sm text-gray-500 flex items-center">
+                          <CalendarIcon className="w-4 h-4 mr-1" />
+                          {formatearFecha(match.date)}
+                        </p>
+                        <p className="text-sm text-gray-500 flex items-center">
+                          <Clock className="w-4 h-4 mr-1" />
                           {match.startTime} - {match.endTime}
                         </p>
-                        <p className="text-xs md:text-sm text-gray-500 flex items-center">
-                          <Hash className="w-3 h-3 mr-1" />
+                        <p className="text-sm text-gray-500 flex items-center">
+                          <Hash className="w-4 h-4 mr-1" />
                           {match.court}
                         </p>
-                        <p className="text-xs md:text-sm text-gray-500 flex items-center">
-                          <Users className="w-3 h-3 mr-1" />
+                        <p className="text-sm text-gray-500 flex items-center">
+                          <Users className="w-4 h-4 mr-1" />
                           {match.players}/4
                         </p>
-                        <span className="text-xs md:text-sm font-semibold text-green-600">${match.price}</span>
+                        <span className="text-sm font-semibold text-green-600">${match.price}</span>
                       </div>
-                      <div
-                        className="flex space-x-2 mt-2 sm:mt-0 self-end sm:self-center"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-8 w-8 p-0"
-                          onClick={() => handleEditMatch(match)}
-                        >
-                          <Edit className="h-3 w-3" />
+                      <div className="flex space-x-2 mt-2 sm:mt-0" onClick={(e) => e.stopPropagation()}>
+                        <Button variant="outline" size="icon" onClick={() => handleEditMatch(match)}>
+                          <Edit className="h-4 w-4" />
                         </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-8 w-8 p-0"
-                          onClick={() => handleDeleteMatch(match.id)}
-                        >
-                          <Trash2 className="h-3 w-3" />
+                        <Button variant="outline" size="icon" onClick={() => handleDeleteMatch(match.id)}>
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                       {loadingMatches[match.id] && (
@@ -506,7 +534,7 @@ export function ClubDashboard() {
           </div>
         </main>
         <Dialog open={isUserModalOpen} onOpenChange={setIsUserModalOpen}>
-          <DialogContent className="w-[95vw] max-w-[425px]">
+          <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
               <DialogTitle>Usuarios Unidos al Partido</DialogTitle>
             </DialogHeader>
