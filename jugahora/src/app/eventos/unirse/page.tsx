@@ -749,7 +749,7 @@ export default function PaginaEventos() {
             <DialogTitle>Confirmar cancelación de inscripción</DialogTitle>
             <DialogDescription>
               ¿Estás seguro que deseas cancelar tu inscripción a este evento? Dependiendo de la política del club, es
-              posible que no se realice un reembolso completo.
+              posible que recibas una penalización.
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-end space-x-2">
