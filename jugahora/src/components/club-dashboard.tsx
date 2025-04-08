@@ -275,13 +275,15 @@ export function ClubDashboard() {
   }
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen">
-      {/* Sidebar fijo */}
+    <div className="flex flex-col min-h-screen">
+      {/* Sidebar */}
       <Sidebar />
-      <div className="flex-1 md:ml-[4rem] p-3 md:p-6 space-y-6 overflow-auto">
+
+      {/* Main content - full width on mobile */}
+      <div className="flex-1 p-3 md:p-6 md:ml-16 space-y-6 overflow-auto">
         <main className="flex-1 p-2 md:p-6 space-y-4 md:space-y-8">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-            <h1 className="text-2xl md:text-3xl font-bold">Dashboard del Club {clubData.name}</h1>
+            <h1 className="text-2xl md:text-3xl font-bold mt-10 md:mt-0">Dashboard del Club {clubData.name}</h1>
             <Dialog>
               <DialogTrigger asChild>
                 <Button>
