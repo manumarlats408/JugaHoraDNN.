@@ -13,10 +13,10 @@ import {
   ChevronRight,
   Trophy,
   Menu,
+  X,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 
 const navItems = [
   { href: "/inventario", icon: FileText, label: "Inventario" },
@@ -31,7 +31,7 @@ export function Sidebar() {
   const pathname = usePathname()
   const [expanded, setExpanded] = useState(false)
   const [activeTooltip, setActiveTooltip] = useState<string | null>(null)
-  const [open, setOpen] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const NavLinks = () => (
     <nav className={cn("flex flex-col items-center space-y-4", expanded && "w-full px-3")}>
@@ -41,7 +41,7 @@ export function Sidebar() {
         return (
           <div
             key={item.href}
-            className="relative"
+            className="relative w-full"
             onMouseEnter={() => !expanded && setActiveTooltip(item.href)}
             onMouseLeave={() => setActiveTooltip(null)}
           >
@@ -51,21 +51,22 @@ export function Sidebar() {
                 "flex items-center rounded-md hover:bg-gray-100 transition-colors",
                 expanded ? "w-full px-3 py-2 justify-start space-x-3" : "w-10 h-10 justify-center",
                 isActive && "bg-gray-100",
+                "md:w-auto", // Ensure proper width on mobile
               )}
               aria-current={isActive ? "page" : undefined}
-              onClick={() => setOpen(false)}
+              onClick={() => setMobileMenuOpen(false)}
             >
               <item.icon size={20} className={cn("flex-shrink-0", isActive ? "text-gray-900" : "text-gray-600")} />
-              {expanded && (
+              {(expanded || mobileMenuOpen) && (
                 <span className={cn("text-sm", isActive ? "text-gray-900 font-medium" : "text-gray-600")}>
                   {item.label}
                 </span>
               )}
             </Link>
 
-            {/* Simple tooltip */}
+            {/* Simple tooltip - only on desktop */}
             {!expanded && activeTooltip === item.href && (
-              <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded whitespace-nowrap z-50">
+              <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded whitespace-nowrap z-50 hidden md:block">
                 {item.label}
               </div>
             )}
@@ -101,34 +102,46 @@ export function Sidebar() {
     </div>
   )
 
-  // Mobile sidebar (Sheet component)
-  const MobileSidebar = (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="md:hidden fixed top-4 left-4 z-50">
-          <Menu className="h-5 w-5" />
-          <span className="sr-only">Toggle Menu</span>
-        </Button>
-      </SheetTrigger>
-      <SheetContent side="left" className="w-[250px] p-0">
-        <div className="flex flex-col h-full py-4">
-          <div className="mb-8 relative w-full flex justify-center">
-            <Link href="/club-dashboard" className="flex items-center justify-center w-10 h-10 rounded-md bg-gray-100">
-              <LayoutGrid size={20} className="text-gray-600" />
-            </Link>
-          </div>
+  // Mobile menu button
+  const MobileMenuButton = (
+    <Button
+      variant="ghost"
+      size="icon"
+      className="fixed top-4 left-4 z-50 md:hidden bg-white shadow-sm"
+      onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+    >
+      {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+      <span className="sr-only">Toggle Menu</span>
+    </Button>
+  )
 
-          <div className="px-3">
-            <NavLinks />
-          </div>
+  // Mobile sidebar
+  const MobileSidebar = mobileMenuOpen && (
+    <div className="fixed inset-0 z-40 md:hidden" onClick={() => setMobileMenuOpen(false)}>
+      {/* Backdrop */}
+      <div className="fixed inset-0 bg-black/20" onClick={() => setMobileMenuOpen(false)} />
+
+      {/* Sidebar */}
+      <div className="fixed inset-y-0 left-0 w-64 bg-white shadow-lg py-4 px-2" onClick={(e) => e.stopPropagation()}>
+        <div className="mb-8 relative w-full flex justify-center">
+          <Link
+            href="/club-dashboard"
+            className="flex items-center justify-center w-10 h-10 rounded-md bg-gray-100"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            <LayoutGrid size={20} className="text-gray-600" />
+          </Link>
         </div>
-      </SheetContent>
-    </Sheet>
+
+        <NavLinks />
+      </div>
+    </div>
   )
 
   return (
     <>
       {DesktopSidebar}
+      {MobileMenuButton}
       {MobileSidebar}
     </>
   )
