@@ -69,14 +69,18 @@ export function EventosDashboard() {
   const fetchEventos = useCallback(async () => {
     if (!clubData) return
     try {
+      setIsLoading(true)
       const res = await fetch(`/api/eventos?clubId=${clubData.id}`)
       const data = await res.json()
       setEventos(data)
       setFilteredEventos(data)
     } catch (err) {
       console.error("Error al obtener eventos:", err)
+    } finally {
+      setIsLoading(false)
     }
   }, [clubData])
+  
 
   useEffect(() => {
     const cargarClub = async () => {
