@@ -18,7 +18,9 @@ import {
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
+// Agregamos Dashboard como primera opción
 const navItems = [
+  { href: "/club-dashboard", icon: LayoutGrid, label: "Dashboard" },
   { href: "/inventario", icon: FileText, label: "Inventario" },
   { href: "/finanzas", icon: DollarSign, label: "Finanzas" },
   { href: "/partidos", icon: CalendarIcon, label: "Partidos" },
@@ -42,10 +44,6 @@ export function Sidebar() {
       )}
     >
       <div className="mb-8 relative w-full flex justify-center">
-        <Link href="/club-dashboard" className="flex items-center justify-center w-10 h-10 rounded-md bg-gray-100">
-          <LayoutGrid size={20} className="text-gray-600" />
-        </Link>
-
         <button
           onClick={() => setExpanded(!expanded)}
           className="absolute right-2 top-1 w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200"
@@ -109,7 +107,7 @@ export function Sidebar() {
     </Button>
   )
 
-  // Mobile sidebar
+  // Mobile sidebar - simplificado
   const MobileSidebar = mobileMenuOpen && (
     <div className="fixed inset-0 z-40 md:hidden" aria-modal="true">
       {/* Backdrop */}
@@ -117,13 +115,7 @@ export function Sidebar() {
 
       {/* Sidebar */}
       <div className="fixed inset-y-0 left-0 w-64 max-w-[80%] bg-white shadow-lg py-6 px-4">
-        <div className="flex justify-between items-center mb-6">
-          <Link href="/club-dashboard" className="flex items-center space-x-2" onClick={() => setMobileMenuOpen(false)}>
-            <div className="flex items-center justify-center w-10 h-10 rounded-md bg-gray-100">
-              <LayoutGrid size={20} className="text-gray-600" />
-            </div>
-            <span className="font-medium text-gray-900">Dashboard</span>
-          </Link>
+        <div className="flex justify-end mb-4">
           <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(false)}>
             <X className="h-5 w-5" />
           </Button>
