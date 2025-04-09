@@ -110,7 +110,7 @@ export default function DashboardPage() {
   }
 
   // Estadísticas
-  const articulosInactivos = articulos.filter((a) => a.cantidadStock === 0).length;
+  const articulosInactivos = articulos.filter((a) => a.cantidadStock === 0).length
   const totalIngresos = movimientos.reduce((total, m) => total + (m.ingreso || 0), 0)
   const totalEgresos = movimientos.reduce((total, m) => total + (m.egreso || 0), 0)
   const saldoNeto = totalIngresos - totalEgresos
@@ -138,16 +138,16 @@ export default function DashboardPage() {
   return (
     <div className="flex min-h-screen">
       <Sidebar />
-      <div className="flex-1 ml-[4rem] p-6 space-y-6 overflow-auto">
-        <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Dashboard {clubData?.name ? `de ${clubData.name}` : ""}</h1>
+      <div className="flex-1 p-3 md:p-6 md:ml-16 space-y-6 overflow-x-hidden">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+          <h1 className="text-2xl md:text-3xl font-bold">Dashboard {clubData?.name ? `de ${clubData.name}` : ""}</h1>
           <Button variant="outline" className="flex items-center gap-2" onClick={handleLogout}>
             <LogOut className="h-4 w-4" />
             Cerrar sesión
           </Button>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           {/* 👉 Partidos */}
           <Link href="/partidos">
             <Card className="hover:shadow-md transition-shadow cursor-pointer">
@@ -210,7 +210,7 @@ export default function DashboardPage() {
             </Card>
           </Link>
 
-          <Card className="hover:shadow-md transition-shadow">
+          <Card className="hover:shadow-md transition-shadow sm:col-span-2 lg:col-span-1">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-sm font-medium">Usuarios Activos</CardTitle>
               <Users className="h-4 w-4 text-purple-500" />
@@ -222,7 +222,7 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           <Card>
             <CardHeader>
               <CardTitle>Últimos Partidos</CardTitle>
@@ -253,54 +253,53 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
-    <Card>
-      <CardHeader>
-        <CardTitle>Artículos Populares</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {[
-            {
-              id: '1',
-              nombre: 'Pelota Pro Pádel',
-              codigo: 'PRO-001',
-              precioVenta: 4500,
-            },
-            {
-              id: '2',
-              nombre: 'Paleta Carbon X',
-              codigo: 'PAL-205',
-              precioVenta: 38000,
-            },
-            {
-              id: '3',
-              nombre: 'Grips Antideslizantes',
-              codigo: 'GRP-099',
-              precioVenta: 1200,
-            },
-          ].map((articulo) => (
-            <div key={articulo.id} className="flex justify-between items-center border-b pb-2">
-              <div>
-                <p className="font-medium">{articulo.nombre}</p>
-                <p className="text-sm text-gray-500">Código: {articulo.codigo}</p>
-              </div>
-              <span className="text-sm font-semibold text-green-600">
-                {formatearPrecio(articulo.precioVenta)}
-              </span>
-            </div>
-          ))}
-
-          <div className="pt-2">
-            <Button variant="outline" size="sm" asChild>
-              <Link href="/inventario">Ver inventario completo</Link>
-            </Button>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-
-
           <Card>
+            <CardHeader>
+              <CardTitle>Artículos Populares</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {[
+                  {
+                    id: "1",
+                    nombre: "Pelota Pro Pádel",
+                    codigo: "PRO-001",
+                    precioVenta: 4500,
+                  },
+                  {
+                    id: "2",
+                    nombre: "Paleta Carbon X",
+                    codigo: "PAL-205",
+                    precioVenta: 38000,
+                  },
+                  {
+                    id: "3",
+                    nombre: "Grips Antideslizantes",
+                    codigo: "GRP-099",
+                    precioVenta: 1200,
+                  },
+                ].map((articulo) => (
+                  <div key={articulo.id} className="flex justify-between items-center border-b pb-2">
+                    <div>
+                      <p className="font-medium">{articulo.nombre}</p>
+                      <p className="text-sm text-gray-500">Código: {articulo.codigo}</p>
+                    </div>
+                    <span className="text-sm font-semibold text-green-600">
+                      {formatearPrecio(articulo.precioVenta)}
+                    </span>
+                  </div>
+                ))}
+
+                <div className="pt-2">
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href="/inventario">Ver inventario completo</Link>
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="md:col-span-2 lg:col-span-1">
             <CardHeader>
               <CardTitle>Últimos Movimientos</CardTitle>
             </CardHeader>
@@ -342,4 +341,3 @@ export default function DashboardPage() {
     </div>
   )
 }
-
