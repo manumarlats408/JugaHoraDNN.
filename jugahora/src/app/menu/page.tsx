@@ -137,7 +137,7 @@ export default function MenuPage() {
       )}
 
       <main className="flex-1 flex justify-center items-center p-4 bg-gradient-to-b from-green-50 to-white">
-        <Card className="w-full max-w-md shadow-lg border-green-100">
+      <Card className="w-full max-w-md shadow-lg border-green-100 max-h-[80vh] overflow-y-auto">
           <CardHeader className="bg-green-50 border-b border-green-100">
             <CardTitle className="text-2xl font-bold text-green-800">
               {userName ? `¡Hola ${userName}!` : "¡Bienvenido!"}
