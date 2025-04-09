@@ -136,53 +136,49 @@ export default function MenuPage() {
         </div>
       )}
 
-      <main className="flex-1 px-4 py-4 bg-gradient-to-b from-green-50 to-white flex flex-col items-center gap-4">
-        {/* Tarjeta principal de funcionalidades */}
-        <Card className="w-full max-w-md shadow-lg border-green-100">
-          <CardHeader className="bg-green-50 border-b border-green-100 py-3">
+      <main className="flex-1 flex justify-center items-center p-4 bg-gradient-to-b from-green-50 to-white">
+      <Card className="w-full max-w-md shadow-lg border-green-100 max-h-[80vh] overflow-y-auto">
+          <CardHeader className="bg-green-50 border-b border-green-100">
             <CardTitle className="text-2xl font-bold text-green-800">
               {userName ? `¡Hola ${userName}!` : "¡Bienvenido!"}
             </CardTitle>
           </CardHeader>
-          <CardContent className="py-4">
-            <p className="mb-4 text-gray-600 text-sm">Aprovecha nuestras funcionalidades:</p>
-            <div className="space-y-3">
-              <Link href="/reserva">
-                <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
+          <CardContent className="pt-6">
+            <p className="mb-6 text-gray-600">Aprovecha nuestras funcionalidades:</p>
+            <div className="space-y-4">
+              <Link href="/reserva" className="block">
+                <Button className="w-full bg-green-600 hover:bg-green-700 text-white transition-colors duration-300 flex items-center justify-center">
                   <Calendar className="w-5 h-5 mr-2" />
                   Reserva tu cancha
                 </Button>
               </Link>
-              <Link href="/jugar">
-                <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
+              <Link href="/jugar" className="block">
+                <Button className="w-full bg-green-600 hover:bg-green-700 text-white transition-colors duration-300 flex items-center justify-center">
                   <Users className="w-5 h-5 mr-2" />
                   Unite a un partido
                 </Button>
               </Link>
-              <Link href="/eventos/unirse">
-                <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
+              <Link href="/eventos/unirse" className="block">
+                <Button className="w-full bg-green-600 hover:bg-green-700 text-white transition-colors duration-300 flex items-center justify-center">
                   <Trophy className="w-5 h-5 mr-2" />
                   Unite a un evento
                 </Button>
               </Link>
             </div>
           </CardContent>
-          <CardFooter className="bg-green-50 border-t border-green-100 py-2">
-            <p className="text-xs text-gray-600 italic text-center w-full">Próximamente más funcionalidades...</p>
+          <CardFooter className="bg-green-50 border-t border-green-100">
+            <p className="text-sm text-gray-600 italic">Próximamente más funcionalidades...</p>
           </CardFooter>
-        </Card>
-
-        {/* Tarjeta con el feedback form */}
-        <Card className="w-full max-w-md mt-2 shadow border-green-100">
-          <CardHeader>
-            <CardTitle className="text-lg text-green-700">¿Tenés alguna sugerencia?</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <FeedbackForm />
-          </CardContent>
         </Card>
       </main>
 
+      <footer className="py-6 px-4 md:px-6 bg-white border-t border-gray-200">
+        <div className="container mx-auto flex flex-col sm:flex-row justify-between items-center">
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            <FeedbackForm />
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
