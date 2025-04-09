@@ -21,6 +21,10 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { TimeSelector } from "@/components/ui/time-selector"
+import { Calendar as DatePickerCalendar } from "@/components/ui/calendar"
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
+import { format } from "date-fns"
+
 
 type Match = {
   id: number
@@ -55,6 +59,7 @@ export function ClubDashboard() {
   const [clubData, setClubData] = useState<Club | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  const [selectedDateMatch, setSelectedDateMatch] = useState<Date | undefined>(undefined)
   const [filteredMatches, setFilteredMatches] = useState<Match[]>([])
   const [loadingMatches, setLoadingMatches] = useState<{ [key: number]: boolean }>({})
   const [joinedUsers, setJoinedUsers] = useState<User[]>([])
@@ -306,13 +311,35 @@ export function ClubDashboard() {
                     <Label htmlFor="date" className="sm:text-right">
                       Fecha
                     </Label>
-                    <Input
-                      id="date"
-                      type="date"
-                      className="col-span-1 sm:col-span-3"
-                      value={newMatch.date}
-                      onChange={(e) => handleInputChange(e)}
-                    />
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={`w-full justify-start text-left font-normal ${
+                            !newMatch.date ? "text-muted-foreground" : ""
+                          }`}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {newMatch.date ? format(new Date(newMatch.date), "dd/MM/yyyy") : "Seleccionar fecha"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <DatePickerCalendar
+                          mode="single"
+                          selected={selectedDateMatch}
+                          onSelect={(date) => {
+                            if (date) {
+                              const isoDate = date.toISOString().split("T")[0]
+                              setSelectedDateMatch(date)
+                              setNewMatch((prev) => ({ ...prev, date: isoDate }))
+                            }
+                          }}
+                          showOutsideDays={false}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
                     <Label htmlFor="startTime" className="sm:text-right">
