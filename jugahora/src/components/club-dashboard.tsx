@@ -68,21 +68,27 @@ export function ClubDashboard() {
   const fetchMatches = useCallback(async () => {
     if (!clubData) return
     try {
+      setIsLoading(true) // 🟢 INICIO CARGA
+  
       const response = await fetch(`/api/matches?clubId=${clubData.id}`, {
         method: "GET",
         credentials: "include",
       })
+  
       if (response.ok) {
         const matchesData = await response.json()
         setMatches(matchesData)
-        setFilteredMatches(matchesData) // Inicializamos los partidos filtrados
+        setFilteredMatches(matchesData)
       } else {
         console.error("Error al obtener los partidos del club:", await response.text())
       }
     } catch (error) {
       console.error("Error al conectar con la API para obtener los partidos:", error)
+    } finally {
+      setIsLoading(false) // 🔴 FIN CARGA
     }
   }, [clubData])
+  
 
   const formatearFecha = (fechaString: string) => {
     const partes = fechaString.split("T")[0].split("-")
@@ -132,8 +138,6 @@ export function ClubDashboard() {
       } catch (error) {
         console.error("Error al obtener el perfil del club:", error)
         router.push("/login")
-      } finally {
-        setIsLoading(false)
       }
     }
 
