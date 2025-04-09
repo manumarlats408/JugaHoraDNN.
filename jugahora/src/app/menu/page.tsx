@@ -146,7 +146,7 @@ export default function MenuPage() {
           </CardHeader>
           <CardContent className="py-5">
             <p className="mb-5 text-gray-600 text-sm">Aprovecha nuestras funcionalidades:</p>
-            <div className="space-y-3">
+            <div className="space-y-5">
               <Link href="/reserva">
                 <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
                   <Calendar className="w-5 h-5 mr-2" />
