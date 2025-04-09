@@ -613,12 +613,11 @@ export function EventosDashboard() {
                           </p>
                           <p className="flex items-center">
                             <Hash className="w-4 h-4 mr-1" />{" "}
-                            {evento.tipo.charAt(0).toUpperCase() + evento.tipo.slice(1).replace("_", " ")}
-                          </p>
-                        </div>
-                        {evento.tipo === "torneo" && evento.formato && (
+                            {evento.tipo.charAt(0).toUpperCase() + evento.tipo.slice(1).replace("_", " ") + evento.tipo === "torneo" && evento.formato && (
                           <p className="text-sm text-gray-500">Formato: {evento.formato.replace("_", " ")}</p>
                         )}
+                          </p>
+                        </div>
                         <p className="text-sm font-semibold text-green-600">Precio: ${evento.price}</p>
                       </div>
 
