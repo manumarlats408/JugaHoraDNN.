@@ -104,7 +104,7 @@ export function Sidebar() {
       className="fixed top-4 left-4 z-50 md:hidden bg-white shadow-sm"
       onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
     >
-      {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+      <Menu className="h-5 w-5" />
       <span className="sr-only">Toggle Menu</span>
     </Button>
   )
@@ -118,12 +118,11 @@ export function Sidebar() {
       {/* Sidebar */}
       <div className="fixed inset-y-0 left-0 w-64 max-w-[80%] bg-white shadow-lg py-6 px-4">
         <div className="flex justify-between items-center mb-6">
-          <Link
-            href="/club-dashboard"
-            className="flex items-center justify-center w-10 h-10 rounded-md bg-gray-100"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            <LayoutGrid size={20} className="text-gray-600" />
+          <Link href="/club-dashboard" className="flex items-center space-x-2" onClick={() => setMobileMenuOpen(false)}>
+            <div className="flex items-center justify-center w-10 h-10 rounded-md bg-gray-100">
+              <LayoutGrid size={20} className="text-gray-600" />
+            </div>
+            <span className="font-medium text-gray-900">Dashboard</span>
           </Link>
           <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(false)}>
             <X className="h-5 w-5" />
