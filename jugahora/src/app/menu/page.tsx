@@ -170,6 +170,15 @@ export default function MenuPage() {
             <p className="text-sm text-gray-600 italic">Próximamente más funcionalidades...</p>
           </CardFooter>
         </Card>
+
+        <Card className="w-full max-w-md mt-2 shadow border-green-100">
+          <CardHeader>
+            <CardTitle className="text-lg text-green-700">¿Tenés alguna sugerencia?</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <FeedbackForm />
+          </CardContent>
+        </Card>
       </main>
 
       <footer className="py-6 px-4 md:px-6 bg-white border-t border-gray-200">
