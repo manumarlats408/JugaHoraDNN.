@@ -607,18 +607,19 @@ export function EventosDashboard() {
                           <p className="flex items-center">
                             <Trophy className="w-4 h-4 mr-1" /> Nivel {evento.categoria} ({evento.genero})
                           </p>
-                          <p className="flex items-center">
-                            <Hash className="w-4 h-4 mr-1" />{" "}
-                            {evento.tipo.charAt(0).toUpperCase() + evento.tipo.slice(1).replace("_", " ")}
-                          </p>
-                        </div>
-                        {evento.tipo === "torneo" && evento.formato && (
-                          <p className="text-sm text-gray-500">Formato: {evento.formato.replace("_", " ")}</p>
-                        )}
-                        <p className="text-sm text-gray-500 flex items-center">
+                          <p className="text-sm text-gray-500 flex items-center">
                           <Users className="w-4 h-4 mr-1" /> {evento.parejas?.length || 0}/{evento.maxParejas}{" "}
                           {evento.tipo === "cancha_abierta" ? "personas" : "parejas"}
                         </p>
+                          
+                        </div>
+                        <p className="flex items-center">
+                            <Hash className="w-4 h-4 mr-1" />{" "}
+                            {evento.tipo.charAt(0).toUpperCase() + evento.tipo.slice(1).replace("_", " ")}
+                          </p>
+                        {evento.tipo === "torneo" && evento.formato && (
+                          <p className="text-sm text-gray-500">Formato: {evento.formato.replace("_", " ")}</p>
+                        )}
                         <p className="text-sm font-semibold text-green-600">Precio: ${evento.price}</p>
                       </div>
 
