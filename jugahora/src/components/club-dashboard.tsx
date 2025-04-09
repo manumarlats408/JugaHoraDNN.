@@ -323,11 +323,7 @@ export function ClubDashboard() {
                           {newMatch.date ? format(new Date(newMatch.date), "dd/MM/yyyy") : "Seleccionar fecha"}
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent
-                        className="w-auto p-0"
-                        align="start"
-                        onClick={(e) => e.stopPropagation()} // ✅ PREVIENE CIERRE
-                      >
+                      <PopoverContent className="w-auto p-0" align="start">
                         <DatePickerCalendar
                           mode="single"
                           selected={selectedDateMatch}
@@ -343,7 +339,6 @@ export function ClubDashboard() {
                         />
                       </PopoverContent>
                     </Popover>
-
 
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
