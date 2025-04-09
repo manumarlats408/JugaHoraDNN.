@@ -4,7 +4,7 @@ import type React from "react"
 
 import { Sidebar } from "@/components/layout/sidebar"
 import { useState, useEffect } from "react"
-import { Search, Download, Upload, Menu } from "lucide-react"
+import { Search, Download, Upload } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { TablaArticulos } from "@/components/tabla-articulos"
@@ -16,7 +16,6 @@ export function ListadoArticulos() {
   const [articulos, setArticulos] = useState<Articulo[]>([])
   const [busqueda, setBusqueda] = useState("")
   const [cargando, setCargando] = useState(true)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { toast } = useToast()
 
   useEffect(() => {
@@ -141,21 +140,9 @@ export function ListadoArticulos() {
     <div className="flex min-h-screen">
       {/* Sidebar */}
       <Sidebar />
-
-      {/* Botón de menú móvil */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className="fixed top-4 left-4 z-50 md:hidden bg-white shadow-sm"
-        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-      >
-        <Menu className="h-5 w-5" />
-        <span className="sr-only">Toggle Menu</span>
-      </Button>
-
       <div className="flex-1 p-3 md:p-6 md:ml-16 space-y-6 overflow-x-hidden">
         <div className="bg-white rounded-lg shadow-sm">
-          <div className="p-4 md:p-6 border-b pt-16 md:pt-4">
+          <div className="p-4 md:p-6 border-b">
             <h1 className="text-xl md:text-2xl font-medium text-gray-600">LISTADO DE CONCEPTOS / ARTÍCULOS</h1>
             <p className="text-sm md:text-base text-gray-500 mt-2">
               A continuación podrás encontrar todos los conceptos/artículos del complejo

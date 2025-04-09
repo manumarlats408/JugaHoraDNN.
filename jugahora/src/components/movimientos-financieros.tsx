@@ -1,13 +1,12 @@
 "use client"
 import { Sidebar } from "@/components/layout/sidebar"
 import { useState, useEffect } from "react"
-import { Search, Calendar, Menu } from "lucide-react"
+import { Search, Calendar } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { TablaMovimientos } from "@/components/tabla-movimientos"
 import { ResumenSaldos } from "@/components/resumen-saldos"
 import { AgregarMovimientoDialog } from "@/components/agregar-movimiento-dialog"
 import { useToast } from "@/hooks/use-toast"
-import { Button } from "@/components/ui/button"
 import type { Movimiento } from "@/lib/tipos"
 
 export function MovimientosFinancieros() {
@@ -19,7 +18,6 @@ export function MovimientosFinancieros() {
   const [clubId] = useState<number | null>(null)
   const [fechaHasta, setFechaHasta] = useState<string>(new Date().toISOString().split("T")[0])
   const [cargando, setCargando] = useState(true)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { toast } = useToast()
 
   const cargarMovimientos = async () => {
@@ -70,21 +68,9 @@ export function MovimientosFinancieros() {
     <div className="flex min-h-screen">
       {/* Sidebar */}
       <Sidebar />
-
-      {/* Botón de menú móvil */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className="fixed top-4 left-4 z-50 md:hidden bg-white shadow-sm"
-        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-      >
-        <Menu className="h-5 w-5" />
-        <span className="sr-only">Toggle Menu</span>
-      </Button>
-
       <div className="flex-1 p-3 md:p-6 md:ml-16 space-y-6 overflow-x-hidden">
         <div className="bg-white rounded-lg shadow-sm">
-          <div className="p-4 md:p-6 border-b pt-16 md:pt-4">
+          <div className="p-4 md:p-6 border-b">
             <h1 className="text-xl md:text-2xl font-medium text-gray-600">MOVIMIENTOS FINANCIEROS</h1>
             <p className="text-sm md:text-base text-gray-500 mt-2">
               Consulta todos los movimientos financieros del complejo deportivo

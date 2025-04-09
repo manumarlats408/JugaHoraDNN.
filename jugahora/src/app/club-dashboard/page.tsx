@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatearPrecio } from "@/lib/utils"
 import Link from "next/link"
-import { CalendarIcon, Package, DollarSign, Users, LogOut, Trophy, Menu } from "lucide-react"
+import { CalendarIcon, Package, DollarSign, Users, LogOut, Trophy } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import type { Articulo, Movimiento, Partido, Club, Evento } from "@/lib/tipos"
 import { useRouter } from "next/navigation"
@@ -18,7 +18,6 @@ export default function DashboardPage() {
   const [cargando, setCargando] = useState(true)
   const [clubData, setClubData] = useState<Club | null>(null)
   const [userName, setUserName] = useState<string | null>(null)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -139,20 +138,8 @@ export default function DashboardPage() {
   return (
     <div className="flex min-h-screen">
       <Sidebar />
-
-      {/* Botón de menú móvil */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className="fixed top-4 left-4 z-50 md:hidden bg-white shadow-sm"
-        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-      >
-        <Menu className="h-5 w-5" />
-        <span className="sr-only">Toggle Menu</span>
-      </Button>
-
       <div className="flex-1 p-3 md:p-6 md:ml-16 space-y-6 overflow-x-hidden">
-        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 pt-12 md:pt-0">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
           <h1 className="text-2xl md:text-3xl font-bold">Dashboard {clubData?.name ? `de ${clubData.name}` : ""}</h1>
           <Button variant="outline" className="flex items-center gap-2" onClick={handleLogout}>
             <LogOut className="h-4 w-4" />
