@@ -261,7 +261,7 @@ export function ClubDashboard() {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gray-50">
-        <p className="text-lg text-gray-600">Cargando dashboard del club...</p>
+        <p className="text-lg text-gray-600">Cargando partidos del club...</p>
       </div>
     )
   }

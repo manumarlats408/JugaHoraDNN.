@@ -48,6 +48,7 @@ export function EventosDashboard() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [editEvento, setEditEvento] = useState<Evento | null>(null)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [loadingEventoDetails, setLoadingEventoDetails] = useState<{ [key: number]: boolean }>({})
   const [selectedEventoTipo, setSelectedEventoTipo] = useState<string | null>(null)
   const [joinedUsers, setJoinedUsers] = useState<string[]>([])
@@ -79,12 +80,21 @@ export function EventosDashboard() {
 
   useEffect(() => {
     const cargarClub = async () => {
-      const res = await fetch("/api/auth", { credentials: "include" })
-      const data = await res.json()
-      setClubData(data.entity)
+      try {
+        setIsLoading(true)
+        const res = await fetch("/api/auth", { credentials: "include" })
+        const data = await res.json()
+        setClubData(data.entity)
+      } catch (err) {
+        console.error("Error al obtener club:", err)
+      } finally {
+        setIsLoading(false)
+      }
     }
+  
     cargarClub()
   }, [])
+  
 
   useEffect(() => {
     if (clubData) fetchEventos()
@@ -241,6 +251,15 @@ export function EventosDashboard() {
       setLoadingEventoDetails((prev) => ({ ...prev, [eventoId]: false }))
     }
   }
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+        <p className="text-lg text-gray-600">Cargando eventos del club...</p>
+      </div>
+    )
+  }
+  
 
   return (
     <div className="flex min-h-screen">
