@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback, type ChangeEvent } from "react"
 import { Sidebar } from "@/components/layout/sidebar"
 import { Button } from "@/components/ui/button"
-import { CalendarIcon, Plus, Trash2, Edit, Users, Clock, Trophy, Hash } from "lucide-react"
+import { CalendarIcon, Plus, Trash2, Edit, Users, Clock, Trophy, Hash, Menu } from "lucide-react"
 import Calendar from "react-calendar"
 import "react-calendar/dist/Calendar.css"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -52,6 +52,7 @@ export function EventosDashboard() {
   const [selectedEventoTipo, setSelectedEventoTipo] = useState<string | null>(null)
   const [joinedUsers, setJoinedUsers] = useState<string[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [newEvento, setNewEvento] = useState({
     nombre: "",
     date: "",
@@ -245,8 +246,20 @@ export function EventosDashboard() {
   return (
     <div className="flex min-h-screen">
       <Sidebar />
+
+      {/* Botón de menú móvil */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="fixed top-4 left-4 z-50 md:hidden bg-white shadow-sm"
+        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+      >
+        <Menu className="h-5 w-5" />
+        <span className="sr-only">Toggle Menu</span>
+      </Button>
+
       <div className="flex-1 p-3 md:p-6 md:ml-16 space-y-6 overflow-x-hidden">
-        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 pt-12 md:pt-0">
           <h1 className="text-2xl md:text-3xl font-bold">Eventos del Club {clubData?.name}</h1>
           <Dialog>
             <DialogTrigger asChild>
@@ -607,10 +620,6 @@ export function EventosDashboard() {
                           <p className="flex items-center">
                             <Trophy className="w-4 h-4 mr-1" /> Nivel {evento.categoria} ({evento.genero})
                           </p>
-                          <p className="text-sm text-gray-500 flex items-center">
-                          <Users className="w-4 h-4 mr-1" /> {evento.parejas?.length || 0}/{evento.maxParejas}{" "}
-                          {evento.tipo === "cancha_abierta" ? "personas" : "parejas"}
-                          </p>
                           <p className="flex items-center">
                             <Hash className="w-4 h-4 mr-1" />{" "}
                             {evento.tipo.charAt(0).toUpperCase() + evento.tipo.slice(1).replace("_", " ")}
@@ -619,6 +628,10 @@ export function EventosDashboard() {
                         {evento.tipo === "torneo" && evento.formato && (
                           <p className="text-sm text-gray-500">Formato: {evento.formato.replace("_", " ")}</p>
                         )}
+                        <p className="text-sm text-gray-500 flex items-center">
+                          <Users className="w-4 h-4 mr-1" /> {evento.parejas?.length || 0}/{evento.maxParejas}{" "}
+                          {evento.tipo === "cancha_abierta" ? "personas" : "parejas"}
+                        </p>
                         <p className="text-sm font-semibold text-green-600">Precio: ${evento.price}</p>
                       </div>
 

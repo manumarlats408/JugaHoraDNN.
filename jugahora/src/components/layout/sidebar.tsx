@@ -94,19 +94,6 @@ export function Sidebar() {
     </div>
   )
 
-  // Mobile menu button
-  const MobileMenuButton = (
-    <Button
-      variant="ghost"
-      size="icon"
-      className="fixed top-4 left-4 z-50 md:hidden bg-white shadow-sm"
-      onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-    >
-      <Menu className="h-5 w-5" />
-      <span className="sr-only">Toggle Menu</span>
-    </Button>
-  )
-
   // Mobile sidebar - simplificado
   const MobileSidebar = mobileMenuOpen && (
     <div className="fixed inset-0 z-40 md:hidden" aria-modal="true">
@@ -151,8 +138,23 @@ export function Sidebar() {
   return (
     <>
       {DesktopSidebar}
-      {MobileMenuButton}
+      {/* Exportamos el botón móvil para que cada página lo coloque correctamente */}
       {MobileSidebar}
     </>
+  )
+}
+
+// Exportamos el botón móvil para que cada página lo coloque correctamente
+export function MobileMenuButton({ onClick }: { onClick: () => void }) {
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      className="fixed top-4 left-4 z-50 md:hidden bg-white shadow-sm"
+      onClick={onClick}
+    >
+      <Menu className="h-5 w-5" />
+      <span className="sr-only">Toggle Menu</span>
+    </Button>
   )
 }
