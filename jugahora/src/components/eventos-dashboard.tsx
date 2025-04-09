@@ -246,6 +246,7 @@ export function EventosDashboard() {
     <div className="flex min-h-screen">
       <Sidebar />
       <div className="flex-1 p-3 md:p-6 md:ml-16 space-y-6 overflow-x-hidden">
+        <main className="flex-1 p-2 md:p-6 space-y-4 md:space-y-8">
         <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
           <h1 className="text-2xl md:text-3xl font-bold mt-10 md:mt-0">Eventos del Club {clubData?.name}</h1>
           <Dialog>
@@ -681,6 +682,7 @@ export function EventosDashboard() {
             </CardContent>
           </Card>
         </div>
+        </main>
       </div>
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="sm:max-w-[425px] w-[95vw] max-w-[95vw] sm:w-auto">
