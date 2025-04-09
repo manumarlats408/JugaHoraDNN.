@@ -183,7 +183,21 @@ export default function MenuPage() {
         </Card>
       </main>
 
-
+      <footer className="py-6 px-4 md:px-6 bg-white border-t border-gray-200">
+        <div className="container mx-auto flex flex-col sm:flex-row justify-between items-center">
+          <p className="text-xs text-gray-500 mb-4 sm:mb-0">© 2024 JugáHora. Todos los derechos reservados.</p>
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            <div className="flex items-center gap-4">
+              <Link className="text-xs text-gray-500 hover:text-green-600 transition-colors" href="/menu">
+                Términos de Servicio
+              </Link>
+              <Link className="text-xs text-gray-500 hover:text-green-600 transition-colors" href="/menu">
+                Privacidad
+              </Link>
+            </div>
+          </div>
+        </div>
+      </footer>
 
     </div>
   )
