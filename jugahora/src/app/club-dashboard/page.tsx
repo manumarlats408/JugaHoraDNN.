@@ -140,7 +140,7 @@ export default function DashboardPage() {
       <Sidebar />
       <div className="flex-1 p-3 md:p-6 md:ml-16 space-y-6 overflow-x-hidden">
         <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-          <h1 className="text-2xl md:text-3xl font-bold">Dashboard {clubData?.name ? `de ${clubData.name}` : ""}</h1>
+          <h1 className="text-2xl md:text-3xl font-bold mt-10 md:mt-0">Dashboard {clubData?.name ? `de ${clubData.name}` : ""}</h1>
           <Button variant="outline" className="flex items-center gap-2" onClick={handleLogout}>
             <LogOut className="h-4 w-4" />
             Cerrar sesión
