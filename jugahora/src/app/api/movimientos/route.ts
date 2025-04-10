@@ -2,26 +2,57 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 
-export async function POST(request: Request) {
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url)
+  const desde = searchParams.get("desde")
+  const hasta = searchParams.get("hasta")
+  const clubId = searchParams.get("clubId")
+
+  if (!desde || !hasta || !clubId) {
+    return NextResponse.json({ error: "Faltan parámetros" }, { status: 400 })
+  }
+
   try {
-    const body = await request.json() // Obtener el cuerpo de la solicitud
-    const { concepto, jugador, cancha, fechaTurno, fechaMovimiento, metodoPago, egreso, ingreso, clubId } = body
-
-    // Validación de datos
-    if (!concepto || !fechaMovimiento || !metodoPago || !clubId) {
-      return NextResponse.json({ error: "Faltan datos obligatorios" }, { status: 400 })
-    }
-
-    // Verificar que el clubId exista y sea válido (asegúrate de que el club exista)
-    const clubExistente = await prisma.club.findUnique({
-      where: { id: clubId },
+    const movimientos = await prisma.movimientoFinanciero.findMany({
+      where: {
+        clubId: Number(clubId),
+        fechaMovimiento: {
+          gte: new Date(desde),
+          lte: new Date(hasta + "T23:59:59"),
+        },
+      },
+      orderBy: {
+        fechaMovimiento: "desc",
+      },
     })
 
-    if (!clubExistente) {
-      return NextResponse.json({ error: "El club no existe" }, { status: 404 })
+    return NextResponse.json(movimientos)
+  } catch (error) {
+    console.error("Error al obtener movimientos", error)
+    return NextResponse.json({ error: "Error del servidor" }, { status: 500 })
+  }
+}
+
+export async function POST(req: Request) {
+  try {
+    const body = await req.json()
+
+    const {
+      concepto,
+      jugador,
+      cancha,
+      fechaTurno,
+      fechaMovimiento,
+      metodoPago,
+      ingreso,
+      egreso,
+      clubId,
+    } = body
+
+    if (!concepto || !fechaMovimiento || !metodoPago || !clubId) {
+      return NextResponse.json({ error: "Faltan campos obligatorios" }, { status: 400 })
     }
 
-    // Crear el movimiento financiero
     const nuevoMovimiento = await prisma.movimientoFinanciero.create({
       data: {
         concepto,
@@ -30,15 +61,15 @@ export async function POST(request: Request) {
         fechaTurno: fechaTurno ? new Date(fechaTurno) : null,
         fechaMovimiento: new Date(fechaMovimiento),
         metodoPago,
-        egreso: egreso ?? 0,
-        ingreso: ingreso ?? 0,
-        clubId, // Asociar el movimiento al clubId
+        ingreso,
+        egreso,
+        clubId: Number(clubId),
       },
     })
 
     return NextResponse.json(nuevoMovimiento, { status: 201 })
   } catch (error) {
-    console.error(error)
-    return NextResponse.json({ error: "Error al guardar el movimiento" }, { status: 500 })
+    console.error("Error al crear movimiento", error)
+    return NextResponse.json({ error: "Error al crear movimiento" }, { status: 500 })
   }
 }

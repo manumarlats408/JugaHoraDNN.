@@ -1,8 +1,6 @@
 "use client"
 
-import type React from "react"
-
-import { useState, useEffect} from "react"
+import React, { useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -13,44 +11,25 @@ import { useToast } from "@/hooks/use-toast"
 import { crearMovimiento } from "@/lib/acciones-movimientos"
 import { Plus } from "lucide-react"
 
-
 interface AgregarMovimientoDialogProps {
   onMovimientoCreado: () => void
   clubId: number
 }
 
-export function AgregarMovimientoDialog({ onMovimientoCreado }: AgregarMovimientoDialogProps) {
+export function AgregarMovimientoDialog({ onMovimientoCreado, clubId }: AgregarMovimientoDialogProps) {
   const { toast } = useToast()
   const [open, setOpen] = useState(false)
   const [cargando, setCargando] = useState(false)
   const [tipoMovimiento, setTipoMovimiento] = useState<"ingreso" | "egreso">("ingreso")
-  const [clubId, setClubId] = useState<string | null>(null)
-
-
 
   const [formData, setFormData] = useState({
     concepto: "",
     jugador: "",
     cancha: "",
     fechaTurno: new Date().toISOString().split("T")[0],
-    metodoPago: "Efectivo",
+    metodoPago: "Efectivo" as "Efectivo" | "Transferencia" | "Tarjeta",
     monto: "",
   })
-
-  // Llamada al backend para obtener la sesión y el clubId
-  useEffect(() => {
-    const obtenerClubId = async () => {
-      try {
-        const response = await fetch("/api/matches") // Suponiendo que tienes esta API configurada
-        const data = await response.json()
-        setClubId(data.clubId) // Ajusta según la respuesta
-      } catch (error) {
-        console.error("Error al obtener el clubId:", error)
-      }
-    }
-    obtenerClubId()
-  }, [])
-
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -64,27 +43,16 @@ export function AgregarMovimientoDialog({ onMovimientoCreado }: AgregarMovimient
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    // Validación básica
-    if (!formData.concepto || !formData.monto || isNaN(Number(formData.monto)) || Number(formData.monto) <= 0) {
+    const monto = Number(formData.monto)
+
+    if (!formData.concepto || isNaN(monto) || monto <= 0) {
       toast({
         title: "Error",
         description: "Por favor completa todos los campos requeridos correctamente",
         variant: "destructive",
-      });
-      return;
+      })
+      return
     }
-
-    // Verificar que el clubId esté disponible
-    if (!clubId) {
-      toast({
-        title: "Error",
-        description: "No se pudo obtener el clubId.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-
 
     try {
       setCargando(true)
@@ -95,9 +63,9 @@ export function AgregarMovimientoDialog({ onMovimientoCreado }: AgregarMovimient
         cancha: formData.cancha || null,
         fechaTurno: new Date(formData.fechaTurno).toISOString(),
         fechaMovimiento: new Date().toISOString(),
-        metodoPago: formData.metodoPago as "Efectivo" | "Transferencia" | "Tarjeta",
-        ingreso: tipoMovimiento === "ingreso" ? Number(formData.monto) : null,
-        egreso: tipoMovimiento === "egreso" ? Number(formData.monto) : null,
+        metodoPago: formData.metodoPago,
+        ingreso: tipoMovimiento === "ingreso" ? monto : null,
+        egreso: tipoMovimiento === "egreso" ? monto : null,
         clubId,
       }
 
@@ -109,7 +77,6 @@ export function AgregarMovimientoDialog({ onMovimientoCreado }: AgregarMovimient
           description: "Movimiento registrado correctamente",
         })
 
-        // Resetear formulario
         setFormData({
           concepto: "",
           jugador: "",
@@ -118,17 +85,13 @@ export function AgregarMovimientoDialog({ onMovimientoCreado }: AgregarMovimient
           metodoPago: "Efectivo",
           monto: "",
         })
-
-        // Cerrar diálogo
         setOpen(false)
-
-        // Notificar al componente padre
         onMovimientoCreado()
       } else {
         throw new Error(resultado.error)
       }
     } catch (error) {
-        console.error(error)
+      console.error(error)
       toast({
         title: "Error",
         description: "No se pudo registrar el movimiento",
@@ -154,22 +117,17 @@ export function AgregarMovimientoDialog({ onMovimientoCreado }: AgregarMovimient
           <div className="space-y-2">
             <Label htmlFor="tipoMovimiento">Tipo de Movimiento</Label>
             <RadioGroup
-              id="tipoMovimiento"
               value={tipoMovimiento}
               onValueChange={(value) => setTipoMovimiento(value as "ingreso" | "egreso")}
               className="flex space-x-4"
             >
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="ingreso" id="ingreso" />
-                <Label htmlFor="ingreso" className="text-green-600 font-medium">
-                  Ingreso
-                </Label>
+                <Label htmlFor="ingreso" className="text-green-600 font-medium">Ingreso</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="egreso" id="egreso" />
-                <Label htmlFor="egreso" className="text-red-600 font-medium">
-                  Egreso
-                </Label>
+                <Label htmlFor="egreso" className="text-red-600 font-medium">Egreso</Label>
               </div>
             </RadioGroup>
           </div>
@@ -189,13 +147,7 @@ export function AgregarMovimientoDialog({ onMovimientoCreado }: AgregarMovimient
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="jugador">Jugador</Label>
-              <Input
-                id="jugador"
-                name="jugador"
-                value={formData.jugador}
-                onChange={handleChange}
-                placeholder="Opcional"
-              />
+              <Input id="jugador" name="jugador" value={formData.jugador} onChange={handleChange} placeholder="Opcional" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="cancha">Cancha</Label>
@@ -255,9 +207,7 @@ export function AgregarMovimientoDialog({ onMovimientoCreado }: AgregarMovimient
             <Button
               type="submit"
               disabled={cargando}
-              className={
-                tipoMovimiento === "ingreso" ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600"
-              }
+              className={tipoMovimiento === "ingreso" ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600"}
             >
               {cargando ? "Guardando..." : "Guardar Movimiento"}
             </Button>
@@ -267,4 +217,3 @@ export function AgregarMovimientoDialog({ onMovimientoCreado }: AgregarMovimient
     </Dialog>
   )
 }
-
