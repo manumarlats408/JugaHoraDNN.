@@ -1,5 +1,3 @@
-// app/crear-partido/page.tsx
-
 'use client'
 
 import { useEffect, useState } from 'react'
@@ -23,8 +21,10 @@ export default function CrearPartidoJugador() {
   const [endTime, setEndTime] = useState('')
   const [court, setCourt] = useState('')
   const [price, setPrice] = useState('')
+  const [userId, setUserId] = useState<string | null>(null) // Nuevo estado para guardar el userId
   const router = useRouter()
 
+  // Obtener clubs
   useEffect(() => {
     const fetchClubs = async () => {
       const res = await fetch('/api/clubs')
@@ -34,8 +34,24 @@ export default function CrearPartidoJugador() {
     fetchClubs()
   }, [])
 
+  // Obtener userId del jugador autenticado
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch("/api/auth", { method: "GET", credentials: "include" })
+        if (response.ok) {
+          const data = await response.json()
+          setUserId(data.entity.id) // Guardar el ID del usuario en el estado
+        }
+      } catch (error) {
+        console.error("Error al obtener los datos del usuario:", error)
+      }
+    }
+    fetchUserData()
+  }, [])
+
   const handleSubmit = async () => {
-    if (!selectedClubId || !date || !startTime || !endTime || !court || !price) {
+    if (!selectedClubId || !date || !startTime || !endTime || !court || !price || !userId) {
       alert('Por favor completá todos los campos')
       return
     }
@@ -50,6 +66,7 @@ export default function CrearPartidoJugador() {
         court,
         price: parseFloat(price),
         clubId: parseInt(selectedClubId),
+        userId: userId, // Enviar el userId
       })
     })
 

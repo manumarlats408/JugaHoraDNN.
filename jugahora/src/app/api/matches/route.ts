@@ -14,18 +14,17 @@ interface Match {
   maxPlayers: number;
   price: number;
   clubId: number;
+  userId: number | null; // Nueva columna userId
   Club: {
     name: string;
     address: string | null;
   };
 }
 
-// ... (previous imports)
-
 // POST: Create a new match
 export async function POST(request: Request) {
   try {
-    const { date, startTime, endTime, court, clubId, price } = await request.json();
+    const { date, startTime, endTime, court, clubId, price, userId } = await request.json();
 
     // Validate required fields
     if (!date || !startTime || !endTime || !court || !clubId) {
@@ -35,7 +34,7 @@ export async function POST(request: Request) {
     // Ensure that price is defined and defaults to 0 if not provided
     const matchPrice = price !== undefined ? price : 0;
 
-  
+    // Create the new match with userId
     const newMatch = await prisma.partidos_club.create({
       data: {
         date: new Date(date),
@@ -46,6 +45,7 @@ export async function POST(request: Request) {
         maxPlayers: 4,
         clubId: parseInt(clubId),
         price: matchPrice,
+        userId: userId || null, // In case the match is created by the club, userId can be null
       },
     });
 
@@ -55,8 +55,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Error creating match' }, { status: 500 });
   }
 }
-
-// ... (rest of the code remains the same)
 
 // GET: Retrieve matches
 export async function GET(request: Request) {
