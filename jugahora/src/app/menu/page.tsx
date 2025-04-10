@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Menu, X, Home, User, Calendar, Users, LogOut, Trophy } from "lucide-react"
+import { Menu, X, Home, User, Calendar, Users, LogOut, Trophy, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import Image from "next/image"
@@ -136,7 +136,8 @@ export default function MenuPage() {
         </div>
       )}
 
-      <main className="flex-1 flex justify-center items-center p-4 bg-gradient-to-b from-green-50 to-white">
+      <main className="flex-1 flex flex-col items-center justify-center gap-6 p-4 bg-gradient-to-b from-green-50 to-white">
+        {/* Tarjeta principal */}
         <Card className="w-full max-w-md shadow-lg border-green-100">
           <CardHeader className="bg-green-50 border-b border-green-100">
             <CardTitle className="text-2xl font-bold text-green-800">
@@ -158,6 +159,12 @@ export default function MenuPage() {
                   Unite a un partido
                 </Button>
               </Link>
+              <Link href="/crear-partido" className="block">
+                <Button className="w-full bg-green-600 hover:bg-green-700 text-white transition-colors duration-300 flex items-center justify-center">
+                  <Plus className="w-5 h-5 mr-2" />
+                  Crear un partido
+                </Button>
+              </Link>
               <Link href="/eventos/unirse" className="block">
                 <Button className="w-full bg-green-600 hover:bg-green-700 text-white transition-colors duration-300 flex items-center justify-center">
                   <Trophy className="w-5 h-5 mr-2" />
@@ -169,6 +176,16 @@ export default function MenuPage() {
           <CardFooter className="bg-green-50 border-t border-green-100">
             <p className="text-sm text-gray-600 italic">Próximamente más funcionalidades...</p>
           </CardFooter>
+        </Card>
+
+        {/* Tarjeta de Feedback */}
+        <Card className="w-full max-w-md shadow border-green-100">
+          <CardHeader>
+            <CardTitle className="text-lg text-green-700">¿Tenés alguna sugerencia?</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <FeedbackForm />
+          </CardContent>
         </Card>
       </main>
 
@@ -184,10 +201,10 @@ export default function MenuPage() {
                 Privacidad
               </Link>
             </div>
-            <FeedbackForm />
           </div>
         </div>
       </footer>
+
     </div>
   )
 }

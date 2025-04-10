@@ -68,21 +68,27 @@ export function ClubDashboard() {
   const fetchMatches = useCallback(async () => {
     if (!clubData) return
     try {
+      setIsLoading(true) // 🟢 INICIO CARGA
+  
       const response = await fetch(`/api/matches?clubId=${clubData.id}`, {
         method: "GET",
         credentials: "include",
       })
+  
       if (response.ok) {
         const matchesData = await response.json()
         setMatches(matchesData)
-        setFilteredMatches(matchesData) // Inicializamos los partidos filtrados
+        setFilteredMatches(matchesData)
       } else {
         console.error("Error al obtener los partidos del club:", await response.text())
       }
     } catch (error) {
       console.error("Error al conectar con la API para obtener los partidos:", error)
+    } finally {
+      setIsLoading(false) // 🔴 FIN CARGA
     }
   }, [clubData])
+  
 
   const formatearFecha = (fechaString: string) => {
     const partes = fechaString.split("T")[0].split("-")
@@ -132,8 +138,6 @@ export function ClubDashboard() {
       } catch (error) {
         console.error("Error al obtener el perfil del club:", error)
         router.push("/login")
-      } finally {
-        setIsLoading(false)
       }
     }
 
@@ -261,7 +265,7 @@ export function ClubDashboard() {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gray-50">
-        <p className="text-lg text-gray-600">Cargando dashboard del club...</p>
+        <p className="text-lg text-gray-600">Cargando partidos del club...</p>
       </div>
     )
   }
@@ -275,20 +279,22 @@ export function ClubDashboard() {
   }
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen">
-      {/* Sidebar fijo */}
+    <div className="flex flex-col min-h-screen">
+      {/* Sidebar */}
       <Sidebar />
-      <div className="flex-1 md:ml-[4rem] p-3 md:p-6 space-y-6 overflow-auto">
+
+      {/* Main content - full width on mobile */}
+      <div className="flex-1 p-3 md:p-6 md:ml-16 space-y-6 overflow-x-hidden">
         <main className="flex-1 p-2 md:p-6 space-y-4 md:space-y-8">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-            <h1 className="text-2xl md:text-3xl font-bold">Dashboard del Club {clubData.name}</h1>
+            <h1 className="text-2xl md:text-3xl font-bold mt-10 md:mt-0">Dashboard del Club {clubData.name}</h1>
             <Dialog>
               <DialogTrigger asChild>
                 <Button>
                   <Plus className="mr-2 h-4 w-4" /> Crear Partido
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
+              <DialogContent className="sm:max-w-[425px] w-[95vw] max-w-[95vw] sm:w-auto">
                 <DialogHeader>
                   <DialogTitle>Crear Nuevo Partido</DialogTitle>
                   <DialogDescription>
@@ -365,7 +371,7 @@ export function ClubDashboard() {
 
           {editMatch && (
             <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-              <DialogContent className="sm:max-w-[425px]">
+              <DialogContent className="sm:max-w-[425px] w-[95vw] max-w-[95vw] sm:w-auto">
                 <DialogHeader>
                   <DialogTitle>Editar Partido</DialogTitle>
                   <DialogDescription>
@@ -447,13 +453,16 @@ export function ClubDashboard() {
                 <CardTitle>Calendario de Partidos</CardTitle>
                 <CardDescription>Vista mensual de los partidos programados</CardDescription>
               </CardHeader>
-              <CardContent>
-                <Calendar
-                  value={currentDate}
-                  onChange={(date) => setSelectedDate(date as Date)}
-                  tileClassName={tileClassName}
-                />
-                <Button onClick={resetDateFilter} className="mt-4">
+              <CardContent className="overflow-x-auto">
+                <div className="min-w-[280px] max-w-full">
+                  <Calendar
+                    value={currentDate}
+                    onChange={(date) => setSelectedDate(date as Date)}
+                    tileClassName={tileClassName}
+                    className="w-full text-sm"
+                  />
+                </div>
+                <Button onClick={resetDateFilter} className="mt-4 w-full">
                   Mostrar Todos los Partidos
                 </Button>
               </CardContent>
@@ -473,22 +482,24 @@ export function ClubDashboard() {
                     >
                       <div>
                         <p className="font-semibold text-gray-800">{formatearFecha(match.date)}</p>
-                        <p className="text-sm text-gray-500 flex items-center">
-                          <CalendarIcon className="w-4 h-4 mr-1" />
-                          {formatearFecha(match.date)}
-                        </p>
-                        <p className="text-sm text-gray-500 flex items-center">
-                          <Clock className="w-4 h-4 mr-1" />
-                          {match.startTime} - {match.endTime}
-                        </p>
-                        <p className="text-sm text-gray-500 flex items-center">
-                          <Hash className="w-4 h-4 mr-1" />
-                          {match.court}
-                        </p>
-                        <p className="text-sm text-gray-500 flex items-center">
-                          <Users className="w-4 h-4 mr-1" />
-                          {match.players}/4
-                        </p>
+                        <div className="grid grid-cols-2 gap-1 text-sm text-gray-500">
+                          <p className="flex items-center">
+                            <CalendarIcon className="w-4 h-4 mr-1" />
+                            {formatearFecha(match.date)}
+                          </p>
+                          <p className="flex items-center">
+                            <Clock className="w-4 h-4 mr-1" />
+                            {match.startTime} - {match.endTime}
+                          </p>
+                          <p className="flex items-center">
+                            <Hash className="w-4 h-4 mr-1" />
+                            {match.court}
+                          </p>
+                          <p className="flex items-center">
+                            <Users className="w-4 h-4 mr-1" />
+                            {match.players}/4
+                          </p>
+                        </div>
                         <span className="text-sm font-semibold text-green-600">${match.price}</span>
                       </div>
                       <div className="flex space-x-2 mt-2 sm:mt-0" onClick={(e) => e.stopPropagation()}>
@@ -534,7 +545,7 @@ export function ClubDashboard() {
           </div>
         </main>
         <Dialog open={isUserModalOpen} onOpenChange={setIsUserModalOpen}>
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent className="sm:max-w-[425px] w-[95vw] max-w-[95vw] sm:w-auto">
             <DialogHeader>
               <DialogTitle>Usuarios Unidos al Partido</DialogTitle>
             </DialogHeader>
