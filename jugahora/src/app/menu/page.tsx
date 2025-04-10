@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Menu, X, Home, User, Calendar, Users, LogOut, Trophy } from "lucide-react"
+import { Menu, X, Home, User, Calendar, Users, LogOut, Trophy, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import Image from "next/image"
@@ -157,6 +157,12 @@ export default function MenuPage() {
                 <Button className="w-full bg-green-600 hover:bg-green-700 text-white transition-colors duration-300 flex items-center justify-center">
                   <Users className="w-5 h-5 mr-2" />
                   Unite a un partido
+                </Button>
+              </Link>
+              <Link href="/crear-partido" className="block">
+                <Button className="w-full bg-green-600 hover:bg-green-700 text-white transition-colors duration-300 flex items-center justify-center">
+                  <Plus className="w-5 h-5 mr-2" />
+                  Crear un partido
                 </Button>
               </Link>
               <Link href="/eventos/unirse" className="block">
