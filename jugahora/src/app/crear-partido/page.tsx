@@ -82,6 +82,10 @@ export default function CrearPartidoJugador() {
     }
   }
 
+  const handleAddPlayersRedirect = () => {
+    router.push('/add-players')  // Redirigir a la página de añadir jugadores
+  }
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gradient-to-b from-green-50 to-white">
       <Card className="w-full max-w-xl shadow-md border-green-100">
@@ -139,8 +143,15 @@ export default function CrearPartidoJugador() {
             />
           </div>
 
+          {/* Botón para redirigir a la página de añadir jugadores */}
+          <Button onClick={handleAddPlayersRedirect} className="w-full mt-4">
+            Añadir Jugadores
+          </Button>
+
           <div className="pt-4">
-            <Button onClick={handleSubmit}>Crear Partido</Button>
+            <Button onClick={handleSubmit} className="w-full">
+              Crear Partido
+            </Button>
           </div>
         </CardContent>
       </Card>
