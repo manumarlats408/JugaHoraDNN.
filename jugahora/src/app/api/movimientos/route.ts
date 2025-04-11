@@ -1,12 +1,24 @@
-// src/app/api/movimientos/route.ts
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { decode } from "jsonwebtoken" // o usa jose si preferís
+import { headers } from "next/headers"
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
   const desde = searchParams.get("desde")
   const hasta = searchParams.get("hasta")
-  const clubId = searchParams.get("clubId")
+
+  const headersList = headers()
+  const authHeader = headersList.get("authorization")
+
+  if (!authHeader) {
+    return NextResponse.json({ error: "Falta token" }, { status: 401 })
+  }
+
+  const token = authHeader.replace("Bearer ", "")
+  const decoded = decode(token) as { id?: string | number }
+
+  const clubId = typeof decoded?.id === "string" ? parseInt(decoded.id) : decoded?.id
 
   if (!desde || !hasta || !clubId) {
     return NextResponse.json({ error: "Faltan parámetros" }, { status: 400 })
@@ -15,7 +27,7 @@ export async function GET(req: Request) {
   try {
     const movimientos = await prisma.movimientoFinanciero.findMany({
       where: {
-        clubId: Number(clubId),
+        clubId,
         fechaMovimiento: {
           gte: new Date(desde),
           lte: new Date(hasta + "T23:59:59"),
@@ -30,46 +42,5 @@ export async function GET(req: Request) {
   } catch (error) {
     console.error("Error al obtener movimientos", error)
     return NextResponse.json({ error: "Error del servidor" }, { status: 500 })
-  }
-}
-
-export async function POST(req: Request) {
-  try {
-    const body = await req.json()
-
-    const {
-      concepto,
-      jugador,
-      cancha,
-      fechaTurno,
-      fechaMovimiento,
-      metodoPago,
-      ingreso,
-      egreso,
-      clubId,
-    } = body
-
-    if (!concepto || !fechaMovimiento || !metodoPago || !clubId) {
-      return NextResponse.json({ error: "Faltan campos obligatorios" }, { status: 400 })
-    }
-
-    const nuevoMovimiento = await prisma.movimientoFinanciero.create({
-      data: {
-        concepto,
-        jugador,
-        cancha,
-        fechaTurno: fechaTurno ? new Date(fechaTurno) : null,
-        fechaMovimiento: new Date(fechaMovimiento),
-        metodoPago,
-        ingreso,
-        egreso,
-        clubId: Number(clubId),
-      },
-    })
-
-    return NextResponse.json(nuevoMovimiento, { status: 201 })
-  } catch (error) {
-    console.error("Error al crear movimiento", error)
-    return NextResponse.json({ error: "Error al crear movimiento" }, { status: 500 })
   }
 }

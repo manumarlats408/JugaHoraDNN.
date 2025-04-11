@@ -23,7 +23,10 @@ export function MovimientosFinancieros() {
   const cargarMovimientos = async () => {
     try {
       setCargando(true)
-      const respuesta = await fetch(`/api/movimientos?desde=${fechaDesde}&hasta=${fechaHasta}&clubId=${clubId}`)
+      const respuesta = await fetch(`/api/movimientos?desde=${fechaDesde}&hasta=${fechaHasta}&clubId=${clubId}`, {
+        credentials: "include",
+      })
+      
       if (!respuesta.ok) throw new Error("Error al cargar los movimientos")
       const datos = await respuesta.json()
       setMovimientos(datos)
