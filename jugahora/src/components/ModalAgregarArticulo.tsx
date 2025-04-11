@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { useState } from "react"
 import { useToast } from "@/hooks/use-toast"
 import { Articulo } from "@/lib/tipos"
-
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface Props {
   abierto: boolean
@@ -19,12 +19,15 @@ export function ModalAgregarArticulo({ abierto, onClose, onGuardado }: Props) {
 
   const [codigo, setCodigo] = useState("")
   const [nombre, setNombre] = useState("")
-  const [precio, setPrecio] = useState("")
+  const [precioCompra, setPrecioCompra] = useState("")
+  const [precioVenta, setPrecioVenta] = useState("")
+  const [cantidadStock, setCantidadStock] = useState("")
+  const [tipo, setTipo] = useState<"Ambos" | "Venta">("Venta")
 
   const [cargando, setCargando] = useState(false)
 
   const handleGuardar = async () => {
-    if (!codigo || !nombre || !precio) {
+    if (!codigo || !nombre || !precioCompra || !precioVenta || !cantidadStock || !tipo) {
       toast({
         title: "Campos requeridos",
         description: "Completá todos los campos",
@@ -39,7 +42,14 @@ export function ModalAgregarArticulo({ abierto, onClose, onGuardado }: Props) {
       const respuesta = await fetch("/api/articulos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ codigo, nombre, precio: parseFloat(precio) }),
+        body: JSON.stringify({
+          codigo,
+          nombre,
+          precioCompra: parseFloat(precioCompra),
+          precioVenta: parseFloat(precioVenta),
+          cantidadStock: parseInt(cantidadStock),
+          tipo,
+        }),
         credentials: "include",
       })
 
@@ -48,6 +58,7 @@ export function ModalAgregarArticulo({ abierto, onClose, onGuardado }: Props) {
       const nuevo = await respuesta.json()
       onGuardado(nuevo)
       toast({ title: "Artículo creado", description: "Se agregó el nuevo artículo" })
+      onClose()
     } catch (error) {
       console.error(error)
       toast({
@@ -79,11 +90,32 @@ export function ModalAgregarArticulo({ abierto, onClose, onGuardado }: Props) {
             onChange={(e) => setNombre(e.target.value)}
           />
           <Input
-            placeholder="Precio"
+            placeholder="Precio Compra"
             type="number"
-            value={precio}
-            onChange={(e) => setPrecio(e.target.value)}
+            value={precioCompra}
+            onChange={(e) => setPrecioCompra(e.target.value)}
           />
+          <Input
+            placeholder="Precio Venta"
+            type="number"
+            value={precioVenta}
+            onChange={(e) => setPrecioVenta(e.target.value)}
+          />
+          <Input
+            placeholder="Stock"
+            type="number"
+            value={cantidadStock}
+            onChange={(e) => setCantidadStock(e.target.value)}
+          />
+          <Select value={tipo} onValueChange={(v) => setTipo(v as "Ambos" | "Venta")}>
+            <SelectTrigger>
+              <SelectValue placeholder="Tipo" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Venta">Venta</SelectItem>
+              <SelectItem value="Ambos">Ambos</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="flex justify-end mt-4 gap-2">
