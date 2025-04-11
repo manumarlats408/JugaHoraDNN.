@@ -3,33 +3,28 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { useRouter, useSearchParams } from 'next/navigation'  // Asegúrate de importar useSearchParams
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Suspense } from 'react'
 
-// Define el tipo de User
 interface User {
   id: number
   firstName: string
   lastName: string
-  email: string
 }
 
-// Componente principal
 const AddPlayers = () => {
   const [profiles, setProfiles] = useState<User[]>([])
   const [filteredProfiles, setFilteredProfiles] = useState<User[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedPlayers, setSelectedPlayers] = useState<number[]>([]) // Guardamos los IDs de los jugadores seleccionados
   const router = useRouter()
-  const searchParams = useSearchParams()  // Aquí obtenemos los parámetros de la URL
-  const matchId = searchParams.get('matchId')  // Obtenemos el matchId de la query string
+  const searchParams = useSearchParams()
+  const matchId = searchParams.get('matchId')  // Obtener el matchId de la query string
 
-  // Obtener los perfiles de usuarios
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch('/api/users') // Obtener todos los usuarios
+        const res = await fetch('/api/users')
         const users = await res.json()
         setProfiles(users)
         setFilteredProfiles(users)
@@ -37,11 +32,9 @@ const AddPlayers = () => {
         console.error('Error al cargar datos:', error)
       }
     }
-
     fetchData()
   }, [])
 
-  // Manejar la búsqueda de jugadores
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toLowerCase()
     setSearchTerm(value)
@@ -53,23 +46,20 @@ const AddPlayers = () => {
     setFilteredProfiles(filtered)
   }
 
-  // Manejar la selección de jugadores
   const handleAddPlayer = (playerId: number) => {
     if (selectedPlayers.includes(playerId)) {
-      setSelectedPlayers(selectedPlayers.filter((id) => id !== playerId)) // Eliminar si ya está seleccionado
+      setSelectedPlayers(selectedPlayers.filter((id) => id !== playerId))
     } else {
-      setSelectedPlayers([...selectedPlayers, playerId]) // Añadir jugador
+      setSelectedPlayers([...selectedPlayers, playerId])
     }
   }
 
-  // Enviar los jugadores seleccionados al partido
   const handleSubmit = async () => {
     if (!matchId || selectedPlayers.length === 0) {
       alert('Por favor, selecciona al menos un jugador')
       return
     }
 
-    // Enviar los jugadores seleccionados al partido
     const res = await fetch(`/api/matches/${matchId}/add-players`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -78,7 +68,7 @@ const AddPlayers = () => {
 
     if (res.ok) {
       alert('Jugadores añadidos al partido')
-      router.push('/jugar') // Redirigir a la página de partidos
+      router.push('/jugar')
     } else {
       alert('Error al añadir jugadores')
     }
@@ -99,14 +89,12 @@ const AddPlayers = () => {
               onChange={handleSearch}
               className="w-full"
             />
-
             {filteredProfiles.length > 0 ? (
               <div className="space-y-4">
                 {filteredProfiles.map((profile) => (
                   <div key={profile.id} className="flex justify-between items-center border p-4 rounded-lg hover:bg-green-50 transition-colors">
                     <div>
                       <p className="text-lg font-semibold text-gray-800">{profile.firstName} {profile.lastName}</p>
-                      <p className="text-sm text-gray-500">{profile.email}</p>
                     </div>
                     <Button
                       onClick={() => handleAddPlayer(profile.id)}
@@ -122,7 +110,6 @@ const AddPlayers = () => {
             )}
           </CardContent>
         </Card>
-
         <Button onClick={handleSubmit} className="w-full mt-6">
           Añadir Jugadores al Partido
         </Button>
@@ -131,13 +118,4 @@ const AddPlayers = () => {
   )
 }
 
-// Envolver el componente con Suspense para manejar correctamente los hooks del cliente
-const PageWrapper = () => {
-  return (
-    <Suspense fallback={<div>Cargando...</div>}>
-      <AddPlayers />
-    </Suspense>
-  )
-}
-
-export default PageWrapper
+export default AddPlayers
