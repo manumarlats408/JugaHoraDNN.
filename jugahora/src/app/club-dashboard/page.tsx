@@ -7,12 +7,12 @@ import { formatearPrecio } from "@/lib/utils"
 import Link from "next/link"
 import { CalendarIcon, Package, DollarSign, Users, LogOut, Trophy } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import type { Articulo, Movimiento, Partido, Club, Evento } from "@/lib/tipos"
+import type { Articulo, MovimientoFinanciero, Partido, Club, Evento } from "@/lib/tipos"
 import { useRouter } from "next/navigation"
 
 export default function DashboardPage() {
   const [articulos, setArticulos] = useState<Articulo[]>([])
-  const [movimientos, setMovimientos] = useState<Movimiento[]>([])
+  const [movimientos, setMovimientos] = useState<MovimientoFinanciero[]>([])
   const [partidos, setPartidos] = useState<Partido[]>([])
   const [eventos, setEventos] = useState<Evento[]>([])
   const [cargando, setCargando] = useState(true)
