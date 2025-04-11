@@ -12,6 +12,8 @@ import { importarArticulos } from "@/lib/acciones-cliente"
 import { useToast } from "@/hooks/use-toast"
 import type { Articulo } from "@/lib/tipos"
 import { ModalEditarArticulo } from "@/components/ModalEditarArticulo"
+import { ModalAgregarArticulo } from "@/components/ModalAgregarArticulo"
+
 
 export function ListadoArticulos() {
   const [articulos, setArticulos] = useState<Articulo[]>([])
@@ -20,6 +22,8 @@ export function ListadoArticulos() {
   const { toast } = useToast()
   const [articuloSeleccionado, setArticuloSeleccionado] = useState<Articulo | null>(null)
   const [modalAbierto, setModalAbierto] = useState(false)
+  const [modalNuevoAbierto, setModalNuevoAbierto] = useState(false)
+
 
   useEffect(() => {
     async function cargarArticulos() {
@@ -222,16 +226,14 @@ export function ListadoArticulos() {
             </div>
 
             <Button
-              variant="outline"
-              className="flex items-center gap-2 w-full md:w-auto"
-              onClick={() => {
-                setArticuloSeleccionado(null)
-                setModalAbierto(true)
-              }}
-            >
-              <span className="text-blue-500 text-lg">＋</span>
-              <span className="whitespace-nowrap">Agregar artículo</span>
-            </Button>
+                variant="outline"
+                className="flex items-center gap-2 w-full md:w-auto"
+                onClick={() => setModalNuevoAbierto(true)}
+              >
+                <span className="text-blue-500 text-lg">＋</span>
+                <span className="whitespace-nowrap">Agregar artículo</span>
+              </Button>
+
 
             <Button
               className="bg-green-500 hover:bg-green-600 text-white flex items-center gap-2 w-full md:w-auto"
@@ -263,6 +265,16 @@ export function ListadoArticulos() {
           onGuardado={handleArticuloActualizado}
         />
       )}
+      {modalNuevoAbierto && (
+  <ModalAgregarArticulo
+    abierto={modalNuevoAbierto}
+    onClose={() => setModalNuevoAbierto(false)}
+    onGuardado={(nuevoArticulo) => {
+      setArticulos((prev) => [...prev, nuevoArticulo])
+      setModalNuevoAbierto(false)
+    }}
+  />
+)}
     </div>
   )
 }
