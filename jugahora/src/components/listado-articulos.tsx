@@ -20,7 +20,6 @@ export function ListadoArticulos() {
   const [cargando, setCargando] = useState(true)
   const { toast } = useToast()
   const [articuloSeleccionado, setArticuloSeleccionado] = useState<Articulo | null>(null)
-  const [mostrarModal, setMostrarModal] = useState(false)
   const [modalAbierto, setModalAbierto] = useState(false)
 
 
@@ -136,8 +135,9 @@ export function ListadoArticulos() {
 
   const handleEditar = (articulo: Articulo) => {
     setArticuloSeleccionado(articulo)
-    setMostrarModal(true)
+    setModalAbierto(true)
   }
+  
 
   
 
@@ -237,7 +237,7 @@ export function ListadoArticulos() {
         </div>
       </div>
 
-      {mostrarModal && articuloSeleccionado && (
+      {modalAbierto && articuloSeleccionado && (
         <ModalEditarArticulo
         articulo={articuloSeleccionado}
         abierto={modalAbierto}
