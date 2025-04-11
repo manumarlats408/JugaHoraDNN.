@@ -22,27 +22,29 @@ export default function CrearPartidoJugador() {
   const [court, setCourt] = useState('')
   const [price, setPrice] = useState('')
   const [userId, setUserId] = useState<string | null>(null)  // ID del creador
-  const [matchId, setMatchId] = useState<number | null>(null)  // Guardamos el matchId
+  const [selectedPlayers, setSelectedPlayers] = useState<number[]>([])  // Jugadores seleccionados
   const router = useRouter()
 
-  // Obtener clubes
   useEffect(() => {
+    // Recuperar los jugadores seleccionados desde sessionStorage
+    const storedPlayers = sessionStorage.getItem('finalPlayers')
+    if (storedPlayers) {
+      setSelectedPlayers(JSON.parse(storedPlayers))
+    }
+
     const fetchClubs = async () => {
       const res = await fetch('/api/clubs')
       const data = await res.json()
       setClubs(data)
     }
     fetchClubs()
-  }, [])
 
-  // Obtener userId del jugador autenticado
-  useEffect(() => {
     const fetchUserData = async () => {
       try {
         const response = await fetch("/api/auth", { method: "GET", credentials: "include" })
         if (response.ok) {
           const data = await response.json()
-          setUserId(data.entity.id) // Guardar el ID del usuario en el estado
+          setUserId(data.entity.id)
         }
       } catch (error) {
         console.error("Error al obtener los datos del usuario:", error)
@@ -51,7 +53,6 @@ export default function CrearPartidoJugador() {
     fetchUserData()
   }, [])
 
-  // Manejar la creación del partido
   const handleSubmit = async () => {
     if (!selectedClubId || !date || !startTime || !endTime || !court || !price || !userId) {
       alert('Por favor completá todos los campos')
@@ -68,25 +69,16 @@ export default function CrearPartidoJugador() {
         court,
         price: parseFloat(price),
         clubId: parseInt(selectedClubId),
-        userId: userId, // Enviar el userId
+        userId: userId,
+        players: selectedPlayers  // Enviar jugadores seleccionados
       })
     })
 
     if (res.ok) {
-      const createdMatch = await res.json(); // Aquí lo guardamos
-      setMatchId(createdMatch.id)  // Guardar el ID del partido creado
       alert('Partido creado con éxito')
+      router.push('/jugar')
     } else {
       alert('Error al crear el partido')
-    }
-  }
-
-  // Función para redirigir a la página de "Añadir Jugadores"
-  const handleAddPlayersRedirect = () => {
-    if (matchId) {
-      router.push(`/add-players?matchId=${matchId}`) // Redirigir a la página de añadir jugadores
-    } else {
-      alert('Por favor, crea el partido primero')
     }
   }
 
@@ -145,10 +137,6 @@ export default function CrearPartidoJugador() {
               onChange={(e) => setPrice(e.target.value.replace(/\D/g, ''))}
               className="w-full border rounded p-2"
             />
-          </div>
-
-          <div className="pt-4">
-            <Button onClick={handleAddPlayersRedirect}>Añadir Jugadores</Button>
           </div>
 
           <div className="pt-4">

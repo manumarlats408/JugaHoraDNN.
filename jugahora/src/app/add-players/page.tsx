@@ -1,12 +1,11 @@
 'use client'
 
-import { useState, useEffect, Suspense } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { useRouter, useSearchParams } from 'next/navigation'  
+import { useRouter } from 'next/navigation'  
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-// Define el tipo de User
 interface User {
   id: number
   firstName: string
@@ -19,8 +18,6 @@ const AddPlayers = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedPlayers, setSelectedPlayers] = useState<number[]>([]) // Guardamos los IDs de los jugadores seleccionados
   const router = useRouter()
-  const searchParams = useSearchParams()  
-  const matchId = searchParams.get('matchId')  // Obtenemos el matchId de la query string
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,7 +31,19 @@ const AddPlayers = () => {
       }
     }
     fetchData()
+
+    // Intentamos obtener jugadores seleccionados desde sessionStorage
+    const storedPlayers = sessionStorage.getItem('selectedPlayers')
+    if (storedPlayers) {
+      setSelectedPlayers(JSON.parse(storedPlayers))
+    }
   }, [])
+
+  // Función para actualizar los jugadores seleccionados en sessionStorage
+  const updateSelectedPlayers = (updatedPlayers: number[]) => {
+    setSelectedPlayers(updatedPlayers)
+    sessionStorage.setItem('selectedPlayers', JSON.stringify(updatedPlayers))  // Guardamos en sessionStorage
+  }
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toLowerCase()
@@ -49,9 +58,11 @@ const AddPlayers = () => {
 
   const handleAddPlayer = (playerId: number) => {
     if (selectedPlayers.includes(playerId)) {
-      setSelectedPlayers(selectedPlayers.filter((id) => id !== playerId))
+      const updatedPlayers = selectedPlayers.filter((id) => id !== playerId)
+      updateSelectedPlayers(updatedPlayers)
     } else {
-      setSelectedPlayers([...selectedPlayers, playerId])
+      const updatedPlayers = [...selectedPlayers, playerId]
+      updateSelectedPlayers(updatedPlayers)
     }
   }
 
@@ -61,18 +72,10 @@ const AddPlayers = () => {
       return
     }
 
-    const res = await fetch(`/api/matches/${matchId}/add-players`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ playerIds: selectedPlayers })
-    })
+    // Guardar en el formulario de creación del partido
+    sessionStorage.setItem('finalPlayers', JSON.stringify(selectedPlayers)) // Guardamos los jugadores seleccionados de forma temporal
 
-    if (res.ok) {
-      alert('Jugadores añadidos al partido')
-      router.push('/jugar') 
-    } else {
-      alert('Error al añadir jugadores')
-    }
+    router.push('/crear-partido') // Volvemos a la página de crear partido
   }
 
   return (
@@ -119,13 +122,4 @@ const AddPlayers = () => {
   )
 }
 
-// Envolver el componente con Suspense para manejar correctamente los hooks del cliente
-const PageWrapper = () => {
-  return (
-    <Suspense fallback={<div>Cargando...</div>}>
-      <AddPlayers />
-    </Suspense>
-  )
-}
-
-export default PageWrapper
+export default AddPlayers
