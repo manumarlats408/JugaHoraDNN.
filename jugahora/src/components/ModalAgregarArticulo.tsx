@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast"
 import { Articulo } from "@/lib/tipos"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
+
 interface Props {
   abierto: boolean
   onClose: () => void
@@ -22,7 +23,8 @@ export function ModalAgregarArticulo({ abierto, onClose, onGuardado }: Props) {
   const [precioCompra, setPrecioCompra] = useState("")
   const [precioVenta, setPrecioVenta] = useState("")
   const [cantidadStock, setCantidadStock] = useState("")
-  const [tipo, setTipo] = useState<"Ambos" | "Venta">("Venta")
+  const [tipo, setTipo] = useState<Articulo["tipo"]>("Venta")
+
 
   const [cargando, setCargando] = useState(false)
 
@@ -107,15 +109,19 @@ export function ModalAgregarArticulo({ abierto, onClose, onGuardado }: Props) {
             value={cantidadStock}
             onChange={(e) => setCantidadStock(e.target.value)}
           />
-          <Select value={tipo} onValueChange={(v) => setTipo(v as "Ambos" | "Venta")}>
+          <Select value={tipo} onValueChange={(v) => setTipo(v as Articulo["tipo"])}>
             <SelectTrigger>
               <SelectValue placeholder="Tipo" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="Venta">Venta</SelectItem>
+              <SelectItem value="Uso Interno">Uso Interno</SelectItem>
+              <SelectItem value="Alquiler">Alquiler</SelectItem>
               <SelectItem value="Ambos">Ambos</SelectItem>
+              <SelectItem value="Servicio">Servicio</SelectItem>
             </SelectContent>
           </Select>
+
         </div>
 
         <div className="flex justify-end mt-4 gap-2">

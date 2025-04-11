@@ -11,13 +11,19 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useState, useEffect } from "react"
 import type { Articulo } from "@/lib/tipos"
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem
+} from "@/components/ui/select"
 
-// Este tipo es específico del formulario (todos strings)
 type ArticuloForm = {
   id: number
   codigo: string
   nombre: string
-  tipo: string
+  tipo: Articulo["tipo"]
   clubId: number
   precioCompra: string
   precioVenta: string
@@ -58,10 +64,14 @@ export function ModalEditarArticulo({
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
+  const handleTipoChange = (nuevoTipo: Articulo["tipo"]) => {
+    if (!form) return
+    setForm({ ...form, tipo: nuevoTipo })
+  }
+
   const handleSubmit = async () => {
     if (!form) return
 
-    // Validación opcional
     if (
       isNaN(Number(form.precioCompra)) ||
       isNaN(Number(form.precioVenta)) ||
@@ -114,7 +124,18 @@ export function ModalEditarArticulo({
           <Input name="nombre" value={form.nombre} onChange={handleChange} placeholder="Nombre" />
           <Input name="precioCompra" value={form.precioCompra} onChange={handleChange} placeholder="Precio Compra" />
           <Input name="precioVenta" value={form.precioVenta} onChange={handleChange} placeholder="Precio Venta" />
-          <Input name="tipo" value={form.tipo} onChange={handleChange} placeholder="Tipo" />
+          <Select value={form.tipo} onValueChange={handleTipoChange}>
+            <SelectTrigger>
+              <SelectValue placeholder="Tipo" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Venta">Venta</SelectItem>
+              <SelectItem value="Uso Interno">Uso Interno</SelectItem>
+              <SelectItem value="Alquiler">Alquiler</SelectItem>
+              <SelectItem value="Ambos">Ambos</SelectItem>
+              <SelectItem value="Servicio">Servicio</SelectItem>
+            </SelectContent>
+          </Select>
           <Input name="cantidadStock" value={form.cantidadStock} onChange={handleChange} placeholder="Stock" />
         </div>
         <DialogFooter>

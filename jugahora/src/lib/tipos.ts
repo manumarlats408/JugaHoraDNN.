@@ -4,11 +4,12 @@ export type Articulo = {
   nombre: string
   precioCompra: number
   precioVenta: number
-  tipo: "Ambos" | "Venta" | "Compra"
+  tipo: "Venta" | "Uso Interno" | "Alquiler" | "Ambos" | "Servicio"
   cantidadStock: number
   updatedAt: string
   clubId: number
 }
+
 
 
   export interface Partido {
