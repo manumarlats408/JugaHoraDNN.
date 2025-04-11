@@ -1,17 +1,16 @@
-// src/app/components/MovimientoFinanciero.tsx
 "use client"
 
 import { useEffect, useState } from "react"
-import type{ MovimientoFinanciero } from "@/lib/tipos"
+import type { MovimientoFinanciero } from "@/lib/tipos"
 import AgregarMovimientoDialog from "./agregar-movimiento-dialog"
 
-export default function MovimientoFinanciero({ clubId }: { clubId: number }) {
+export default function MovimientosFinancieros() {
   const [movimientos, setMovimientos] = useState<MovimientoFinanciero[]>([])
   const [desde, setDesde] = useState("")
   const [hasta, setHasta] = useState("")
 
   const fetchMovimientos = async () => {
-    const params = new URLSearchParams({ clubId: String(clubId) })
+    const params = new URLSearchParams()
     if (desde) params.append("desde", desde)
     if (hasta) params.append("hasta", hasta)
 
@@ -31,7 +30,7 @@ export default function MovimientoFinanciero({ clubId }: { clubId: number }) {
     <div className="p-4 bg-white shadow rounded-xl">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">Movimientos</h2>
-        <AgregarMovimientoDialog clubId={clubId} onSuccess={fetchMovimientos} />
+        <AgregarMovimientoDialog onSuccess={fetchMovimientos} />
       </div>
 
       <div className="flex gap-4 mb-4">
