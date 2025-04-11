@@ -202,33 +202,46 @@ export function ListadoArticulos() {
               </div>
 
               <div className="flex flex-col space-y-3 md:space-y-0 md:flex-row md:gap-3">
-                <div>
-                  <input
-                    id="importar"
-                    type="file"
-                    accept=".xlsx"
-                    className="hidden"
-                    onChange={handleImportar}
-                  />
-                  <label htmlFor="importar">
-                    <Button
-                      variant="outline"
-                      className="flex items-center gap-2 w-full md:w-auto cursor-pointer"
-                    >
-                      <Upload size={18} className="text-green-500" />
-                      <span className="whitespace-nowrap">Importar (XLSX)</span>
-                    </Button>
-                  </label>
-                </div>
-
+            <div>
+              <input
+                id="importar"
+                type="file"
+                accept=".xlsx"
+                className="hidden"
+                onChange={handleImportar}
+              />
+              <label htmlFor="importar">
                 <Button
-                  className="bg-green-500 hover:bg-green-600 text-white flex items-center gap-2 w-full md:w-auto"
-                  onClick={handleExportar}
+                  variant="outline"
+                  className="flex items-center gap-2 w-full md:w-auto cursor-pointer"
                 >
-                  <Download size={18} />
-                  <span className="whitespace-nowrap">Exportar artículos</span>
+                  <Upload size={18} className="text-green-500" />
+                  <span className="whitespace-nowrap">Importar (XLSX)</span>
                 </Button>
-              </div>
+              </label>
+            </div>
+
+            <Button
+              variant="outline"
+              className="flex items-center gap-2 w-full md:w-auto"
+              onClick={() => {
+                setArticuloSeleccionado(null)
+                setModalAbierto(true)
+              }}
+            >
+              <span className="text-blue-500 text-lg">＋</span>
+              <span className="whitespace-nowrap">Agregar artículo</span>
+            </Button>
+
+            <Button
+              className="bg-green-500 hover:bg-green-600 text-white flex items-center gap-2 w-full md:w-auto"
+              onClick={handleExportar}
+            >
+              <Download size={18} />
+              <span className="whitespace-nowrap">Exportar artículos</span>
+            </Button>
+          </div>
+
             </div>
 
             <TablaArticulos
