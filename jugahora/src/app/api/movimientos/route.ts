@@ -1,7 +1,7 @@
 // src/app/api/movimientos/route.ts
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import type { MovimientoFinanciero } from "@/lib/tipos"
+
 
 // GET: /api/movimientos?clubId=1&desde=2024-01-01&hasta=2024-12-31
 export async function GET(request: Request) {
