@@ -139,10 +139,7 @@ export function ListadoArticulos() {
     setMostrarModal(true)
   }
 
-  const handleCerrarModal = () => {
-    setMostrarModal(false)
-    setArticuloSeleccionado(null)
-  }
+  
 
   const handleEliminar = async (id: number) => {
     const confirmar = confirm("¿Estás seguro de que querés eliminar este artículo?")

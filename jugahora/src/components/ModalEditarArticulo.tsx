@@ -35,9 +35,9 @@ export function ModalEditarArticulo({ articulo, abierto, onClose, onGuardado }: 
       },
       body: JSON.stringify({
         ...form,
-        precioCompra: parseFloat(form.precioCompra as any),
-        precioVenta: parseFloat(form.precioVenta as any),
-        cantidadStock: parseInt(form.cantidadStock as any),
+        precioCompra: form.precioCompra?.toString() ?? '',
+        precioVenta: form.precioVenta?.toString() ?? '',
+        cantidadStock: form.cantidadStock?.toString() ?? '',
       })
     })
 
