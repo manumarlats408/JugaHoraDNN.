@@ -200,22 +200,27 @@ export function ListadoArticulos() {
                   onChange={(e) => setBusqueda(e.target.value)}
                 />
               </div>
+
               <div className="flex flex-col space-y-3 md:space-y-0 md:flex-row md:gap-3">
-                <div className="relative">
+                <div>
                   <input
-                    type="file"
                     id="importar"
+                    type="file"
+                    accept=".xlsx"
                     className="hidden"
-                    accept=".xlsx, .xls"
                     onChange={handleImportar}
                   />
-                  <Button variant="outline" className="flex items-center gap-2 w-full md:w-auto" asChild>
-                    <label htmlFor="importar" className="cursor-pointer">
+                  <label htmlFor="importar">
+                    <Button
+                      variant="outline"
+                      className="flex items-center gap-2 w-full md:w-auto cursor-pointer"
+                    >
                       <Upload size={18} className="text-green-500" />
                       <span className="whitespace-nowrap">Importar (XLSX)</span>
-                    </label>
-                  </Button>
+                    </Button>
+                  </label>
                 </div>
+
                 <Button
                   className="bg-green-500 hover:bg-green-600 text-white flex items-center gap-2 w-full md:w-auto"
                   onClick={handleExportar}
