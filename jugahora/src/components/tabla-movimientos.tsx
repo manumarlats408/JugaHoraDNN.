@@ -2,10 +2,10 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Skeleton } from "@/components/ui/skeleton"
 import { formatearFecha, formatearPrecio } from "@/lib/utils"
-import type { Movimiento } from "@/lib/tipos"
+import type { MovimientoFinanciero } from "@/lib/tipos"
 
 interface TablaMovimientosProps {
-  movimientos: Movimiento[]
+  movimientos: MovimientoFinanciero[]
   cargando: boolean
 }
 
