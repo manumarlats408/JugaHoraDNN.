@@ -90,11 +90,11 @@ model Partidos_club {
   mail24h Boolean @default(false)
   mail12h Boolean @default(false)
   categoria   String?  // 
-  userId    Int      // Nueva columna para el ID del jugador que creó el partido
+  userId    Int?      // Nueva columna para el ID del jugador que creó el partido
 
   usuarios    Int[]     // Array of User IDs
   Club        Club      @relation(fields: [clubId], references: [id])
-  User      User     @relation(fields: [userId], references: [id])  // Relación con la tabla de usuarios
+  User      User?     @relation(fields: [userId], references: [id])  // Relación con la tabla de usuarios
 
 }
 
