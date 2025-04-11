@@ -1,63 +1,56 @@
-import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import jwt from "jsonwebtoken";
+// src/app/api/movimientos/route.ts
+import { NextResponse } from "next/server"
+import { prisma } from "@/lib/prisma"
+import type { MovimientoFinanciero } from "@/lib/tipos"
 
-function getClubIdFromToken(request: NextRequest): number | null {
-  const token = request.cookies.get("token")?.value;
-  if (!token) return null;
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { id: number; isClub: boolean };
-    if (!decoded.isClub) return null;
-    return decoded.id;
-  } catch {
-    return null;
+// GET: /api/movimientos?clubId=1&desde=2024-01-01&hasta=2024-12-31
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url)
+  const clubId = Number(searchParams.get("clubId"))
+  const desde = searchParams.get("desde")
+  const hasta = searchParams.get("hasta")
+
+  if (!clubId) return NextResponse.json({ error: "clubId es obligatorio" }, { status: 400 })
+
+  const where: any = { clubId }
+
+  if (desde) where.fechaMovimiento = { gte: new Date(desde) }
+  if (hasta) {
+    where.fechaMovimiento = {
+      ...where.fechaMovimiento,
+      lte: new Date(hasta),
+    }
   }
-}
-
-export async function GET(request: NextRequest) {
-  const clubId = getClubIdFromToken(request);
-  if (!clubId) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-
-  const { searchParams } = new URL(request.url);
-  const desde = searchParams.get("desde");
-  const hasta = searchParams.get("hasta");
-
-  if (!desde || !hasta)
-    return NextResponse.json({ error: "Faltan fechas" }, { status: 400 });
 
   const movimientos = await prisma.movimientoFinanciero.findMany({
-    where: {
-      clubId,
-      fechaMovimiento: {
-        gte: new Date(desde),
-        lte: new Date(hasta + "T23:59:59"),
-      },
-    },
+    where,
     orderBy: { fechaMovimiento: "desc" },
-  });
+  })
 
-  return NextResponse.json(movimientos);
+  return NextResponse.json(movimientos)
 }
 
-export async function POST(request: NextRequest) {
-  const clubId = getClubIdFromToken(request);
-  if (!clubId) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+// POST: /api/movimientos
+export async function POST(request: Request) {
+  const data = await request.json()
 
-  const { concepto, metodoPago, ingreso, egreso, fecha } = await request.json();
+  if (!data.concepto || !data.fechaMovimiento || !data.metodoPago || !data.clubId) {
+    return NextResponse.json({ error: "Faltan campos obligatorios" }, { status: 400 })
+  }
 
-  if (!concepto || !metodoPago || !fecha)
-    return NextResponse.json({ error: "Datos incompletos" }, { status: 400 });
-
-  const movimiento = await prisma.movimientoFinanciero.create({
+  const nuevoMovimiento = await prisma.movimientoFinanciero.create({
     data: {
-      clubId,
-      concepto,
-      metodoPago,
-      ingreso: ingreso || 0,
-      egreso: egreso || 0,
-      fechaMovimiento: new Date(fecha),
+      concepto: data.concepto,
+      jugador: data.jugador || null,
+      cancha: data.cancha || null,
+      fechaTurno: data.fechaTurno ? new Date(data.fechaTurno) : null,
+      fechaMovimiento: new Date(data.fechaMovimiento),
+      metodoPago: data.metodoPago,
+      egreso: data.egreso ?? null,
+      ingreso: data.ingreso ?? null,
+      clubId: data.clubId,
     },
-  });
+  })
 
-  return NextResponse.json(movimiento);
+  return NextResponse.json(nuevoMovimiento)
 }

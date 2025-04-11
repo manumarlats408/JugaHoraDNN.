@@ -20,16 +20,18 @@ export type Articulo = {
   }
   
   export type MovimientoFinanciero = {
-    id: string
+    id: number
     concepto: string
     jugador: string | null
     cancha: string | null
-    fechaTurno: string
+    fechaTurno: string | null
     fechaMovimiento: string
     metodoPago: "Efectivo" | "Transferencia" | "Tarjeta"
     egreso: number | null
     ingreso: number | null
+    clubId: number
   }
+  
   
   
   

@@ -1,69 +1,69 @@
-"use client";
+// src/app/components/AgregarMovimientoDialog.tsx
+"use client"
 
-import { useState } from "react";
+import { useState } from "react"
 
-export default function AgregarMovimientoDialog({ onAdded }: { onAdded: () => void }) {
-  const [show, setShow] = useState(false);
+export default function AgregarMovimientoDialog({
+  clubId,
+  onSuccess,
+}: {
+  clubId: number
+  onSuccess: () => void
+}) {
+  const [open, setOpen] = useState(false)
   const [form, setForm] = useState({
     concepto: "",
-    metodoPago: "efectivo",
-    ingreso: 0,
-    egreso: 0,
-    fecha: "",
-  });
+    jugador: "",
+    metodoPago: "Efectivo",
+    ingreso: "",
+    egreso: "",
+    fechaMovimiento: "",
+  })
 
-  const handleSubmit = async () => {
-    await fetch("/api/movimientos", {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const res = await fetch("/api/movimientos", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
-    setShow(false);
-    setForm({ concepto: "", metodoPago: "efectivo", ingreso: 0, egreso: 0, fecha: "" });
-    onAdded();
-  };
+      body: JSON.stringify({
+        ...form,
+        ingreso: form.ingreso ? parseFloat(form.ingreso) : null,
+        egreso: form.egreso ? parseFloat(form.egreso) : null,
+        clubId,
+      }),
+    })
+    if (res.ok) {
+      onSuccess()
+      setOpen(false)
+    }
+  }
 
   return (
-    <div>
-      <button onClick={() => setShow(true)} className="bg-blue-600 text-white px-3 py-1 rounded">
-        Agregar Movimiento
-      </button>
-      {show && (
-        <div className="mt-4 space-y-2">
-          <input
-            placeholder="Concepto"
-            value={form.concepto}
-            onChange={(e) => setForm({ ...form, concepto: e.target.value })}
-          />
-          <select
-            value={form.metodoPago}
-            onChange={(e) => setForm({ ...form, metodoPago: e.target.value })}
-          >
-            <option value="efectivo">Efectivo</option>
-            <option value="transferencia">Transferencia</option>
-          </select>
-          <input
-            type="number"
-            placeholder="Ingreso"
-            value={form.ingreso}
-            onChange={(e) => setForm({ ...form, ingreso: Number(e.target.value) })}
-          />
-          <input
-            type="number"
-            placeholder="Egreso"
-            value={form.egreso}
-            onChange={(e) => setForm({ ...form, egreso: Number(e.target.value) })}
-          />
-          <input
-            type="date"
-            value={form.fecha}
-            onChange={(e) => setForm({ ...form, fecha: e.target.value })}
-          />
-          <button onClick={handleSubmit} className="bg-green-600 text-white px-3 py-1 rounded">
-            Guardar
-          </button>
+    <>
+      <button onClick={() => setOpen(true)} className="bg-blue-600 text-white px-3 py-1 rounded">+ Agregar</button>
+
+      {open && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-xl shadow max-w-md w-full">
+            <h3 className="text-lg font-semibold mb-4">Agregar Movimiento</h3>
+            <form onSubmit={handleSubmit} className="space-y-3">
+              <input required type="text" placeholder="Concepto" value={form.concepto} onChange={(e) => setForm({ ...form, concepto: e.target.value })} className="w-full border p-2 rounded" />
+              <input type="text" placeholder="Jugador" value={form.jugador} onChange={(e) => setForm({ ...form, jugador: e.target.value })} className="w-full border p-2 rounded" />
+              <input type="date" required value={form.fechaMovimiento} onChange={(e) => setForm({ ...form, fechaMovimiento: e.target.value })} className="w-full border p-2 rounded" />
+              <select value={form.metodoPago} onChange={(e) => setForm({ ...form, metodoPago: e.target.value })} className="w-full border p-2 rounded">
+                <option value="Efectivo">Efectivo</option>
+                <option value="MercadoPago">MercadoPago</option>
+                <option value="Transferencia">Transferencia</option>
+              </select>
+              <input type="number" step="0.01" placeholder="Ingreso" value={form.ingreso} onChange={(e) => setForm({ ...form, ingreso: e.target.value })} className="w-full border p-2 rounded" />
+              <input type="number" step="0.01" placeholder="Egreso" value={form.egreso} onChange={(e) => setForm({ ...form, egreso: e.target.value })} className="w-full border p-2 rounded" />
+              <div className="flex justify-end gap-2">
+                <button type="button" onClick={() => setOpen(false)} className="text-gray-500">Cancelar</button>
+                <button type="submit" className="bg-blue-600 text-white px-4 py-1 rounded">Guardar</button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
-    </div>
-  );
+    </>
+  )
 }
