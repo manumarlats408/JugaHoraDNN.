@@ -12,7 +12,8 @@ interface ExcelRow {
   "Precio Venta"?: number | string
   Tipo?: string
   "Cantidad Stock"?: number | string
-  Stock?: number | string // Añadimos esta alternativa
+  cantidadStock?: number | string // Añadimos el nombre exacto que aparece en el Excel
+  Stock?: number | string
 }
 
 export async function POST(request: NextRequest) {
@@ -43,7 +44,7 @@ export async function POST(request: NextRequest) {
 
     // Convertir a JSON y mostrar las primeras filas para depuración
     const data = XLSX.utils.sheet_to_json(worksheet) as ExcelRow[]
-    console.log("Primeras 3 filas del Excel:", data.slice(0, 3))
+    console.log("Primeras 3 filas del Excel:", JSON.stringify(data.slice(0, 3), null, 2))
 
     // Mostrar los nombres de las columnas para depuración
     if (data.length > 0) {
@@ -51,8 +52,15 @@ export async function POST(request: NextRequest) {
     }
 
     for (const row of data) {
-      // Verificar qué columna de stock está presente
-      const stockValue = row["Cantidad Stock"] !== undefined ? row["Cantidad Stock"] : row["Stock"]
+      // Verificar qué columna de stock está presente, probando todas las variantes posibles
+      const stockValue =
+        row.cantidadStock !== undefined
+          ? row.cantidadStock
+          : row["Cantidad Stock"] !== undefined
+            ? row["Cantidad Stock"]
+            : row.Stock !== undefined
+              ? row.Stock
+              : 0
 
       // Convertir a número de manera más segura
       let cantidadStock = 0
@@ -77,9 +85,11 @@ export async function POST(request: NextRequest) {
         precioCompra: Number(row["Precio Compra"]) || 0,
         precioVenta: Number(row["Precio Venta"]) || 0,
         tipo: row["Tipo"] === "Ambos" ? "Ambos" : "Venta",
-        cantidadStock: cantidadStock, // Usar cantidadStock en lugar de stock
+        cantidadStock: cantidadStock,
         clubId,
       }
+
+      console.log("Guardando artículo:", JSON.stringify(articulo, null, 2))
 
       const existente = await prisma.articulo.findFirst({
         where: {
