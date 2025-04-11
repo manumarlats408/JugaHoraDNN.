@@ -5,11 +5,13 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useState } from "react"
 import { useToast } from "@/hooks/use-toast"
+import { Articulo } from "@/lib/tipos"
+
 
 interface Props {
   abierto: boolean
   onClose: () => void
-  onGuardado: (nuevoArticulo: any) => void
+  onGuardado: (nuevoArticulo: Articulo) => void
 }
 
 export function ModalAgregarArticulo({ abierto, onClose, onGuardado }: Props) {

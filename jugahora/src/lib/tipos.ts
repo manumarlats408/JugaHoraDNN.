@@ -4,7 +4,7 @@ export type Articulo = {
   nombre: string
   precioCompra: number
   precioVenta: number
-  tipo: "Ambos" | "Venta"
+  tipo: "Ambos" | "Venta" | "Compra"
   cantidadStock: number
   updatedAt: string
   clubId: number
