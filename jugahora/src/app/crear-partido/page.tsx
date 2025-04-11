@@ -7,22 +7,14 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { TimeSelector } from '@/components/ui/time-selector'
-import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle } from '@/components/ui/dialog'
 
 type Club = {
   id: number
   name: string
 }
 
-type User = {
-  id: number
-  firstName: string
-  lastName: string
-}
-
 export default function CrearPartidoJugador() {
   const [clubs, setClubs] = useState<Club[]>([])
-  const [players, setPlayers] = useState<User[]>([])
   const [selectedClubId, setSelectedClubId] = useState('')
   const [date, setDate] = useState<Date | null>(null)
   const [startTime, setStartTime] = useState('')
@@ -31,7 +23,6 @@ export default function CrearPartidoJugador() {
   const [price, setPrice] = useState('')
   const [userId, setUserId] = useState<string | null>(null)  // ID del creador
   const [matchId, setMatchId] = useState<number | null>(null)  // Guardamos el matchId
-  const [isModalOpen, setIsModalOpen] = useState(false)  // Estado del modal
   const router = useRouter()
 
   // Obtener clubes
@@ -42,16 +33,6 @@ export default function CrearPartidoJugador() {
       setClubs(data)
     }
     fetchClubs()
-  }, [])
-
-  // Obtener jugadores disponibles
-  useEffect(() => {
-    const fetchPlayers = async () => {
-      const res = await fetch('/api/users')  // Endpoint para obtener todos los usuarios
-      const data = await res.json()
-      setPlayers(data)
-    }
-    fetchPlayers()
   }, [])
 
   // Obtener userId del jugador autenticado
@@ -95,9 +76,17 @@ export default function CrearPartidoJugador() {
       const createdMatch = await res.json(); // Aquí lo guardamos
       setMatchId(createdMatch.id)  // Guardar el ID del partido creado
       alert('Partido creado con éxito')
-      router.push(`/add-players?matchId=${createdMatch.id}`) // Redirigimos con el ID del partido
     } else {
       alert('Error al crear el partido')
+    }
+  }
+
+  // Función para redirigir a la página de "Añadir Jugadores"
+  const handleAddPlayersRedirect = () => {
+    if (matchId) {
+      router.push(`/add-players?matchId=${matchId}`) // Redirigir a la página de añadir jugadores
+    } else {
+      alert('Por favor, crea el partido primero')
     }
   }
 
@@ -158,36 +147,14 @@ export default function CrearPartidoJugador() {
             />
           </div>
 
-          {/* Botón para abrir el modal de selección de jugadores */}
-          <Button onClick={() => setIsModalOpen(true)}>Agregar Jugadores</Button>
+          {/* Botón para redirigir a la página de añadir jugadores */}
+          <Button onClick={handleAddPlayersRedirect}>Agregar Jugadores</Button>
 
           <div className="pt-4">
             <Button onClick={handleSubmit}>Crear Partido</Button>
           </div>
         </CardContent>
       </Card>
-
-      {/* Modal de selección de jugadores */}
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Seleccionar Jugadores</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 pt-4">
-            {players.map((player) => (
-              <div key={player.id} className="flex justify-between items-center border p-4 rounded-lg">
-                <p>{player.firstName} {player.lastName}</p>
-                <Button onClick={() => router.push(`/add-players?matchId=${matchId}`)}>
-                  Añadir Jugadores
-                </Button>
-              </div>
-            ))}
-          </div>
-          <DialogFooter>
-            <Button onClick={() => setIsModalOpen(false)}>Cerrar</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }
