@@ -11,9 +11,11 @@ interface TablaArticulosProps {
   articulos: Articulo[]
   cargando: boolean
   onActualizar: (articulos: Articulo[]) => void
+  onEditar: (articulo: Articulo) => void
+  onEliminar: (articuloId: number) => void
 }
 
-export function TablaArticulos({ articulos, cargando }: TablaArticulosProps) {
+export function TablaArticulos({ articulos, cargando, onEditar, onEliminar }: TablaArticulosProps) {
   if (cargando) {
     return (
       <div className="space-y-2">
@@ -64,11 +66,11 @@ export function TablaArticulos({ articulos, cargando }: TablaArticulosProps) {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem className="cursor-pointer">
+                    <DropdownMenuItem className="cursor-pointer" onClick={() => onEditar(articulo)}>
                       <Edit className="mr-2 h-4 w-4" />
                       <span>Editar</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="cursor-pointer text-red-600">
+                    <DropdownMenuItem className="cursor-pointer text-red-600" onClick={() => onEliminar(articulo.id)}>
                       <Trash className="mr-2 h-4 w-4" />
                       <span>Eliminar</span>
                     </DropdownMenuItem>

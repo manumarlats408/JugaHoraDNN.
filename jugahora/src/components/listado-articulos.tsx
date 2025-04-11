@@ -49,14 +49,9 @@ export function ListadoArticulos() {
   )
 
   const handleImportar = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("Iniciando importación de archivo")
-    if (!e.target.files || e.target.files.length === 0) {
-      console.log("No se seleccionó ningún archivo")
-      return
-    }
+    if (!e.target.files || e.target.files.length === 0) return
 
     const file = e.target.files[0]
-    console.log("Archivo seleccionado:", file.name, file.type)
 
     if (file.type !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
       toast({
@@ -64,7 +59,6 @@ export function ListadoArticulos() {
         description: "Por favor, sube un archivo XLSX",
         variant: "destructive",
       })
-      // Resetear el input file
       return
     }
 
@@ -72,17 +66,15 @@ export function ListadoArticulos() {
       setCargando(true)
       const formData = new FormData()
       formData.append("archivo", file)
-      console.log("FormData creado con archivo:", file.name)
 
       const resultado = await importarArticulos(formData)
-      console.log("Resultado de importación:", resultado)
 
       if (resultado.success) {
         toast({
           title: "Éxito",
           description: "Artículos importados correctamente",
         })
-        // Recargar artículos
+
         const respuesta = await fetch("/api/articulos", {
           credentials: "include",
         })
@@ -101,7 +93,6 @@ export function ListadoArticulos() {
       })
     } finally {
       setCargando(false)
-      // Resetear el input file
       e.target.value = ""
     }
   }
@@ -136,14 +127,54 @@ export function ListadoArticulos() {
     }
   }
 
+  const handleEditar = (articulo: Articulo) => {
+    console.log("Editar artículo:", articulo)
+    toast({
+      title: "Función no implementada",
+      description: `Abrir modal para editar el artículo "${articulo.nombre}"`,
+    })
+  }
+
+  const handleEliminar = async (id: number) => {
+    const confirmar = confirm("¿Estás seguro de que querés eliminar este artículo?")
+    if (!confirmar) return
+
+    try {
+      setCargando(true)
+      const respuesta = await fetch(`/api/articulos/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+      })
+
+      if (!respuesta.ok) throw new Error("Error al eliminar el artículo")
+
+      toast({
+        title: "Artículo eliminado",
+        description: "El artículo se eliminó correctamente.",
+      })
+
+      setArticulos((prev) => prev.filter((articulo) => articulo.id !== id))
+    } catch (error) {
+      console.error(error)
+      toast({
+        title: "Error",
+        description: "No se pudo eliminar el artículo",
+        variant: "destructive",
+      })
+    } finally {
+      setCargando(false)
+    }
+  }
+
   return (
     <div className="flex min-h-screen">
-      {/* Sidebar */}
       <Sidebar />
       <div className="flex-1 p-3 md:p-6 md:ml-16 space-y-6 overflow-x-hidden">
         <div className="bg-white rounded-lg shadow-sm">
           <div className="p-4 md:p-6 border-b">
-            <h1 className="text-xl md:text-2xl font-medium text-gray-600 mt-10 md:mt-0">LISTADO DE CONCEPTOS / ARTÍCULOS</h1>
+            <h1 className="text-xl md:text-2xl font-medium text-gray-600 mt-10 md:mt-0">
+              LISTADO DE CONCEPTOS / ARTÍCULOS
+            </h1>
             <p className="text-sm md:text-base text-gray-500 mt-2">
               A continuación podrás encontrar todos los conceptos/artículos del complejo
             </p>
@@ -185,6 +216,8 @@ export function ListadoArticulos() {
               articulos={articulosFiltrados}
               cargando={cargando}
               onActualizar={(articulosActualizados) => setArticulos(articulosActualizados)}
+              onEditar={handleEditar}
+              onEliminar={handleEliminar}
             />
           </div>
         </div>
