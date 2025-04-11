@@ -29,7 +29,7 @@ export function ModalEditarArticulo({ articulo, abierto, onClose, onGuardado }: 
     if (!form) return
 
     const res = await fetch(`/api/articulos/${form.id}`, {
-      method: "PUT",
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json"
       },
