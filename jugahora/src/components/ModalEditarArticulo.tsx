@@ -1,10 +1,28 @@
 "use client"
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter
+} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useState, useEffect } from "react"
 import type { Articulo } from "@/lib/tipos"
+
+// Este tipo es específico del formulario (todos strings)
+type ArticuloForm = {
+  id: number
+  codigo: string
+  nombre: string
+  tipo: string
+  clubId: number
+  precioCompra: string
+  precioVenta: string
+  cantidadStock: string
+}
 
 interface ModalEditarArticuloProps {
   articulo: Articulo | null
@@ -13,11 +31,26 @@ interface ModalEditarArticuloProps {
   onGuardado: (actualizado: Articulo) => void
 }
 
-export function ModalEditarArticulo({ articulo, abierto, onClose, onGuardado }: ModalEditarArticuloProps) {
-  const [form, setForm] = useState<Articulo | null>(null)
+export function ModalEditarArticulo({
+  articulo,
+  abierto,
+  onClose,
+  onGuardado,
+}: ModalEditarArticuloProps) {
+  const [form, setForm] = useState<ArticuloForm | null>(null)
 
   useEffect(() => {
-    setForm(articulo)
+    if (!articulo) return
+    setForm({
+      id: articulo.id,
+      codigo: articulo.codigo,
+      nombre: articulo.nombre,
+      tipo: articulo.tipo,
+      clubId: articulo.clubId,
+      precioCompra: articulo.precioCompra?.toString() ?? "",
+      precioVenta: articulo.precioVenta?.toString() ?? "",
+      cantidadStock: articulo.cantidadStock?.toString() ?? "",
+    })
   }, [articulo])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,17 +61,33 @@ export function ModalEditarArticulo({ articulo, abierto, onClose, onGuardado }: 
   const handleSubmit = async () => {
     if (!form) return
 
+    // Validación opcional
+    if (
+      isNaN(Number(form.precioCompra)) ||
+      isNaN(Number(form.precioVenta)) ||
+      isNaN(Number(form.cantidadStock))
+    ) {
+      alert("Precio y stock deben ser números válidos.")
+      return
+    }
+
+    const body = {
+      id: form.id,
+      codigo: form.codigo,
+      nombre: form.nombre,
+      tipo: form.tipo,
+      clubId: form.clubId,
+      precioCompra: parseFloat(form.precioCompra),
+      precioVenta: parseFloat(form.precioVenta),
+      cantidadStock: parseInt(form.cantidadStock),
+    }
+
     const res = await fetch(`/api/articulos/${form.id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        ...form,
-        precioCompra: form.precioCompra?.toString() ?? '',
-        precioVenta: form.precioVenta?.toString() ?? '',
-        cantidadStock: form.cantidadStock?.toString() ?? '',
-      })
+      body: JSON.stringify(body),
     })
 
     if (res.ok) {
@@ -46,6 +95,8 @@ export function ModalEditarArticulo({ articulo, abierto, onClose, onGuardado }: 
       onGuardado(actualizado)
       onClose()
     } else {
+      const err = await res.json()
+      console.error("Error al guardar:", err)
       alert("Error al guardar")
     }
   }
