@@ -1,30 +1,40 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { TimeSelector } from '@/components/ui/time-selector'
+import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle } from '@/components/ui/dialog'
 
 type Club = {
   id: number
   name: string
 }
 
+type User = {
+  id: number
+  firstName: string
+  lastName: string
+}
+
 export default function CrearPartidoJugador() {
   const [clubs, setClubs] = useState<Club[]>([])
+  const [players, setPlayers] = useState<User[]>([])
   const [selectedClubId, setSelectedClubId] = useState('')
   const [date, setDate] = useState<Date | null>(null)
   const [startTime, setStartTime] = useState('')
   const [endTime, setEndTime] = useState('')
   const [court, setCourt] = useState('')
   const [price, setPrice] = useState('')
-  const [userId, setUserId] = useState<string | null>(null) // Nuevo estado para guardar el userId
+  const [selectedPlayers, setSelectedPlayers] = useState<User[]>([])  // Jugadores seleccionados
+  const [userId, setUserId] = useState<string | null>(null)  // ID del creador
+  const [isModalOpen, setIsModalOpen] = useState(false)  // Estado del modal
   const router = useRouter()
 
-  // Obtener clubs
+  // Obtener clubes
   useEffect(() => {
     const fetchClubs = async () => {
       const res = await fetch('/api/clubs')
@@ -32,6 +42,16 @@ export default function CrearPartidoJugador() {
       setClubs(data)
     }
     fetchClubs()
+  }, [])
+
+  // Obtener jugadores disponibles
+  useEffect(() => {
+    const fetchPlayers = async () => {
+      const res = await fetch('/api/users')  // Endpoint para obtener todos los usuarios
+      const data = await res.json()
+      setPlayers(data)
+    }
+    fetchPlayers()
   }, [])
 
   // Obtener userId del jugador autenticado
@@ -50,6 +70,14 @@ export default function CrearPartidoJugador() {
     fetchUserData()
   }, [])
 
+  // Agregar jugador al partido
+  const addPlayerToMatch = (player: User) => {
+    if (selectedPlayers.length < 2) {
+      setSelectedPlayers([...selectedPlayers, player])
+    }
+  }
+
+  // Manejar la creación del partido
   const handleSubmit = async () => {
     if (!selectedClubId || !date || !startTime || !endTime || !court || !price || !userId) {
       alert('Por favor completá todos los campos')
@@ -66,7 +94,8 @@ export default function CrearPartidoJugador() {
         court,
         price: parseFloat(price),
         clubId: parseInt(selectedClubId),
-        userId: userId, // Enviar el userId
+        userId: userId,  // Agregar el userId del creador
+        users: [userId, ...selectedPlayers.map(player => player.id)],  // Agregar los jugadores seleccionados
       })
     })
 
@@ -135,11 +164,34 @@ export default function CrearPartidoJugador() {
             />
           </div>
 
+          {/* Botón para abrir el modal de selección de jugadores */}
+          <Button onClick={() => setIsModalOpen(true)}>Agregar Jugadores</Button>
+
           <div className="pt-4">
             <Button onClick={handleSubmit}>Crear Partido</Button>
           </div>
         </CardContent>
       </Card>
+
+      {/* Modal de selección de jugadores */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Seleccionar Jugadores</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            {players.map((player) => (
+              <div key={player.id} className="flex justify-between items-center border p-4 rounded-lg">
+                <p>{player.firstName} {player.lastName}</p>
+                <Button onClick={() => addPlayerToMatch(player)} className="text-sm">Añadir al partido</Button>
+              </div>
+            ))}
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setIsModalOpen(false)}>Cerrar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -22,30 +22,32 @@ interface Match {
 }
 
 // POST: Create a new match
+// app/api/matches/route.ts
+
 export async function POST(request: Request) {
   try {
-    const { date, startTime, endTime, court, clubId, price, userId } = await request.json();
+    const { date, startTime, endTime, court, price, clubId, userId, users } = await request.json();
 
-    // Validate required fields
-    if (!date || !startTime || !endTime || !court || !clubId) {
+    if (!date || !startTime || !endTime || !court || !clubId || !userId) {
       return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
     }
 
-    // Ensure that price is defined and defaults to 0 if not provided
     const matchPrice = price !== undefined ? price : 0;
 
-    // Create the new match with userId
+    // Crear el partido con el userId del creador y los usuarios seleccionados
     const newMatch = await prisma.partidos_club.create({
       data: {
         date: new Date(date),
         startTime,
         endTime,
         court,
-        players: 0,
+        players: users.length + 1,  // 1 para el creador del partido + los jugadores seleccionados
         maxPlayers: 4,
         clubId: parseInt(clubId),
         price: matchPrice,
-        userId: userId || null, // In case the match is created by the club, userId can be null
+        userId,  // Agregar el userId del creador
+        usuarios: [userId, ...users],  // Guardar los userIds en la columna usuarios
+        categoria: "Nivel " + userId,  // Usar el nivel del creador
       },
     });
 
@@ -55,6 +57,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Error creating match' }, { status: 500 });
   }
 }
+
 
 // GET: Retrieve matches
 export async function GET(request: Request) {
