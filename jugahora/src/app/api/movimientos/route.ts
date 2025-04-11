@@ -1,30 +1,31 @@
-import { NextResponse } from "next/server"
+import { NextResponse, type NextRequest } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { decode } from "jsonwebtoken" // o usa jose si preferís
-import { headers } from "next/headers"
+import jwt from "jsonwebtoken"
 
-export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url)
-  const desde = searchParams.get("desde")
-  const hasta = searchParams.get("hasta")
-
-  const headersList = headers()
-  const authHeader = headersList.get("authorization")
-
-  if (!authHeader) {
-    return NextResponse.json({ error: "Falta token" }, { status: 401 })
-  }
-
-  const token = authHeader.replace("Bearer ", "")
-  const decoded = decode(token) as { id?: string | number }
-
-  const clubId = typeof decoded?.id === "string" ? parseInt(decoded.id) : decoded?.id
-
-  if (!desde || !hasta || !clubId) {
-    return NextResponse.json({ error: "Faltan parámetros" }, { status: 400 })
-  }
-
+export async function GET(request: NextRequest) {
   try {
+    const token = request.headers.get("cookie")?.split("; ").find((c) => c.startsWith("token="))?.split("=")[1]
+
+    if (!token) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 })
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { id: number | string; isClub: boolean }
+
+    if (!decoded.isClub) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
+    }
+
+    const clubId = typeof decoded.id === "string" ? parseInt(decoded.id) : decoded.id
+
+    const { searchParams } = new URL(request.url)
+    const desde = searchParams.get("desde")
+    const hasta = searchParams.get("hasta")
+
+    if (!desde || !hasta) {
+      return NextResponse.json({ error: "Faltan parámetros" }, { status: 400 })
+    }
+
     const movimientos = await prisma.movimientoFinanciero.findMany({
       where: {
         clubId,
