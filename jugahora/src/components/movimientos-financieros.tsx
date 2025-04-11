@@ -1,47 +1,61 @@
-import { NextResponse, type NextRequest } from "next/server"
-import { prisma } from "@/lib/prisma"
-import jwt from "jsonwebtoken"
+"use client";
 
-export async function GET(request: NextRequest) {
-  try {
-    const token = request.headers.get("cookie")?.split("; ").find((c) => c.startsWith("token="))?.split("=")[1]
+import { useState, useEffect } from "react";
+import AgregarMovimientoDialog from "./agregar-movimiento-dialog";
+import { MovimientoFinanciero } from "@/lib/tipos"
 
-    if (!token) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 401 })
+export default function MovimientosFinancieros() {
+  const [movimientos, setMovimientos] = useState<MovimientoFinanciero[]>([])
+  const [desde, setDesde] = useState("");
+  const [hasta, setHasta] = useState("");
+
+  useEffect(() => {
+    if (desde && hasta) {
+      fetch(`/api/movimientos?desde=${desde}&hasta=${hasta}`)
+        .then((res) => res.json())
+        .then((data) => setMovimientos(data));
     }
+  }, [desde, hasta]);
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { id: number | string; isClub: boolean }
+  return (
+    <div className="p-4 space-y-4">
+      <h1 className="text-xl font-semibold">Movimientos Financieros</h1>
 
-    if (!decoded.isClub) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
+      <div className="flex gap-4">
+        <div>
+          <label>Desde:</label>
+          <input type="date" value={desde} onChange={(e) => setDesde(e.target.value)} />
+        </div>
+        <div>
+          <label>Hasta:</label>
+          <input type="date" value={hasta} onChange={(e) => setHasta(e.target.value)} />
+        </div>
+      </div>
 
-    const clubId = typeof decoded.id === "string" ? parseInt(decoded.id) : decoded.id
+      <AgregarMovimientoDialog onAdded={() => desde && hasta && fetch(`/api/movimientos?desde=${desde}&hasta=${hasta}`).then(res => res.json()).then(setMovimientos)} />
 
-    const { searchParams } = new URL(request.url)
-    const desde = searchParams.get("desde")
-    const hasta = searchParams.get("hasta")
-
-    if (!desde || !hasta) {
-      return NextResponse.json({ error: "Faltan parámetros" }, { status: 400 })
-    }
-
-    const movimientos = await prisma.movimientoFinanciero.findMany({
-      where: {
-        clubId,
-        fechaMovimiento: {
-          gte: new Date(desde),
-          lte: new Date(hasta + "T23:59:59"),
-        },
-      },
-      orderBy: {
-        fechaMovimiento: "desc",
-      },
-    })
-
-    return NextResponse.json(movimientos)
-  } catch (error) {
-    console.error("Error al obtener movimientos", error)
-    return NextResponse.json({ error: "Error del servidor" }, { status: 500 })
-  }
+      <table className="w-full mt-4 border">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Concepto</th>
+            <th>Método de pago</th>
+            <th>Ingreso</th>
+            <th>Egreso</th>
+          </tr>
+        </thead>
+        <tbody>
+          {movimientos.map((m) => (
+            <tr key={m.id}>
+              <td>{new Date(m.fechaMovimiento).toLocaleDateString()}</td>
+              <td>{m.concepto}</td>
+              <td>{m.metodoPago}</td>
+              <td>${m.ingreso}</td>
+              <td>${m.egreso}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 }

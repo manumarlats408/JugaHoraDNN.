@@ -19,7 +19,7 @@ export type Articulo = {
     price: number
   }
   
-  export interface Movimiento {
+  export type MovimientoFinanciero = {
     id: string
     concepto: string
     jugador: string | null
@@ -30,6 +30,8 @@ export type Articulo = {
     egreso: number | null
     ingreso: number | null
   }
+  
+  
   
   export interface Club {
     id: string
