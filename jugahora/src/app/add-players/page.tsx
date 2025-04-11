@@ -1,11 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'  
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
+// Define el tipo de User
 interface User {
   id: number
   firstName: string
@@ -18,13 +19,13 @@ const AddPlayers = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedPlayers, setSelectedPlayers] = useState<number[]>([]) // Guardamos los IDs de los jugadores seleccionados
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const matchId = searchParams.get('matchId')  // Obtener el matchId de la query string
+  const searchParams = useSearchParams()  
+  const matchId = searchParams.get('matchId')  // Obtenemos el matchId de la query string
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch('/api/users')
+        const res = await fetch('/api/users') 
         const users = await res.json()
         setProfiles(users)
         setFilteredProfiles(users)
@@ -55,7 +56,7 @@ const AddPlayers = () => {
   }
 
   const handleSubmit = async () => {
-    if (!matchId || selectedPlayers.length === 0) {
+    if (selectedPlayers.length === 0) {
       alert('Por favor, selecciona al menos un jugador')
       return
     }
@@ -68,7 +69,7 @@ const AddPlayers = () => {
 
     if (res.ok) {
       alert('Jugadores añadidos al partido')
-      router.push('/jugar')
+      router.push('/jugar') 
     } else {
       alert('Error al añadir jugadores')
     }
@@ -118,4 +119,13 @@ const AddPlayers = () => {
   )
 }
 
-export default AddPlayers
+// Envolver el componente con Suspense para manejar correctamente los hooks del cliente
+const PageWrapper = () => {
+  return (
+    <Suspense fallback={<div>Cargando...</div>}>
+      <AddPlayers />
+    </Suspense>
+  )
+}
+
+export default PageWrapper
