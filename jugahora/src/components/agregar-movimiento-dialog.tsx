@@ -28,7 +28,9 @@ export default function AgregarMovimientoDialog({ onSuccess }: Props) {
         metodoPago,
       }),
     })
-
+  
+    const data = await res.json()
+  
     if (res.ok) {
       setOpen(false)
       setConcepto("")
@@ -38,9 +40,11 @@ export default function AgregarMovimientoDialog({ onSuccess }: Props) {
       setMetodoPago("")
       onSuccess()
     } else {
-      alert("Error al guardar el movimiento")
+      alert(`Error al guardar el movimiento: ${data.error || "Error desconocido"}`)
+      console.error("Error al guardar movimiento:", data)
     }
   }
+  
 
   return (
     <div>

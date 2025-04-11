@@ -137,10 +137,11 @@ model MovimientoFinanciero {
   jugador         String?
   cancha          String?
   fechaTurno      DateTime?
-  fechaMovimiento DateTime
+  fechaMovimiento DateTime?  // <-- acá lo cambiamos a opcional
   metodoPago      String
   egreso          Float?
   ingreso         Float?
   clubId          Int
   Club            Club     @relation(fields: [clubId], references: [id])
 }
+
