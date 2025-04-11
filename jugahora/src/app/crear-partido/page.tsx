@@ -29,8 +29,8 @@ export default function CrearPartidoJugador() {
   const [endTime, setEndTime] = useState('')
   const [court, setCourt] = useState('')
   const [price, setPrice] = useState('')
-  const [selectedPlayers, setSelectedPlayers] = useState<User[]>([])  // Jugadores seleccionados
   const [userId, setUserId] = useState<string | null>(null)  // ID del creador
+  const [matchId, setMatchId] = useState<number | null>(null)  // Guardamos el matchId
   const [isModalOpen, setIsModalOpen] = useState(false)  // Estado del modal
   const router = useRouter()
 
@@ -70,13 +70,6 @@ export default function CrearPartidoJugador() {
     fetchUserData()
   }, [])
 
-  // Agregar jugador al partido
-  const addPlayerToMatch = (player: User) => {
-    if (selectedPlayers.length < 2) {
-      setSelectedPlayers([...selectedPlayers, player])
-    }
-  }
-
   // Manejar la creación del partido
   const handleSubmit = async () => {
     if (!selectedClubId || !date || !startTime || !endTime || !court || !price || !userId) {
@@ -94,14 +87,15 @@ export default function CrearPartidoJugador() {
         court,
         price: parseFloat(price),
         clubId: parseInt(selectedClubId),
-        userId: userId,  // Agregar el userId del creador
-        users: [userId, ...selectedPlayers.map(player => player.id)],  // Agregar los jugadores seleccionados
+        userId: userId, // Enviar el userId
       })
     })
 
     if (res.ok) {
+      const createdMatch = await res.json(); // Aquí lo guardamos
+      setMatchId(createdMatch.id)  // Guardar el ID del partido creado
       alert('Partido creado con éxito')
-      router.push('/jugar')
+      router.push(`/add-players?matchId=${createdMatch.id}`) // Redirigimos con el ID del partido
     } else {
       alert('Error al crear el partido')
     }
@@ -183,7 +177,9 @@ export default function CrearPartidoJugador() {
             {players.map((player) => (
               <div key={player.id} className="flex justify-between items-center border p-4 rounded-lg">
                 <p>{player.firstName} {player.lastName}</p>
-                <Button onClick={() => addPlayerToMatch(player)} className="text-sm">Añadir al partido</Button>
+                <Button onClick={() => router.push(`/add-players?matchId=${matchId}`)}>
+                  Añadir Jugadores
+                </Button>
               </div>
             ))}
           </div>
