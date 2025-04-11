@@ -1,10 +1,10 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Search, Plus, Calendar } from "lucide-react"
+import { Search, Calendar } from "lucide-react"
 import type { MovimientoFinanciero } from "@/lib/tipos"
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import AgregarMovimientoDialog from "./agregar-movimiento-dialog"
 
 export default function MovimientosFinancieros() {
   const [movimientos, setMovimientos] = useState<MovimientoFinanciero[]>([])
@@ -26,6 +26,7 @@ export default function MovimientosFinancieros() {
     fetchMovimientos()
   }, [desde, hasta])
 
+  // Cálculo de saldos por método de pago
   const totalEfectivo = movimientos
     .filter((m) => m.metodoPago === "Efectivo")
     .reduce((s, m) => s + ((m.ingreso || 0) - (m.egreso || 0)), 0)
@@ -82,10 +83,7 @@ export default function MovimientosFinancieros() {
               </div>
             </div>
 
-            <Button className="bg-green-500 hover:bg-green-600 text-white gap-2">
-              <Plus className="h-4 w-4" />
-              <span>Nuevo Movimiento</span>
-            </Button>
+            <AgregarMovimientoDialog onSuccess={fetchMovimientos} />
           </div>
         </div>
 

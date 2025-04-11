@@ -1,6 +1,11 @@
 "use client"
 
 import { useState } from "react"
+import { Plus } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 
 type Props = {
   onSuccess: () => void
@@ -28,9 +33,9 @@ export default function AgregarMovimientoDialog({ onSuccess }: Props) {
         metodoPago,
       }),
     })
-  
+
     const data = await res.json()
-  
+
     if (res.ok) {
       setOpen(false)
       setConcepto("")
@@ -44,69 +49,86 @@ export default function AgregarMovimientoDialog({ onSuccess }: Props) {
       console.error("Error al guardar movimiento:", data)
     }
   }
-  
 
   return (
-    <div>
-      <button onClick={() => setOpen(true)} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-        Agregar movimiento
-      </button>
-
-      {open && (
-        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded shadow-md w-96 space-y-4">
-            <h3 className="text-lg font-bold">Nuevo Movimiento</h3>
-
-            <input
-              type="text"
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button className="bg-green-500 hover:bg-green-600 text-white gap-2">
+          <Plus className="h-4 w-4" />
+          <span>Nuevo Movimiento</span>
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Nuevo Movimiento</DialogTitle>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid gap-2">
+            <Label htmlFor="concepto">Concepto</Label>
+            <Input
+              id="concepto"
               placeholder="Concepto"
               value={concepto}
               onChange={(e) => setConcepto(e.target.value)}
-              className="w-full border px-2 py-1"
             />
+          </div>
 
-            <input
+          <div className="grid gap-2">
+            <Label htmlFor="fecha">Fecha</Label>
+            <Input
+              id="fecha"
               type="date"
               value={fechaMovimiento}
               onChange={(e) => setFechaMovimiento(e.target.value)}
-              className="w-full border px-2 py-1"
             />
+          </div>
 
-            <input
+          <div className="grid gap-2">
+            <Label htmlFor="ingreso">Ingreso</Label>
+            <Input
+              id="ingreso"
               type="number"
               placeholder="Ingreso"
               value={ingreso ?? ""}
               onChange={(e) => setIngreso(Number(e.target.value) || null)}
-              className="w-full border px-2 py-1"
             />
+          </div>
 
-            <input
+          <div className="grid gap-2">
+            <Label htmlFor="egreso">Egreso</Label>
+            <Input
+              id="egreso"
               type="number"
               placeholder="Egreso"
               value={egreso ?? ""}
               onChange={(e) => setEgreso(Number(e.target.value) || null)}
-              className="w-full border px-2 py-1"
             />
+          </div>
 
-            <input
-              type="text"
-              placeholder="Método de pago"
+          <div className="grid gap-2">
+            <Label htmlFor="metodoPago">Método de pago</Label>
+            <select
+              id="metodoPago"
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               value={metodoPago}
               onChange={(e) => setMetodoPago(e.target.value)}
-              className="w-full border px-2 py-1"
-            />
-
-            <div className="flex justify-end gap-2">
-              <button onClick={() => setOpen(false)} className="px-4 py-1 border rounded">
-                Cancelar
-              </button>
-              <button onClick={handleSubmit} className="px-4 py-1 bg-green-600 text-white rounded hover:bg-green-700">
-                Guardar
-              </button>
-            </div>
+            >
+              <option value="">Seleccionar método</option>
+              <option value="Efectivo">Efectivo</option>
+              <option value="Transferencia">Transferencia</option>
+              <option value="Tarjeta">Tarjeta</option>
+            </select>
           </div>
         </div>
-      )}
-    </div>
+        <div className="flex justify-end gap-2">
+          <Button variant="outline" onClick={() => setOpen(false)}>
+            Cancelar
+          </Button>
+          <Button className="bg-green-600 hover:bg-green-700" onClick={handleSubmit}>
+            Guardar
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   )
 }
