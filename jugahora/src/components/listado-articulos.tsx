@@ -13,7 +13,6 @@ import { useToast } from "@/hooks/use-toast"
 import type { Articulo } from "@/lib/tipos"
 import { ModalEditarArticulo } from "@/components/ModalEditarArticulo"
 
-
 export function ListadoArticulos() {
   const [articulos, setArticulos] = useState<Articulo[]>([])
   const [busqueda, setBusqueda] = useState("")
@@ -21,8 +20,6 @@ export function ListadoArticulos() {
   const { toast } = useToast()
   const [articuloSeleccionado, setArticuloSeleccionado] = useState<Articulo | null>(null)
   const [modalAbierto, setModalAbierto] = useState(false)
-
-
 
   useEffect(() => {
     async function cargarArticulos() {
@@ -137,9 +134,6 @@ export function ListadoArticulos() {
     setArticuloSeleccionado(articulo)
     setModalAbierto(true)
   }
-  
-
-  
 
   const handleEliminar = async (id: number) => {
     const confirmar = confirm("¿Estás seguro de que querés eliminar este artículo?")
@@ -208,7 +202,13 @@ export function ListadoArticulos() {
               </div>
               <div className="flex flex-col space-y-3 md:space-y-0 md:flex-row md:gap-3">
                 <div className="relative">
-                  <input type="file" id="importar" className="hidden" accept=".xlsx, .xls" onChange={handleImportar} />
+                  <input
+                    type="file"
+                    id="importar"
+                    className="hidden"
+                    accept=".xlsx, .xls"
+                    onChange={handleImportar}
+                  />
                   <Button variant="outline" className="flex items-center gap-2 w-full md:w-auto" asChild>
                     <label htmlFor="importar" className="cursor-pointer">
                       <Upload size={18} className="text-green-500" />
@@ -239,11 +239,11 @@ export function ListadoArticulos() {
 
       {modalAbierto && articuloSeleccionado && (
         <ModalEditarArticulo
-        articulo={articuloSeleccionado}
-        abierto={modalAbierto}
-        onClose={() => setModalAbierto(false)}
-        onGuardado={handleArticuloActualizado} // <- Este nombre es el correcto según tu interface
-      />
+          articulo={articuloSeleccionado}
+          abierto={modalAbierto}
+          onClose={() => setModalAbierto(false)}
+          onGuardado={handleArticuloActualizado}
+        />
       )}
     </div>
   )
