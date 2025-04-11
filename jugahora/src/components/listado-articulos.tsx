@@ -11,12 +11,19 @@ import { TablaArticulos } from "@/components/tabla-articulos"
 import { importarArticulos } from "@/lib/acciones-cliente"
 import { useToast } from "@/hooks/use-toast"
 import type { Articulo } from "@/lib/tipos"
+import { ModalEditarArticulo } from "@/components/ModalEditarArticulo"
+
 
 export function ListadoArticulos() {
   const [articulos, setArticulos] = useState<Articulo[]>([])
   const [busqueda, setBusqueda] = useState("")
   const [cargando, setCargando] = useState(true)
   const { toast } = useToast()
+  const [articuloSeleccionado, setArticuloSeleccionado] = useState<Articulo | null>(null)
+  const [mostrarModal, setMostrarModal] = useState(false)
+  const [modalAbierto, setModalAbierto] = useState(false)
+
+
 
   useEffect(() => {
     async function cargarArticulos() {
@@ -128,11 +135,13 @@ export function ListadoArticulos() {
   }
 
   const handleEditar = (articulo: Articulo) => {
-    console.log("Editar artículo:", articulo)
-    toast({
-      title: "Función no implementada",
-      description: `Abrir modal para editar el artículo "${articulo.nombre}"`,
-    })
+    setArticuloSeleccionado(articulo)
+    setMostrarModal(true)
+  }
+
+  const handleCerrarModal = () => {
+    setMostrarModal(false)
+    setArticuloSeleccionado(null)
   }
 
   const handleEliminar = async (id: number) => {
@@ -164,6 +173,14 @@ export function ListadoArticulos() {
     } finally {
       setCargando(false)
     }
+  }
+
+  const handleArticuloActualizado = (actualizado: Articulo) => {
+    setArticulos((prev) =>
+      prev.map((art) => (art.id === actualizado.id ? actualizado : art)),
+    )
+    setModalAbierto(false)
+    setArticuloSeleccionado(null)
   }
 
   return (
@@ -222,6 +239,15 @@ export function ListadoArticulos() {
           </div>
         </div>
       </div>
+
+      {mostrarModal && articuloSeleccionado && (
+        <ModalEditarArticulo
+        articulo={articuloSeleccionado}
+        abierto={modalAbierto}
+        onClose={() => setModalAbierto(false)}
+        onGuardado={handleArticuloActualizado} // <- Este nombre es el correcto según tu interface
+      />
+      )}
     </div>
   )
 }
