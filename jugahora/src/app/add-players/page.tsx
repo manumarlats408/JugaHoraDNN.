@@ -1,11 +1,13 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useRouter, useSearchParams } from 'next/navigation'  // Asegúrate de importar useSearchParams
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Suspense } from 'react'
 
+// Define el tipo de User
 interface User {
   id: number
   firstName: string
@@ -13,7 +15,8 @@ interface User {
   email: string
 }
 
-export default function AddPlayers() {
+// Componente principal
+const AddPlayers = () => {
   const [profiles, setProfiles] = useState<User[]>([])
   const [filteredProfiles, setFilteredProfiles] = useState<User[]>([])
   const [searchTerm, setSearchTerm] = useState('')
@@ -22,6 +25,7 @@ export default function AddPlayers() {
   const searchParams = useSearchParams()  // Aquí obtenemos los parámetros de la URL
   const matchId = searchParams.get('matchId')  // Obtenemos el matchId de la query string
 
+  // Obtener los perfiles de usuarios
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -37,6 +41,7 @@ export default function AddPlayers() {
     fetchData()
   }, [])
 
+  // Manejar la búsqueda de jugadores
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toLowerCase()
     setSearchTerm(value)
@@ -48,6 +53,7 @@ export default function AddPlayers() {
     setFilteredProfiles(filtered)
   }
 
+  // Manejar la selección de jugadores
   const handleAddPlayer = (playerId: number) => {
     if (selectedPlayers.includes(playerId)) {
       setSelectedPlayers(selectedPlayers.filter((id) => id !== playerId)) // Eliminar si ya está seleccionado
@@ -56,6 +62,7 @@ export default function AddPlayers() {
     }
   }
 
+  // Enviar los jugadores seleccionados al partido
   const handleSubmit = async () => {
     if (!matchId || selectedPlayers.length === 0) {
       alert('Por favor, selecciona al menos un jugador')
@@ -123,3 +130,14 @@ export default function AddPlayers() {
     </div>
   )
 }
+
+// Envolver el componente con Suspense para manejar correctamente los hooks del cliente
+const PageWrapper = () => {
+  return (
+    <Suspense fallback={<div>Cargando...</div>}>
+      <AddPlayers />
+    </Suspense>
+  )
+}
+
+export default PageWrapper
