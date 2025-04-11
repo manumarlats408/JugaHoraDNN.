@@ -1,7 +1,7 @@
 // src/app/api/movimientos/route.ts
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-
+import { Prisma } from "@prisma/client"
 
 // GET: /api/movimientos?clubId=1&desde=2024-01-01&hasta=2024-12-31
 export async function GET(request: Request) {
@@ -10,16 +10,19 @@ export async function GET(request: Request) {
   const desde = searchParams.get("desde")
   const hasta = searchParams.get("hasta")
 
-  if (!clubId) return NextResponse.json({ error: "clubId es obligatorio" }, { status: 400 })
+  if (!clubId) {
+    return NextResponse.json({ error: "clubId es obligatorio" }, { status: 400 })
+  }
 
-  const where: any = { clubId }
+  // Creamos el filtro de fechas aparte para evitar errores de tipo
+  const fechaFiltro: Prisma.DateTimeFilter = {}
 
-  if (desde) where.fechaMovimiento = { gte: new Date(desde) }
-  if (hasta) {
-    where.fechaMovimiento = {
-      ...where.fechaMovimiento,
-      lte: new Date(hasta),
-    }
+  if (desde) fechaFiltro.gte = new Date(desde)
+  if (hasta) fechaFiltro.lte = new Date(hasta)
+
+  const where: Prisma.MovimientoFinancieroWhereInput = {
+    clubId,
+    ...(desde || hasta ? { fechaMovimiento: fechaFiltro } : {}),
   }
 
   const movimientos = await prisma.movimientoFinanciero.findMany({
