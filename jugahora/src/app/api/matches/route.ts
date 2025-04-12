@@ -23,6 +23,7 @@ interface Match {
 }
 
 // POST: Create a new match
+
 export async function POST(request: Request) {
   try {
     const { date, startTime, endTime, court, price, clubId, userId, players } = await request.json()
@@ -32,10 +33,8 @@ export async function POST(request: Request) {
     }
 
     const matchPrice = price !== undefined ? price : 0
-
     const jugadores = userId ? [userId, ...(Array.isArray(players) ? players : [])] : []
 
-    // Base del partido (para ambos casos)
     const baseData: Prisma.Partidos_clubCreateInput = {
       date: new Date(date),
       startTime,
@@ -50,20 +49,25 @@ export async function POST(request: Request) {
       Club: { connect: { id: parseInt(clubId) } },
     }
 
-    // Si lo crea un jugador (se añade User y categoría)
     if (userId) {
-      baseData.User = { connect: { id: userId } }
-
+      // Obtener nivel del jugador
       const jugador = await prisma.user.findUnique({
         where: { id: userId },
         select: { nivel: true }
       })
 
-      baseData.categoria = jugador?.nivel ? `Nivel ${jugador.nivel}` : `Nivel ${userId}`
+      if (!jugador?.nivel) {
+        return NextResponse.json(
+          { error: 'Tu perfil no tiene un nivel asignado. Por favor actualizalo antes de crear un partido.' },
+          { status: 400 }
+        )
+      }
+
+      baseData.User = { connect: { id: userId } }
+      baseData.categoria = jugador.nivel.toString()
     }
 
     const newMatch = await prisma.partidos_club.create({ data: baseData })
-
     return NextResponse.json(newMatch)
   } catch (error) {
     console.error('Error creating match:', error)
