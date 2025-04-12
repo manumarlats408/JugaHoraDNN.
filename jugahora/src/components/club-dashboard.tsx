@@ -343,6 +343,7 @@ export function ClubDashboard() {
                       className="col-span-1 sm:col-span-3"
                       value={newMatch.court}
                       onChange={(e) => handleInputChange(e)}
+                      placeholder="Ej: 5"
                     />
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
@@ -354,6 +355,7 @@ export function ClubDashboard() {
                       type="text" // Cambiado de "number" a "text" para quitar las flechas
                       className="col-span-1 sm:col-span-3"
                       value={newMatch.price} // Permitir que se muestre vacío si es 0
+                      placeholder="Ej: 44000"
                       onChange={(e) => handleInputChange(e)}
                       onInput={(e) => {
                         // Permitir solo números
