@@ -26,28 +26,31 @@ interface Match {
 
 export async function POST(request: Request) {
   try {
-    const { date, startTime, endTime, court, price, clubId, userId, users } = await request.json();
+    const { date, startTime, endTime, court, price, clubId, userId, players } = await request.json();
 
     if (!date || !startTime || !endTime || !court || !clubId || !userId) {
       return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
     }
 
+    if (!Array.isArray(players)) {
+      return NextResponse.json({ error: 'El campo players debe ser un array' }, { status: 400 });
+    }
+
     const matchPrice = price !== undefined ? price : 0;
 
-    // Crear el partido con el userId del creador y los usuarios seleccionados
     const newMatch = await prisma.partidos_club.create({
       data: {
         date: new Date(date),
         startTime,
         endTime,
         court,
-        players: users.length + 1,  // 1 para el creador del partido + los jugadores seleccionados
+        players: players.length + 1,
         maxPlayers: 4,
         clubId: parseInt(clubId),
         price: matchPrice,
-        userId,  // Agregar el userId del creador
-        usuarios: [userId, ...users],  // Guardar los userIds en la columna usuarios
-        categoria: "Nivel " + userId,  // Usar el nivel del creador
+        userId,
+        usuarios: [userId, ...players],
+        categoria: "Nivel " + userId,
       },
     });
 
@@ -57,6 +60,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Error creating match' }, { status: 500 });
   }
 }
+
 
 
 // GET: Retrieve matches
