@@ -21,18 +21,16 @@ export default function CrearPartidoJugador() {
   const [endTime, setEndTime] = useState('')
   const [court, setCourt] = useState('')
   const [price, setPrice] = useState('')
-  const [userId, setUserId] = useState<string | null>(null)  // ID del creador
-  const [selectedPlayers, setSelectedPlayers] = useState<number[]>([])  // Jugadores seleccionados
+  const [userId, setUserId] = useState<string | null>(null)
+  const [selectedPlayers, setSelectedPlayers] = useState<number[]>([])
   const router = useRouter()
 
   useEffect(() => {
-    // Recuperar los jugadores seleccionados desde sessionStorage
     const storedPlayers = sessionStorage.getItem('finalPlayers')
     if (storedPlayers) {
       setSelectedPlayers(JSON.parse(storedPlayers))
     }
-  
-    // Recuperar los datos del formulario si existen
+
     const storedData = sessionStorage.getItem('formData')
     if (storedData) {
       const data = JSON.parse(storedData)
@@ -43,15 +41,13 @@ export default function CrearPartidoJugador() {
       setCourt(data.court)
       setPrice(data.price)
     }
-  
-    // Cargar clubs
+
     const fetchClubs = async () => {
       const res = await fetch('/api/clubs')
       const data = await res.json()
       setClubs(data)
     }
-  
-    // Cargar user ID
+
     const fetchUserData = async () => {
       try {
         const response = await fetch("/api/auth", { method: "GET", credentials: "include" })
@@ -63,29 +59,30 @@ export default function CrearPartidoJugador() {
         console.error("Error al obtener los datos del usuario:", error)
       }
     }
-  
+
     fetchClubs()
     fetchUserData()
   }, [])
-  
+
+  const guardarFormularioEnSession = () => {
+    sessionStorage.setItem('formData', JSON.stringify({
+      selectedClubId,
+      date: date?.toISOString() || '',
+      startTime,
+      endTime,
+      court,
+      price
+    }))
+  }
 
   const handleSubmit = async () => {
     if (!selectedClubId || !date || !startTime || !endTime || !court || !price || !userId) {
       alert('Por favor completá todos los campos')
       return
     }
-  
-    // Guardar los datos en sessionStorage antes de redirigir
-    sessionStorage.setItem('formData', JSON.stringify({
-      selectedClubId,
-      date: date.toISOString(),
-      startTime,
-      endTime,
-      court,
-      price
-    }))
-    
-    // Enviar la solicitud para crear el partido
+
+    guardarFormularioEnSession()
+
     const res = await fetch('/api/matches', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -96,22 +93,29 @@ export default function CrearPartidoJugador() {
         court,
         price: parseFloat(price),
         clubId: parseInt(selectedClubId),
-        userId: userId,
+        userId,
         players: selectedPlayers
       })
     })
-  
+
     if (res.ok) {
       alert('Partido creado con éxito')
+      sessionStorage.removeItem('formData')
+      sessionStorage.removeItem('finalPlayers')
       router.push('/jugar')
     } else {
       alert('Error al crear el partido')
     }
   }
-  
 
   const handleAddPlayersRedirect = () => {
-    router.push('/add-players')  // Redirigir a la página de añadir jugadores
+    if (!selectedClubId || !date || !startTime || !endTime || !court || !price) {
+      alert('Por favor completá todos los campos antes de añadir jugadores')
+      return
+    }
+
+    guardarFormularioEnSession()
+    router.push('/add-players')
   }
 
   return (
@@ -171,7 +175,6 @@ export default function CrearPartidoJugador() {
             />
           </div>
 
-          {/* Botón para redirigir a la página de añadir jugadores */}
           <Button onClick={handleAddPlayersRedirect} className="w-full mt-4">
             Añadir Jugadores
           </Button>
