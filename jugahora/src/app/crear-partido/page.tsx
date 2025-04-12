@@ -31,14 +31,27 @@ export default function CrearPartidoJugador() {
     if (storedPlayers) {
       setSelectedPlayers(JSON.parse(storedPlayers))
     }
-
+  
+    // Recuperar los datos del formulario si existen
+    const storedData = sessionStorage.getItem('formData')
+    if (storedData) {
+      const data = JSON.parse(storedData)
+      setSelectedClubId(data.selectedClubId)
+      setDate(data.date ? new Date(data.date) : null)
+      setStartTime(data.startTime)
+      setEndTime(data.endTime)
+      setCourt(data.court)
+      setPrice(data.price)
+    }
+  
+    // Cargar clubs
     const fetchClubs = async () => {
       const res = await fetch('/api/clubs')
       const data = await res.json()
       setClubs(data)
     }
-    fetchClubs()
-
+  
+    // Cargar user ID
     const fetchUserData = async () => {
       try {
         const response = await fetch("/api/auth", { method: "GET", credentials: "include" })
@@ -50,23 +63,11 @@ export default function CrearPartidoJugador() {
         console.error("Error al obtener los datos del usuario:", error)
       }
     }
+  
+    fetchClubs()
     fetchUserData()
   }, [])
-
-    // En `crear-partido/page.tsx`
-  useEffect(() => {
-    const storedData = sessionStorage.getItem('formData')
-    if (storedData) {
-      const data = JSON.parse(storedData)
-      setSelectedClubId(data.selectedClubId)
-      setDate(new Date(data.date))
-      setStartTime(data.startTime)
-      setEndTime(data.endTime)
-      setCourt(data.court)
-      setPrice(data.price)
-    }
-  }, [])
-
+  
 
   const handleSubmit = async () => {
     if (!selectedClubId || !date || !startTime || !endTime || !court || !price || !userId) {

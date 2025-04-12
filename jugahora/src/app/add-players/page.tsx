@@ -77,8 +77,12 @@ const AddPlayers = () => {
           </CardHeader>
           <CardContent className="space-y-4 pt-4">
             {/* Flecha para regresar al formulario */}
-            <Button onClick={handleBack} className="flex items-center text-blue-500">
-              <MdArrowBack className="h-5 w-5 mr-2" /> {/* Reemplazado con react-icons */}
+            <Button
+              onClick={handleBack}
+              variant="outline"
+              className="flex items-center justify-start gap-2 text-green-800"
+            >
+              <MdArrowBack className="h-5 w-5" />
               Volver
             </Button>
             <Input
