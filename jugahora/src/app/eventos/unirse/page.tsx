@@ -22,6 +22,7 @@ import {
   DollarSign,
   Trophy,
   Hash,
+  Plus
 } from "lucide-react"
 import { toast } from "react-hot-toast"
 import {
@@ -71,6 +72,7 @@ const elementosMenu = [
   { href: "/perfil", etiqueta: "Perfil", icono: User },
   { href: "/reserva", etiqueta: "Reservar", icono: Calendar },
   { href: "/jugar", etiqueta: "Unirme a un partido", icono: Users },
+  { href: "/crear-partido", label: "Crear un partido", icono: Plus },
   { href: "/eventos/unirse", etiqueta: "Unirse a un evento", icono: Trophy },
 ]
 

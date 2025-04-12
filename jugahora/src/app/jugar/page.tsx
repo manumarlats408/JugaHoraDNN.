@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
-import { Menu, X, Home, User, Users, LogOut, Clock, MapPin, Hash, Search, DollarSign, Trophy } from 'lucide-react'
+import { Menu, X, Home, User, Users, LogOut, Clock, MapPin, Hash, Search, DollarSign, Trophy, Plus } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { Dialog, DialogContent, DialogHeader,  DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { format } from "date-fns"
@@ -49,6 +49,7 @@ const elementosMenu = [
   { href: '/perfil', etiqueta: 'Perfil', icono: User },
   { href: '/reserva', etiqueta: 'Reservar', icono: Calendar },
   { href: '/jugar', etiqueta: 'Unirme a un partido', icono: Users },
+  { href: "/crear-partido", label: "Crear un partido", icono: Plus },
   { href: '/eventos/unirse', etiqueta: 'Unirme a un evento', icono: Trophy },
 ]
 
