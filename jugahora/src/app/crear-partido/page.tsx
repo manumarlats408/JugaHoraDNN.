@@ -24,6 +24,21 @@ type Club = {
   name: string
 }
 
+type Match = {
+  id: number
+  date: string
+  startTime: string
+  endTime: string
+  court: string
+  players: number
+  price: number
+  clubId: number
+  Club: {
+    name: string
+    address?: string
+  }
+}
+
 export default function CrearPartidoJugador() {
   const [clubs, setClubs] = useState<Club[]>([])
   const [selectedClubId, setSelectedClubId] = useState('')
@@ -32,6 +47,7 @@ export default function CrearPartidoJugador() {
   const [endTime, setEndTime] = useState('')
   const [court, setCourt] = useState('')
   const [price, setPrice] = useState('')
+  const [myMatches, setMyMatches] = useState<Match[]>([])
   const [userId, setUserId] = useState<string | null>(null)
   const [selectedPlayers, setSelectedPlayers] = useState<number[]>([])
   const router = useRouter()
@@ -75,6 +91,16 @@ export default function CrearPartidoJugador() {
     fetchUserData()
   }, [])
 
+  useEffect(() => {
+    if (!userId) return
+    const fetchMyMatches = async () => {
+      const res = await fetch(`/api/matches?userId=${userId}`, { credentials: 'include' })
+      const data = await res.json()
+      setMyMatches(data)
+    }
+    fetchMyMatches()
+  }, [userId])
+  
   const guardarFormularioEnSession = () => {
     sessionStorage.setItem('formData', JSON.stringify({
       selectedClubId,
@@ -239,6 +265,44 @@ export default function CrearPartidoJugador() {
             </div>
           </CardContent>
         </Card>
+        {myMatches.length > 0 && (
+          <div className="max-w-xl mx-auto mt-8 space-y-4">
+            <h2 className="text-xl font-semibold text-green-800">Mis partidos creados</h2>
+            {myMatches.map((match) => (
+              <Card key={match.id} className="p-4 border border-green-100">
+                <p><strong>Fecha:</strong> {match.date.split('T')[0]}</p>
+                <p><strong>Hora:</strong> {match.startTime} - {match.endTime}</p>
+                <p><strong>Cancha:</strong> {match.court}</p>
+                <p><strong>Jugadores:</strong> {match.players}/4</p>
+                <p><strong>Precio:</strong> ${match.price}</p>
+                <div className="mt-2 flex space-x-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => router.push(`/editar-partido/${match.id}`)}
+                  >
+                    Editar
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={async () => {
+                      const confirm = window.confirm("¿Seguro que querés cancelar el partido?")
+                      if (!confirm) return
+
+                      const res = await fetch(`/api/matches/${match.id}`, { method: "DELETE" })
+                      if (res.ok) {
+                        setMyMatches(prev => prev.filter(p => p.id !== match.id))
+                      } else {
+                        alert("Error al eliminar el partido")
+                      }
+                    }}
+                  >
+                    Cancelar
+                  </Button>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
       </main>
 
       {/* FOOTER */}
