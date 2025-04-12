@@ -2,6 +2,7 @@
 
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { Prisma } from '@prisma/client'
 
 // Define the interface to include the new fields
 interface Match {
@@ -22,46 +23,53 @@ interface Match {
 }
 
 // POST: Create a new match
-// app/api/matches/route.ts
-
 export async function POST(request: Request) {
   try {
-    const { date, startTime, endTime, court, price, clubId, userId, players } = await request.json();
+    const { date, startTime, endTime, court, price, clubId, userId, players } = await request.json()
 
-    if (!date || !startTime || !endTime || !court || !clubId || !userId) {
-      return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
+    if (!date || !startTime || !endTime || !court || !clubId) {
+      return NextResponse.json({ error: 'All fields are required' }, { status: 400 })
     }
 
-    if (!Array.isArray(players)) {
-      return NextResponse.json({ error: 'El campo players debe ser un array' }, { status: 400 });
+    const matchPrice = price !== undefined ? price : 0
+
+    const jugadores = userId ? [userId, ...(Array.isArray(players) ? players : [])] : []
+
+    // Base del partido (para ambos casos)
+    const baseData: Prisma.Partidos_clubCreateInput = {
+      date: new Date(date),
+      startTime,
+      endTime,
+      court,
+      players: jugadores.length,
+      maxPlayers: 4,
+      price: matchPrice,
+      usuarios: jugadores,
+      mail24h: false,
+      mail12h: false,
+      Club: { connect: { id: parseInt(clubId) } },
     }
 
-    const matchPrice = price !== undefined ? price : 0;
+    // Si lo crea un jugador (se añade User y categoría)
+    if (userId) {
+      baseData.User = { connect: { id: userId } }
 
-    const newMatch = await prisma.partidos_club.create({
-      data: {
-        date: new Date(date),
-        startTime,
-        endTime,
-        court,
-        players: players.length + 1,
-        maxPlayers: 4,
-        clubId: parseInt(clubId),
-        price: matchPrice,
-        userId,
-        usuarios: [userId, ...players],
-        categoria: "Nivel " + userId,
-      },
-    });
+      const jugador = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { nivel: true }
+      })
 
-    return NextResponse.json(newMatch);
+      baseData.categoria = jugador?.nivel ? `Nivel ${jugador.nivel}` : `Nivel ${userId}`
+    }
+
+    const newMatch = await prisma.partidos_club.create({ data: baseData })
+
+    return NextResponse.json(newMatch)
   } catch (error) {
-    console.error('Error creating match:', error);
-    return NextResponse.json({ error: 'Error creating match' }, { status: 500 });
+    console.error('Error creating match:', error)
+    return NextResponse.json({ error: 'Error creating match' }, { status: 500 })
   }
 }
-
-
 
 // GET: Retrieve matches
 export async function GET(request: Request) {
