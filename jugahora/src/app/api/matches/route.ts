@@ -80,26 +80,20 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const clubId = searchParams.get('clubId');
 
-  const userId = searchParams.get('userId');
+  const userId = searchParams.get('userId')
 
   if (userId) {
     const matches = await prisma.partidos_club.findMany({
-      where: { userId: parseInt(userId) },
-      include: {
-        Club: {
-          select: {
-            name: true,
-            address: true,
-          },
-        },
+      where: {
+        userId: parseInt(userId),
       },
       orderBy: {
         date: 'asc',
       },
-    });
-
-    return NextResponse.json(matches);
+    })
+    return NextResponse.json(matches)
   }
+
 
   try {
     if (clubId) {

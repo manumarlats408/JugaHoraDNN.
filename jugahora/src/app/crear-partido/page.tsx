@@ -9,7 +9,16 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { TimeSelector } from '@/components/ui/time-selector'
-import { Home, User, Calendar, Users, Trophy, LogOut } from 'lucide-react'
+import { Home, User, Calendar, Users, Trophy, LogOut, Edit, Trash2, Hash, Clock } from 'lucide-react'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+
 
 const elementosMenu = [
   { href: '/menu', etiqueta: 'Menú', icono: Home },
@@ -47,9 +56,10 @@ export default function CrearPartidoJugador() {
   const [endTime, setEndTime] = useState('')
   const [court, setCourt] = useState('')
   const [price, setPrice] = useState('')
-  const [myMatches, setMyMatches] = useState<Match[]>([])
   const [userId, setUserId] = useState<string | null>(null)
   const [selectedPlayers, setSelectedPlayers] = useState<number[]>([])
+  const [misPartidos, setMisPartidos] = useState<Match[]>([])
+  const [editMatch, setEditMatch] = useState<Match | null>(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -92,13 +102,18 @@ export default function CrearPartidoJugador() {
   }, [])
 
   useEffect(() => {
-    if (!userId) return
-    const fetchMyMatches = async () => {
-      const res = await fetch(`/api/matches?userId=${userId}`, { credentials: 'include' })
-      const data = await res.json()
-      setMyMatches(data)
+    const fetchMisPartidos = async () => {
+      if (!userId) return
+      try {
+        const res = await fetch(`/api/matches?userId=${userId}`)
+        const data = await res.json()
+        setMisPartidos(data)
+      } catch (error) {
+        console.error("Error al obtener partidos del jugador:", error)
+      }
     }
-    fetchMyMatches()
+  
+    if (userId) fetchMisPartidos()
   }, [userId])
   
   const guardarFormularioEnSession = () => {
@@ -111,6 +126,40 @@ export default function CrearPartidoJugador() {
       price
     }))
   }
+
+  const handleDeleteMatch = async (id: number) => {
+    try {
+      const res = await fetch(`/api/matches/${id}`, { method: 'DELETE' })
+      if (res.ok) {
+        setMisPartidos((prev) => prev.filter((m) => m.id !== id))
+      } else {
+        alert('Error al eliminar el partido')
+      }
+    } catch (error) {
+      console.error('Error al eliminar partido:', error)
+    }
+  }
+  
+  const handleSaveEdit = async () => {
+    if (!editMatch) return
+    try {
+      const res = await fetch(`/api/matches/${editMatch.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editMatch),
+      })
+      if (res.ok) {
+        const updated = await res.json()
+        setMisPartidos((prev) => prev.map((m) => (m.id === updated.id ? updated : m)))
+        setEditMatch(null)
+      } else {
+        alert('Error al actualizar el partido')
+      }
+    } catch (error) {
+      console.error('Error al actualizar partido:', error)
+    }
+  }
+  
 
   const handleSubmit = async () => {
     if (!selectedClubId || !date || !startTime || !endTime || !court || !price || !userId) {
@@ -265,43 +314,137 @@ export default function CrearPartidoJugador() {
             </div>
           </CardContent>
         </Card>
-        {myMatches.length > 0 && (
-          <div className="max-w-xl mx-auto mt-8 space-y-4">
-            <h2 className="text-xl font-semibold text-green-800">Mis partidos creados</h2>
-            {myMatches.map((match) => (
-              <Card key={match.id} className="p-4 border border-green-100">
-                <p><strong>Fecha:</strong> {match.date.split('T')[0]}</p>
-                <p><strong>Hora:</strong> {match.startTime} - {match.endTime}</p>
-                <p><strong>Cancha:</strong> {match.court}</p>
-                <p><strong>Jugadores:</strong> {match.players}/4</p>
-                <p><strong>Precio:</strong> ${match.price}</p>
-                <div className="mt-2 flex space-x-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => router.push(`/editar-partido/${match.id}`)}
-                  >
-                    Editar
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    onClick={async () => {
-                      const confirm = window.confirm("¿Seguro que querés cancelar el partido?")
-                      if (!confirm) return
-
-                      const res = await fetch(`/api/matches/${match.id}`, { method: "DELETE" })
-                      if (res.ok) {
-                        setMyMatches(prev => prev.filter(p => p.id !== match.id))
-                      } else {
-                        alert("Error al eliminar el partido")
-                      }
-                    }}
-                  >
-                    Cancelar
-                  </Button>
+        {misPartidos.length > 0 && (
+          <section className="max-w-5xl mx-auto mt-10">
+            <h2 className="text-xl font-semibold text-green-800 mb-4">Mis partidos creados</h2>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {misPartidos.map((match) => (
+                <div
+                  key={match.id}
+                  className="flex flex-col sm:flex-row sm:items-center justify-between p-3 md:p-4 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300"
+                >
+                  <div>
+                    <p className="font-semibold text-gray-800">
+                      {new Date(match.date).toLocaleDateString('es-AR')}
+                    </p>
+                    <div className="grid grid-cols-2 gap-1 text-sm text-gray-500">
+                      <p className="flex items-center">
+                        <Calendar className="w-4 h-4 mr-1" />
+                        {new Date(match.date).toLocaleDateString('es-AR')}
+                      </p>
+                      <p className="flex items-center">
+                        <Clock className="w-4 h-4 mr-1" />
+                        {match.startTime} - {match.endTime}
+                      </p>
+                      <p className="flex items-center">
+                        <Hash className="w-4 h-4 mr-1" />
+                        {match.court}
+                      </p>
+                      <p className="flex items-center">
+                        <Users className="w-4 h-4 mr-1" />
+                        {match.players}/4
+                      </p>
+                    </div>
+                    <span className="text-sm font-semibold text-green-600">${match.price}</span>
+                  </div>
+                  <div className="flex space-x-2 mt-2 sm:mt-0">
+                    <Button variant="outline" size="icon" onClick={() => setEditMatch(match)}>
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button variant="outline" size="icon" onClick={() => handleDeleteMatch(match.id)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
-              </Card>
-            ))}
-          </div>
+              ))}
+            </div>
+          </section>
+        )}
+        {editMatch && (
+          <Dialog open={!!editMatch} onOpenChange={(open) => !open && setEditMatch(null)}>
+            <DialogContent className="sm:max-w-[425px] w-[95vw] max-w-[95vw] sm:w-auto">
+              <DialogHeader>
+                <DialogTitle>Editar Partido</DialogTitle>
+                <DialogDescription>
+                  Modificá los detalles del partido y guardá los cambios.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
+                  <Label htmlFor="date" className="sm:text-right">Fecha</Label>
+                  <Input
+                    id="date"
+                    type="date"
+                    className="col-span-1 sm:col-span-3"
+                    value={editMatch ? new Date(editMatch.date).toISOString().split("T")[0] : ""}
+                    onChange={(e) =>
+                      setEditMatch((prev) =>
+                        prev ? { ...prev, date: e.target.value } : prev
+                      )
+                    }
+                  />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
+                  <Label htmlFor="startTime" className="sm:text-right">Hora de Inicio</Label>
+                  <TimeSelector
+                    id="startTime"
+                    value={editMatch?.startTime || ""}
+                    onChange={(val) =>
+                      setEditMatch((prev) =>
+                        prev ? { ...prev, startTime: val } : prev
+                      )
+                    }
+                  />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
+                  <Label htmlFor="endTime" className="sm:text-right">Hora de Fin</Label>
+                  <TimeSelector
+                    id="endTime"
+                    value={editMatch?.endTime || ""}
+                    onChange={(val) =>
+                      setEditMatch((prev) =>
+                        prev ? { ...prev, endTime: val } : prev
+                      )
+                    }
+                  />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
+                  <Label htmlFor="court" className="sm:text-right">Cancha</Label>
+                  <Input
+                    id="court"
+                    className="col-span-1 sm:col-span-3"
+                    value={editMatch?.court || ""}
+                    onChange={(e) =>
+                      setEditMatch((prev) =>
+                        prev ? { ...prev, court: e.target.value } : prev
+                      )
+                    }
+                  />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
+                  <Label htmlFor="price" className="sm:text-right">Precio</Label>
+                  <Input
+                    id="price"
+                    type="text"
+                    className="col-span-1 sm:col-span-3"
+                    value={editMatch?.price?.toString() || ""}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, "")
+                      setEditMatch((prev) =>
+                        prev ? { ...prev, price: parseFloat(value) || 0 } : prev
+                      )
+                    }}
+                    onInput={(e) => {
+                      e.currentTarget.value = e.currentTarget.value.replace(/\D/g, "")
+                    }}
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button onClick={handleSaveEdit}>Guardar Cambios</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         )}
       </main>
 
