@@ -11,6 +11,7 @@ interface User {
   id: number
   firstName: string
   lastName: string
+  email: string
 }
 
 const AddPlayers = () => {
@@ -98,6 +99,7 @@ const AddPlayers = () => {
                   <div key={profile.id} className="flex justify-between items-center border p-4 rounded-lg hover:bg-green-50 transition-colors">
                     <div>
                       <p className="text-lg font-semibold text-gray-800">{profile.firstName} {profile.lastName}</p>
+                      <p className="text-sm text-gray-500">{profile.email}</p>
                     </div>
                     <Button
                       onClick={() => handleAddPlayer(profile.id)}
