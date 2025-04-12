@@ -49,7 +49,7 @@ const elementosMenu = [
   { href: '/perfil', etiqueta: 'Perfil', icono: User },
   { href: '/reserva', etiqueta: 'Reservar', icono: Calendar },
   { href: '/jugar', etiqueta: 'Unirme a un partido', icono: Users },
-  { href: "/crear-partido", label: "Crear un partido", icono: Plus },
+  { href: "/crear-partido", etiqueta: "Crear un partido", icono: Plus },
   { href: '/eventos/unirse', etiqueta: 'Unirme a un evento', icono: Trophy },
 ]
 
