@@ -1,10 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { useRouter } from 'next/navigation'  
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { MdArrowBack } from 'react-icons/md' // Importa el ícono de react-icons
 
 interface User {
   id: number
@@ -19,10 +20,11 @@ const AddPlayers = () => {
   const [selectedPlayers, setSelectedPlayers] = useState<number[]>([]) // Guardamos los IDs de los jugadores seleccionados
   const router = useRouter()
 
+  // Obtener los perfiles de usuarios
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch('/api/users') 
+        const res = await fetch('/api/users') // Obtener todos los usuarios
         const users = await res.json()
         setProfiles(users)
         setFilteredProfiles(users)
@@ -32,19 +34,14 @@ const AddPlayers = () => {
     }
     fetchData()
 
-    // Intentamos obtener jugadores seleccionados desde sessionStorage
-    const storedPlayers = sessionStorage.getItem('selectedPlayers')
+    // Recuperar los jugadores seleccionados desde sessionStorage
+    const storedPlayers = sessionStorage.getItem('finalPlayers')
     if (storedPlayers) {
       setSelectedPlayers(JSON.parse(storedPlayers))
     }
   }, [])
 
-  // Función para actualizar los jugadores seleccionados en sessionStorage
-  const updateSelectedPlayers = (updatedPlayers: number[]) => {
-    setSelectedPlayers(updatedPlayers)
-    sessionStorage.setItem('selectedPlayers', JSON.stringify(updatedPlayers))  // Guardamos en sessionStorage
-  }
-
+  // Manejar la búsqueda de jugadores
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toLowerCase()
     setSearchTerm(value)
@@ -56,26 +53,19 @@ const AddPlayers = () => {
     setFilteredProfiles(filtered)
   }
 
+  // Manejar la selección de jugadores
   const handleAddPlayer = (playerId: number) => {
     if (selectedPlayers.includes(playerId)) {
-      const updatedPlayers = selectedPlayers.filter((id) => id !== playerId)
-      updateSelectedPlayers(updatedPlayers)
+      setSelectedPlayers(selectedPlayers.filter((id) => id !== playerId))
     } else {
-      const updatedPlayers = [...selectedPlayers, playerId]
-      updateSelectedPlayers(updatedPlayers)
+      setSelectedPlayers([...selectedPlayers, playerId])
     }
   }
 
-  const handleSubmit = async () => {
-    if (selectedPlayers.length === 0) {
-      alert('Por favor, selecciona al menos un jugador')
-      return
-    }
-
-    // Guardar en el formulario de creación del partido
-    sessionStorage.setItem('finalPlayers', JSON.stringify(selectedPlayers)) // Guardamos los jugadores seleccionados de forma temporal
-
-    router.push('/crear-partido') // Volvemos a la página de crear partido
+  // Guardar jugadores seleccionados antes de volver al formulario
+  const handleBack = () => {
+    sessionStorage.setItem('finalPlayers', JSON.stringify(selectedPlayers))
+    router.push('/crear-partido') // Redirige al formulario de creación
   }
 
   return (
@@ -86,6 +76,11 @@ const AddPlayers = () => {
             <CardTitle className="text-xl font-bold text-green-800">Añadir Jugadores al Partido</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 pt-4">
+            {/* Flecha para regresar al formulario */}
+            <Button onClick={handleBack} className="flex items-center text-blue-500">
+              <MdArrowBack className="h-5 w-5 mr-2" /> {/* Reemplazado con react-icons */}
+              Volver
+            </Button>
             <Input
               type="text"
               placeholder="Buscar por nombre..."
@@ -114,8 +109,9 @@ const AddPlayers = () => {
             )}
           </CardContent>
         </Card>
-        <Button onClick={handleSubmit} className="w-full mt-6">
-          Añadir Jugadores al Partido
+
+        <Button onClick={handleBack} className="w-full mt-6">
+          Guardar y Volver
         </Button>
       </div>
     </div>

@@ -53,12 +53,38 @@ export default function CrearPartidoJugador() {
     fetchUserData()
   }, [])
 
+    // En `crear-partido/page.tsx`
+  useEffect(() => {
+    const storedData = sessionStorage.getItem('formData')
+    if (storedData) {
+      const data = JSON.parse(storedData)
+      setSelectedClubId(data.selectedClubId)
+      setDate(new Date(data.date))
+      setStartTime(data.startTime)
+      setEndTime(data.endTime)
+      setCourt(data.court)
+      setPrice(data.price)
+    }
+  }, [])
+
+
   const handleSubmit = async () => {
     if (!selectedClubId || !date || !startTime || !endTime || !court || !price || !userId) {
       alert('Por favor completá todos los campos')
       return
     }
-
+  
+    // Guardar los datos en sessionStorage antes de redirigir
+    sessionStorage.setItem('formData', JSON.stringify({
+      selectedClubId,
+      date: date.toISOString(),
+      startTime,
+      endTime,
+      court,
+      price
+    }))
+    
+    // Enviar la solicitud para crear el partido
     const res = await fetch('/api/matches', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -70,10 +96,10 @@ export default function CrearPartidoJugador() {
         price: parseFloat(price),
         clubId: parseInt(selectedClubId),
         userId: userId,
-        players: selectedPlayers  // Enviar jugadores seleccionados
+        players: selectedPlayers
       })
     })
-
+  
     if (res.ok) {
       alert('Partido creado con éxito')
       router.push('/jugar')
@@ -81,6 +107,7 @@ export default function CrearPartidoJugador() {
       alert('Error al crear el partido')
     }
   }
+  
 
   const handleAddPlayersRedirect = () => {
     router.push('/add-players')  // Redirigir a la página de añadir jugadores
