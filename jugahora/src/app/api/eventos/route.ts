@@ -60,7 +60,7 @@ export async function POST(request: Request) {
         html: generarEmailHTML({
           titulo: `🎾 ¡Nuevo evento en ${nuevoEvento.Club.name}!`,
           saludo: `Hola <strong>${jugador.firstName || "jugador"}</strong>,`,
-          descripcion: `Se ha creado un nuevo evento que coincide con tu nivel (<strong>${categoria}</strong>) y podría interesarte.`,
+          descripcion: `Se ha creado un nuevo evento que podría interesarte.`,
           detalles: [
             { label: "📝 Nombre", valor: nuevoEvento.nombre },
             { label: "📆 Fecha", valor: formatearFechaDDMMYYYY(nuevoEvento.date) },
