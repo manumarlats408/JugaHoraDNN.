@@ -225,27 +225,42 @@ export default function EditarPerfilPage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="nivel">Nivel (solo puedes bajarlo)</Label>
+                  <Label htmlFor="nivel">
+                    Nivel <span className="text-gray-500 text-sm ml-1">(solo puedes bajarlo)</span>
+                  </Label>
+                  <p className="text-sm text-gray-500 mb-1">🏅 Tu nivel actual es <strong>{userData.nivel}</strong>.</p>
                   <select
                     id="nivel"
                     value={userData.nivel || ''}
                     onChange={(e) => {
                       const nuevoNivel = e.target.value;
-                      if (!userData.nivel || parseInt(nuevoNivel) >= parseInt(userData.nivel)) return;
+
+                      // Si aún no hay nivel o es inválido, permitimos el cambio
+                      if (!userData.nivel || userData.nivel === '') {
+                        setUserData({ ...userData, nivel: nuevoNivel });
+                        return;
+                      }
+
+                      // Si intenta bajar el nivel, permitimos
+                      if (parseInt(nuevoNivel) > parseInt(userData.nivel)) {
+                        return; // no se puede subir de nivel
+                      }
+
+                      // Si está bajando el nivel, actualizamos
                       setUserData({ ...userData, nivel: nuevoNivel });
                     }}
                     className="w-full p-2 border rounded"
+                    required
                   >
                     <option value="">Selecciona un nivel</option>
                     {Array.from({ length: 9 }, (_, i) => (i + 1).toString()).map((nivel) => (
-                      parseInt(nivel) >= parseInt(userData.nivel || '9') && (
-                        <option key={nivel} value={nivel}>
-                          {nivel}
-                        </option>
-                      )
+                      <option key={nivel} value={nivel}>
+                        {nivel}
+                      </option>
                     ))}
                   </select>
                 </div>
+
 
 
                 <div>
