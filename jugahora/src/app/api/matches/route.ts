@@ -104,6 +104,7 @@ export async function GET(request: Request) {
       ...match,
       nombreClub: match.Club?.name || 'Club',
       direccionClub: match.Club?.address || '',
+      clubId: match.clubId,
     }));
   
     return NextResponse.json(formattedMatches);

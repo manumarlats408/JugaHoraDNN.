@@ -29,6 +29,7 @@ type Match = {
   players: number
   maxPlayers: number
   nombreClub: string
+  clubId: number
   price: number
   direccionClub: string
   usuarios: number[]
@@ -250,6 +251,20 @@ export default function PaginaJuega() {
     // Crear fecha local sin conversión de zona horaria
     return `${dia}/${mes}/${año}`;
   };
+
+  const obtenerTipoDeCancha = (clubId: number, court: string) => {
+    const canchaNum = parseInt(court)
+    if (isNaN(canchaNum)) return ''
+  
+    if (clubId === 3) {
+      if (canchaNum >= 1 && canchaNum <= 9) return 'Techada'
+      if (canchaNum === 10 || canchaNum === 11) return 'Destechada'
+    }
+  
+    // Agregá más condiciones por club si querés
+  
+    return '' // Desconocido o no especificado
+  }  
 
   const handleMatchClick = async (matchId: number) => {
     setLoadingMatchDetails(prev => ({ ...prev, [matchId]: true }))
@@ -493,6 +508,7 @@ export default function PaginaJuega() {
                       <p className="text-sm text-gray-500 flex items-center">
                         <Hash className="w-4 h-4 mr-1" />
                         Cancha: {match.court}
+                        <span className="ml-2 italic">({obtenerTipoDeCancha(match.clubId, match.court)})</span>
                       </p>
                       <p className="text-sm text-gray-500 flex items-center">
                         <Users className="w-4 h-4 mr-1" />
@@ -502,6 +518,7 @@ export default function PaginaJuega() {
                         <DollarSign className="w-4 h-4 mr-1" />
                         {match.price} en total
                       </p>
+                      <p className="text-sm text-gray-500 italic">* El total se abona en persona en el club.</p>
                       {match.players > 0 && match.categoria && (
                         <p className="text-sm text-gray-500 flex items-center">
                           <Trophy className="w-4 h-4 mr-1" />

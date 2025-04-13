@@ -495,7 +495,7 @@ export function ClubDashboard() {
                           </p>
                           <p className="flex items-center">
                             <Hash className="w-4 h-4 mr-1" />
-                            {match.court}
+                            Cancha: {match.court}
                           </p>
                           <p className="flex items-center">
                             <Users className="w-4 h-4 mr-1" />
