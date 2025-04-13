@@ -4,11 +4,12 @@ export type Articulo = {
   nombre: string
   precioCompra: number
   precioVenta: number
-  tipo: "Ambos" | "Venta"
+  tipo: "Venta" | "Uso Interno" | "Alquiler" | "Ambos" | "Servicio"
   cantidadStock: number
   updatedAt: string
   clubId: number
 }
+
 
 
   export interface Partido {
@@ -19,17 +20,21 @@ export type Articulo = {
     price: number
   }
   
-  export interface Movimiento {
-    id: string
+  export type MovimientoFinanciero = {
+    id: number
     concepto: string
     jugador: string | null
     cancha: string | null
-    fechaTurno: string
+    fechaTurno: string | null
     fechaMovimiento: string
     metodoPago: "Efectivo" | "Transferencia" | "Tarjeta"
     egreso: number | null
     ingreso: number | null
+    clubId: number
   }
+  
+  
+  
   
   export interface Club {
     id: string

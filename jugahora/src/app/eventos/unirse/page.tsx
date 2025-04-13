@@ -22,6 +22,7 @@ import {
   DollarSign,
   Trophy,
   Hash,
+  Plus
 } from "lucide-react"
 import { toast } from "react-hot-toast"
 import {
@@ -71,6 +72,7 @@ const elementosMenu = [
   { href: "/perfil", etiqueta: "Perfil", icono: User },
   { href: "/reserva", etiqueta: "Reservar", icono: Calendar },
   { href: "/jugar", etiqueta: "Unirme a un partido", icono: Users },
+  { href: "/crear-partido", etiqueta: "Crear un partido", icono: Plus },
   { href: "/eventos/unirse", etiqueta: "Unirse a un evento", icono: Trophy },
 ]
 
@@ -749,7 +751,7 @@ export default function PaginaEventos() {
             <DialogTitle>Confirmar cancelación de inscripción</DialogTitle>
             <DialogDescription>
               ¿Estás seguro que deseas cancelar tu inscripción a este evento? Dependiendo de la política del club, es
-              posible que no se realice un reembolso completo.
+              posible que recibas una penalización.
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-end space-x-2">

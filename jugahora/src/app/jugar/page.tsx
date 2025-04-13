@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
-import { Menu, X, Home, User, Users, LogOut, Clock, MapPin, Hash, Search, DollarSign, Trophy } from 'lucide-react'
+import { Menu, X, Home, User, Users, LogOut, Clock, MapPin, Hash, Search, DollarSign, Trophy, Plus } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { Dialog, DialogContent, DialogHeader,  DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { format } from "date-fns"
@@ -29,6 +29,7 @@ type Match = {
   players: number
   maxPlayers: number
   nombreClub: string
+  clubId: number
   price: number
   direccionClub: string
   usuarios: number[]
@@ -49,6 +50,7 @@ const elementosMenu = [
   { href: '/perfil', etiqueta: 'Perfil', icono: User },
   { href: '/reserva', etiqueta: 'Reservar', icono: Calendar },
   { href: '/jugar', etiqueta: 'Unirme a un partido', icono: Users },
+  { href: "/crear-partido", etiqueta: "Crear un partido", icono: Plus },
   { href: '/eventos/unirse', etiqueta: 'Unirme a un evento', icono: Trophy },
 ]
 
@@ -249,6 +251,20 @@ export default function PaginaJuega() {
     // Crear fecha local sin conversión de zona horaria
     return `${dia}/${mes}/${año}`;
   };
+
+  const obtenerTipoDeCancha = (clubId: number, court: string) => {
+    const canchaNum = parseInt(court)
+    if (isNaN(canchaNum)) return ''
+  
+    if (clubId === 3) {
+      if (canchaNum >= 1 && canchaNum <= 9) return 'Techada'
+      if (canchaNum === 10 || canchaNum === 11) return 'Destechada'
+    }
+  
+    // Agregá más condiciones por club si querés
+  
+    return '' // Desconocido o no especificado
+  }  
 
   const handleMatchClick = async (matchId: number) => {
     setLoadingMatchDetails(prev => ({ ...prev, [matchId]: true }))
@@ -492,6 +508,7 @@ export default function PaginaJuega() {
                       <p className="text-sm text-gray-500 flex items-center">
                         <Hash className="w-4 h-4 mr-1" />
                         Cancha: {match.court}
+                        <span className="ml-2 italic">({obtenerTipoDeCancha(match.clubId, match.court)})</span>
                       </p>
                       <p className="text-sm text-gray-500 flex items-center">
                         <Users className="w-4 h-4 mr-1" />
@@ -501,6 +518,7 @@ export default function PaginaJuega() {
                         <DollarSign className="w-4 h-4 mr-1" />
                         {match.price} en total
                       </p>
+                      <p className="text-sm text-gray-500 italic">* El total se abona en persona en el club.</p>
                       {match.players > 0 && match.categoria && (
                         <p className="text-sm text-gray-500 flex items-center">
                           <Trophy className="w-4 h-4 mr-1" />
@@ -637,7 +655,7 @@ export default function PaginaJuega() {
           <DialogHeader>
             <DialogTitle>Confirmar retiro del partido</DialogTitle>
             <DialogDescription>
-              Atención: Si te retiras del partido 1 hora y 30 minutos antes de la hora de inicio del partido no se hará el reembolso.
+              Atención: Si te retiras del partido 12 horas antes de la hora de inicio del partido podrías recibir una penalización.
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-end space-x-2">

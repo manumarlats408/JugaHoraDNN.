@@ -1,132 +1,146 @@
 "use client"
-import { Sidebar } from "@/components/layout/sidebar"
-import { useState, useEffect } from "react"
+
+import { useEffect, useState } from "react"
 import { Search, Calendar } from "lucide-react"
+import type { MovimientoFinanciero } from "@/lib/tipos"
 import { Input } from "@/components/ui/input"
-import { TablaMovimientos } from "@/components/tabla-movimientos"
-import { ResumenSaldos } from "@/components/resumen-saldos"
-import { AgregarMovimientoDialog } from "@/components/agregar-movimiento-dialog"
-import { useToast } from "@/hooks/use-toast"
-import type { Movimiento } from "@/lib/tipos"
+import AgregarMovimientoDialog from "./agregar-movimiento-dialog"
 
-export function MovimientosFinancieros() {
-  const [movimientos, setMovimientos] = useState<Movimiento[]>([])
+export default function MovimientosFinancieros() {
+  const [movimientos, setMovimientos] = useState<MovimientoFinanciero[]>([])
+  const [desde, setDesde] = useState("")
+  const [hasta, setHasta] = useState("")
   const [busqueda, setBusqueda] = useState("")
-  const [fechaDesde, setFechaDesde] = useState<string>(
-    new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split("T")[0],
-  )
-  const [clubId] = useState<number | null>(null)
-  const [fechaHasta, setFechaHasta] = useState<string>(new Date().toISOString().split("T")[0])
-  const [cargando, setCargando] = useState(true)
-  const { toast } = useToast()
 
-  const cargarMovimientos = async () => {
-    try {
-      setCargando(true)
-      const respuesta = await fetch(`/api/movimientos?desde=${fechaDesde}&hasta=${fechaHasta}`)
-      if (!respuesta.ok) throw new Error("Error al cargar los movimientos")
-      const datos = await respuesta.json()
-      setMovimientos(datos)
-    } catch (error) {
-        console.error(error)
-      toast({
-        title: "Error",
-        description: "No se pudieron cargar los movimientos",
-        variant: "destructive",
-      })
-    } finally {
-      setCargando(false)
-    }
+  const fetchMovimientos = async () => {
+    const params = new URLSearchParams()
+    if (desde) params.append("desde", desde)
+    if (hasta) params.append("hasta", hasta)
+
+    const res = await fetch(`/api/movimientos?${params.toString()}`)
+    const data = await res.json()
+    setMovimientos(data)
   }
 
   useEffect(() => {
-    cargarMovimientos()
-  }, [fechaDesde, fechaHasta, toast])
+    fetchMovimientos()
+  }, [desde, hasta])
 
-  const movimientosFiltrados = movimientos.filter(
-    (movimiento) =>
-      movimiento.concepto.toLowerCase().includes(busqueda.toLowerCase()) ||
-      (movimiento.jugador && movimiento.jugador.toLowerCase().includes(busqueda.toLowerCase())),
-  )
-
-  // Calcular totales
-  const totalEfectivo = movimientosFiltrados
+  // Cálculo de saldos por método de pago
+  const totalEfectivo = movimientos
     .filter((m) => m.metodoPago === "Efectivo")
-    .reduce((total, m) => total + (m.ingreso || 0) - (m.egreso || 0), 0)
+    .reduce((s, m) => s + ((m.ingreso || 0) - (m.egreso || 0)), 0)
 
-  const totalTransferencia = movimientosFiltrados
+  const totalTransferencia = movimientos
     .filter((m) => m.metodoPago === "Transferencia")
-    .reduce((total, m) => total + (m.ingreso || 0) - (m.egreso || 0), 0)
+    .reduce((s, m) => s + ((m.ingreso || 0) - (m.egreso || 0)), 0)
 
   const saldoTotal = totalEfectivo + totalTransferencia
 
-  const handleMovimientoCreado = () => {
-    cargarMovimientos()
-  }
-
   return (
-    <div className="flex min-h-screen">
-          {/* Sidebar fijo */}
-      <Sidebar />
-    <div className="flex-1 ml-[4rem] p-6 space-y-6 overflow-auto">
-      <div className="bg-white rounded-lg shadow-sm">
-        <div className="p-6 border-b">
-          <h1 className="text-2xl font-medium text-gray-600">MOVIMIENTOS FINANCIEROS</h1>
-          <p className="text-gray-500 mt-2">Consulta todos los movimientos financieros del complejo deportivo</p>
-        </div>
+    <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="space-y-2 mb-8">
+        <h1 className="text-2xl font-medium text-gray-700">MOVIMIENTOS FINANCIEROS</h1>
+        <p className="text-gray-500">Consulta todos los movimientos financieros del complejo deportivo</p>
+      </div>
 
-        <div className="p-6">
-          <div className="flex flex-col md:flex-row justify-between gap-4 mb-6">
-            <div className="relative w-full md:w-96">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-              <Input
-                type="text"
-                placeholder="Buscar por concepto o jugador"
-                className="pl-10"
-                value={busqueda}
-                onChange={(e) => setBusqueda(e.target.value)}
-              />
-            </div>
-            <div className="flex flex-col md:flex-row gap-3 items-center">
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-500">Desde</span>
-                <div className="relative">
-                  <Input
-                    type="date"
-                    value={fechaDesde}
-                    onChange={(e) => setFechaDesde(e.target.value)}
-                    className="w-full md:w-48"
-                  />
-                  <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-500">Hasta</span>
-                <div className="relative">
-                  <Input
-                    type="date"
-                    value={fechaHasta}
-                    onChange={(e) => setFechaHasta(e.target.value)}
-                    className="w-full md:w-48"
-                  />
-                  <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-                </div>
-              </div>
-              <AgregarMovimientoDialog onMovimientoCreado={handleMovimientoCreado} clubId={clubId ?? 0}/>
-            </div>
+      <div className="border-t border-gray-200 pt-6">
+        <div className="flex flex-col md:flex-row justify-between gap-4 mb-6">
+          <div className="relative w-full md:w-96">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Input
+              className="pl-10 bg-white"
+              placeholder="Buscar por concepto o jugador"
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+            />
           </div>
 
-          <TablaMovimientos movimientos={movimientosFiltrados} cargando={cargando} />
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <span className="text-gray-500 whitespace-nowrap">Desde</span>
+              <div className="relative">
+                <Input
+                  type="date"
+                  value={desde}
+                  onChange={(e) => setDesde(e.target.value)}
+                  className="pr-10 bg-white"
+                />
+                <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              </div>
+            </div>
 
-          <ResumenSaldos
-            totalEfectivo={totalEfectivo}
-            totalTransferencia={totalTransferencia}
-            saldoTotal={saldoTotal}
-          />
+            <div className="flex items-center gap-2">
+              <span className="text-gray-500 whitespace-nowrap">Hasta</span>
+              <div className="relative">
+                <Input
+                  type="date"
+                  value={hasta}
+                  onChange={(e) => setHasta(e.target.value)}
+                  className="pr-10 bg-white"
+                />
+                <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              </div>
+            </div>
+
+            <AgregarMovimientoDialog onSuccess={fetchMovimientos} />
+          </div>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-gray-200">
+                <th className="py-3 text-left font-medium text-gray-500">Concepto</th>
+                <th className="py-3 text-left font-medium text-gray-500">Jugador</th>
+                <th className="py-3 text-left font-medium text-gray-500">Cancha</th>
+                <th className="py-3 text-left font-medium text-gray-500">Fecha de turno</th>
+                <th className="py-3 text-left font-medium text-gray-500">Fecha movimiento</th>
+                <th className="py-3 text-left font-medium text-gray-500">Método de pago</th>
+                <th className="py-3 text-left font-medium text-gray-500">Egreso</th>
+                <th className="py-3 text-left font-medium text-gray-500">Ingreso</th>
+              </tr>
+            </thead>
+            <tbody>
+              {movimientos.length > 0 ? (
+                movimientos.map((m) => (
+                  <tr key={m.id} className="border-b border-gray-100 hover:bg-gray-50">
+                    <td className="py-3">{m.concepto}</td>
+                    <td className="py-3">{m.jugador || "-"}</td>
+                    <td className="py-3">{m.cancha || "-"}</td>
+                    <td className="py-3">{m.fechaTurno ? new Date(m.fechaTurno).toLocaleDateString() : "-"}</td>
+                    <td className="py-3">{new Date(m.fechaMovimiento).toLocaleDateString()}</td>
+                    <td className="py-3">{m.metodoPago}</td>
+                    <td className="py-3 text-red-600">{m.egreso ? `$${m.egreso.toFixed(2)}` : "-"}</td>
+                    <td className="py-3 text-green-600">{m.ingreso ? `$${m.ingreso.toFixed(2)}` : "-"}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={8} className="py-8 text-center text-gray-500 bg-gray-50">
+                    No se encontraron movimientos en el período seleccionado
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+          <div className="bg-gray-50 p-4 rounded-md">
+            <div className="text-gray-500 mb-1">Efectivo</div>
+            <div className="text-2xl font-semibold">$ {totalEfectivo.toFixed(2)}</div>
+          </div>
+          <div className="bg-gray-50 p-4 rounded-md">
+            <div className="text-gray-500 mb-1">Transferencia</div>
+            <div className="text-2xl font-semibold">$ {totalTransferencia.toFixed(2)}</div>
+          </div>
+          <div className="bg-gray-50 p-4 rounded-md">
+            <div className="text-gray-500 mb-1">Saldo</div>
+            <div className="text-2xl font-semibold">$ {saldoTotal.toFixed(2)}</div>
+          </div>
         </div>
       </div>
     </div>
-    </div>
   )
 }
-

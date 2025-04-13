@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import sendgrid from "@sendgrid/mail";
+import { generarEmailHTML, formatearFechaDDMMYYYY } from "@/lib/emailUtils"
+
 
 sendgrid.setApiKey(process.env.SENDGRID_API_KEY as string);
 
@@ -55,22 +57,21 @@ export async function POST(request: Request) {
         to: jugador.email,
         from: process.env.SENDGRID_FROM_EMAIL as string,
         subject: "🎾 ¡Nuevo evento disponible!",
-        html: `
-          <h2>🎾 ¡Nuevo evento en ${nuevoEvento.Club.name}!</h2>
-          <p>Hola ${jugador.firstName || "jugador"},</p>
-          <p>Se ha creado un nuevo evento que puede interesarte.</p>
-          <h3>📅 Detalles del Evento:</h3>
-          <ul>
-            <li><strong>Nombre:</strong> ${nuevoEvento.nombre}</li>
-            <li><strong>Fecha:</strong> ${new Date(nuevoEvento.date).toISOString().split("T")[0]}</li>
-            <li><strong>Horario:</strong> ${startTime} - ${endTime}</li>
-            <li><strong>Género:</strong> ${genero}</li>
-            <li><strong>Categoría:</strong> ${categoria}</li>
-            <li><strong>Tipo:</strong> ${tipo}</li>
-          </ul>
-          <p>Podés unirte desde la plataforma en la sección de eventos.</p>
-          <p>¡Te esperamos en la cancha!</p>
-        `,
+        html: generarEmailHTML({
+          titulo: `🎾 ¡Nuevo evento en ${nuevoEvento.Club.name}!`,
+          saludo: `Hola <strong>${jugador.firstName || "jugador"}</strong>,`,
+          descripcion: `Se ha creado un nuevo evento que podría interesarte.`,
+          detalles: [
+            { label: "📝 Nombre", valor: nuevoEvento.nombre },
+            { label: "📆 Fecha", valor: formatearFechaDDMMYYYY(nuevoEvento.date) },
+            { label: "⏰ Horario", valor: `${startTime} - ${endTime}` },
+            { label: "🎯 Categoría", valor: categoria },
+            { label: "🎭 Género", valor: genero },
+            { label: "📌 Tipo", valor: tipo + (tipo === "torneo" && formato ? ` - Formato ${formato}` : "") },
+            { label: "💰 Precio", valor: `$${price}` },
+          ],
+          footer: `Podés unirte desde la plataforma en la sección de eventos. ¡Te esperamos en la cancha!`,
+        }),
       });
     }
 

@@ -64,6 +64,7 @@ const menuItems = [
   { href: '/perfil', label: 'Perfil', icon: User },
   { href: '/reserva', label: 'Reservar', icon: Calendar },
   { href: '/jugar', label: 'Unirme a un partido', icon: Users },
+  { href: "/crear-partido", label: "Crear un partido", icon: Plus },
   { href: '/eventos/unirse', label: 'Unirme a un evento', icon: Trophy },
 ]
 

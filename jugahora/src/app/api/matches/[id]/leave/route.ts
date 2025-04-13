@@ -5,6 +5,7 @@ import prisma from '@/lib/prisma';
 import { cookies } from 'next/headers';
 import { verifyAuth } from '@/lib/auth';
 import sendgrid from "@sendgrid/mail";
+import { generarEmailHTML, formatearFechaDDMMYYYY } from "@/lib/emailUtils";
 
 sendgrid.setApiKey(process.env.SENDGRID_API_KEY as string);
 
@@ -90,34 +91,25 @@ export async function POST(
           select: { firstName: true, email: true },
         });
 
-        // 🔹 Construir la lista de jugadores restantes
-        const jugadoresLista = jugadoresRestantes
-          .map(jugador => `${jugador.firstName || "Usuario"} (${jugador.email})`)
-          .join("<br>");
-
         // 🔹 Enviar email al club avisando que el partido se abrió nuevamente
-        if (match.Club && match.Club.email) {
-          await sendgrid.send({
-            to: match.Club.email, // Email del club
-            from: process.env.SENDGRID_FROM_EMAIL as string,
-            subject: "🎾 Partido Abierto Nuevamente",
-            html: `
-              <h2>🎾 Un jugador se ha retirado de un partido en ${match.Club.name}</h2>
-              <p>El partido en la cancha ${match.court} ahora tiene 3 jugadores.</p>
-              <h3>📅 Detalles del Partido:</h3>
-              <ul>
-                <li><strong>📍 Club:</strong> ${match.Club.name}</li>
-                <li><strong>📆 Día:</strong> ${match.date.toISOString().split("T")[0]}</li>
-                <li><strong>⏰ Hora:</strong> ${match.startTime} - ${match.endTime}</li>
-                <li><strong>🏟️ Cancha:</strong> ${match.court}</li>
-              </ul>
-              <h3>👥 Jugadores actuales:</h3>
-              <p>${jugadoresLista}</p>
-              <p>Ahora hay un lugar disponible en este partido.</p>
-            `
-          });
-          console.log('Correo enviado al club.');
-        }
+        await sendgrid.send({
+          to: match.Club.email,
+          from: process.env.SENDGRID_FROM_EMAIL as string,
+          subject: "🎾 Partido Abierto Nuevamente",
+          html: generarEmailHTML({
+            titulo: "🎾 Partido Abierto Nuevamente",
+            saludo: `Hola ${match.Club.name},`,
+            descripcion: "Un jugador se ha retirado y el partido ahora tiene 3 jugadores.",
+            detalles: [
+              { label: "📍 Club", valor: match.Club.name },
+              { label: "📆 Día", valor: formatearFechaDDMMYYYY(match.date) },
+              { label: "⏰ Hora", valor: `${match.startTime} - ${match.endTime}` },
+              { label: "🏟️ Cancha", valor: match.court },
+            ],
+            footer: "Ahora hay un lugar disponible en este partido.",
+          }),
+        });
+        
 
         // 🔹 Enviar email a los jugadores restantes avisando que hay un lugar libre
         for (const jugador of jugadoresRestantes) {
@@ -125,20 +117,21 @@ export async function POST(
             to: jugador.email,
             from: process.env.SENDGRID_FROM_EMAIL as string,
             subject: "🎾 Un jugador se ha retirado del partido",
-            html: `
-              <h2>🎾 Un jugador se ha retirado del partido</h2>
-              <p>Ahora hay un lugar disponible en el partido en ${match.Club.name}.</p>
-              <h3>📅 Detalles del Partido:</h3>
-              <ul>
-                <li><strong>📆 Día:</strong> ${match.date.toISOString().split("T")[0]}</li>
-                <li><strong>⏰ Hora:</strong> ${match.startTime} - ${match.endTime}</li>
-                <li><strong>🏟️ Cancha:</strong> ${match.court}</li>
-              </ul>
-              <p>Revisa la plataforma para ver si hay nuevos jugadores disponibles.</p>
-            `
+            html: generarEmailHTML({
+              titulo: "🎾 Un jugador se ha retirado del partido",
+              saludo: `Hola ${jugador.firstName || "jugador"},`,
+              descripcion: "Ahora hay un lugar disponible en tu partido de pádel.",
+              detalles: [
+                { label: "📍 Club", valor: match.Club.name },
+                { label: "📆 Día", valor: formatearFechaDDMMYYYY(match.date) },
+                { label: "⏰ Hora", valor: `${match.startTime} - ${match.endTime}` },
+                { label: "🏟️ Cancha", valor: match.court },
+              ],
+              footer: "Revisá la plataforma para ver si hay nuevos jugadores disponibles.",
+            }),
           });
+          
         }
-        console.log('Correos enviados a los jugadores restantes.');
       }
 
       // 🔔 Notificar si quedó con 3 jugadores
@@ -156,18 +149,20 @@ export async function POST(
             to: user.email,
             from: process.env.SENDGRID_FROM_EMAIL as string,
             subject: "🎾 ¡Unite a este partido de tu nivel!",
-            html: `
-              <h2>🎾 ¡Un partido de nivel ${match.categoria} necesita un jugador!</h2>
-              <p>Un jugador se retiró de un partido que coincide con tu nivel:</p>
-              <ul>
-                <li><strong>📍 Club:</strong> ${match.Club.name}</li>
-                <li><strong>📆 Día:</strong> ${match.date.toISOString().split("T")[0]}</li>
-                <li><strong>⏰ Hora:</strong> ${match.startTime} - ${match.endTime}</li>
-                <li><strong>🏟️ Cancha:</strong> ${match.court}</li>
-              </ul>
-              <p>¡Unite desde la plataforma antes de que se llene!</p>
-            `,
+            html: generarEmailHTML({
+              titulo: `🎾 ¡Un partido de categoria ${match.categoria} necesita un jugador!`,
+              saludo: `Hola ${user.firstName || "jugador"},`,
+              descripcion: "Un jugador se retiró de un partido que coincide con tu nivel:",
+              detalles: [
+                { label: "📍 Club", valor: match.Club.name },
+                { label: "📆 Día", valor: formatearFechaDDMMYYYY(match.date) },
+                { label: "⏰ Hora", valor: `${match.startTime} - ${match.endTime}` },
+                { label: "🏟️ Cancha", valor: match.court },
+              ],
+              footer: "¡Unite desde la plataforma antes de que se llene!",
+            }),
           });
+          
         }
       }
 

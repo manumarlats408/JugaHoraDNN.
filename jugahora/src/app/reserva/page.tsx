@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Menu, X, Home, User, Calendar, Users, LogOut, Phone, Trophy } from 'lucide-react'
+import { Menu, X, Home, User, Calendar, Users, LogOut, Phone, Trophy, Plus } from 'lucide-react'
 
 const clubs = [
   { name: 'Lasaigues Club - Martinez', phone: '+54 9 11 3013-0664' },
@@ -26,6 +26,7 @@ const menuItems = [
   { href: '/perfil', label: 'Perfil', icon: User },
   { href: '/reserva', label: 'Reservar', icon: Calendar },
   { href: '/jugar', label: 'Unirme a un partido', icon: Users },
+  { href: "/crear-partido", label: "Crear un partido", icon: Plus },
   { href: '/eventos/unirse', label: 'Unirme a un evento', icon: Trophy },
   
 ]

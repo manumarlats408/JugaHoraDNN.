@@ -3,6 +3,7 @@ import prisma from '@/lib/prisma';
 import { cookies } from 'next/headers';
 import { verifyAuth } from '@/lib/auth';
 import sendgrid from "@sendgrid/mail";
+import { generarEmailHTML, formatearFechaDDMMYYYY } from "@/lib/emailUtils";
 
 sendgrid.setApiKey(process.env.SENDGRID_API_KEY as string);
 
@@ -62,52 +63,51 @@ export async function POST(
       if (updatedMatch.players === updatedMatch.maxPlayers && match.Club?.email) {
         const jugadores = await prisma.user.findMany({
           where: { id: { in: updatedMatch.usuarios } },
-          select: { firstName: true, email: true },
+          select: { firstName: true, lastName: true, email: true },
         });
 
         const jugadoresLista = jugadores
-          .map(j => `${j.firstName || 'Jugador'} (${j.email})`)
-          .join("<br>");
+        .map(j => `${(j.firstName || 'Jugador')} ${(j.lastName || '')} (${j.email})`)
+        .join("<br>");
 
         // Email al club
         await sendgrid.send({
           to: match.Club.email,
           from: process.env.SENDGRID_FROM_EMAIL as string,
-          subject: "🎾 Partido Completo - Detalles",
-          html: `
-            <h2>🎾 ¡El partido en ${match.Club.name} está completo!</h2>
-            <p>Se han unido 4 jugadores al partido.</p>
-            <ul>
-              <li><strong>📆 Día:</strong> ${match.date.toISOString().split("T")[0]}</li>
-              <li><strong>⏰ Hora:</strong> ${match.startTime} - ${match.endTime}</li>
-              <li><strong>🏟️ Cancha:</strong> ${match.court}</li>
-            </ul>
-            <h3>👥 Jugadores:</h3>
-            ${jugadoresLista}
-          `,
+          subject: "✅ Partido completo",
+          html: generarEmailHTML({
+            titulo: "✅ Partido completo",
+            saludo: `Hola ${match.Club.name},`,
+            descripcion: "Se han unido 4 jugadores al partido programado.",
+            detalles: [
+              { label: "📆 Día", valor: formatearFechaDDMMYYYY(match.date) },
+              { label: "⏰ Hora", valor: `${match.startTime} - ${match.endTime}` },
+              { label: "🏟️ Cancha", valor: match.court },
+            ],
+            footer: `Jugadores inscritos:<br>${jugadoresLista}`,
+          }),
         });
-
+        
         // Email a los jugadores
         for (const jugador of jugadores) {
           await sendgrid.send({
             to: jugador.email,
             from: process.env.SENDGRID_FROM_EMAIL as string,
             subject: "✅ Tu partido ha sido confirmado",
-            html: `
-              <h2>🎾 ¡Partido confirmado!</h2>
-              <p>Hola ${jugador.firstName || 'jugador'},</p>
-              <p>El partido en <strong>${match.Club.name}</strong> ya se encuentra completo.</p>
-              <h3>📅 Detalles:</h3>
-              <ul>
-                <li><strong>Día:</strong> ${match.date.toISOString().split("T")[0]}</li>
-                <li><strong>Hora:</strong> ${match.startTime} - ${match.endTime}</li>
-                <li><strong>Cancha:</strong> ${match.court}</li>
-              </ul>
-              <p>¡Nos vemos en la cancha! 🏆</p>
-              <p style="font-size: 12px; color: #888;">JugáHora</p>
-            `,
+            html: generarEmailHTML({
+              titulo: "🎾 ¡Partido confirmado!",
+              saludo: `Hola <strong>${jugador.firstName || "jugador"}</strong>,`,
+              descripcion: `El partido en <strong>${match.Club.name}</strong> ya se encuentra completo.`,
+              detalles: [
+                { label: "📆 Día", valor: formatearFechaDDMMYYYY(match.date) },
+                { label: "⏰ Hora", valor: `${match.startTime} - ${match.endTime}` },
+                { label: "🏟️ Cancha", valor: match.court },
+              ],
+              footer: "¡Nos vemos en la cancha!",
+            }),
           });
         }
+        
       }
 
       // 🔔 Notificación si el partido queda con 3 jugadores
@@ -125,19 +125,21 @@ export async function POST(
             to: user.email,
             from: process.env.SENDGRID_FROM_EMAIL as string,
             subject: "🎾 ¡Unite a este partido de tu nivel!",
-            html: `
-              <h2>🎾 ¡Un partido de nivel ${match.categoria} necesita un jugador!</h2>
-              <p>Hay un lugar disponible en un partido que coincide con tu nivel:</p>
-              <ul>
-                <li><strong>📍 Club:</strong> ${match.Club.name}</li>
-                <li><strong>📆 Día:</strong> ${match.date.toISOString().split("T")[0]}</li>
-                <li><strong>⏰ Hora:</strong> ${match.startTime} - ${match.endTime}</li>
-                <li><strong>🏟️ Cancha:</strong> ${match.court}</li>
-              </ul>
-              <p>¡Unite desde la plataforma antes de que se llene!</p>
-            `,
+            html: generarEmailHTML({
+              titulo: `🎾 ¡Un partido de categoria ${match.categoria} necesita un jugador!`,
+              saludo: `Hola <strong>${user.firstName || "jugador"}</strong>,`,
+              descripcion: `Hay un lugar disponible en un partido que coincide con tu nivel.`,
+              detalles: [
+                { label: "📍 Club", valor: match.Club.name },
+                { label: "📆 Día", valor: formatearFechaDDMMYYYY(match.date) },
+                { label: "⏰ Hora", valor: `${match.startTime} - ${match.endTime}` },
+                { label: "🏟️ Cancha", valor: match.court },
+              ],
+              footer: "¡Unite desde la plataforma antes de que se llene!",
+            }),
           });
         }
+        
       }
 
       return updatedMatch;
