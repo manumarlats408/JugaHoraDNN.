@@ -54,7 +54,7 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
-  const { email, nivel, preferredSide, strengths, weaknesses } = await request.json();
+  const { email, nivel,  preferredSide, strengths, weaknesses } = await request.json();
 
   if (!nivel) {
     return NextResponse.json({ error: 'El nivel es obligatorio' }, { status: 400 });
@@ -65,6 +65,7 @@ export async function PATCH(request: Request) {
       where: { email },
       data: { 
         nivel,
+        progress: 50, // Asignar un progreso inicial del 50%
         preferredSide,
         strengths: strengths.split(',').map((s: string) => s.trim()),
         weaknesses: weaknesses.split(',').map((s: string) => s.trim()),
