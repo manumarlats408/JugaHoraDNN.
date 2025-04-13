@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { TimeSelector } from '@/components/ui/time-selector'
-import { Home, User, Calendar, Users, Trophy, LogOut, Edit, Trash2, Hash, Clock } from 'lucide-react'
+import { Home, User, Calendar, Users, Trophy, LogOut, Edit, Trash2, Hash, Clock, Plus } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -25,6 +25,7 @@ const elementosMenu = [
   { href: '/perfil', etiqueta: 'Perfil', icono: User },
   { href: '/reserva', etiqueta: 'Reservar', icono: Calendar },
   { href: '/jugar', etiqueta: 'Unirme a un partido', icono: Users },
+  { href: '/crear-partido', etiqueta: 'Crear un partido', icono: Plus },
   { href: '/eventos/unirse', etiqueta: 'Unirme a un evento', icono: Trophy },
 ]
 
@@ -244,6 +245,52 @@ export default function CrearPartidoJugador() {
 
       {/* FORMULARIO */}
       <main className="flex-1 p-4 bg-gradient-to-b from-green-50 to-white">
+        {misPartidos.length > 0 && (
+          <Card className="w-full max-w-xl mx-auto shadow-md border-green-100 mb-10">
+            <CardHeader className="bg-green-50 border-b border-green-100">
+              <CardTitle className="text-xl font-semibold text-green-800">Mis partidos creados</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 mt-4">
+              {misPartidos.map((match) => (
+                <div
+                  key={match.id}
+                  className="flex flex-col sm:flex-row sm:items-center justify-between p-3 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300"
+                >
+                  <div>
+                    <p className="font-semibold text-gray-800">{match.Club?.name || 'Club'}</p>
+                    <div className="grid grid-cols-2 gap-1 text-sm text-gray-500">
+                      <p className="flex items-center">
+                        <Calendar className="w-4 h-4 mr-1" />
+                        {new Date(match.date).toLocaleDateString('es-AR')}
+                      </p>
+                      <p className="flex items-center">
+                        <Clock className="w-4 h-4 mr-1" />
+                        {match.startTime} - {match.endTime}
+                      </p>
+                      <p className="flex items-center">
+                        <Hash className="w-4 h-4 mr-1" />
+                        {match.court}
+                      </p>
+                      <p className="flex items-center">
+                        <Users className="w-4 h-4 mr-1" />
+                        {match.players}/4
+                      </p>
+                    </div>
+                    <span className="text-sm font-semibold text-green-600">${match.price}</span>
+                  </div>
+                  <div className="flex space-x-2 mt-2 sm:mt-0">
+                    <Button variant="outline" size="icon" onClick={() => setEditMatch(match)}>
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button variant="outline" size="icon" onClick={() => handleDeleteMatch(match.id)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
         <Card className="w-full max-w-xl mx-auto shadow-md border-green-100">
           <CardHeader className="bg-green-50 border-b border-green-100">
             <CardTitle className="text-2xl font-bold text-green-800">Crear Partido</CardTitle>
@@ -314,52 +361,6 @@ export default function CrearPartidoJugador() {
             </div>
           </CardContent>
         </Card>
-        {misPartidos.length > 0 && (
-          <section className="max-w-5xl mx-auto mt-10">
-            <h2 className="text-xl font-semibold text-green-800 mb-4">Mis partidos creados</h2>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {misPartidos.map((match) => (
-                <div
-                  key={match.id}
-                  className="flex flex-col sm:flex-row sm:items-center justify-between p-3 md:p-4 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300"
-                >
-                  <div>
-                    <p className="font-semibold text-gray-800">
-                      {new Date(match.date).toLocaleDateString('es-AR')}
-                    </p>
-                    <div className="grid grid-cols-2 gap-1 text-sm text-gray-500">
-                      <p className="flex items-center">
-                        <Calendar className="w-4 h-4 mr-1" />
-                        {new Date(match.date).toLocaleDateString('es-AR')}
-                      </p>
-                      <p className="flex items-center">
-                        <Clock className="w-4 h-4 mr-1" />
-                        {match.startTime} - {match.endTime}
-                      </p>
-                      <p className="flex items-center">
-                        <Hash className="w-4 h-4 mr-1" />
-                        {match.court}
-                      </p>
-                      <p className="flex items-center">
-                        <Users className="w-4 h-4 mr-1" />
-                        {match.players}/4
-                      </p>
-                    </div>
-                    <span className="text-sm font-semibold text-green-600">${match.price}</span>
-                  </div>
-                  <div className="flex space-x-2 mt-2 sm:mt-0">
-                    <Button variant="outline" size="icon" onClick={() => setEditMatch(match)}>
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button variant="outline" size="icon" onClick={() => handleDeleteMatch(match.id)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
         {editMatch && (
           <Dialog open={!!editMatch} onOpenChange={(open) => !open && setEditMatch(null)}>
             <DialogContent className="sm:max-w-[425px] w-[95vw] max-w-[95vw] sm:w-auto">
