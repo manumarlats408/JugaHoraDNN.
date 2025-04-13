@@ -117,8 +117,8 @@ export default function ExploreProfiles() {
               <div className="space-y-4">
                 {filteredProfiles.map((profile) => (
                   <div
-                    key={profile.id}
-                    className="flex justify-between items-center border p-4 rounded-lg hover:bg-green-50 transition-colors"
+                  key={profile.id}
+                  className="flex flex-col sm:flex-row sm:justify-between sm:items-center border p-4 rounded-lg hover:bg-green-50 transition-colors space-y-2 sm:space-y-0"
                   >
                     <div>
                       <p className="text-lg font-semibold text-gray-800">
@@ -126,7 +126,7 @@ export default function ExploreProfiles() {
                       </p>
                       <p className="text-sm text-gray-500">{profile.email}</p>
                     </div>
-                    <Button onClick={() => handleSendRequest(profile.id)} className="text-sm">
+                    <Button onClick={() => handleSendRequest(profile.id)} className="text-sm w-full sm:w-auto sm:ml-4">
                       Enviar Solicitud
                     </Button>
                   </div>

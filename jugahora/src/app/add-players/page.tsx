@@ -96,14 +96,14 @@ const AddPlayers = () => {
             {filteredProfiles.length > 0 ? (
               <div className="space-y-4">
                 {filteredProfiles.map((profile) => (
-                  <div key={profile.id} className="flex justify-between items-center border p-4 rounded-lg hover:bg-green-50 transition-colors">
+                  <div key={profile.id} className="flex flex-col sm:flex-row sm:justify-between sm:items-center border p-4 rounded-lg hover:bg-green-50 transition-colors space-y-2 sm:space-y-0">
                     <div>
                       <p className="text-lg font-semibold text-gray-800">{profile.firstName} {profile.lastName}</p>
                       <p className="text-sm text-gray-500">{profile.email}</p>
                     </div>
                     <Button
                       onClick={() => handleAddPlayer(profile.id)}
-                      className={`text-sm ${selectedPlayers.includes(profile.id) ? 'bg-green-600' : 'bg-gray-200'}`}
+                      className={`text-sm w-full sm:w-auto ${selectedPlayers.includes(profile.id) ? 'bg-green-600' : 'bg-gray-200'} sm:ml-4`}
                     >
                       {selectedPlayers.includes(profile.id) ? 'Añadido' : 'Añadir al partido'}
                     </Button>

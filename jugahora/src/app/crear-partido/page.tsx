@@ -19,6 +19,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { toast } from 'react-hot-toast'
+import { Menu, X } from 'lucide-react'
+import { useRef } from 'react'
 
 
 
@@ -64,6 +66,8 @@ export default function CrearPartidoJugador() {
   const [isLoading, setIsLoading] = useState(true)
   const [misPartidos, setMisPartidos] = useState<Match[]>([])
   const [editMatch, setEditMatch] = useState<Match | null>(null)
+  const [menuAbierto, setMenuAbierto] = useState(false)
+  const referenciaMenu = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -215,6 +219,22 @@ export default function CrearPartidoJugador() {
     router.push('/add-players')
   }
 
+  const alternarMenu = () => setMenuAbierto(!menuAbierto)
+
+  useEffect(() => {
+    const manejarClicFuera = (evento: MouseEvent) => {
+      if (referenciaMenu.current && !referenciaMenu.current.contains(evento.target as Node)) {
+        setMenuAbierto(false)
+      }
+    }
+
+    document.addEventListener('mousedown', manejarClicFuera)
+    return () => {
+      document.removeEventListener('mousedown', manejarClicFuera)
+    }
+  }, [])
+
+
   const manejarCierreSesion = async () => {
     try {
       await fetch('/api/logout', { method: 'GET', credentials: 'include' })
@@ -240,6 +260,7 @@ export default function CrearPartidoJugador() {
           <Image src='/logo.svg' alt="Logo" width={32} height={32} />
           <span className="ml-2 text-2xl font-bold">JugáHora</span>
         </Link>
+
         <nav className="hidden lg:flex ml-auto gap-6">
           {elementosMenu.map((el) => (
             <Link
@@ -259,7 +280,44 @@ export default function CrearPartidoJugador() {
             Cerrar sesión
           </button>
         </nav>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="lg:hidden ml-auto text-gray-600 hover:text-green-600"
+          onClick={alternarMenu}
+          aria-label={menuAbierto ? "Cerrar menú" : "Abrir menú"}
+        >
+          {menuAbierto ? <X size={24} /> : <Menu size={24} />}
+        </Button>
       </header>
+
+      {menuAbierto && (
+        <div
+          ref={referenciaMenu}
+          className="lg:hidden absolute top-16 right-0 left-0 bg-white shadow-md z-10 transition-all duration-300 ease-in-out"
+        >
+          <nav className="py-2">
+            {elementosMenu.map((elemento) => (
+              <Link
+                key={elemento.href}
+                href={elemento.href}
+                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                onClick={() => setMenuAbierto(false)}
+              >
+                <elemento.icono className="w-4 h-4 mr-2" />
+                {elemento.etiqueta}
+              </Link>
+            ))}
+            <button
+              onClick={manejarCierreSesion}
+              className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Cerrar sesión
+            </button>
+          </nav>
+        </div>
+      )}
 
       <main className="flex-1 p-4 bg-gradient-to-b from-green-50 to-white">
       {misPartidos.length > 0 && (
