@@ -87,13 +87,27 @@ export async function GET(request: Request) {
       where: {
         userId: parseInt(userId),
       },
+      include: {
+        Club: {
+          select: {
+            name: true,
+            address: true,
+          },
+        },
+      },
       orderBy: {
         date: 'asc',
       },
-    })
-    return NextResponse.json(matches)
-  }
-
+    });
+  
+    const formattedMatches = matches.map((match) => ({
+      ...match,
+      nombreClub: match.Club?.name || 'Club',
+      direccionClub: match.Club?.address || '',
+    }));
+  
+    return NextResponse.json(formattedMatches);
+  }  
 
   try {
     if (clubId) {

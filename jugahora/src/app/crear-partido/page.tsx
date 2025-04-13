@@ -59,63 +59,54 @@ export default function CrearPartidoJugador() {
   const [price, setPrice] = useState('')
   const [userId, setUserId] = useState<string | null>(null)
   const [selectedPlayers, setSelectedPlayers] = useState<number[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   const [misPartidos, setMisPartidos] = useState<Match[]>([])
   const [editMatch, setEditMatch] = useState<Match | null>(null)
   const router = useRouter()
 
   useEffect(() => {
-    const storedPlayers = sessionStorage.getItem('finalPlayers')
-    if (storedPlayers) {
-      setSelectedPlayers(JSON.parse(storedPlayers))
-    }
-
-    const storedData = sessionStorage.getItem('formData')
-    if (storedData) {
-      const data = JSON.parse(storedData)
-      setSelectedClubId(data.selectedClubId)
-      setDate(data.date ? new Date(data.date) : null)
-      setStartTime(data.startTime)
-      setEndTime(data.endTime)
-      setCourt(data.court)
-      setPrice(data.price)
-    }
-
-    const fetchClubs = async () => {
-      const res = await fetch('/api/clubs')
-      const data = await res.json()
-      setClubs(data)
-    }
-
-    const fetchUserData = async () => {
+    const fetchInitialData = async () => {
+      setIsLoading(true)
       try {
-        const response = await fetch("/api/auth", { method: "GET", credentials: "include" })
-        if (response.ok) {
-          const data = await response.json()
-          setUserId(data.entity.id)
+        const storedPlayers = sessionStorage.getItem('finalPlayers')
+        if (storedPlayers) setSelectedPlayers(JSON.parse(storedPlayers))
+  
+        const storedData = sessionStorage.getItem('formData')
+        if (storedData) {
+          const data = JSON.parse(storedData)
+          setSelectedClubId(data.selectedClubId)
+          setDate(data.date ? new Date(data.date) : null)
+          setStartTime(data.startTime)
+          setEndTime(data.endTime)
+          setCourt(data.court)
+          setPrice(data.price)
+        }
+  
+        const [clubsRes, userRes] = await Promise.all([
+          fetch('/api/clubs'),
+          fetch('/api/auth', { method: 'GET', credentials: 'include' }),
+        ])
+  
+        const clubsData = await clubsRes.json()
+        setClubs(clubsData)
+  
+        if (userRes.ok) {
+          const userData = await userRes.json()
+          setUserId(userData.entity.id)
+  
+          const matchesRes = await fetch(`/api/matches?userId=${userData.entity.id}`)
+          const matchesData = await matchesRes.json()
+          setMisPartidos(matchesData)
         }
       } catch (error) {
-        console.error("Error al obtener los datos del usuario:", error)
-      }
-    }
-
-    fetchClubs()
-    fetchUserData()
-  }, [])
-
-  useEffect(() => {
-    const fetchMisPartidos = async () => {
-      if (!userId) return
-      try {
-        const res = await fetch(`/api/matches?userId=${userId}`)
-        const data = await res.json()
-        setMisPartidos(data)
-      } catch (error) {
-        console.error("Error al obtener partidos del jugador:", error)
+        console.error('Error al cargar datos iniciales:', error)
+      } finally {
+        setIsLoading(false)
       }
     }
   
-    if (userId) fetchMisPartidos()
-  }, [userId])
+    fetchInitialData()
+  }, [])
   
   const guardarFormularioEnSession = () => {
     sessionStorage.setItem('formData', JSON.stringify({
@@ -214,6 +205,14 @@ export default function CrearPartidoJugador() {
     }
   }
 
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+        <p className="text-lg text-gray-600">Cargando tus partidos...</p>
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       {/* TOPBAR */}
@@ -243,54 +242,54 @@ export default function CrearPartidoJugador() {
         </nav>
       </header>
 
-      {/* FORMULARIO */}
       <main className="flex-1 p-4 bg-gradient-to-b from-green-50 to-white">
-        {misPartidos.length > 0 && (
-          <Card className="w-full max-w-xl mx-auto shadow-md border-green-100 mb-10">
-            <CardHeader className="bg-green-50 border-b border-green-100">
-              <CardTitle className="text-xl font-semibold text-green-800">Mis partidos creados</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 mt-4">
-              {misPartidos.map((match) => (
-                <div
-                  key={match.id}
-                  className="flex flex-col sm:flex-row sm:items-center justify-between p-3 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300"
-                >
-                  <div>
-                    <p className="font-semibold text-gray-800">{match.Club?.name || 'Club'}</p>
-                    <div className="grid grid-cols-2 gap-1 text-sm text-gray-500">
-                      <p className="flex items-center">
-                        <Calendar className="w-4 h-4 mr-1" />
-                        {new Date(match.date).toLocaleDateString('es-AR')}
-                      </p>
-                      <p className="flex items-center">
-                        <Clock className="w-4 h-4 mr-1" />
-                        {match.startTime} - {match.endTime}
-                      </p>
-                      <p className="flex items-center">
-                        <Hash className="w-4 h-4 mr-1" />
-                        {match.court}
-                      </p>
-                      <p className="flex items-center">
-                        <Users className="w-4 h-4 mr-1" />
-                        {match.players}/4
-                      </p>
-                    </div>
-                    <span className="text-sm font-semibold text-green-600">${match.price}</span>
+      {misPartidos.length > 0 && (
+        <Card className="w-full max-w-xl mx-auto mb-10 shadow-md border-green-100">
+          <CardHeader className="bg-green-50 border-b border-green-100">
+            <CardTitle className="text-2xl font-bold text-green-800">Mis partidos creados</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 mt-4">
+            {misPartidos.map((match) => (
+              <div
+                key={match.id}
+                className="flex flex-col sm:flex-row sm:items-center justify-between p-3 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300"
+              >
+                <div>
+                  <p className="font-semibold text-gray-800">{match.Club?.name || 'Club'}</p>
+                  <div className="grid grid-cols-2 gap-1 text-sm text-gray-500">
+                    <p className="flex items-center">
+                      <Calendar className="w-4 h-4 mr-1" />
+                      {new Date(match.date).toLocaleDateString('es-AR')}
+                    </p>
+                    <p className="flex items-center">
+                      <Clock className="w-4 h-4 mr-1" />
+                      {match.startTime} - {match.endTime}
+                    </p>
+                    <p className="flex items-center">
+                      <Hash className="w-4 h-4 mr-1" />
+                      {match.court}
+                    </p>
+                    <p className="flex items-center">
+                      <Users className="w-4 h-4 mr-1" />
+                      {match.players}/4
+                    </p>
                   </div>
-                  <div className="flex space-x-2 mt-2 sm:mt-0">
-                    <Button variant="outline" size="icon" onClick={() => setEditMatch(match)}>
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button variant="outline" size="icon" onClick={() => handleDeleteMatch(match.id)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  <span className="text-sm font-semibold text-green-600">${match.price}</span>
                 </div>
-              ))}
-            </CardContent>
-          </Card>
-        )}
+                <div className="flex space-x-2 mt-2 sm:mt-0">
+                  <Button variant="outline" size="icon" onClick={() => setEditMatch(match)}>
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button variant="outline" size="icon" onClick={() => handleDeleteMatch(match.id)}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+
         <Card className="w-full max-w-xl mx-auto shadow-md border-green-100">
           <CardHeader className="bg-green-50 border-b border-green-100">
             <CardTitle className="text-2xl font-bold text-green-800">Crear Partido</CardTitle>
