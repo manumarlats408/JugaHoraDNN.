@@ -18,6 +18,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { toast } from 'react-hot-toast'
+
 
 
 const elementosMenu = [
@@ -135,9 +137,10 @@ export default function CrearPartidoJugador() {
       const res = await fetch(`/api/matches/${id}`, { method: 'DELETE' })
       if (res.ok) {
         setMisPartidos((prev) => prev.filter((m) => m.id !== id))
+        toast.success('Partido eliminado con éxito')
       } else {
-        alert('Error al eliminar el partido')
-      }
+        toast.error('Error al eliminar el partido')
+      }      
     } catch (error) {
       console.error('Error al eliminar partido:', error)
     }
@@ -155,9 +158,11 @@ export default function CrearPartidoJugador() {
         const updated = await res.json()
         setMisPartidos((prev) => prev.map((m) => (m.id === updated.id ? updated : m)))
         setEditMatch(null)
+        toast.success('Partido actualizado con éxito')
       } else {
-        alert('Error al actualizar el partido')
+        toast.error('Error al actualizar el partido')
       }
+      
     } catch (error) {
       console.error('Error al actualizar partido:', error)
     }
@@ -166,9 +171,10 @@ export default function CrearPartidoJugador() {
 
   const handleSubmit = async () => {
     if (!selectedClubId || !date || !startTime || !endTime || !court || !price || !userId) {
-      alert('Por favor completá todos los campos')
+      toast.error('Por favor completá todos los campos')
       return
     }
+    
 
     guardarFormularioEnSession()
 
@@ -188,20 +194,22 @@ export default function CrearPartidoJugador() {
     })
 
     if (res.ok) {
-      alert('Partido creado con éxito')
+      toast.success('Partido creado con éxito')
       sessionStorage.removeItem('formData')
       sessionStorage.removeItem('finalPlayers')
       router.push('/jugar')
     } else {
-      alert('Error al crear el partido')
+      toast.error('Error al crear el partido')
     }
+    
   }
 
   const handleAddPlayersRedirect = () => {
     if (!selectedClubId || !date || !startTime || !endTime || !court || !price) {
-      alert('Por favor completá todos los campos antes de añadir jugadores')
+      toast.error('Por favor completá todos los campos antes de añadir jugadores')
       return
     }
+    
 
     guardarFormularioEnSession()
     router.push('/add-players')
