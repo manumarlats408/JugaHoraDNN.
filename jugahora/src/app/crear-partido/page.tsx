@@ -107,6 +107,17 @@ export default function CrearPartidoJugador() {
   
     fetchInitialData()
   }, [])
+
+  const formatearFecha = (fechaString: string) => {
+    const partes = fechaString.split("T")[0].split("-")
+    if (partes.length !== 3) return fechaString
+  
+    const año = partes[0]
+    const mes = partes[1]
+    const dia = partes[2]
+  
+    return `${dia}/${mes}/${año}`
+  }  
   
   const guardarFormularioEnSession = () => {
     sessionStorage.setItem('formData', JSON.stringify({
@@ -259,7 +270,7 @@ export default function CrearPartidoJugador() {
                   <div className="grid grid-cols-2 gap-1 text-sm text-gray-500">
                     <p className="flex items-center">
                       <Calendar className="w-4 h-4 mr-1" />
-                      {new Date(match.date).toLocaleDateString('es-AR')}
+                      {formatearFecha(match.date)}
                     </p>
                     <p className="flex items-center">
                       <Clock className="w-4 h-4 mr-1" />
