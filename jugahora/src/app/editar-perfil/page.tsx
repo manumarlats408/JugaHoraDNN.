@@ -224,39 +224,28 @@ export default function EditarPerfilPage() {
                   </select>
                 </div>
 
-                <div>
-                  <Label htmlFor="nivel">
-                    Nivel <span className="text-gray-500 text-sm ml-1">(solo puedes bajarlo)</span>
-                  </Label>
-                  <select
-                    id="nivel"
-                    value={userData.nivel || ''}
-                    onChange={(e) => {
-                      const nuevoNivel = e.target.value;
-
-                      if (!userData.nivel || userData.nivel === '') {
-                        setUserData({ ...userData, nivel: nuevoNivel });
-                        return;
-                      }
-
-                      // Ahora sí: permitimos solo si el nuevo nivel es mayor (más bajo en habilidad)
-                      if (parseInt(nuevoNivel) < parseInt(userData.nivel)) return;
-
-                      setUserData({ ...userData, nivel: nuevoNivel });
-                    }}
-                    className="w-full p-2 border rounded"
-                    required
-                  >
-                    <option value="">Selecciona un nivel</option>
-                    {Array.from({ length: 9 }, (_, i) => (i + 1).toString()).map((nivel) => (
-                      <option key={nivel} value={nivel}>
-                        {nivel}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-
+                {userData.nivel && (
+                  <div>
+                    <Label htmlFor="nivel">
+                      Nivel <span className="text-gray-500 text-sm ml-1">(solo puedes bajar de categoria)</span>
+                    </Label>
+                    <select
+                      id="nivel"
+                      value={userData.nivel}
+                      onChange={(e) => setUserData({ ...userData, nivel: e.target.value })}
+                      className="w-full p-2 border rounded"
+                      required
+                    >
+                      {Array.from({ length: 9 }, (_, i) => (i + 1).toString())
+                        .filter((nivel) => parseInt(nivel) >= parseInt(userData.nivel!))
+                        .map((nivel) => (
+                          <option key={nivel} value={nivel}>
+                            {nivel}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                )}
 
 
                 <div>
