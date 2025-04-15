@@ -3,55 +3,39 @@ import prisma from '@/lib/prisma';
 import { hash } from 'bcryptjs';
 
 export async function POST(request: Request) {
-  const { isClub, email, password, firstName, lastName, phoneNumber, address, age, nivel } = await request.json();
+  const { email, password, firstName, lastName, phoneNumber, address, age, nivel, genero } = await request.json();
 
-  // Verificar si el usuario o club ya existe
-  const existingEntity = await prisma.user.findUnique({ where: { email } }) ||
-                         await prisma.club.findUnique({ where: { email } });
+  // Verificar si el usuario ya existe
+  const existingUser = await prisma.user.findUnique({ where: { email } });
 
-  if (existingEntity) {
+  if (existingUser) {
     return NextResponse.json({ error: 'El correo ya está registrado' }, { status: 400 });
   }
 
-  // Hashear la contraseña
   const hashedPassword = await hash(password, 10);
 
   try {
-    let newEntity;
+    const newUser = await prisma.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+        firstName,
+        lastName,
+        phoneNumber: phoneNumber || null,
+        address: address || null,
+        age: age ? parseInt(age as string) : null,
+        nivel: nivel || null,
+        genero, // 👈 nuevo campo requerido
+      },
+    });
 
-    if (isClub) {
-      // Crear un nuevo club
-      newEntity = await prisma.club.create({
-        data: {
-          email,
-          password: hashedPassword,
-          name: firstName, // Usamos firstName como nombre del club
-          phoneNumber,
-          address,
-        },
-      });
-    } else {
-      // Crear un nuevo usuario
-      newEntity = await prisma.user.create({
-        data: {
-          email,
-          password: hashedPassword,
-          firstName,
-          lastName,
-          phoneNumber: phoneNumber || null,
-          address: address || null,
-          age: age ? parseInt(age as string) : null,
-          nivel: nivel || null, // Agregar campo nivel, puede ser nulo inicialmente
-        },
-      });
-    }
-
-    return NextResponse.json(newEntity, { status: 201 });
+    return NextResponse.json(newUser, { status: 201 });
   } catch (error) {
     console.error('Error al registrar:', error);
     return NextResponse.json({ error: 'Ocurrió un error al registrar' }, { status: 500 });
   }
 }
+
 
 export async function PATCH(request: Request) {
   const { email, nivel,  preferredSide, strengths, weaknesses } = await request.json();

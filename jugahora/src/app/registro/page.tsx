@@ -25,6 +25,7 @@ export default function PaginaRegistro() {
   const [address, setAddress] = useState('')
   const [age, setAge] = useState<number | ''>('')
   const [nivel, setNivel] = useState('')
+  const [genero, setGenero] = useState('')
   const [currentStep, setCurrentStep] = useState(1)
   const [error, setError] = useState('')
   const [isRegistering, setIsRegistering] = useState(false)
@@ -44,7 +45,7 @@ export default function PaginaRegistro() {
         const respuesta = await fetch('/api/registro', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password, firstName, lastName, phoneNumber, address, age }),
+          body: JSON.stringify({ email, password, firstName, lastName, phoneNumber, address, age, genero }),
         })
 
         if (respuesta.ok) {
@@ -129,6 +130,22 @@ export default function PaginaRegistro() {
                   <Label htmlFor="lastName" className="flex items-center">Apellido <RequiredFieldTooltip /></Label>
                   <Input id="lastName" type="text" placeholder="Pérez" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
                 </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="genero" className="flex items-center">
+                  Género <RequiredFieldTooltip />
+                </Label>
+                <select
+                  id="genero"
+                  value={genero}
+                  onChange={(e) => setGenero(e.target.value)}
+                  required
+                  className="w-full p-2 border rounded"
+                >
+                  <option value="">Selecciona tu género</option>
+                  <option value="Masculino">Masculino</option>
+                  <option value="Femenino">Femenino</option>
+                </select>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="age">Edad</Label>
