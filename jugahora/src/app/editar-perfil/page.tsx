@@ -228,25 +228,20 @@ export default function EditarPerfilPage() {
                   <Label htmlFor="nivel">
                     Nivel <span className="text-gray-500 text-sm ml-1">(solo puedes bajarlo)</span>
                   </Label>
-                  <p className="text-sm text-gray-500 mb-1">🏅 Tu nivel actual es <strong>{userData.nivel}</strong>.</p>
                   <select
                     id="nivel"
                     value={userData.nivel || ''}
                     onChange={(e) => {
                       const nuevoNivel = e.target.value;
 
-                      // Si aún no hay nivel o es inválido, permitimos el cambio
                       if (!userData.nivel || userData.nivel === '') {
                         setUserData({ ...userData, nivel: nuevoNivel });
                         return;
                       }
 
-                      // Si intenta bajar el nivel, permitimos
-                      if (parseInt(nuevoNivel) > parseInt(userData.nivel)) {
-                        return; // no se puede subir de nivel
-                      }
+                      // Ahora sí: permitimos solo si el nuevo nivel es mayor (más bajo en habilidad)
+                      if (parseInt(nuevoNivel) < parseInt(userData.nivel)) return;
 
-                      // Si está bajando el nivel, actualizamos
                       setUserData({ ...userData, nivel: nuevoNivel });
                     }}
                     className="w-full p-2 border rounded"
@@ -260,6 +255,7 @@ export default function EditarPerfilPage() {
                     ))}
                   </select>
                 </div>
+
 
 
 
