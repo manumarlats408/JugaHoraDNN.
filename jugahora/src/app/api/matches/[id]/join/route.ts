@@ -39,43 +39,29 @@ export async function POST(
       if (match.players >= match.maxPlayers) throw new Error('El partido está completo');
       if (match.usuarios.includes(userId)) throw new Error('Ya estás unido a este partido');
 
-      // Asignar categoría y género si es el primer jugador
+      // Si es el primer jugador, guarda género y categoría
       if (match.players === 0) {
-        // Primer jugador define la categoría
         await prisma.partidos_club.update({
           where: { id: matchId },
-          data: { categoria: jugador.nivel },
+          data: {
+            categoria: jugador.nivel,
+            genero: jugador.genero,
+          },
         });
       } else {
-        if (match.categoria == null) {
-          throw new Error('Este partido no tiene categoría definida.');
+        if (match.categoria == null || match.genero == null) {
+          throw new Error('Este partido no tiene categoría o género definidos.');
         }
-      
-        // 1. Validar género contra el primer jugador del partido
-        const primerJugador = await prisma.user.findUnique({
-          where: { id: match.usuarios[0] },
-          select: { genero: true },
-        });
-      
-        const jugadorGenero = await prisma.user.findUnique({
-          where: { id: userId },
-          select: { genero: true },
-        });
-      
-        if (!primerJugador?.genero || !jugadorGenero?.genero) {
-          throw new Error('No se pudo verificar el género de los jugadores.');
+
+        // Validar género y nivel contra el partido
+        if (jugador.genero !== match.genero) {
+          throw new Error(`Este partido es para género ${match.genero}. Tu género es ${jugador.genero}.`);
         }
-      
-        if (primerJugador.genero !== jugadorGenero.genero) {
-          throw new Error(`Este partido es para género ${primerJugador.genero}. Tu género es ${jugadorGenero.genero}.`);
-        }
-      
-        // 2. Validar nivel
+
         if (jugador.nivel !== match.categoria) {
           throw new Error(`Este partido es para categoría ${match.categoria}. Tu categoría actual es ${jugador.nivel}.`);
         }
       }
-      
 
       const updatedMatch = await prisma.partidos_club.update({
         where: { id: matchId },

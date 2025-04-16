@@ -91,6 +91,7 @@ model Partidos_club {
   mail24h Boolean @default(false)
   mail12h Boolean @default(false)
   categoria   String?  // 
+  genero      String? 
   userId    Int?      // Nueva columna para el ID del jugador que creó el partido
 
   usuarios    Int[]     // Array of User IDs
