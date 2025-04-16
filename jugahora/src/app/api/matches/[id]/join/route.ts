@@ -41,7 +41,7 @@ export async function POST(
 
       // Asignar categoría y género si es el primer jugador
       if (match.players === 0) {
-        // Primer jugador define la categoría (y se asume su género para validación futura)
+        // Primer jugador define la categoría
         await prisma.partidos_club.update({
           where: { id: matchId },
           data: { categoria: jugador.nivel },
@@ -51,19 +51,31 @@ export async function POST(
           throw new Error('Este partido no tiene categoría definida.');
         }
       
-        if (jugador.nivel !== match.categoria) {
-          throw new Error(`Este partido es para categoría ${match.categoria}. Tu categoría actual es ${jugador.nivel}.`);
-        }
-      
+        // 1. Validar género contra el primer jugador del partido
         const primerJugador = await prisma.user.findUnique({
           where: { id: match.usuarios[0] },
           select: { genero: true },
         });
       
-        if (primerJugador?.genero !== jugador.genero) {
-          throw new Error(`Este partido es para género ${primerJugador?.genero}. Tu género es ${jugador.genero}.`);
+        const jugadorGenero = await prisma.user.findUnique({
+          where: { id: userId },
+          select: { genero: true },
+        });
+      
+        if (!primerJugador?.genero || !jugadorGenero?.genero) {
+          throw new Error('No se pudo verificar el género de los jugadores.');
+        }
+      
+        if (primerJugador.genero !== jugadorGenero.genero) {
+          throw new Error(`Este partido es para género ${primerJugador.genero}. Tu género es ${jugadorGenero.genero}.`);
+        }
+      
+        // 2. Validar nivel
+        if (jugador.nivel !== match.categoria) {
+          throw new Error(`Este partido es para categoría ${match.categoria}. Tu categoría actual es ${jugador.nivel}.`);
         }
       }
+      
 
       const updatedMatch = await prisma.partidos_club.update({
         where: { id: matchId },
