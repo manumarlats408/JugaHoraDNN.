@@ -23,6 +23,7 @@ interface UserData {
   preferredSide?: string
   strengths?: string
   weaknesses?: string
+  nivel?: string
 }
 
 export default function EditarPerfilPage() {
@@ -120,66 +121,82 @@ export default function EditarPerfilPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6">
-            <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="email">
+                Email <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                value={userData.email}
+                onChange={(e) => setUserData({ ...userData, email: e.target.value })}
+                required
+              />
+            </div>
+
+            {userData.isClub ? (
               <div>
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="name">
+                  Nombre del Club <span className="text-red-500">*</span>
+                </Label>
                 <Input
-                  id="email"
-                  type="email"
-                  value={userData.email}
-                  onChange={(e) => setUserData({ ...userData, email: e.target.value })}
+                  id="name"
+                  value={userData.name || ''}
+                  onChange={(e) => setUserData({ ...userData, name: e.target.value })}
                   required
                 />
               </div>
-              {userData.isClub ? (  
+            ) : (
+              <>
                 <div>
-                  <Label htmlFor="name">Nombre del Club</Label>
+                  <Label htmlFor="firstName">
+                    Nombre <span className="text-red-500">*</span>
+                  </Label>
                   <Input
-                    id="name"
-                    value={userData.name || ''}
-                    onChange={(e) => setUserData({ ...userData, name: e.target.value })}
+                    id="firstName"
+                    value={userData.firstName || ''}
+                    onChange={(e) => setUserData({ ...userData, firstName: e.target.value })}
                     required
                   />
                 </div>
-              ) : (
-                <>
-                  <div>
-                    <Label htmlFor="firstName">Nombre</Label>
-                    <Input
-                      id="firstName"
-                      value={userData.firstName || ''}
-                      onChange={(e) => setUserData({ ...userData, firstName: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="lastName">Apellido</Label>
-                    <Input
-                      id="lastName"
-                      value={userData.lastName || ''}
-                      onChange={(e) => setUserData({ ...userData, lastName: e.target.value })}
-                      required
-                    />
-                  </div>
-                </>
-              )}
-              <div>
-                <Label htmlFor="phoneNumber">Teléfono</Label>
-                <Input
-                  id="phoneNumber"
-                  value={userData.phoneNumber || ''}
-                  onChange={(e) => setUserData({ ...userData, phoneNumber: e.target.value })}
-                />
-              </div>
-              <div>
-                <Label htmlFor="address">Dirección</Label>
-                <Input
-                  id="address"
-                  value={userData.address || ''}
-                  onChange={(e) => setUserData({ ...userData, address: e.target.value })}
-                />
-              </div>
-              {!userData.isClub && (
+                <div>
+                  <Label htmlFor="lastName">
+                    Apellido <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="lastName"
+                    value={userData.lastName || ''}
+                    onChange={(e) => setUserData({ ...userData, lastName: e.target.value })}
+                    required
+                  />
+                </div>
+              </>
+            )}
+
+            <div>
+              <Label htmlFor="phoneNumber">
+                Teléfono <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="phoneNumber"
+                value={userData.phoneNumber || ''}
+                onChange={(e) => setUserData({ ...userData, phoneNumber: e.target.value })}
+                required
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="address">Dirección</Label>
+              <Input
+                id="address"
+                value={userData.address || ''}
+                onChange={(e) => setUserData({ ...userData, address: e.target.value })}
+              />
+            </div>
+
+            {!userData.isClub && (
+              <>
                 <div>
                   <Label htmlFor="age">Edad</Label>
                   <Input
@@ -188,49 +205,82 @@ export default function EditarPerfilPage() {
                     value={userData.age || ''}
                     onChange={(e) => setUserData({ ...userData, age: parseInt(e.target.value) || undefined })}
                   />
-                </div>               
-              )}
-              {!userData.isClub && (
-                <>
+                </div>
+
+                <div>
+                  <Label htmlFor="preferredSide">
+                    Lado preferido <span className="text-red-500">*</span>
+                  </Label>
+                  <select
+                    id="preferredSide"
+                    value={userData.preferredSide || ''}
+                    onChange={(e) => setUserData({ ...userData, preferredSide: e.target.value })}
+                    required
+                    className="w-full p-2 border rounded"
+                  >
+                    <option value="">Selecciona un lado</option>
+                    <option value="Revés">Revés</option>
+                    <option value="Drive">Drive</option>
+                  </select>
+                </div>
+
+                {userData.nivel && (
                   <div>
-                    <Label htmlFor="preferredSide">Lado preferido</Label>
-                    <Input
-                      id="preferredSide"
-                      value={userData.preferredSide || ''}
-                      onChange={(e) => setUserData({ ...userData, preferredSide: e.target.value })}
-                      placeholder="Ej: derecha, revés"
-                    />
+                    <Label htmlFor="nivel">
+                      Nivel <span className="text-gray-500 text-sm ml-1">(solo puedes bajar de categoria)</span>
+                    </Label>
+                    <select
+                      id="nivel"
+                      value={userData.nivel}
+                      onChange={(e) => setUserData({ ...userData, nivel: e.target.value })}
+                      className="w-full p-2 border rounded"
+                      required
+                    >
+                      {Array.from({ length: 9 }, (_, i) => (i + 1).toString())
+                        .filter((nivel) => parseInt(nivel) >= parseInt(userData.nivel!))
+                        .map((nivel) => (
+                          <option key={nivel} value={nivel}>
+                            {nivel}
+                          </option>
+                        ))}
+                    </select>
                   </div>
-                  <div>
-                    <Label htmlFor="strengths">Fortalezas</Label>
-                    <Input
-                      id="strengths"
-                      value={userData.strengths || ''}
-                      onChange={(e) => setUserData({ ...userData, strengths: e.target.value })}
-                      placeholder="Ej: volea, saque, smash"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="weaknesses">Debilidades</Label>
-                    <Input
-                      id="weaknesses"
-                      value={userData.weaknesses || ''}
-                      onChange={(e) => setUserData({ ...userData, weaknesses: e.target.value })}
-                      placeholder="Ej: movilidad, juego en red"
-                    />
-                  </div>
-                </>
-              )}
-              <div className="flex justify-between">
-                <Button type="button" variant="outline" onClick={() => router.push('/perfil')}>
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Volver
-                </Button>
-                <Button type="submit" className="bg-green-600 hover:bg-green-700 text-white">
-                  Guardar cambios
-                </Button>
-              </div>
-            </form>
+                )}
+
+
+                <div>
+                  <Label htmlFor="strengths">Fortalezas</Label>
+                  <Input
+                    id="strengths"
+                    value={userData.strengths || ''}
+                    onChange={(e) => setUserData({ ...userData, strengths: e.target.value })}
+                    placeholder="Ej: volea, saque, smash"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="weaknesses">Debilidades</Label>
+                  <Input
+                    id="weaknesses"
+                    value={userData.weaknesses || ''}
+                    onChange={(e) => setUserData({ ...userData, weaknesses: e.target.value })}
+                    placeholder="Ej: movilidad, juego en red"
+                  />
+                </div>
+              </>
+            )}
+
+            <div className="flex justify-between">
+              <Button type="button" variant="outline" onClick={() => router.push('/perfil')}>
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Volver
+              </Button>
+              <Button type="submit" className="bg-green-600 hover:bg-green-700 text-white">
+                Guardar cambios
+              </Button>
+            </div>
+          </form>
+
           </CardContent>
         </Card>
       </main>

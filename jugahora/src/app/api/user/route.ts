@@ -55,26 +55,28 @@ export async function PUT(request: Request) {
 
         // Intentar actualizar el perfil del usuario en la tabla 'User'
         const { data, error: updateError } = await supabase
-            .from('User')
-            .update({
-                firstName: updatedData.firstName,
-                lastName: updatedData.lastName,
-                phoneNumber: updatedData.phoneNumber,
-                address: updatedData.address,
-                age: updatedData.age,
-                preferredSide: updatedData.preferredSide || null,
-                strengths: updatedData.strengths
-                  ? Array.isArray(updatedData.strengths)
-                    ? updatedData.strengths
-                    : updatedData.strengths.split(',').map((s: string) => s.trim())
-                  : [],
-                weaknesses: updatedData.weaknesses
-                  ? Array.isArray(updatedData.weaknesses)
-                    ? updatedData.weaknesses
-                    : updatedData.weaknesses.split(',').map((s: string) => s.trim())
-                  : [],
-              })
-            .eq('email', userEmail);
+        .from('User')
+        .update({
+            firstName: updatedData.firstName,
+            lastName: updatedData.lastName,
+            phoneNumber: updatedData.phoneNumber,
+            address: updatedData.address,
+            age: updatedData.age,
+            preferredSide: updatedData.preferredSide || null,
+            strengths: updatedData.strengths
+            ? Array.isArray(updatedData.strengths)
+                ? updatedData.strengths
+                : updatedData.strengths.split(',').map((s: string) => s.trim())
+            : [],
+            weaknesses: updatedData.weaknesses
+            ? Array.isArray(updatedData.weaknesses)
+                ? updatedData.weaknesses
+                : updatedData.weaknesses.split(',').map((s: string) => s.trim())
+            : [],
+            nivel: updatedData.nivel, // ← ✅ AGREGAR ESTA LÍNEA
+        })
+        .eq('email', userEmail);
+
 
         console.log('Resultado de actualización:', data);
 
