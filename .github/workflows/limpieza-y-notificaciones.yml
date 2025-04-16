@@ -3,23 +3,17 @@ name: Limpieza y Notificaciones
 on:
   schedule:
     - cron: '*/30 * * * *'  # Cada 30 minutos
-  workflow_dispatch:        # Para ejecutarlo manualmente si querés
+  workflow_dispatch:        # También se puede correr manualmente
 
 jobs:
-  limpieza-eventos:
+  tareas-programadas:
     runs-on: ubuntu-latest
     steps:
       - name: Limpiar eventos vencidos
         run: curl -X DELETE "https://www.jugahora.com.ar/api/eventos/cleanup"
 
-  limpieza-partidos:
-    runs-on: ubuntu-latest
-    steps:
       - name: Limpiar partidos vencidos
         run: curl -X DELETE "https://www.jugahora.com.ar/api/matches/cleanup"
 
-  notificaciones:
-    runs-on: ubuntu-latest
-    steps:
       - name: Enviar notificaciones
         run: curl -X GET "https://www.jugahora.com.ar/api/matches/reminder"
