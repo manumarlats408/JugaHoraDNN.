@@ -22,11 +22,11 @@ export async function POST(
 
     const jugador = await prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, nivel: true, firstName: true, email: true },
+      select: { id: true, nivel: true, genero: true, firstName: true, email: true },
     });
 
-    if (!jugador || jugador.nivel == null) {
-      return NextResponse.json({ error: 'No se encontró el jugador o no tiene nivel asignado' }, { status: 400 });
+    if (!jugador || jugador.nivel == null || jugador.genero == null) {
+      return NextResponse.json({ error: 'El jugador no tiene nivel o género asignado' }, { status: 400 });
     }
 
     const result = await prisma.$transaction(async (prisma) => {
@@ -39,15 +39,29 @@ export async function POST(
       if (match.players >= match.maxPlayers) throw new Error('El partido está completo');
       if (match.usuarios.includes(userId)) throw new Error('Ya estás unido a este partido');
 
-      // Asignar o validar categoría
+      // Asignar categoría y género si es el primer jugador
       if (match.players === 0) {
+        // Primer jugador define la categoría (y se asume su género para validación futura)
         await prisma.partidos_club.update({
           where: { id: matchId },
           data: { categoria: jugador.nivel },
         });
       } else {
-        if (match.categoria == null || jugador.nivel !== match.categoria) {
-          throw new Error(`Este partido es para categoria ${match.categoria}. Tu categoria actual es ${jugador.nivel}.`);
+        if (match.categoria == null) {
+          throw new Error('Este partido no tiene categoría definida.');
+        }
+      
+        if (jugador.nivel !== match.categoria) {
+          throw new Error(`Este partido es para categoría ${match.categoria}. Tu categoría actual es ${jugador.nivel}.`);
+        }
+      
+        const primerJugador = await prisma.user.findUnique({
+          where: { id: match.usuarios[0] },
+          select: { genero: true },
+        });
+      
+        if (primerJugador?.genero !== jugador.genero) {
+          throw new Error(`Este partido es para género ${primerJugador?.genero}. Tu género es ${jugador.genero}.`);
         }
       }
 
