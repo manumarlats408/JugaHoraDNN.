@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
-import { Menu, X, Home, User, Users, LogOut, Clock, MapPin, Hash, Search, DollarSign, Trophy, Plus } from 'lucide-react'
+import { Menu, X, Home, User, Users, LogOut, Clock, MapPin, Hash, Search, DollarSign, Trophy, Plus, VenetianMask  } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { Dialog, DialogContent, DialogHeader,  DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { format } from "date-fns"
@@ -34,6 +34,7 @@ type Match = {
   direccionClub: string
   usuarios: number[]
   categoria: string
+  genero: string
 }
 
 type User = {
@@ -523,6 +524,12 @@ export default function PaginaJuega() {
                         <p className="text-sm text-gray-500 flex items-center">
                           <Trophy className="w-4 h-4 mr-1" />
                           Categoria : {match.categoria}
+                        </p>   
+                      )}
+                      {match.players > 0 && (
+                        <p className="text-sm text-gray-500 flex items-center">
+                          <VenetianMask className="w-4 h-4 mr-1" />
+                          Género: {match.genero === 'Masculino' ? 'Masculino' : match.genero === 'Femenino' ? 'Femenino' : 'Mixto'}
                         </p>
                       )}
                       <p className="text-sm text-blue-700">
