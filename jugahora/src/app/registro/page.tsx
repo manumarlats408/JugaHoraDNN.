@@ -64,8 +64,9 @@ export default function PaginaRegistro() {
         })
 
         if (respuesta.ok) {
-          router.push('/login')
-        } else {
+          router.push('/onboarding') // 👈 redirige al video de bienvenida
+        }
+         else {
           const datos = await respuesta.json()
           setError(datos.error || 'Ocurrió un error al completar el registro')
         }
