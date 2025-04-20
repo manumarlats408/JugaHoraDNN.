@@ -180,8 +180,10 @@ export default function PaginaJuega() {
       
       if (respuesta.ok) {
         const updatedMatch = await respuesta.json()
-        setMatches(matches.map(match => 
-          match.id === idPartido ? { ...match, players: updatedMatch.players, usuarios: [...match.usuarios, user.id] } : match
+        setMatches(matches.map(match =>
+          match.id === idPartido
+            ? { ...match, ...updatedMatch }
+            : match
         ))
         toast.success('Te has unido al partido exitosamente!')
       } else {
