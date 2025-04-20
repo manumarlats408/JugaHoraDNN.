@@ -165,6 +165,20 @@ export default function DashboardPage() {
             </Card>
           </Link>
 
+          {/* 👉 Jugadores Abonados */}
+          <Link href="/abonados">
+            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                <CardTitle className="text-sm font-medium">Jugadores Abonados</CardTitle>
+                <Users className="h-4 w-4 text-yellow-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">Ver</div>
+                <p className="text-xs text-muted-foreground">Gestión de jugadores validados</p>
+              </CardContent>
+            </Card>
+          </Link>
+
           {/* 👉 Eventos */}
           <Link href="/eventos">
             <Card className="hover:shadow-md transition-shadow cursor-pointer">
