@@ -20,6 +20,8 @@ export function AbonadosDashboard() {
   const [allUsers, setAllUsers] = useState<User[]>([])
   const [abonados, setAbonados] = useState<User[]>([])
   const [searchTerm, setSearchTerm] = useState("")
+  const [loadingUserId, setLoadingUserId] = useState<number | null>(null)
+
 
   useEffect(() => {
     const fetchClub = async () => {
@@ -50,6 +52,7 @@ export function AbonadosDashboard() {
   }, [clubId])
 
   const handleAgregar = async (userId: number) => {
+    setLoadingUserId(userId)
     const res = await fetch("/api/abonados", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -60,9 +63,11 @@ export function AbonadosDashboard() {
       setAbonados([...abonados, newUser!])
       toast.success("Jugador agregado")
     }
+    setLoadingUserId(null)
   }
 
   const handleEliminar = async (userId: number) => {
+    setLoadingUserId(userId)
     const res = await fetch(`/api/abonados?clubId=${clubId}&userId=${userId}`, {
       method: "DELETE",
     })
@@ -70,6 +75,7 @@ export function AbonadosDashboard() {
       setAbonados(abonados.filter((u) => u.id !== userId))
       toast.success("Jugador eliminado")
     }
+    setLoadingUserId(null)
   }
 
   const abonadosIds = abonados.map((u) => u.id)
@@ -105,12 +111,35 @@ export function AbonadosDashboard() {
                   </div>
                 </div>
                 {abonadosIds.includes(user.id) ? (
-                  <Button variant="destructive" onClick={() => handleEliminar(user.id)}>
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Quitar
+                  <Button
+                    variant="destructive"
+                    disabled={loadingUserId === user.id}
+                    onClick={() => handleEliminar(user.id)}
+                  >
+                    {loadingUserId === user.id ? (
+                      <span className="flex items-center gap-2">
+                        <span className="loader"></span> Quitando...
+                      </span>
+                    ) : (
+                      <>
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Quitar
+                      </>
+                    )}
                   </Button>
                 ) : (
-                  <Button onClick={() => handleAgregar(user.id)}>Agregar</Button>
+                  <Button
+                    disabled={loadingUserId === user.id}
+                    onClick={() => handleAgregar(user.id)}
+                  >
+                    {loadingUserId === user.id ? (
+                      <span className="flex items-center gap-2">
+                        <span className="loader"></span> Agregando...
+                      </span>
+                    ) : (
+                      "Agregar"
+                    )}
+                  </Button>
                 )}
               </div>
             ))}

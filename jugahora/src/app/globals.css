@@ -125,3 +125,17 @@
     font-size: 0.7rem;
   }
 }
+
+.loader {
+  border: 2px solid #e5e7eb; /* light gray */
+  border-top: 2px solid #10b981; /* green */
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
