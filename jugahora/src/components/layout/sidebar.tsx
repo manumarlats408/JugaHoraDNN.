@@ -14,6 +14,7 @@ import {
   Trophy,
   Menu,
   X,
+  UserCheck
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -22,7 +23,7 @@ import { Button } from "@/components/ui/button"
 const navItems = [
   { href: "/club-dashboard", icon: LayoutGrid, label: "Dashboard" },
   { href: "/partidos", icon: CalendarIcon, label: "Partidos" },
-  { href: "/abonados", icon: Users, label: "Abonados" },
+  { href: "/abonados", icon: UserCheck, label: "Abonados" },
   { href: "/eventos", icon: Trophy, label: "Eventos" },
   { href: "/inventario", icon: FileText, label: "Inventario" },
   { href: "/finanzas", icon: DollarSign, label: "Finanzas" },
