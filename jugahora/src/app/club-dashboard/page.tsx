@@ -18,6 +18,7 @@ export default function DashboardPage() {
   const [cargando, setCargando] = useState(true)
   const [clubData, setClubData] = useState<Club | null>(null)
   const [userName, setUserName] = useState<string | null>(null)
+  const [cantidadAbonados, setCantidadAbonados] = useState<number>(0)
   const router = useRouter()
 
   useEffect(() => {
@@ -72,6 +73,14 @@ export default function DashboardPage() {
           const articulosData = await articulosResponse.json()
           setArticulos(articulosData)
         }
+
+        const abonadosRes = await fetch(`/api/abonados?clubId=${userData.entity.id}`, {
+          credentials: "include",
+        })
+        if (abonadosRes.ok) {
+          const abonados = await abonadosRes.json()
+          setCantidadAbonados(abonados.length)
+        }      
 
         // Cargar movimientos financieros
         const fechaDesde = new Date()
@@ -170,11 +179,11 @@ export default function DashboardPage() {
             <Card className="hover:shadow-md transition-shadow cursor-pointer">
               <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                 <CardTitle className="text-sm font-medium">Jugadores Abonados</CardTitle>
-                <Users className="h-4 w-4 text-yellow-600" />
+                <Users className="h-4 w-4 text-emerald-600" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">Ver</div>
-                <p className="text-xs text-muted-foreground">Gestión de jugadores validados</p>
+                <div className="text-2xl font-bold">{cantidadAbonados}</div>
+                <p className="text-xs text-muted-foreground">autorizados a crear partidos</p>
               </CardContent>
             </Card>
           </Link>

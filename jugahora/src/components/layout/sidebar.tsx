@@ -21,10 +21,11 @@ import { Button } from "@/components/ui/button"
 // Agregamos Dashboard como primera opción
 const navItems = [
   { href: "/club-dashboard", icon: LayoutGrid, label: "Dashboard" },
+  { href: "/partidos", icon: CalendarIcon, label: "Partidos" },
+  { href: "/abonados", icon: Users, label: "Abonados" },
+  { href: "/eventos", icon: Trophy, label: "Eventos" },
   { href: "/inventario", icon: FileText, label: "Inventario" },
   { href: "/finanzas", icon: DollarSign, label: "Finanzas" },
-  { href: "/partidos", icon: CalendarIcon, label: "Partidos" },
-  { href: "/eventos", icon: Trophy, label: "Eventos" },
   { href: "/usuarios", icon: Users, label: "Usuarios" },
   { href: "/configuracion", icon: Settings, label: "Configuración" },
 ]
