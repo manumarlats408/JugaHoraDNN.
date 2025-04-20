@@ -50,22 +50,38 @@ export async function POST(request: Request) {
     }
 
     if (userId) {
+      // Verificar si el jugador está abonado al club
+      const esAbonado = await prisma.jugadorAbonado.findFirst({
+        where: {
+          userId,
+          clubId: parseInt(clubId),
+        },
+      });
+    
+      if (!esAbonado) {
+        return NextResponse.json(
+          { error: 'Solo los jugadores autorizados pueden crear partidos en este club.' },
+          { status: 403 }
+        );
+      }
+    
       // Obtener nivel del jugador
       const jugador = await prisma.user.findUnique({
         where: { id: userId },
         select: { nivel: true }
-      })
-
+      });
+    
       if (!jugador?.nivel) {
         return NextResponse.json(
           { error: 'Tu perfil no tiene un nivel asignado. Por favor actualizalo antes de crear un partido.' },
           { status: 400 }
-        )
+        );
       }
-
-      baseData.User = { connect: { id: userId } }
-      baseData.categoria = jugador.nivel.toString()
+    
+      baseData.User = { connect: { id: userId } };
+      baseData.categoria = jugador.nivel.toString();
     }
+    
 
     const newMatch = await prisma.partidos_club.create({ data: baseData })
     return NextResponse.json(newMatch)

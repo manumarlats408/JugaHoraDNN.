@@ -178,10 +178,9 @@ export default function CrearPartidoJugador() {
       toast.error('Por favor completá todos los campos')
       return
     }
-    
-
+  
     guardarFormularioEnSession()
-
+  
     const res = await fetch('/api/matches', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -193,20 +192,22 @@ export default function CrearPartidoJugador() {
         price: parseFloat(price),
         clubId: parseInt(selectedClubId),
         userId,
-        players: selectedPlayers
-      })
+        players: selectedPlayers,
+      }),
     })
-
+  
+    const data = await res.json()
+  
     if (res.ok) {
       toast.success('Partido creado con éxito')
       sessionStorage.removeItem('formData')
       sessionStorage.removeItem('finalPlayers')
       router.push('/jugar')
     } else {
-      toast.error('Error al crear el partido')
+      toast.error(data.error || 'Error al crear el partido')
     }
-    
   }
+  
 
   const handleAddPlayersRedirect = () => {
     if (!selectedClubId || !date || !startTime || !endTime || !court || !price) {
