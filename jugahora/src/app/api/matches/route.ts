@@ -68,7 +68,7 @@ export async function POST(request: Request) {
       // Obtener nivel del jugador
       const jugador = await prisma.user.findUnique({
         where: { id: userId },
-        select: { nivel: true }
+        select: { nivel: true, genero: true },
       });
     
       if (!jugador?.nivel) {
@@ -80,6 +80,9 @@ export async function POST(request: Request) {
     
       baseData.User = { connect: { id: userId } };
       baseData.categoria = jugador.nivel.toString();
+      if (jugador.genero) {
+        baseData.genero = jugador.genero;
+      }
     }
     
 
