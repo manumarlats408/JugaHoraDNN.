@@ -95,6 +95,8 @@ export default function CrearPartidoJugador() {
   
         const clubsData = await clubsRes.json()
         setClubs(clubsData)
+
+        console.log("Clubes recibidos desde la API:", clubsData)
   
         if (userRes.ok) {
           const userData = await userRes.json()
