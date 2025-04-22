@@ -934,6 +934,12 @@ const rachas = calcularRachas(partidos);
           </CollapsibleSection>
 
           <CollapsibleSection title="Historial de Partidos" defaultOpen={false}>
+            <div>
+                <p className="text-gray-600 mb-2">
+                  Registrá tus partidos con honestidad. Así, tus estadísticas van a reflejar tu perfil con precisión.
+                </p>
+            </div>
+
             {partidos.length > 0 ? (
               partidos.map((partido) => (
                 <div key={partido.id} className="border-b border-gray-200 pb-2">
