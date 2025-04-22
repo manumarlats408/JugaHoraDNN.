@@ -289,6 +289,45 @@ const procesarHistorial = (partidos: Partido[]) => {
   return acumulados;
 };
 
+const historialNivel = (() => {
+  const partidosOrdenados = [...partidos].sort(
+    (a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime()
+  );
+
+  const historial: { fecha: string; nivel: number; progreso: number }[] = [];
+  let nivel = parseInt(userData?.nivel || '8');
+  let progreso = 50; // Suponemos que arrancó con 50%
+
+  for (const partido of partidosOrdenados) {
+    if (partido.ganado) {
+      progreso += 10;
+      if (progreso >= 100) {
+        progreso = 0;
+        if (nivel > 1) nivel -= 1;
+      }
+    } else {
+      progreso -= 10;
+      if (progreso < 0) {
+        if (nivel < 8) {
+          nivel += 1;
+          progreso = 90;
+        } else {
+          progreso = 0;
+        }
+      }
+    }
+
+    historial.push({
+      fecha: new Date(partido.fecha).toLocaleDateString(),
+      nivel,
+      progreso,
+    });
+  }
+
+  return historial;
+})();
+
+
 // Procesar los datos
 const historial = procesarHistorial(partidos);
 const fechas = Object.keys(historial);
@@ -317,6 +356,60 @@ const dataHistorial = {
     },
   ],
 };
+
+const dataNivel = {
+  labels: historialNivel.map((p) => p.fecha),
+  datasets: [
+    {
+      label: 'Evolución de Nivel',
+      data: historialNivel.map(
+        (p) => 8 - (p.nivel - 1 + p.progreso / 100) // 8 es el peor, 1 el mejor
+      ),
+      borderColor: 'rgba(54, 162, 235, 1)',
+      backgroundColor: 'rgba(54, 162, 235, 0.2)',
+      fill: false,
+      tension: 0.4,
+    },
+  ],
+};
+
+const opcionesNivel = {
+  responsive: true,
+  maintainAspectRatio: false,
+  scales: {
+    y: {
+      reverse: true,
+      min: 1,
+      max: 8,
+      title: {
+        display: true,
+        text: 'Nivel (categoría)',
+      },
+      ticks: {
+        stepSize: 1,
+        callback: function (tickValue: string | number) {
+          if (typeof tickValue === 'number') {
+            return `Nivel ${tickValue}`
+          }
+          return tickValue
+        },
+      },
+    },
+    x: {
+      title: {
+        display: true,
+        text: 'Fecha',
+      },
+    },
+  },
+  plugins: {
+    legend: {
+      position: 'top' as const,
+    },
+  },
+};
+
+
 
 // Opciones del gráfico
 const opciones = {
@@ -891,6 +984,17 @@ const rachas = calcularRachas(partidos);
                 </div>
               </div>
             </div>
+
+            <div className="mb-8">
+              <p className="font-bold text-green-800 mb-4">Evolución de Nivel</p>
+              <p className="text-gray-600 text-sm mb-4">
+                Este gráfico refleja cómo tu nivel fue mejorando (o no) a lo largo del tiempo. Cuanto más arriba, mejor categoría.
+              </p>
+              <div style={{ width: '100%', height: '400px' }}>
+                <Line data={dataNivel} options={opcionesNivel} />
+              </div>
+            </div>
+
             
             {/* Gráfico de lineas */}
             <div className="mb-8">
