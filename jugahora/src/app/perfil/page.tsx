@@ -379,19 +379,19 @@ const opcionesNivel = {
   scales: {
     y: {
       reverse: true,
-      min: 1,
-      max: 8,
+      min: Math.max(1, parseInt(userData?.nivel ?? '8') - 1),
+      max: Math.min(8, parseInt(userData?.nivel ?? '8') + 1),
       title: {
         display: true,
         text: 'Nivel (categoría)',
       },
       ticks: {
         stepSize: 1,
-        callback: function (tickValue: string | number) {
+        callback: function (tickValue: unknown): string {
           if (typeof tickValue === 'number') {
-            return `Nivel ${tickValue}`
+            return `Nivel ${tickValue}`;
           }
-          return tickValue
+          return `${tickValue}`;
         },
       },
     },
@@ -408,7 +408,6 @@ const opcionesNivel = {
     },
   },
 };
-
 
 
 // Opciones del gráfico
