@@ -363,15 +363,17 @@ const dataNivel = {
     {
       label: 'Evolución de Nivel',
       data: historialNivel.map(
-        (p) => 8 - (p.nivel - 1 + p.progreso / 100) // 8 es el peor, 1 el mejor
+        (p) => 8 - (p.nivel - 1 + p.progreso / 100)
       ),
       borderColor: 'rgba(54, 162, 235, 1)',
       backgroundColor: 'rgba(54, 162, 235, 0.2)',
       fill: false,
       tension: 0.4,
+      pointRadius: 4,
+      pointHoverRadius: 6,
     },
   ],
-};
+}
 
 const opcionesNivel = {
   responsive: true,
@@ -379,19 +381,19 @@ const opcionesNivel = {
   scales: {
     y: {
       reverse: true,
-      min: Math.max(1, parseInt(userData?.nivel ?? '8') - 1),
-      max: Math.min(8, parseInt(userData?.nivel ?? '8') + 1),
+      suggestedMin: Math.max(1, 8 - (parseInt(userData?.nivel ?? '8') + 1)), // Nivel actual - 1
+      suggestedMax: Math.min(8, 8 - (parseInt(userData?.nivel ?? '8') - 1)), // Nivel actual + 1
       title: {
         display: true,
         text: 'Nivel (categoría)',
       },
       ticks: {
         stepSize: 1,
-        callback: function (tickValue: unknown): string {
+        callback: function (tickValue: string | number) {
           if (typeof tickValue === 'number') {
-            return `Nivel ${tickValue}`;
+            return `Nivel ${tickValue}`
           }
-          return `${tickValue}`;
+          return tickValue
         },
       },
     },
@@ -407,7 +409,7 @@ const opcionesNivel = {
       position: 'top' as const,
     },
   },
-};
+}
 
 
 // Opciones del gráfico
