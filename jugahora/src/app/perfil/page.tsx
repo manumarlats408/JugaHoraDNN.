@@ -290,22 +290,26 @@ const procesarHistorial = (partidos: Partido[]) => {
 };
 
 const historialNivel = (() => {
+  if (!userData) return [];
+
   const partidosOrdenados = [...partidos].sort(
-    (a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime()
+    (a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime() // del más reciente al más antiguo
   );
 
+  let nivel = parseInt(userData.nivel || '8');
+  let progreso = userData.progress || 0;
+
   const historial: { fecha: string; nivel: number; progreso: number }[] = [];
-  let nivel = parseInt(userData?.nivel || '8');
-  let progreso = 50; // Suponemos que arrancó con 50%
 
   for (const partido of partidosOrdenados) {
+    historial.unshift({
+      fecha: new Date(partido.fecha).toLocaleDateString(),
+      nivel,
+      progreso,
+    });
+
+    // deshacer la evolución de este partido
     if (partido.ganado) {
-      progreso += 10;
-      if (progreso >= 100) {
-        progreso = 0;
-        if (nivel > 1) nivel -= 1;
-      }
-    } else {
       progreso -= 10;
       if (progreso < 0) {
         if (nivel < 8) {
@@ -315,17 +319,20 @@ const historialNivel = (() => {
           progreso = 0;
         }
       }
+    } else {
+      progreso += 10;
+      if (progreso >= 100) {
+        progreso = 0;
+        if (nivel > 1) {
+          nivel -= 1;
+        }
+      }
     }
-
-    historial.push({
-      fecha: new Date(partido.fecha).toLocaleDateString(),
-      nivel,
-      progreso,
-    });
   }
 
   return historial;
 })();
+
 
 
 // Procesar los datos
