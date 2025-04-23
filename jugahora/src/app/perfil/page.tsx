@@ -362,7 +362,7 @@ const dataNivel = {
   datasets: [
     {
       label: 'Evolución de Nivel',
-      data: historialNivel.map(p => p.nivel - (1 - p.progreso / 100)), // ✅ Ahora sí refleja tu idea
+      data: historialNivel.map(p => p.nivel - (p.progreso / 100)), // ✅ // ✅ Ahora sí refleja tu idea
       borderColor: 'rgba(54, 162, 235, 1)',
       backgroundColor: 'rgba(54, 162, 235, 0.2)',
       fill: false,
