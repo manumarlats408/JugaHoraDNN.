@@ -362,7 +362,7 @@ const dataNivel = {
   datasets: [
     {
       label: 'Evolución de Nivel',
-      data: historialNivel.map(p => p.nivel - (p.progreso / 100)), // ✅ Cambiado
+      data: historialNivel.map(p => p.nivel - (1 - p.progreso / 100)), // ✅ Ahora sí refleja tu idea
       borderColor: 'rgba(54, 162, 235, 1)',
       backgroundColor: 'rgba(54, 162, 235, 0.2)',
       fill: false,
@@ -983,7 +983,8 @@ const rachas = calcularRachas(partidos);
             <div className="mb-8">
               <p className="font-bold text-green-800 mb-4">Evolución de Nivel</p>
               <p className="text-gray-600 text-sm mb-4">
-                Este gráfico refleja cómo tu nivel fue mejorando (o no) a lo largo del tiempo. Cuanto más arriba, mejor categoría.
+                Este gráfico muestra cómo ha evolucionado tu nivel a lo largo del tiempo. El eje vertical refleja la categoría (del 8 al 1, siendo 1 la mejor). 
+                A medida que ganás partidos, tu progreso dentro de la categoría se acumula y te acercas a la siguiente categoria.
               </p>
               <div style={{ width: '100%', height: '400px' }}>
                 <Line data={dataNivel} options={opcionesNivel} />
