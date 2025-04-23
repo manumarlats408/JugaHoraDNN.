@@ -377,15 +377,17 @@ const dataNivel = {
 
 
 const nivelActual = parseInt(userData?.nivel ?? '8');
+const minY = Math.max(1, nivelActual - 1);
+const maxY = Math.min(8, nivelActual + 1);
 
 const opcionesNivel = {
   responsive: true,
   maintainAspectRatio: false,
   scales: {
     y: {
-      reverse: true, // Más arriba es mejor categoría
-      min: Math.max(1, nivelActual - 1),
-      max: Math.min(8, nivelActual + 1),
+      reverse: true,
+      min: 8 - (maxY - 1), // transformar a escala invertida
+      max: 8 - (minY - 1),
       title: {
         display: true,
         text: 'Nivel (categoría)',
@@ -394,9 +396,10 @@ const opcionesNivel = {
         stepSize: 1,
         callback: function (tickValue: string | number) {
           if (typeof tickValue === 'number') {
-            return `Nivel ${tickValue}`
+            const nivel = 8 - tickValue + 1;
+            return `Nivel ${nivel}`;
           }
-          return tickValue
+          return tickValue;
         },
       },
     },
@@ -412,7 +415,8 @@ const opcionesNivel = {
       position: 'top' as const,
     },
   },
-}
+};
+
 
 
 // Opciones del gráfico
