@@ -263,7 +263,16 @@ useEffect(() => {
   };
 }, [selectedFriend]);
 
+const formatearFechaDDMMYYYY = (fechaString: string): string => {
+  const partes = fechaString.split('T')[0].split('-');
+  if (partes.length !== 3) return fechaString;
 
+  const año = partes[0];
+  const mes = partes[1];
+  const dia = partes[2];
+
+  return `${dia}/${mes}/${año}`;
+};
 
 // Procesar los datos para acumular partidos jugados y ganados
 const procesarHistorial = (partidos: Partido[]) => {
@@ -278,7 +287,7 @@ const procesarHistorial = (partidos: Partido[]) => {
   let ganadosAcumulados = 0;
 
   partidosOrdenados.forEach((partido) => {
-    const fecha = new Date(partido.fecha).toLocaleDateString();
+    const fecha = formatearFechaDDMMYYYY(partido.fecha);
 
     jugadosAcumulados++;
     if (partido.ganado) ganadosAcumulados++;
@@ -303,7 +312,7 @@ const historialNivel = (() => {
 
   for (const partido of partidosOrdenados) {
     historial.unshift({
-      fecha: new Date(partido.fecha).toLocaleDateString(),
+      fecha: formatearFechaDDMMYYYY(partido.fecha),
       nivel,
       progreso,
     });
@@ -469,7 +478,8 @@ const calcularRachas = (partidos: Partido[]) => {
     tempInicioPerdidas = '';
 
   partidos.forEach((partido) => {
-    const fecha = new Date(partido.fecha).toLocaleDateString();
+    const fecha = formatearFechaDDMMYYYY(partido.fecha);
+
 
     if (partido.ganado) {
       if (tempGanadas === 0) tempInicioGanadas = fecha;
@@ -1050,7 +1060,7 @@ const rachas = calcularRachas(partidos);
             {partidos.length > 0 ? (
               partidos.map((partido) => (
                 <div key={partido.id} className="border-b border-gray-200 pb-2">
-                  <p><strong>Fecha:</strong> {new Date(partido.fecha).toLocaleDateString()}</p>
+                  <p><strong>Fecha:</strong> {formatearFechaDDMMYYYY(partido.fecha)}</p>
                   <p><strong>Jugadores:</strong> {partido.jugadores}</p>
                   <p><strong>Resultado:</strong> {partido.resultado}</p>
                   <p><strong>Estado:</strong> {partido.ganado ? 'Ganado' : 'Perdido'}</p>
