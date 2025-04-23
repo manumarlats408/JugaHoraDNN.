@@ -362,18 +362,15 @@ const dataNivel = {
   datasets: [
     {
       label: 'Evolución de Nivel',
-      data: historialNivel.map(
-        (p) => p.nivel + (1 - p.progreso / 100) // Cuanto más progreso, más cerca del nivel actual
-      ),
+      data: historialNivel.map(p => p.nivel + (1 - p.progreso / 100)), // 👈 ESTA ES LA CLAVE
       borderColor: 'rgba(54, 162, 235, 1)',
       backgroundColor: 'rgba(54, 162, 235, 0.2)',
       fill: false,
       tension: 0.4,
-      pointRadius: 4,
-      pointHoverRadius: 6,
     },
   ],
-}
+};
+
 
 
 const nivelActual = parseInt(userData?.nivel ?? '8');
@@ -385,21 +382,17 @@ const opcionesNivel = {
   maintainAspectRatio: false,
   scales: {
     y: {
-      reverse: true,
-      min: 8 - (maxY - 1), // transformar a escala invertida
-      max: 8 - (minY - 1),
+      beginAtZero: false, // ya no usamos reverse
+      min: minY,
+      max: maxY,
       title: {
         display: true,
         text: 'Nivel (categoría)',
       },
       ticks: {
         stepSize: 1,
-        callback: function (tickValue: string | number) {
-          if (typeof tickValue === 'number') {
-            const nivel = 8 - tickValue + 1;
-            return `Nivel ${nivel}`;
-          }
-          return tickValue;
+        callback: function (value: string | number) {
+          return `Nivel ${value}`;
         },
       },
     },
