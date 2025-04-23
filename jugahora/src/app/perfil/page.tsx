@@ -363,7 +363,7 @@ const dataNivel = {
     {
       label: 'Evolución de Nivel',
       data: historialNivel.map(
-        (p) => 8 - (p.nivel - 1 + p.progreso / 100)
+        (p) => p.nivel + (1 - p.progreso / 100) // Cuanto más progreso, más cerca del nivel actual
       ),
       borderColor: 'rgba(54, 162, 235, 1)',
       backgroundColor: 'rgba(54, 162, 235, 0.2)',
@@ -375,14 +375,17 @@ const dataNivel = {
   ],
 }
 
+
+const nivelActual = parseInt(userData?.nivel ?? '8');
+
 const opcionesNivel = {
   responsive: true,
   maintainAspectRatio: false,
   scales: {
     y: {
-      reverse: true,
-      suggestedMin: Math.max(1, 8 - (parseInt(userData?.nivel ?? '8') + 1)), // Nivel actual - 1
-      suggestedMax: Math.min(8, 8 - (parseInt(userData?.nivel ?? '8') - 1)), // Nivel actual + 1
+      reverse: true, // Más arriba es mejor categoría
+      min: Math.max(1, nivelActual - 1),
+      max: Math.min(8, nivelActual + 1),
       title: {
         display: true,
         text: 'Nivel (categoría)',
