@@ -4,7 +4,8 @@ import { useEffect, useState, useCallback } from "react"
 import { Search, Calendar } from "lucide-react"
 import type { MovimientoFinanciero } from "@/lib/tipos"
 import { Input } from "@/components/ui/input"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { Sidebar } from "@/components/layout/sidebar"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import AgregarMovimientoDialog from "./agregar-movimiento-dialog"
 
 export default function MovimientosFinancieros() {
@@ -39,10 +40,11 @@ export default function MovimientosFinancieros() {
 
   return (
     <div className="flex min-h-screen">
+      <Sidebar />
       <div className="flex-1 p-3 md:p-6 md:ml-16 space-y-6 overflow-x-hidden">
         <Card className="bg-white rounded-lg shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-xl md:text-2xl text-gray-600 mt-10 md:mt-0">
+          <CardHeader className="p-4 md:p-6 border-b">
+            <CardTitle className="text-xl md:text-2xl font-medium text-gray-600 mt-10 md:mt-0">
               MOVIMIENTOS FINANCIEROS
             </CardTitle>
             <p className="text-sm md:text-base text-gray-500 mt-2">
