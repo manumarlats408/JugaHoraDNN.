@@ -84,9 +84,9 @@ export function AbonadosDashboard() {
     .sort((a, b) => (abonadosIds.includes(b.id) ? 1 : -1))
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex flex-col md:flex-row min-h-screen">
       <Sidebar />
-      <div className="flex-1 p-4 md:p-6 md:ml-16 space-y-6 overflow-x-hidden">
+      <div className="flex-1 px-4 py-6 md:px-6 md:ml-16 space-y-6 overflow-x-hidden">
         <Card>
           <CardHeader>
             <CardTitle>Gestionar Jugadores Abonados</CardTitle>
@@ -101,7 +101,7 @@ export function AbonadosDashboard() {
             {filteredUsers.map((user) => (
               <div
                 key={user.id}
-                className="flex justify-between items-center border p-4 rounded-md hover:bg-green-50 transition"
+                className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 border p-4 rounded-md hover:bg-green-50 transition"
               >
                 <div className="flex items-center gap-3">
                   <Users className="h-5 w-5 text-green-700" />

@@ -45,7 +45,7 @@ export default function MovimientosFinancieros() {
       </div>
 
       <div className="border-t border-gray-200 pt-6">
-        <div className="flex flex-col md:flex-row justify-between gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:justify-between gap-4 mb-6">
           <div className="relative w-full md:w-96">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
@@ -126,7 +126,7 @@ export default function MovimientosFinancieros() {
           </table>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-8">
           <div className="bg-gray-50 p-4 rounded-md">
             <div className="text-gray-500 mb-1">Efectivo</div>
             <div className="text-2xl font-semibold">$ {totalEfectivo.toFixed(2)}</div>
