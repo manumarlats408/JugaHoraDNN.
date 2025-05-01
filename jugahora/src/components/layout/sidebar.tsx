@@ -103,7 +103,7 @@ export function Sidebar() {
                 <button
                   onClick={handleLogout}
                   className={cn(
-                    "flex items-center rounded-md hover:bg-gray-100 transition-colors text-red-600",
+                    "flex items-center rounded-md hover:bg-gray-100 transition-colors",
                     expanded ? "w-full px-3 py-2 justify-start space-x-3" : "w-10 h-10 justify-center"
                   )}
                 >
@@ -123,14 +123,6 @@ export function Sidebar() {
         })}
 
       </nav>
-      <Button
-        variant="ghost"
-        className={cn("mt-8 flex items-center gap-2", expanded ? "w-full px-3 justify-start" : "w-10 h-10 justify-center")}
-        onClick={handleLogout}
-      >
-        <LogOut size={20} className="text-red-600" />
-        {expanded && <span className="text-sm text-red-600">Cerrar sesión</span>}
-      </Button>
     </div>
   )
 
@@ -185,7 +177,7 @@ export function Sidebar() {
                   setMobileMenuOpen(false)
                   handleLogout()
                 }}
-                className="flex items-center px-3 py-3 rounded-md hover:bg-gray-100 text-red-600 transition-colors"
+                className="flex items-center px-3 py-3 rounded-md hover:bg-gray-100 transition-colors"
               >
                 <item.icon size={20} className="mr-3" />
                 <span className="text-sm font-medium">Cerrar sesión</span>
@@ -194,17 +186,6 @@ export function Sidebar() {
           )}
 
         </nav>
-        <Button
-          variant="ghost"
-          className="mt-4 flex items-center text-red-600"
-          onClick={() => {
-            setMobileMenuOpen(false)
-            handleLogout()
-          }}
-        >
-          <LogOut size={20} className="mr-3" />
-          <span className="text-sm font-medium">Cerrar sesión</span>
-        </Button>
       </div>
     </div>
   )
