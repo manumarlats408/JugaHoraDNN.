@@ -38,10 +38,10 @@ export default function MovimientosFinancieros() {
   const saldoTotal = totalEfectivo + totalTransferencia
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen w-full">
       <Sidebar />
       <div className="flex-1 p-3 md:p-6 md:ml-16 space-y-6 overflow-x-hidden">
-        <div className="bg-white rounded-lg shadow-sm">
+        <div className="bg-white rounded-lg shadow-sm w-full">
           <div className="p-4 md:p-6 border-b">
             <h1 className="text-xl md:text-2xl font-medium text-gray-600 mt-10 md:mt-0">
               MOVIMIENTOS FINANCIEROS
