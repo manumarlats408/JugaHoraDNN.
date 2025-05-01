@@ -107,9 +107,14 @@ export function Sidebar() {
                     expanded ? "w-full px-3 py-2 justify-start space-x-3" : "w-10 h-10 justify-center"
                   )}
                 >
-                  <item.icon size={20} />
-                  {expanded && <span className="text-sm">Cerrar sesión</span>}
+                  <item.icon size={20} className={cn("flex-shrink-0", "text-gray-600")} />
+                  {expanded && (
+                    <span className={cn("text-sm", "text-gray-600")}>
+                      {item.label}
+                    </span>
+                  )}
                 </button>
+
               )}
 
               {/* Tooltip solo si está colapsado */}
@@ -179,9 +184,10 @@ export function Sidebar() {
                 }}
                 className="flex items-center px-3 py-3 rounded-md hover:bg-gray-100 transition-colors"
               >
-                <item.icon size={20} className="mr-3" />
-                <span className="text-sm font-medium">Cerrar sesión</span>
+                <item.icon size={20} className="mr-3 text-gray-600" />
+                <span className="text-sm text-gray-600">{item.label}</span>
               </button>
+
             )
           )}
 
