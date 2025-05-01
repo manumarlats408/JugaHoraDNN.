@@ -5,7 +5,6 @@ import { Search, Calendar } from "lucide-react"
 import type { MovimientoFinanciero } from "@/lib/tipos"
 import { Input } from "@/components/ui/input"
 import { Sidebar } from "@/components/layout/sidebar"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import AgregarMovimientoDialog from "./agregar-movimiento-dialog"
 
 export default function MovimientosFinancieros() {
@@ -42,17 +41,17 @@ export default function MovimientosFinancieros() {
     <div className="flex min-h-screen">
       <Sidebar />
       <div className="flex-1 p-3 md:p-6 md:ml-16 space-y-6 overflow-x-hidden">
-        <Card className="bg-white rounded-lg shadow-sm">
-          <CardHeader className="p-4 md:p-6 border-b">
-            <CardTitle className="text-xl md:text-2xl font-medium text-gray-600 mt-10 md:mt-0">
+        <div className="bg-white rounded-lg shadow-sm">
+          <div className="p-4 md:p-6 border-b">
+            <h1 className="text-xl md:text-2xl font-medium text-gray-600 mt-10 md:mt-0">
               MOVIMIENTOS FINANCIEROS
-            </CardTitle>
+            </h1>
             <p className="text-sm md:text-base text-gray-500 mt-2">
               Consulta todos los movimientos financieros del complejo deportivo
             </p>
-          </CardHeader>
-
-          <CardContent className="p-4 md:p-6">
+          </div>
+  
+          <div className="p-4 md:p-6">
             <div className="flex flex-col space-y-4 md:space-y-0 md:flex-row md:justify-between md:gap-4 mb-6">
               <div className="relative w-full md:w-96">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -63,8 +62,8 @@ export default function MovimientosFinancieros() {
                   onChange={(e) => setBusqueda(e.target.value)}
                 />
               </div>
-
-              <div className="flex items-center gap-4 flex-wrap">
+  
+              <div className="flex flex-col space-y-3 md:space-y-0 md:flex-row md:gap-3">
                 <div className="flex items-center gap-2">
                   <span className="text-gray-500 whitespace-nowrap">Desde</span>
                   <div className="relative">
@@ -77,7 +76,7 @@ export default function MovimientosFinancieros() {
                     <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                   </div>
                 </div>
-
+  
                 <div className="flex items-center gap-2">
                   <span className="text-gray-500 whitespace-nowrap">Hasta</span>
                   <div className="relative">
@@ -90,12 +89,12 @@ export default function MovimientosFinancieros() {
                     <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                   </div>
                 </div>
-
+  
                 <AgregarMovimientoDialog onSuccess={fetchMovimientos} />
               </div>
             </div>
-
-            <div className="overflow-x-auto">
+  
+            <div className="overflow-x-auto border rounded-lg">
               <table className="w-full min-w-[900px]">
                 <thead>
                   <tr className="border-b border-gray-200">
@@ -133,7 +132,7 @@ export default function MovimientosFinancieros() {
                 </tbody>
               </table>
             </div>
-
+  
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-8">
               <div className="bg-gray-50 p-4 rounded-md">
                 <div className="text-gray-500 mb-1">Efectivo</div>
@@ -148,9 +147,10 @@ export default function MovimientosFinancieros() {
                 <div className="text-2xl font-semibold">$ {saldoTotal.toFixed(2)}</div>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   )
+  
 }
