@@ -8,16 +8,18 @@ import {
   FileText,
   CalendarIcon,
   Users,
-  Settings,
   DollarSign,
   ChevronRight,
   Trophy,
   Menu,
   X,
-  UserCheck
+  UserCheck,
+  LogOut,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { useRouter } from "next/navigation"
+
 
 // Agregamos Dashboard como primera opción
 const navItems = [
@@ -28,7 +30,6 @@ const navItems = [
   { href: "/inventario", icon: FileText, label: "Inventario" },
   { href: "/finanzas", icon: DollarSign, label: "Finanzas" },
   { href: "/usuarios", icon: Users, label: "Usuarios" },
-  { href: "/configuracion", icon: Settings, label: "Configuración" },
 ]
 
 export function Sidebar() {
@@ -36,6 +37,20 @@ export function Sidebar() {
   const [expanded, setExpanded] = useState(false)
   const [activeTooltip, setActiveTooltip] = useState<string | null>(null)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  const router = useRouter()
+
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/logout", {
+        method: "GET",
+        credentials: "include",
+      })
+      router.push("/")
+    } catch (error) {
+      console.error("Error al cerrar sesión:", error)
+    }
+  }
 
   // Desktop sidebar
   const DesktopSidebar = (
@@ -93,6 +108,14 @@ export function Sidebar() {
           )
         })}
       </nav>
+      <Button
+        variant="ghost"
+        className={cn("mt-8 flex items-center gap-2", expanded ? "w-full px-3 justify-start" : "w-10 h-10 justify-center")}
+        onClick={handleLogout}
+      >
+        <LogOut size={20} className="text-red-600" />
+        {expanded && <span className="text-sm text-red-600">Cerrar sesión</span>}
+      </Button>
     </div>
   )
 
@@ -146,6 +169,17 @@ export function Sidebar() {
             )
           })}
         </nav>
+        <Button
+          variant="ghost"
+          className="mt-4 flex items-center text-red-600"
+          onClick={() => {
+            setMobileMenuOpen(false)
+            handleLogout()
+          }}
+        >
+          <LogOut size={20} className="mr-3" />
+          <span className="text-sm font-medium">Cerrar sesión</span>
+        </Button>
       </div>
     </div>
   )

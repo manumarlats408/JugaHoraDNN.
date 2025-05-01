@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatearPrecio } from "@/lib/utils"
 import Link from "next/link"
-import { CalendarIcon, Package, DollarSign, Users, LogOut, Trophy, UserCheck } from "lucide-react"
+import { CalendarIcon, Package, DollarSign, Users, Trophy, UserCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import type { Articulo, MovimientoFinanciero, Partido, Club, Evento } from "@/lib/tipos"
 import { useRouter } from "next/navigation"
@@ -106,17 +106,17 @@ export default function DashboardPage() {
     cargarDatos()
   }, [router])
 
-  const handleLogout = async () => {
-    try {
-      await fetch("/api/logout", {
-        method: "GET",
-        credentials: "include",
-      })
-      router.push("/")
-    } catch (error) {
-      console.error("Error al cerrar sesión:", error)
-    }
-  }
+  // const handleLogout = async () => {
+  //   try {
+  //     await fetch("/api/logout", {
+  //       method: "GET",
+  //       credentials: "include",
+  //     })
+  //     router.push("/")
+  //   } catch (error) {
+  //     console.error("Error al cerrar sesión:", error)
+  //   }
+  // }
 
   // Estadísticas
   const articulosInactivos = articulos.filter((a) => a.cantidadStock === 0).length
@@ -151,10 +151,10 @@ export default function DashboardPage() {
         <main className="flex-1 p-2 md:p-6 space-y-4 md:space-y-8">
         <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
           <h1 className="text-2xl md:text-3xl font-bold mt-10 md:mt-0">Dashboard {clubData?.name ? `de ${clubData.name}` : ""}</h1>
-          <Button variant="outline" className="flex items-center gap-2" onClick={handleLogout}>
+          {/* <Button variant="outline" className="flex items-center gap-2" onClick={handleLogout}>
             <LogOut className="h-4 w-4" />
             Cerrar sesión
-          </Button>
+          </Button> */}
         </div>
 
         <div className="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
