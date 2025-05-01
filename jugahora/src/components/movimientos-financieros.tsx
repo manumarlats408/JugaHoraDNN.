@@ -40,12 +40,13 @@ export default function MovimientosFinancieros() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="space-y-2 mb-8">
-        <h1 className="text-2xl font-medium text-gray-700">MOVIMIENTOS FINANCIEROS</h1>
+        <h1 className="text-2xl font-medium text-gray-700 mt-10">MOVIMIENTOS FINANCIEROS</h1>
         <p className="text-gray-500">Consulta todos los movimientos financieros del complejo deportivo</p>
       </div>
 
       <div className="border-t border-gray-200 pt-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:justify-between gap-4 mb-6">
+        <div className="flex flex-col space-y-4 md:space-y-0 md:flex-row md:justify-between md:gap-4 mb-6">
+
           <div className="relative w-full md:w-96">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
@@ -88,7 +89,7 @@ export default function MovimientosFinancieros() {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full min-w-[900px]">
             <thead>
               <tr className="border-b border-gray-200">
                 <th className="py-3 text-left font-medium text-gray-500">Concepto</th>

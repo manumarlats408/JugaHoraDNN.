@@ -86,7 +86,7 @@ export function AbonadosDashboard() {
   return (
     <div className="flex flex-col md:flex-row min-h-screen">
       <Sidebar />
-      <div className="flex-1 px-4 py-6 md:px-6 md:ml-16 space-y-6 overflow-x-hidden">
+      <div className="flex-1 px-4 py-6 md:px-6 md:ml-16 space-y-6 overflow-x-hidden mt-10">
         <Card>
           <CardHeader>
             <CardTitle>Gestionar Jugadores Abonados</CardTitle>
