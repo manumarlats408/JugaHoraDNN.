@@ -25,22 +25,30 @@ const AddPlayers = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch('/api/users') // Obtener todos los usuarios
-        const users = await res.json()
-        setProfiles(users)
-        setFilteredProfiles(users)
+        const [usersRes, userRes] = await Promise.all([
+          fetch('/api/users'),
+          fetch('/api/auth', { credentials: 'include' }),
+        ])
+        const users = await usersRes.json()
+        const userData = await userRes.json()
+  
+        // Excluye al usuario logueado
+        const filteredUsers = users.filter((u: User) => u.id !== userData.entity.id)
+        setProfiles(filteredUsers)
+        setFilteredProfiles(filteredUsers)
       } catch (error) {
         console.error('Error al cargar datos:', error)
       }
     }
+  
     fetchData()
-
-    // Recuperar los jugadores seleccionados desde sessionStorage
+  
     const storedPlayers = sessionStorage.getItem('finalPlayers')
     if (storedPlayers) {
       setSelectedPlayers(JSON.parse(storedPlayers))
     }
   }, [])
+  
 
   // Manejar la búsqueda de jugadores
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
