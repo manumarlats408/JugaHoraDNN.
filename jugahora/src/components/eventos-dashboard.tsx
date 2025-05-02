@@ -279,7 +279,7 @@ export function EventosDashboard() {
               </Button>
             </DialogTrigger>
             <DialogContent
-                className="sm:max-w-[425px] w-[95vw] max-w-[95vw] sm:w-auto max-h-[90vh] overflow-y-auto rounded-2xl p-6"
+                className="sm:max-w-[425px] w-[95vw] max-w-[95vw] sm:w-auto max-h-[90vh] overflow-y-auto rounded-none my-8 p-6"
               >
 
               <DialogHeader>
@@ -434,7 +434,8 @@ export function EventosDashboard() {
         {editEvento && (
           <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
             <DialogContent
-                className="sm:max-w-[425px] w-[95vw] max-w-[95vw] sm:w-auto max-h-[90vh] overflow-y-auto rounded-2xl p-6"
+                className="sm:max-w-[425px] w-[95vw] max-w-[95vw] sm:w-auto max-h-[90vh] overflow-y-auto rounded-none my-8 p-6"
+
               >
 
               <DialogHeader>
@@ -715,7 +716,7 @@ export function EventosDashboard() {
       </div>
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent
-          className="sm:max-w-[425px] w-[95vw] max-w-[95vw] sm:w-auto max-h-[90vh] overflow-y-auto rounded-2xl p-6"
+          className="sm:max-w-[425px] w-[95vw] max-w-[95vw] sm:w-auto max-h-[90vh] overflow-y-auto rounded-none my-8 p-6"
         >
 
           <DialogHeader>
