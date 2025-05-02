@@ -278,7 +278,10 @@ export function EventosDashboard() {
                 <Plus className="mr-2 h-4 w-4" /> Crear Evento
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px] w-[95vw] max-w-[95vw] sm:w-auto">
+            <DialogContent
+                className="sm:max-w-[425px] w-[95vw] max-w-[95vw] sm:w-auto max-h-[90vh] overflow-y-auto rounded-2xl p-6"
+              >
+
               <DialogHeader>
                 <DialogTitle>Crear Evento</DialogTitle>
                 <DialogDescription>Complete la información del evento</DialogDescription>
@@ -430,7 +433,10 @@ export function EventosDashboard() {
 
         {editEvento && (
           <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-            <DialogContent className="sm:max-w-[425px] w-[95vw] max-w-[95vw] sm:w-auto">
+            <DialogContent
+                className="sm:max-w-[425px] w-[95vw] max-w-[95vw] sm:w-auto max-h-[90vh] overflow-y-auto rounded-2xl p-6"
+              >
+
               <DialogHeader>
                 <DialogTitle>Editar Evento</DialogTitle>
                 <DialogDescription>Modificá los datos del evento</DialogDescription>
@@ -708,7 +714,10 @@ export function EventosDashboard() {
         </main>
       </div>
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-[425px] w-[95vw] max-w-[95vw] sm:w-auto">
+        <DialogContent
+          className="sm:max-w-[425px] w-[95vw] max-w-[95vw] sm:w-auto max-h-[90vh] overflow-y-auto rounded-2xl p-6"
+        >
+
           <DialogHeader>
             <DialogTitle>{selectedEventoTipo === "torneo" ? "Parejas Inscritas" : "Personas Inscritas"}</DialogTitle>
           </DialogHeader>
