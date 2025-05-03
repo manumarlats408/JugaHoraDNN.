@@ -122,7 +122,10 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     for (const jugador of jugadores) {
       await sendgrid.send({
         to: jugador.email,
-        from: process.env.SENDGRID_FROM_EMAIL as string,
+        from: {
+          name: "JugáHora",
+          email: process.env.SENDGRID_FROM_EMAIL as string
+        },
         subject: "📢 Partido Actualizado",
         html: generarEmailHTML({
           titulo: "📢 Partido Modificado",

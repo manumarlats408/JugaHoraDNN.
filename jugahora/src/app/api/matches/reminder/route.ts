@@ -45,7 +45,10 @@ export async function GET() {
         for (const jugador of jugadores) {
           await sendgrid.send({
             to: jugador.email,
-            from: process.env.SENDGRID_FROM_EMAIL as string,
+            from: {
+              name: "JugáHora",
+              email: process.env.SENDGRID_FROM_EMAIL as string
+            },
             subject: "⏳ ¡Faltan 24 horas para tu partido de pádel!",
             html: generarEmailHTML({
               titulo: "⏳ ¡Faltan 24 horas para tu partido!",
@@ -76,7 +79,10 @@ export async function GET() {
         for (const jugador of jugadores) {
           await sendgrid.send({
             to: jugador.email,
-            from: process.env.SENDGRID_FROM_EMAIL as string,
+            from: {
+              name: "JugáHora",
+              email: process.env.SENDGRID_FROM_EMAIL as string
+            },
             subject: "⚠️ Faltan 12 horas para tu partido - No se permiten cancelaciones",
             html: generarEmailHTML({
               titulo: "⚠️ ¡Faltan 12 horas para tu partido!",
