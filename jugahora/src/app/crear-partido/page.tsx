@@ -95,6 +95,8 @@ export default function CrearPartidoJugador() {
   
         const clubsData = await clubsRes.json()
         setClubs(clubsData)
+
+        console.log("Clubes recibidos desde la API:", clubsData)
   
         if (userRes.ok) {
           const userData = await userRes.json()
@@ -178,10 +180,9 @@ export default function CrearPartidoJugador() {
       toast.error('Por favor completá todos los campos')
       return
     }
-    
-
+  
     guardarFormularioEnSession()
-
+  
     const res = await fetch('/api/matches', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -193,20 +194,22 @@ export default function CrearPartidoJugador() {
         price: parseFloat(price),
         clubId: parseInt(selectedClubId),
         userId,
-        players: selectedPlayers
-      })
+        players: selectedPlayers,
+      }),
     })
-
+  
+    const data = await res.json()
+  
     if (res.ok) {
       toast.success('Partido creado con éxito')
       sessionStorage.removeItem('formData')
       sessionStorage.removeItem('finalPlayers')
       router.push('/jugar')
     } else {
-      toast.error('Error al crear el partido')
+      toast.error(data.error || 'Error al crear el partido')
     }
-    
   }
+  
 
   const handleAddPlayersRedirect = () => {
     if (!selectedClubId || !date || !startTime || !endTime || !court || !price) {
@@ -372,6 +375,9 @@ export default function CrearPartidoJugador() {
             <CardTitle className="text-2xl font-bold text-green-800">Crear Partido</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 mt-4">
+          <p className="mb-4 text-gray-600">
+            Como jugador abonado podés crear partidos, sumar a tus amigos ya confirmados y dejar el resto de los lugares disponibles para que otros jugadores de la app se sumen.
+          </p>
             <div>
               <Label>Club</Label>
               <select
@@ -437,6 +443,15 @@ export default function CrearPartidoJugador() {
             </div>
           </CardContent>
         </Card>
+
+        <div className="mt-6 text-center">
+          <Link href="/menu">
+            <Button variant="outline" className="bg-white hover:bg-gray-100 text-green-600 border-green-600 hover:border-green-700 transition-colors duration-300">
+              Volver al menú
+            </Button>
+          </Link>
+        </div>
+        
         {editMatch && (
           <Dialog open={!!editMatch} onOpenChange={(open) => !open && setEditMatch(null)}>
             <DialogContent className="sm:max-w-[425px] w-[95vw] max-w-[95vw] sm:w-auto">
