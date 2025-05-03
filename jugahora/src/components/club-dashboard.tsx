@@ -21,6 +21,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { TimeSelector } from "@/components/ui/time-selector"
+import { toast } from "react-hot-toast"
+
 
 type Match = {
   id: number
@@ -173,20 +175,29 @@ export function ClubDashboard() {
       const response = await fetch("/api/matches", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...newMatch, clubId: clubData.id.toString(), price: Number.parseFloat(newMatch.price) }),
+        body: JSON.stringify({
+          ...newMatch,
+          clubId: clubData.id.toString(),
+          price: Number.parseFloat(newMatch.price),
+        }),
       })
-
+  
       if (response.ok) {
         const createdMatch = await response.json()
         setMatches([...matches, createdMatch])
         setNewMatch({ date: "", startTime: "", endTime: "", court: "", price: "" })
+  
+        toast.success("Partido creado exitosamente!") // ✅ Éxito
       } else {
-        console.error("Error al crear el partido:", await response.text())
+        const errorMessage = await response.text()
+        toast.error(errorMessage || "Error al crear el partido") // ❌ Error del backend
       }
     } catch (error) {
       console.error("Error al conectar con la API para crear el partido:", error)
+      toast.error("Error al conectar con el servidor") // ❌ Error de red u otro
     }
   }
+  
 
   const handleDeleteMatch = async (id: number) => {
     try {

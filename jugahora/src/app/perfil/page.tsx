@@ -263,7 +263,16 @@ useEffect(() => {
   };
 }, [selectedFriend]);
 
+const formatearFechaDDMMYYYY = (fechaString: string): string => {
+  const partes = fechaString.split('T')[0].split('-');
+  if (partes.length !== 3) return fechaString;
 
+  const año = partes[0];
+  const mes = partes[1];
+  const dia = partes[2];
+
+  return `${dia}/${mes}/${año}`;
+};
 
 // Procesar los datos para acumular partidos jugados y ganados
 const procesarHistorial = (partidos: Partido[]) => {
@@ -278,7 +287,7 @@ const procesarHistorial = (partidos: Partido[]) => {
   let ganadosAcumulados = 0;
 
   partidosOrdenados.forEach((partido) => {
-    const fecha = new Date(partido.fecha).toLocaleDateString();
+    const fecha = formatearFechaDDMMYYYY(partido.fecha);
 
     jugadosAcumulados++;
     if (partido.ganado) ganadosAcumulados++;
@@ -288,6 +297,52 @@ const procesarHistorial = (partidos: Partido[]) => {
 
   return acumulados;
 };
+
+const historialNivel = (() => {
+  if (!userData) return [];
+
+  const partidosOrdenados = [...partidos].sort(
+    (a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime() // del más reciente al más antiguo
+  );
+
+  let nivel = parseInt(userData.nivel || '8');
+  let progreso = userData.progress || 0;
+
+  const historial: { fecha: string; nivel: number; progreso: number }[] = [];
+
+  for (const partido of partidosOrdenados) {
+    historial.unshift({
+      fecha: formatearFechaDDMMYYYY(partido.fecha),
+      nivel,
+      progreso,
+    });
+
+    // deshacer la evolución de este partido
+    if (partido.ganado) {
+      progreso -= 10;
+      if (progreso < 0) {
+        if (nivel < 8) {
+          nivel += 1;
+          progreso = 90;
+        } else {
+          progreso = 0;
+        }
+      }
+    } else {
+      progreso += 10;
+      if (progreso >= 100) {
+        progreso = 0;
+        if (nivel > 1) {
+          nivel -= 1;
+        }
+      }
+    }
+  }
+
+  return historial;
+})();
+
+
 
 // Procesar los datos
 const historial = procesarHistorial(partidos);
@@ -317,6 +372,55 @@ const dataHistorial = {
     },
   ],
 };
+
+const dataNivel = {
+  labels: historialNivel.map((p) => p.fecha),
+  datasets: [
+    {
+      label: 'Evolución de Nivel',
+      data: historialNivel.map(p => p.nivel - (p.progreso / 100)), // ✅ // ✅ Ahora sí refleja tu idea
+      borderColor: 'rgba(54, 162, 235, 1)',
+      backgroundColor: 'rgba(54, 162, 235, 0.2)',
+      fill: false,
+      tension: 0.4,
+    },
+  ],
+};
+
+const opcionesNivel = {
+  responsive: true,
+  maintainAspectRatio: false,
+  scales: {
+    y: {
+      reverse: true,  // ✅ Invertido
+      min: 1,
+      max: 8,
+      title: {
+        display: true,
+        text: 'Nivel (categoría)',
+      },
+      ticks: {
+        stepSize: 1,
+        callback: function (value: string | number) {
+          return `Nivel ${value}`;
+        },
+      },
+    },
+    x: {
+      title: {
+        display: true,
+        text: 'Fecha',
+      },
+    },
+  },
+  plugins: {
+    legend: {
+      position: 'top' as const,
+    },
+  },
+};
+
+
 
 // Opciones del gráfico
 const opciones = {
@@ -374,7 +478,8 @@ const calcularRachas = (partidos: Partido[]) => {
     tempInicioPerdidas = '';
 
   partidos.forEach((partido) => {
-    const fecha = new Date(partido.fecha).toLocaleDateString();
+    const fecha = formatearFechaDDMMYYYY(partido.fecha);
+
 
     if (partido.ganado) {
       if (tempGanadas === 0) tempInicioGanadas = fecha;
@@ -891,6 +996,18 @@ const rachas = calcularRachas(partidos);
                 </div>
               </div>
             </div>
+
+            <div className="mb-8">
+              <p className="font-bold text-green-800 mb-4">Evolución de Nivel</p>
+              <p className="text-gray-600 text-sm mb-4">
+                Este gráfico muestra cómo ha evolucionado tu nivel a lo largo del tiempo. El eje vertical refleja la categoría (del 8 al 1, siendo 1 la mejor). 
+                A medida que ganás partidos, tu progreso dentro de la categoría se acumula y te acercas a la siguiente categoria.
+              </p>
+              <div style={{ width: '100%', height: '400px' }}>
+                <Line data={dataNivel} options={opcionesNivel} />
+              </div>
+            </div>
+
             
             {/* Gráfico de lineas */}
             <div className="mb-8">
@@ -934,10 +1051,16 @@ const rachas = calcularRachas(partidos);
           </CollapsibleSection>
 
           <CollapsibleSection title="Historial de Partidos" defaultOpen={false}>
+            <div>
+                <p className="text-gray-600 mb-2">
+                  Registrá tus partidos con honestidad. Así, tus estadísticas van a reflejar tu perfil con precisión.
+                </p>
+            </div>
+
             {partidos.length > 0 ? (
               partidos.map((partido) => (
                 <div key={partido.id} className="border-b border-gray-200 pb-2">
-                  <p><strong>Fecha:</strong> {new Date(partido.fecha).toLocaleDateString()}</p>
+                  <p><strong>Fecha:</strong> {formatearFechaDDMMYYYY(partido.fecha)}</p>
                   <p><strong>Jugadores:</strong> {partido.jugadores}</p>
                   <p><strong>Resultado:</strong> {partido.resultado}</p>
                   <p><strong>Estado:</strong> {partido.ganado ? 'Ganado' : 'Perdido'}</p>
