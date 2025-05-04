@@ -35,12 +35,12 @@ export async function POST(request: Request) {
     const sendgridData = {
       personalizations: [
         {
-          to: [{ email: process.env.SENDGRID_FROM_EMAIL }],
+          to: [{ email: "jugahora.contacto@gmail.com" }], // destino fijo
           subject: "Nuevo feedback anónimo de JugáHora",
         },
       ],
       from: {
-        email: process.env.SENDGRID_FROM_EMAIL,
+        email: process.env.SENDGRID_FROM_EMAIL, // sigue usando el remitente confiable
         name: "JugáHora Feedback",
       },
       content: [
@@ -50,6 +50,7 @@ export async function POST(request: Request) {
         },
       ],
     }
+    
 
     console.log("Enviando email con feedback anónimo")
 

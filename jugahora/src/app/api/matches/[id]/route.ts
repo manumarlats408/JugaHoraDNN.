@@ -126,7 +126,10 @@ export async function PATCH(request: Request, { params }: { params: { id: string
       console.log("Enviando mail desde:", process.env.SENDGRID_FROM_EMAIL);
       await sendgrid.send({
         to: jugador.email,
-        from: process.env.SENDGRID_FROM_EMAIL as string,
+        from: {
+          name: "JugáHora",
+          email: process.env.SENDGRID_FROM_EMAIL as string
+        },
         subject: "📢 Partido Actualizado",
         html: generarEmailHTML({
           titulo: "📢 Partido Modificado",
