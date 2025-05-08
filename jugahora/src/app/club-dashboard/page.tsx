@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatearPrecio } from "@/lib/utils"
 import Link from "next/link"
-import { CalendarIcon, Package, DollarSign, Users, Trophy, UserCheck } from "lucide-react"
+import { CalendarIcon, Package, DollarSign, Trophy, UserCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import type { Articulo, MovimientoFinanciero, Partido, Club, Evento } from "@/lib/tipos"
 import { useRouter } from "next/navigation"
@@ -105,6 +105,15 @@ export default function DashboardPage() {
 
     cargarDatos()
   }, [router])
+
+  const formatearFecha = (fechaString: string) => {
+    const partes = fechaString.split("T")[0].split("-")
+    if (partes.length !== 3) return fechaString
+    const año = partes[0]
+    const mes = partes[1]
+    const dia = partes[2]
+    return `${dia}/${mes}/${año}`
+  }
 
   // const handleLogout = async () => {
   //   try {
@@ -234,7 +243,7 @@ export default function DashboardPage() {
             </Card>
           </Link>
 
-          <Card className="hover:shadow-md transition-shadow sm:col-span-2 lg:col-span-1">
+          {/* <Card className="hover:shadow-md transition-shadow sm:col-span-2 lg:col-span-1">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-sm font-medium">Usuarios Activos</CardTitle>
               <Users className="h-4 w-4 text-purple-500" />
@@ -243,85 +252,70 @@ export default function DashboardPage() {
               <div className="text-2xl font-bold">--</div>
               <p className="text-xs text-muted-foreground">Información no disponible</p>
             </CardContent>
-          </Card>
+          </Card> */}
         </div>
 
         <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          <Card>
-            <CardHeader>
-              <CardTitle>Últimos Partidos</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {partidos.length > 0 ? (
-                <div className="space-y-4">
-                  {partidos.slice(0, 3).map((partido) => (
-                    <div key={partido.id} className="flex justify-between items-center border-b pb-2">
-                      <div>
-                        <p className="font-medium">{partido.court}</p>
-                        <p className="text-sm text-gray-500">
-                          {new Date(partido.date).toLocaleDateString()}, {partido.startTime}
-                        </p>
-                      </div>
-                      <span className="text-sm font-semibold text-green-600">${partido.price}</span>
-                    </div>
-                  ))}
-                  <div className="pt-2">
-                    <Button variant="outline" size="sm" asChild>
-                      <Link href="/partidos">Ver todos los partidos</Link>
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <p className="text-center text-gray-500 py-4">No hay partidos programados</p>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Artículos Populares</CardTitle>
-            </CardHeader>
-            <CardContent>
+        <Card>
+          <CardHeader>
+            <CardTitle>Partidos Próximos</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {partidos.length > 0 ? (
               <div className="space-y-4">
-                {[
-                  {
-                    id: "1",
-                    nombre: "Pelota Pro Pádel",
-                    codigo: "PRO-001",
-                    precioVenta: 4500,
-                  },
-                  {
-                    id: "2",
-                    nombre: "Paleta Carbon X",
-                    codigo: "PAL-205",
-                    precioVenta: 38000,
-                  },
-                  {
-                    id: "3",
-                    nombre: "Grips Antideslizantes",
-                    codigo: "GRP-099",
-                    precioVenta: 1200,
-                  },
-                ].map((articulo) => (
-                  <div key={articulo.id} className="flex justify-between items-center border-b pb-2">
+                {partidos.slice(0, 3).map((partido) => (
+                  <div key={partido.id} className="flex justify-between items-center border-b pb-2">
                     <div>
-                      <p className="font-medium">{articulo.nombre}</p>
-                      <p className="text-sm text-gray-500">Código: {articulo.codigo}</p>
+                      <p className="font-semibold text-gray-800">{formatearFecha(partido.date)}</p>
+                      <p className="text-sm text-gray-500">{partido.startTime} - {partido.endTime} hs</p>
                     </div>
                     <span className="text-sm font-semibold text-green-600">
-                      {formatearPrecio(articulo.precioVenta)}
+                      {formatearPrecio(partido.price)}
                     </span>
                   </div>
                 ))}
-
                 <div className="pt-2">
                   <Button variant="outline" size="sm" asChild>
-                    <Link href="/inventario">Ver inventario completo</Link>
+                    <Link href="/partidos">Ver todos los partidos</Link>
                   </Button>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            ) : (
+              <p className="text-center text-gray-500 py-4">No hay partidos programados</p>
+            )}
+          </CardContent>
+        </Card>
+
+
+        <Card>
+        <CardHeader>
+          <CardTitle>Artículos Populares</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {articulos.length > 0 ? (
+            <div className="space-y-4">
+              {articulos.slice(0, 3).map((articulo) => (
+                <div key={articulo.id} className="flex justify-between items-center border-b pb-2">
+                  <div>
+                    <p className="font-medium">{articulo.nombre}</p>
+                    <p className="text-sm text-gray-500">Stock: {articulo.cantidadStock}</p>
+                  </div>
+                  <span className="text-sm font-semibold text-green-600">
+                    {formatearPrecio(articulo.precioVenta)}
+                  </span>
+                </div>
+              ))}
+              <div className="pt-2">
+                <Button variant="outline" size="sm" asChild>
+                  <Link href="/inventario">Ver inventario completo</Link>
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <p className="text-center text-gray-500 py-4">No hay artículos disponibles</p>
+          )}
+        </CardContent>
+      </Card>
 
           <Card className="md:col-span-2 lg:col-span-1">
             <CardHeader>

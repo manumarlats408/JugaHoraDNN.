@@ -149,8 +149,17 @@ export default function PaginaRegistro() {
                 </select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="age">Edad</Label>
-                <Input id="age" type="number" placeholder="Opcional: 30" value={age} onChange={(e) => setAge(Number(e.target.value))} />
+                <Label htmlFor="age" className="flex items-center">
+                  Edad <RequiredFieldTooltip />
+                </Label>
+                <Input
+                  id="age"
+                  type="number"
+                  placeholder="Ej: 30"
+                  value={age}
+                  onChange={(e) => setAge(Number(e.target.value))}
+                  required
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phoneNumber" className="flex items-center">Número de teléfono <RequiredFieldTooltip /></Label>

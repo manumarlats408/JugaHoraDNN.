@@ -23,7 +23,7 @@ export async function POST(request: Request) {
         lastName,
         phoneNumber: phoneNumber || null,
         address: address || null,
-        age: age ? parseInt(age as string) : null,
+        age: parseInt(age as string),
         nivel: nivel || null,
         genero, // 👈 nuevo campo requerido
       },
