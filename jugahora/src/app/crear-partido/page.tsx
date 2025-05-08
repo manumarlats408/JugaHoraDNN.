@@ -449,7 +449,7 @@ export default function CrearPartidoJugador() {
             </Button>
 
             <div className="pt-4">
-            <Button onClick={handleSubmit} disabled={isSavingMatch}>
+            <Button onClick={handleSubmit} disabled={isSavingMatch} className="min-w-[140px]">
               {isSavingMatch ? (
                 <span className="flex items-center">
                   <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
