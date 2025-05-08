@@ -20,36 +20,37 @@ export function AbonadosDashboard() {
   const [allUsers, setAllUsers] = useState<User[]>([])
   const [abonados, setAbonados] = useState<User[]>([])
   const [searchTerm, setSearchTerm] = useState("")
+  const [isLoading, setIsLoading] = useState(true)
   const [loadingUserId, setLoadingUserId] = useState<number | null>(null)
 
 
   useEffect(() => {
-    const fetchClub = async () => {
-      const res = await fetch("/api/auth", { credentials: "include" })
-      const data = await res.json()
-      setClubId(data.entity.id)
+    const fetchData = async () => {
+      try {
+        // 1. Obtener club
+        const resClub = await fetch("/api/auth", { credentials: "include" })
+        const dataClub = await resClub.json()
+        setClubId(dataClub.entity.id)
+  
+        // 2. Obtener usuarios
+        const resUsers = await fetch("/api/users")
+        const users = await resUsers.json()
+        setAllUsers(users)
+  
+        // 3. Obtener abonados
+        const resAbonados = await fetch(`/api/abonados?clubId=${dataClub.entity.id}`)
+        const dataAbonados = await resAbonados.json()
+        setAbonados(dataAbonados)
+      } catch (error) {
+        console.error("Error al cargar datos de abonados:", error)
+      } finally {
+        setIsLoading(false)
+      }
     }
-    fetchClub()
+  
+    fetchData()
   }, [])
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      const res = await fetch("/api/users")
-      const data = await res.json()
-      setAllUsers(data)
-    }
-    fetchUsers()
-  }, [])
-
-  useEffect(() => {
-    if (!clubId) return
-    const fetchAbonados = async () => {
-      const res = await fetch(`/api/abonados?clubId=${clubId}`)
-      const data = await res.json()
-      setAbonados(data)
-    }
-    fetchAbonados()
-  }, [clubId])
+  
 
   const handleAgregar = async (userId: number) => {
     setLoadingUserId(userId)
@@ -83,6 +84,14 @@ export function AbonadosDashboard() {
     .filter((u) => `${u.firstName} ${u.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()))
     .sort((a, b) => (abonadosIds.includes(b.id) ? 1 : -1))
 
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+        <p className="text-lg text-gray-600">Cargando jugadores abonados...</p>
+      </div>
+    )
+  }
+    
   return (
     <div className="flex flex-col md:flex-row min-h-screen">
       <Sidebar />
