@@ -106,6 +106,15 @@ export default function DashboardPage() {
     cargarDatos()
   }, [router])
 
+  const formatearFecha = (fechaString: string) => {
+    const partes = fechaString.split("T")[0].split("-")
+    if (partes.length !== 3) return fechaString
+    const año = partes[0]
+    const mes = partes[1]
+    const dia = partes[2]
+    return `${dia}/${mes}/${año}`
+  }
+
   // const handleLogout = async () => {
   //   try {
   //     await fetch("/api/logout", {
@@ -247,35 +256,36 @@ export default function DashboardPage() {
         </div>
 
         <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          <Card>
-            <CardHeader>
-              <CardTitle>Últimos Partidos</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {partidos.length > 0 ? (
-                <div className="space-y-4">
-                  {partidos.slice(0, 3).map((partido) => (
-                    <div key={partido.id} className="flex justify-between items-center border-b pb-2">
-                      <div>
-                        <p className="font-medium">{partido.court}</p>
-                        <p className="text-sm text-gray-500">
-                          {new Date(partido.date).toLocaleDateString()}, {partido.startTime}
-                        </p>
-                      </div>
-                      <span className="text-sm font-semibold text-green-600">${partido.price}</span>
+        <Card>
+          <CardHeader>
+            <CardTitle>Partidos Próximos</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {partidos.length > 0 ? (
+              <div className="space-y-4">
+                {partidos.slice(0, 3).map((partido) => (
+                  <div key={partido.id} className="flex justify-between items-center border-b pb-2">
+                    <div>
+                      <p className="font-semibold text-gray-800">{formatearFecha(partido.date)}</p>
+                      <p className="text-sm text-gray-500">{partido.startTime} - {partido.endTime} hs</p>
                     </div>
-                  ))}
-                  <div className="pt-2">
-                    <Button variant="outline" size="sm" asChild>
-                      <Link href="/partidos">Ver todos los partidos</Link>
-                    </Button>
+                    <span className="text-sm font-semibold text-green-600">
+                      {formatearPrecio(partido.price)}
+                    </span>
                   </div>
+                ))}
+                <div className="pt-2">
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href="/partidos">Ver todos los partidos</Link>
+                  </Button>
                 </div>
-              ) : (
-                <p className="text-center text-gray-500 py-4">No hay partidos programados</p>
-              )}
-            </CardContent>
-          </Card>
+              </div>
+            ) : (
+              <p className="text-center text-gray-500 py-4">No hay partidos programados</p>
+            )}
+          </CardContent>
+        </Card>
+
 
           <Card>
             <CardHeader>
