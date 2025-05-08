@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatearPrecio } from "@/lib/utils"
 import Link from "next/link"
-import { CalendarIcon, Package, DollarSign, Users, Trophy, UserCheck } from "lucide-react"
+import { CalendarIcon, Package, DollarSign, Trophy, UserCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import type { Articulo, MovimientoFinanciero, Partido, Club, Evento } from "@/lib/tipos"
 import { useRouter } from "next/navigation"
@@ -234,7 +234,7 @@ export default function DashboardPage() {
             </Card>
           </Link>
 
-          <Card className="hover:shadow-md transition-shadow sm:col-span-2 lg:col-span-1">
+          {/* <Card className="hover:shadow-md transition-shadow sm:col-span-2 lg:col-span-1">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-sm font-medium">Usuarios Activos</CardTitle>
               <Users className="h-4 w-4 text-purple-500" />
@@ -243,7 +243,7 @@ export default function DashboardPage() {
               <div className="text-2xl font-bold">--</div>
               <p className="text-xs text-muted-foreground">Información no disponible</p>
             </CardContent>
-          </Card>
+          </Card> */}
         </div>
 
         <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">

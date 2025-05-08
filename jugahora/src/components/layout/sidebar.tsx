@@ -7,7 +7,6 @@ import {
   LayoutGrid,
   FileText,
   CalendarIcon,
-  Users,
   DollarSign,
   ChevronRight,
   Trophy,
@@ -29,7 +28,7 @@ const navItems = [
   { href: "/eventos", icon: Trophy, label: "Eventos" },
   { href: "/inventario", icon: FileText, label: "Inventario" },
   { href: "/finanzas", icon: DollarSign, label: "Finanzas" },
-  { href: "/usuarios", icon: Users, label: "Usuarios" },
+  // { href: "/usuarios", icon: Users, label: "Usuarios" },
   { icon: LogOut, label: "Cerrar sesión", onClick: true },
 ]
 
