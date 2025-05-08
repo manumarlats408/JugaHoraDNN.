@@ -287,51 +287,35 @@ export default function DashboardPage() {
         </Card>
 
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Artículos Populares</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {[
-                  {
-                    id: "1",
-                    nombre: "Pelota Pro Pádel",
-                    codigo: "PRO-001",
-                    precioVenta: 4500,
-                  },
-                  {
-                    id: "2",
-                    nombre: "Paleta Carbon X",
-                    codigo: "PAL-205",
-                    precioVenta: 38000,
-                  },
-                  {
-                    id: "3",
-                    nombre: "Grips Antideslizantes",
-                    codigo: "GRP-099",
-                    precioVenta: 1200,
-                  },
-                ].map((articulo) => (
-                  <div key={articulo.id} className="flex justify-between items-center border-b pb-2">
-                    <div>
-                      <p className="font-medium">{articulo.nombre}</p>
-                      <p className="text-sm text-gray-500">Código: {articulo.codigo}</p>
-                    </div>
-                    <span className="text-sm font-semibold text-green-600">
-                      {formatearPrecio(articulo.precioVenta)}
-                    </span>
+        <Card>
+        <CardHeader>
+          <CardTitle>Artículos Populares</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {articulos.length > 0 ? (
+            <div className="space-y-4">
+              {articulos.slice(0, 3).map((articulo) => (
+                <div key={articulo.id} className="flex justify-between items-center border-b pb-2">
+                  <div>
+                    <p className="font-medium">{articulo.nombre}</p>
+                    <p className="text-sm text-gray-500">Código: {articulo.codigo}</p>
                   </div>
-                ))}
-
-                <div className="pt-2">
-                  <Button variant="outline" size="sm" asChild>
-                    <Link href="/inventario">Ver inventario completo</Link>
-                  </Button>
+                  <span className="text-sm font-semibold text-green-600">
+                    {formatearPrecio(articulo.precioVenta)}
+                  </span>
                 </div>
+              ))}
+              <div className="pt-2">
+                <Button variant="outline" size="sm" asChild>
+                  <Link href="/inventario">Ver inventario completo</Link>
+                </Button>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          ) : (
+            <p className="text-center text-gray-500 py-4">No hay artículos disponibles</p>
+          )}
+        </CardContent>
+      </Card>
 
           <Card className="md:col-span-2 lg:col-span-1">
             <CardHeader>
