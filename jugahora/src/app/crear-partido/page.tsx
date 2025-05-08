@@ -66,6 +66,8 @@ export default function CrearPartidoJugador() {
   const [isLoading, setIsLoading] = useState(true)
   const [misPartidos, setMisPartidos] = useState<Match[]>([])
   const [editMatch, setEditMatch] = useState<Match | null>(null)
+  const [isSavingMatch, setIsSavingMatch] = useState(false)
+  const [isSavingEditMatch, setIsSavingEditMatch] = useState(false)
   const [menuAbierto, setMenuAbierto] = useState(false)
   const referenciaMenu = useRef<HTMLDivElement>(null)
   const router = useRouter()
@@ -154,6 +156,7 @@ export default function CrearPartidoJugador() {
   
   const handleSaveEdit = async () => {
     if (!editMatch) return
+    setIsSavingEditMatch(true)
     try {
       const res = await fetch(`/api/matches/${editMatch.id}`, {
         method: 'PATCH',
@@ -171,6 +174,8 @@ export default function CrearPartidoJugador() {
       
     } catch (error) {
       console.error('Error al actualizar partido:', error)
+    } finally {
+      setIsSavingEditMatch(false)
     }
   }
   
@@ -180,9 +185,10 @@ export default function CrearPartidoJugador() {
       toast.error('Por favor completá todos los campos')
       return
     }
-  
+    setIsSavingMatch(true)
     guardarFormularioEnSession()
-  
+    
+    try {
     const res = await fetch('/api/matches', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -207,8 +213,14 @@ export default function CrearPartidoJugador() {
       router.push('/jugar')
     } else {
       toast.error(data.error || 'Error al crear el partido')
-    }
+    } 
+  } catch (error) {
+    console.error('Error:', error)
+  } finally {
+    setIsSavingMatch(false)
   }
+}
+
   
 
   const handleAddPlayersRedirect = () => {
@@ -437,9 +449,21 @@ export default function CrearPartidoJugador() {
             </Button>
 
             <div className="pt-4">
-              <Button onClick={handleSubmit} className="w-full">
-                Crear Partido
-              </Button>
+            <Button onClick={handleSubmit} disabled={isSavingMatch} className="min-w-[140px]">
+              {isSavingMatch ? (
+                <span className="flex items-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 
+                      5.291A7.962 7.962 0 014 12H0c0 3.042 
+                      1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                  Creando...
+                </span>
+              ) : (
+                "Crear Partido"
+              )}
+            </Button>
             </div>
           </CardContent>
         </Card>
@@ -533,7 +557,21 @@ export default function CrearPartidoJugador() {
                 </div>
               </div>
               <DialogFooter>
-                <Button onClick={handleSaveEdit}>Guardar Cambios</Button>
+              <Button onClick={handleSaveEdit} disabled={isSavingEditMatch}>
+                {isSavingEditMatch ? (
+                  <span className="flex items-center">
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 
+                        5.291A7.962 7.962 0 014 12H0c0 3.042 
+                        1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    Guardando...
+                  </span>
+                ) : (
+                  "Guardar Cambios"
+                )}
+              </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
