@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { Calendar, UserPlus, Users } from "lucide-react"
+import { UserCircle, UserPlus, Users } from "lucide-react"
 import Link from "next/link"
 import Image from 'next/image'
 import { ReactNode } from 'react'
@@ -23,8 +23,7 @@ export default function HomePage() {
                   Bienvenido a JugáHora
                 </h1>
                 <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
-                  Reserva canchas de pádel o únete a partidos existentes en tu área. Juega cuando quieras, donde
-                  quieras.
+                  Únete a partidos o eventos de pádel con jugadores de tu mismo nivel!
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
@@ -45,11 +44,6 @@ export default function HomePage() {
             </h2>
             <div className="grid grid-cols-1 gap-8 sm:gap-12 md:grid-cols-3">
               <FeatureCard
-                icon={<Calendar className="h-10 w-10 sm:h-12 sm:w-12 text-green-600" />}
-                title="Reserva Fácil"
-                description="Reserva canchas de pádel en los mejores clubes con solo unos clics."
-              />
-              <FeatureCard
                 icon={<Users className="h-10 w-10 sm:h-12 sm:w-12 text-green-600" />}
                 title="Únete a Partidos"
                 description="Encuentra y únete a partidos organizados por otros jugadores en tu área."
@@ -58,6 +52,11 @@ export default function HomePage() {
                 icon={<UserPlus className="h-10 w-10 sm:h-12 sm:w-12 text-green-600" />}
                 title="Conoce Gente Nueva"
                 description="Únete a partidos y actividades para conocer nuevos jugadores de pádel y hacer amigos mientras te diviertes."
+              />
+              <FeatureCard
+                icon={<UserCircle className="h-10 w-10 sm:h-12 sm:w-12 text-green-600" />}
+                title="Perfil Personalizado"
+                description="Crea tu perfil, seleccioná tu nivel de juego y encontrá partidos compatibles con vos."
               />
             </div>
           </div>
