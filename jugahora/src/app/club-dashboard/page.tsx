@@ -298,7 +298,7 @@ export default function DashboardPage() {
                 <div key={articulo.id} className="flex justify-between items-center border-b pb-2">
                   <div>
                     <p className="font-medium">{articulo.nombre}</p>
-                    <p className="text-sm text-gray-500">Código: {articulo.codigo}</p>
+                    <p className="text-sm text-gray-500">Código: {articulo.cantidadStock}</p>
                   </div>
                   <span className="text-sm font-semibold text-green-600">
                     {formatearPrecio(articulo.precioVenta)}
