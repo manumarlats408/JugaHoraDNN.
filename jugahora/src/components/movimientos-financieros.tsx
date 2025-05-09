@@ -6,6 +6,8 @@ import type { MovimientoFinanciero } from "@/lib/tipos"
 import { Input } from "@/components/ui/input"
 import { Sidebar } from "@/components/layout/sidebar"
 import AgregarMovimientoDialog from "./agregar-movimiento-dialog"
+import { useRouter } from "next/navigation"
+
 
 export default function MovimientosFinancieros() {
   const [movimientos, setMovimientos] = useState<MovimientoFinanciero[]>([])
@@ -22,7 +24,21 @@ export default function MovimientosFinancieros() {
     const data = await res.json()
     setMovimientos(data)
   }, [desde, hasta])
-
+  const router = useRouter()
+  useEffect(() => {
+    const verificarAuth = async () => {
+      try {
+        const res = await fetch("/api/auth", { credentials: "include" })
+        if (!res.ok) throw new Error("No autorizado")
+      } catch (error) {
+        console.error("No autorizado:", error)
+        router.push("/login") // 🔁 Redirección si no hay token
+      }
+    }
+  
+    verificarAuth()
+  }, [router])
+  
   useEffect(() => {
     fetchMovimientos()
   }, [fetchMovimientos])
@@ -45,6 +61,8 @@ export default function MovimientosFinancieros() {
     const dia = partes[2]
     return `${dia}/${mes}/${año}`
   }
+  
+
 
   return (
     <div className="flex min-h-screen w-full">
