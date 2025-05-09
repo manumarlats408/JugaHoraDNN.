@@ -244,13 +244,15 @@ export function ListadoArticulos() {
 
             </div>
 
-            <TablaArticulos
-              articulos={articulosFiltrados}
-              cargando={cargando}
-              onActualizar={(articulosActualizados) => setArticulos(articulosActualizados)}
-              onEditar={handleEditar}
-              onEliminar={handleEliminar}
-            />
+            <div className="max-h-[360px] overflow-y-auto border rounded-lg">
+              <TablaArticulos
+                articulos={articulosFiltrados}
+                cargando={cargando}
+                onActualizar={(articulosActualizados) => setArticulos(articulosActualizados)}
+                onEditar={handleEditar}
+                onEliminar={handleEliminar}
+              />
+            </div>
           </div>
         </div>
       </div>

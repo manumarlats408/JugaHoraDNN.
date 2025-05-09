@@ -92,8 +92,8 @@ export default function MovimientosFinancieros() {
               </div>
             </div>
   
-            <div className="overflow-x-auto border rounded-lg">
-              <table className="w-full min-w-[900px]">
+            <div className="overflow-x-auto border rounded-lg max-h-[360px] overflow-y-auto">
+              <table className="w-full min-w-[900px] table-auto">
                 <thead>
                   <tr className="border-b border-gray-200">
                     <th className="py-3 text-left font-medium text-gray-500">Concepto</th>
