@@ -8,6 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Users, Trash2 } from "lucide-react"
 import { toast } from "react-hot-toast"
+import { useRouter } from "next/navigation"
+
 
 type User = {
   id: number
@@ -22,17 +24,22 @@ export function AbonadosDashboard() {
   const [abonados, setAbonados] = useState<User[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [loadingUserId, setLoadingUserId] = useState<number | null>(null)
-
+  const router = useRouter()
 
   useEffect(() => {
     const fetchClub = async () => {
-      const res = await fetch("/api/auth", { credentials: "include" })
-      if (!res.ok) throw new Error("No autorizado")
-      const data = await res.json()
-      setClubId(data.entity.id)
+      try {
+        const res = await fetch("/api/auth", { credentials: "include" })
+        if (!res.ok) throw new Error("No autorizado")
+        const data = await res.json()
+        setClubId(data.entity.id)
+      } catch (error) {
+        console.error("Error al obtener el club:", error)
+        router.push("/login") // 🔁 Redirección si falla auth
+      }
     }
     fetchClub()
-  }, [])
+  }, [router])
 
   useEffect(() => {
     const fetchUsers = async () => {
