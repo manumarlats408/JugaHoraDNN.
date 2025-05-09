@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { Sidebar } from "@/components/layout/sidebar"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Search, Download, Upload } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -22,6 +22,7 @@ export function ListadoArticulos() {
   const [articuloSeleccionado, setArticuloSeleccionado] = useState<Articulo | null>(null)
   const [modalAbierto, setModalAbierto] = useState(false)
   const [modalNuevoAbierto, setModalNuevoAbierto] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
 
   useEffect(() => {
@@ -212,24 +213,24 @@ export function ListadoArticulos() {
               </div>
 
               <div className="flex flex-col space-y-3 md:space-y-0 md:flex-row md:gap-3">
-            <div>
-              <input
-                id="importar"
-                type="file"
-                accept=".xlsx"
-                className="hidden"
-                onChange={handleImportar}
-              />
-              <label htmlFor="importar">
+              <div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".xlsx"
+                  className="hidden"
+                  onChange={handleImportar}
+                />
                 <Button
                   variant="outline"
-                  className="flex items-center gap-2 w-full md:w-auto cursor-pointer"
+                  className="flex items-center gap-2 w-full md:w-auto"
+                  onClick={() => fileInputRef.current?.click()}
                 >
                   <Upload size={18} className="text-green-500" />
                   <span className="whitespace-nowrap">Importar (XLSX)</span>
                 </Button>
-              </label>
-            </div>
+              </div>
+
 
             <Button
                 variant="outline"
