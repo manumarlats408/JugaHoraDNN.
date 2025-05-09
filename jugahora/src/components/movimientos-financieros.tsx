@@ -43,9 +43,7 @@ export default function MovimientosFinancieros() {
     verificarAuth()
   }, [router])
   
-  if (isVerifying) {
-    return null
-  }
+ 
   
   useEffect(() => {
     fetchMovimientos()
@@ -70,7 +68,9 @@ export default function MovimientosFinancieros() {
     return `${dia}/${mes}/${año}`
   }
   
-
+  if (isVerifying) {
+    return null
+  }
 
   return (
     <div className="flex min-h-screen w-full">
