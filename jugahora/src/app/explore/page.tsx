@@ -28,6 +28,7 @@ export default function ExploreProfiles() {
   const [searchTerm, setSearchTerm] = useState('')
   const [friends, setFriends] = useState<User[]>([])
   const [pendingIds, setPendingIds] = useState<number[]>([])
+  const [receivedRequestIds, setReceivedRequestIds] = useState<number[]>([])
   const [loading, setLoading] = useState(true)
   const [isVerifying, setIsVerifying] = useState(true)
   const [isAuthorized, setIsAuthorized] = useState(false)
@@ -39,14 +40,12 @@ export default function ExploreProfiles() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 1. Verifica sesión
         const authRes = await fetch('/api/auth', { credentials: 'include' })
         if (!authRes.ok) throw new Error('No autorizado')
         const userData = await authRes.json()
         const myId = userData.entity.id
         setCurrentUserId(myId)
 
-        // 2. Busca todos los perfiles y amigos
         const [usersRes, friendsRes, pendingRes] = await Promise.all([
           fetch('/api/users'),
           fetch('/api/friends/list-friends', { credentials: 'include' }),
@@ -60,19 +59,28 @@ export default function ExploreProfiles() {
         setProfiles(users)
         setFriends(friendsData)
 
-        // 3. Setea los que tienen solicitud pendiente
+        // IDs a los que yo les mandé solicitud
         const pending = pendingData
           .filter((r) => r.userId === myId && r.status === 'pending')
           .map((r) => r.friendId)
         setPendingIds(pending)
 
-        // 4. Filtra perfiles visibles
+        // IDs que me mandaron solicitud a mí (yo aún no acepté)
+        const received = pendingData
+          .filter((r) => r.friendId === myId && r.status === 'pending')
+          .map((r) => r.userId)
+        setReceivedRequestIds(received)
+
+        // Excluir amigos, yo mismo, y los que me mandaron solicitud
         const friendIds = new Set(friendsData.map((f) => f.id))
         const filtered = users.filter(
-          (profile) => !friendIds.has(profile.id) && profile.id !== myId
+          (profile) =>
+            !friendIds.has(profile.id) &&
+            !received.includes(profile.id) &&
+            profile.id !== myId
         )
-        setFilteredProfiles(filtered)
 
+        setFilteredProfiles(filtered)
         setIsAuthorized(true)
       } catch {
         router.push('/login')
@@ -117,7 +125,12 @@ export default function ExploreProfiles() {
 
     const friendIds = new Set(friends.map((f) => f.id))
     const filtered = profiles
-      .filter((profile) => !friendIds.has(profile.id) && profile.id !== currentUserId)
+      .filter(
+        (profile) =>
+          !friendIds.has(profile.id) &&
+          !receivedRequestIds.includes(profile.id) &&
+          profile.id !== currentUserId
+      )
       .filter((profile) =>
         `${profile.firstName} ${profile.lastName}`.toLowerCase().includes(value)
       )
