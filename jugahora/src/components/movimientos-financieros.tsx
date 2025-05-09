@@ -48,7 +48,9 @@ export default function MovimientosFinancieros() {
  
   
   useEffect(() => {
-    fetchMovimientos()
+    if (isAuthorized) {
+      fetchMovimientos()
+    }
   }, [fetchMovimientos])
 
   const totalEfectivo = movimientos
