@@ -37,15 +37,22 @@ export default function MovimientosFinancieros() {
 
   const saldoTotal = totalEfectivo + totalTransferencia
 
+  const formatearFecha = (fechaString: string) => {
+    const partes = fechaString.split("T")[0].split("-")
+    if (partes.length !== 3) return fechaString
+    const año = partes[0]
+    const mes = partes[1]
+    const dia = partes[2]
+    return `${dia}/${mes}/${año}`
+  }
+
   return (
     <div className="flex min-h-screen w-full">
       <Sidebar />
-      <div className="flex-1 p-3 md:p-6 md:ml-16 space-y-6 overflow-x-hidden">
+      <div className="flex-1 md:ml-16 p-3 sm:p-4 md:p-6 space-y-6 overflow-x-hidden">
         <div className="bg-white rounded-lg shadow-sm w-full">
           <div className="p-4 md:p-6 border-b">
-            <h1 className="text-xl md:text-2xl font-medium text-gray-600 mt-10 md:mt-0">
-              MOVIMIENTOS FINANCIEROS
-            </h1>
+            <h1 className="text-2xl md:text-3xl font-bold mt-10 md:mt-0">Movimientos financieros</h1>
             <p className="text-sm md:text-base text-gray-500 mt-2">
               Consulta todos los movimientos financieros del complejo deportivo
             </p>
@@ -94,8 +101,9 @@ export default function MovimientosFinancieros() {
               </div>
             </div>
   
-            <div className="overflow-x-auto border rounded-lg">
-              <table className="w-full min-w-[900px]">
+            <div className="overflow-x-auto border rounded-lg max-h-[360px] overflow-y-auto">
+            <table className="w-full table-auto">
+
                 <thead>
                   <tr className="border-b border-gray-200">
                     <th className="py-3 text-left font-medium text-gray-500">Concepto</th>
@@ -115,8 +123,8 @@ export default function MovimientosFinancieros() {
                         <td className="py-3">{m.concepto}</td>
                         <td className="py-3">{m.jugador || "-"}</td>
                         <td className="py-3">{m.cancha || "-"}</td>
-                        <td className="py-3">{m.fechaTurno ? new Date(m.fechaTurno).toLocaleDateString() : "-"}</td>
-                        <td className="py-3">{new Date(m.fechaMovimiento).toLocaleDateString()}</td>
+                        <td className="py-3">{m.fechaTurno ? formatearFecha(m.fechaTurno) : "-"}</td>
+                        <td className="py-3">{formatearFecha(m.fechaMovimiento)}</td>
                         <td className="py-3">{m.metodoPago}</td>
                         <td className="py-3 text-red-600">{m.egreso ? `$${m.egreso.toFixed(2)}` : "-"}</td>
                         <td className="py-3 text-green-600">{m.ingreso ? `$${m.ingreso.toFixed(2)}` : "-"}</td>

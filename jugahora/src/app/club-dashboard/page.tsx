@@ -128,7 +128,7 @@ export default function DashboardPage() {
   // }
 
   // Estadísticas
-  const articulosInactivos = articulos.filter((a) => a.cantidadStock === 0).length
+  // const articulosInactivos = articulos.filter((a) => a.cantidadStock === 0).length
   const totalIngresos = movimientos.reduce((total, m) => total + (m.ingreso || 0), 0)
   const totalEgresos = movimientos.reduce((total, m) => total + (m.egreso || 0), 0)
   const saldoNeto = totalIngresos - totalEgresos
@@ -221,8 +221,8 @@ export default function DashboardPage() {
                 <Package className="h-4 w-4 text-blue-500" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{articulosInactivos}</div>
-                <p className="text-xs text-muted-foreground">{articulos.length} artículos en total</p>
+                <div className="text-2xl font-bold">{articulos.length}</div>
+                <p className="text-xs text-muted-foreground">artículos en total</p>
               </CardContent>
             </Card>
           </Link>

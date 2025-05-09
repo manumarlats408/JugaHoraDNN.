@@ -1,19 +1,34 @@
 import { PrismaClient } from "@prisma/client"
 import * as XLSX from "xlsx"
+import jwt from "jsonwebtoken"
 
 const prisma = new PrismaClient()
 
 export async function GET(req: Request) {
   try {
-    const { searchParams } = new URL(req.url)
-    const clubId = Number(searchParams.get("clubId"))
+    const token = req.headers
+  .get("cookie")
+  ?.split("; ")
+  .find((c) => c.startsWith("token="))
+  ?.split("=")[1]
 
-    if (!clubId) {
-      return new Response(JSON.stringify({ error: "Falta el parámetro clubId" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      })
-    }
+if (!token) {
+  return new Response(JSON.stringify({ error: "No autorizado: falta token" }), {
+    status: 401,
+    headers: { "Content-Type": "application/json" },
+  })
+}
+
+const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { id: string | number; isClub: boolean }
+if (!decoded.isClub) {
+  return new Response(JSON.stringify({ error: "No autorizado" }), {
+    status: 403,
+    headers: { "Content-Type": "application/json" },
+  })
+}
+
+const clubId = typeof decoded.id === "string" ? parseInt(decoded.id) : decoded.id
+
 
     const articulos = await prisma.articulo.findMany({
       where: { clubId },
