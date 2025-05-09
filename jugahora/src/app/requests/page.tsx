@@ -18,7 +18,9 @@ interface Request {
 export default function RequestsPage() {
   const [requests, setRequests] = useState<Request[]>([])
   const [loading, setLoading] = useState(true)
-  const [loadingRequestId, setLoadingRequestId] = useState<number | null>(null)
+  const [acceptingId, setAcceptingId] = useState<number | null>(null)
+  const [rejectingId, setRejectingId] = useState<number | null>(null)
+
 
   const router = useRouter()
 
@@ -55,15 +57,11 @@ export default function RequestsPage() {
       ?.split('=')[1]
   }
 
-  const handleRespond = async (requestId: number, action: 'accept' | 'reject') => {
-    setLoadingRequestId(requestId)
+  const handleAccept = async (requestId: number) => {
+    setAcceptingId(requestId)
     const token = getTokenFromCookies()
-
     try {
-      const endpoint =
-        action === 'accept' ? '/api/friends/accept-request' : '/api/friends/reject-request'
-
-      const response = await fetch(endpoint, {
+      const response = await fetch('/api/friends/accept-request', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -71,16 +69,40 @@ export default function RequestsPage() {
         },
         body: JSON.stringify({ requestId }),
       })
-
+  
       if (response.ok) {
         setRequests((prev) => prev.filter((req) => req.id !== requestId))
       }
     } catch (error) {
-      console.error(`Error al ${action === 'accept' ? 'aceptar' : 'rechazar'} solicitud:`, error)
+      console.error('Error al aceptar solicitud:', error)
     } finally {
-      setLoadingRequestId(null)
+      setAcceptingId(null)
     }
   }
+  
+  const handleReject = async (requestId: number) => {
+    setRejectingId(requestId)
+    const token = getTokenFromCookies()
+    try {
+      const response = await fetch('/api/friends/reject-request', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ requestId }),
+      })
+  
+      if (response.ok) {
+        setRequests((prev) => prev.filter((req) => req.id !== requestId))
+      }
+    } catch (error) {
+      console.error('Error al rechazar solicitud:', error)
+    } finally {
+      setRejectingId(null)
+    }
+  }
+  
 
   if (loading) {
     return (
@@ -120,20 +142,20 @@ export default function RequestsPage() {
                     <p className="text-sm text-gray-500">{request.sender.email}</p>
                   </div>
                   <div className="flex space-x-2">
-                    <Button
-                      onClick={() => handleRespond(request.id, 'accept')}
-                      disabled={loadingRequestId === request.id}
-                      className="bg-green-500 hover:bg-green-600 text-white"
-                    >
-                      {loadingRequestId === request.id ? 'Aceptando...' : 'Aceptar'}
-                    </Button>
-                    <Button
-                      onClick={() => handleRespond(request.id, 'reject')}
-                      disabled={loadingRequestId === request.id}
-                      className="bg-red-500 hover:bg-red-600 text-white"
-                    >
-                      {loadingRequestId === request.id ? 'Rechazando...' : 'Rechazar'}
-                    </Button>
+                  <Button
+                    onClick={() => handleAccept(request.id)}
+                    disabled={acceptingId === request.id}
+                    className="bg-green-500 hover:bg-green-600 text-white"
+                  >
+                    {acceptingId === request.id ? 'Aceptando...' : 'Aceptar'}
+                  </Button>
+                  <Button
+                    onClick={() => handleReject(request.id)}
+                    disabled={rejectingId === request.id}
+                    className="bg-red-500 hover:bg-red-600 text-white"
+                  >
+                    {rejectingId === request.id ? 'Rechazando...' : 'Rechazar'}
+                  </Button>
                   </div>
                 </div>
               ))
