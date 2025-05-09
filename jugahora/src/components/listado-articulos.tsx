@@ -107,7 +107,9 @@ export function ListadoArticulos() {
   const handleExportar = async () => {
     try {
       setCargando(true)
-      const respuesta = await fetch("/api/exportar-articulos")
+      const respuesta = await fetch("/api/exportar-articulos", {
+        credentials: "include",
+      })
       const blob = await respuesta.blob()
 
       const url = window.URL.createObjectURL(blob)
