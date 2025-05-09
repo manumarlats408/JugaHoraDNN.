@@ -8,7 +8,6 @@ import { Search, Download, Upload } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { TablaArticulos } from "@/components/tabla-articulos"
-import { importarArticulos } from "@/lib/acciones-cliente"
 import { useToast } from "@/hooks/use-toast"
 import type { Articulo } from "@/lib/tipos"
 import { ModalEditarArticulo } from "@/components/ModalEditarArticulo"
@@ -57,9 +56,9 @@ export function ListadoArticulos() {
 
   const handleImportar = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return
-
+  
     const file = e.target.files[0]
-
+  
     if (file.type !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
       toast({
         title: "Formato incorrecto",
@@ -68,25 +67,31 @@ export function ListadoArticulos() {
       })
       return
     }
-
+  
     try {
       setCargando(true)
       const formData = new FormData()
       formData.append("archivo", file)
-
-      const resultado = await importarArticulos(formData)
-
-      if (resultado.success) {
+  
+      const respuesta = await fetch("/api/articulos/importar", {
+        method: "POST",
+        body: formData,
+        credentials: "include", // IMPORTANTE para que llegue el token
+      })
+  
+      const resultado = await respuesta.json()
+  
+      if (respuesta.ok && resultado.success) {
         toast({
           title: "Éxito",
           description: "Artículos importados correctamente",
         })
-
-        const respuesta = await fetch("/api/articulos", {
+  
+        // Recargar artículos
+        const nuevaRespuesta = await fetch("/api/articulos", {
           credentials: "include",
         })
-        if (!respuesta.ok) throw new Error("Error al recargar los artículos")
-        const datos = await respuesta.json()
+        const datos = await nuevaRespuesta.json()
         setArticulos(datos)
       } else {
         throw new Error(resultado.error || "Error desconocido al importar")
@@ -100,9 +105,10 @@ export function ListadoArticulos() {
       })
     } finally {
       setCargando(false)
-      e.target.value = ""
+      e.target.value = "" // permite volver a subir el mismo archivo si hace falta
     }
   }
+  
 
   const handleExportar = async () => {
     try {
