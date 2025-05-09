@@ -184,9 +184,7 @@ export function ListadoArticulos() {
       <div className="flex-1 p-3 md:p-6 md:ml-16 space-y-6 overflow-x-hidden">
         <div className="bg-white rounded-lg shadow-sm">
           <div className="p-4 md:p-6 border-b">
-            <h1 className="text-xl md:text-2xl font-medium text-gray-600 mt-10 md:mt-0">
-              LISTADO DE CONCEPTOS / ARTÍCULOS
-            </h1>
+            <h1 className="text-2xl md:text-3xl font-bold mt-10 md:mt-0">Listado de artículos</h1>
             <p className="text-sm md:text-base text-gray-500 mt-2">
               A continuación podrás encontrar todos los conceptos/artículos del complejo
             </p>
