@@ -47,9 +47,9 @@ export default function MovimientosFinancieros() {
   }
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen w-full">
       <Sidebar />
-      <div className="flex-1 p-3 sm:p-4 md:p-6 ml-0 md:ml-16 space-y-6 overflow-x-hidden">
+      <div className="flex-1 md:ml-16 p-3 sm:p-4 md:p-6 space-y-6 overflow-x-hidden">
         <div className="bg-white rounded-lg shadow-sm w-full">
           <div className="p-4 md:p-6 border-b">
             <h1 className="text-2xl md:text-3xl font-bold mt-10 md:mt-0">Movimientos financieros</h1>
@@ -102,7 +102,8 @@ export default function MovimientosFinancieros() {
             </div>
   
             <div className="overflow-x-auto border rounded-lg max-h-[360px] overflow-y-auto">
-            <table className="min-w-full table-auto">
+            <table className="w-full table-auto">
+
                 <thead>
                   <tr className="border-b border-gray-200">
                     <th className="py-3 text-left font-medium text-gray-500">Concepto</th>
