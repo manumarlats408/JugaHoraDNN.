@@ -74,7 +74,8 @@ export function ListadoArticulos() {
       const formData = new FormData()
       formData.append("archivo", file)
   
-      const respuesta = await fetch("/api/articulos/importar", {
+      const respuesta = await fetch("/api/importar-articulos", {
+
         method: "POST",
         body: formData,
         credentials: "include", // IMPORTANTE para que llegue el token
