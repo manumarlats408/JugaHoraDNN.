@@ -20,11 +20,18 @@ export default function ExploreProfiles() {
   const [searchTerm, setSearchTerm] = useState('');
   const [friends, setFriends] = useState<User[]>([])
   const [loading, setLoading] = useState<boolean>(true);
+  const [isVerifying, setIsVerifying] = useState(true)
+  const [isAuthorized, setIsAuthorized] = useState(false)
+
   const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const authRes = await fetch('/api/auth', { credentials: 'include' })
+        if (!authRes.ok) throw new Error('No autorizado')
+        const userData = await authRes.json()
+  
         const [usersRes, friendsRes] = await Promise.all([
           fetch('/api/users'),
           fetch('/api/friends/list-friends', { credentials: 'include' }),
@@ -36,19 +43,22 @@ export default function ExploreProfiles() {
         setProfiles(users)
         setFriends(friendsData)
   
-        // Aplicar filtro inicial sin amigos
         const friendIds = new Set(friendsData.map((f: User) => f.id))
         const filtered = users.filter((profile: User) => !friendIds.has(profile.id))
         setFilteredProfiles(filtered)
+  
+        setIsAuthorized(true)
       } catch (error) {
-        console.error('Error al cargar datos:', error)
+        router.push('/login') // redirige si no hay token válido
       } finally {
+        setIsVerifying(false)
         setLoading(false)
       }
     }
   
     fetchData()
-  }, [])
+  }, [router])
+  
 
   const handleSendRequest = async (friendId: number) => {
     try {
@@ -85,6 +95,8 @@ export default function ExploreProfiles() {
   
 
   if (loading) return <p className="p-4">Cargando perfiles...</p>;
+
+  if (isVerifying || !isAuthorized) return null
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white p-6">
