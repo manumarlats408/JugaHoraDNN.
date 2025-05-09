@@ -37,6 +37,21 @@ export default function ExploreProfiles() {
 
   const router = useRouter()
 
+  const getVisibleProfiles = (
+    users: User[],
+    myId: number,
+    friendsData: User[],
+    received: number[]
+  ) => {
+    const friendIds = new Set(friendsData.map((f) => f.id))
+    return users.filter(
+      (profile) =>
+        !friendIds.has(profile.id) &&
+        !received.includes(profile.id) &&
+        profile.id !== myId
+    )
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -59,28 +74,19 @@ export default function ExploreProfiles() {
         setProfiles(users)
         setFriends(friendsData)
 
-        // IDs a los que yo les mandé solicitud
         const pending = pendingData
           .filter((r) => r.userId === myId && r.status === 'pending')
           .map((r) => r.friendId)
         setPendingIds(pending)
 
-        // IDs que me mandaron solicitud a mí (yo aún no acepté)
         const received = pendingData
           .filter((r) => r.friendId === myId && r.status === 'pending')
           .map((r) => r.userId)
         setReceivedRequestIds(received)
 
-        // Excluir amigos, yo mismo, y los que me mandaron solicitud
-        const friendIds = new Set(friendsData.map((f) => f.id))
-        const filtered = users.filter(
-          (profile) =>
-            !friendIds.has(profile.id) &&
-            !received.includes(profile.id) &&
-            profile.id !== myId
-        )
-
+        const filtered = getVisibleProfiles(users, myId, friendsData, received)
         setFilteredProfiles(filtered)
+
         setIsAuthorized(true)
       } catch {
         router.push('/login')
@@ -123,18 +129,12 @@ export default function ExploreProfiles() {
     const value = e.target.value.toLowerCase()
     setSearchTerm(value)
 
-    const friendIds = new Set(friends.map((f) => f.id))
-    const filtered = profiles
-      .filter(
-        (profile) =>
-          !friendIds.has(profile.id) &&
-          !receivedRequestIds.includes(profile.id) &&
-          profile.id !== currentUserId
-      )
-      .filter((profile) =>
-        `${profile.firstName} ${profile.lastName}`.toLowerCase().includes(value)
-      )
+    if (!currentUserId) return
 
+    const visible = getVisibleProfiles(profiles, currentUserId, friends, receivedRequestIds)
+    const filtered = visible.filter((profile) =>
+      `${profile.firstName} ${profile.lastName}`.toLowerCase().includes(value)
+    )
     setFilteredProfiles(filtered)
   }
 
