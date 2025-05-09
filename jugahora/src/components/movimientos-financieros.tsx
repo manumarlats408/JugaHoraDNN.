@@ -37,6 +37,15 @@ export default function MovimientosFinancieros() {
 
   const saldoTotal = totalEfectivo + totalTransferencia
 
+  const formatearFecha = (fechaString: string) => {
+    const partes = fechaString.split("T")[0].split("-")
+    if (partes.length !== 3) return fechaString
+    const año = partes[0]
+    const mes = partes[1]
+    const dia = partes[2]
+    return `${dia}/${mes}/${año}`
+  }
+
   return (
     <div className="flex min-h-screen w-full">
       <Sidebar />
@@ -113,8 +122,8 @@ export default function MovimientosFinancieros() {
                         <td className="py-3">{m.concepto}</td>
                         <td className="py-3">{m.jugador || "-"}</td>
                         <td className="py-3">{m.cancha || "-"}</td>
-                        <td className="py-3">{m.fechaTurno ? new Date(m.fechaTurno).toLocaleDateString() : "-"}</td>
-                        <td className="py-3">{new Date(m.fechaMovimiento).toLocaleDateString()}</td>
+                        <td className="py-3">{m.fechaTurno ? formatearFecha(m.fechaTurno) : "-"}</td>
+                        <td className="py-3">{formatearFecha(m.fechaMovimiento)}</td>
                         <td className="py-3">{m.metodoPago}</td>
                         <td className="py-3 text-red-600">{m.egreso ? `$${m.egreso.toFixed(2)}` : "-"}</td>
                         <td className="py-3 text-green-600">{m.ingreso ? `$${m.ingreso.toFixed(2)}` : "-"}</td>
