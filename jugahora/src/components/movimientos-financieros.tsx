@@ -24,6 +24,7 @@ export default function MovimientosFinancieros() {
     const data = await res.json()
     setMovimientos(data)
   }, [desde, hasta])
+  const [isVerifying, setIsVerifying] = useState(true)
   const router = useRouter()
   useEffect(() => {
     const verificarAuth = async () => {
@@ -32,12 +33,19 @@ export default function MovimientosFinancieros() {
         if (!res.ok) throw new Error("No autorizado")
       } catch (error) {
         console.error("No autorizado:", error)
-        router.push("/login") // 🔁 Redirección si no hay token
+        router.push("/login")
+        return
+      } finally {
+        setIsVerifying(false)
       }
     }
   
     verificarAuth()
   }, [router])
+  
+  if (isVerifying) {
+    return null
+  }
   
   useEffect(() => {
     fetchMovimientos()
