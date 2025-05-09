@@ -1,100 +1,121 @@
-'use client';
+'use client'
 
-import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useEffect, useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { toast } from 'react-hot-toast'
 
 interface User {
-  id: number;
-  firstName: string;
-  lastName: string;
-  email: string;
+  id: number
+  firstName: string
+  lastName: string
+  email: string
 }
 
 export default function ExploreProfiles() {
-  const [profiles, setProfiles] = useState<User[]>([]);
-  const [filteredProfiles, setFilteredProfiles] = useState<User[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [profiles, setProfiles] = useState<User[]>([])
+  const [filteredProfiles, setFilteredProfiles] = useState<User[]>([])
+  const [searchTerm, setSearchTerm] = useState('')
   const [friends, setFriends] = useState<User[]>([])
-  const [loading, setLoading] = useState<boolean>(true);
+  const [pendingIds, setPendingIds] = useState<number[]>([])
+  const [loading, setLoading] = useState(true)
   const [isVerifying, setIsVerifying] = useState(true)
   const [isAuthorized, setIsAuthorized] = useState(false)
+  const [currentUserId, setCurrentUserId] = useState<number | null>(null)
+  const [isSendingId, setIsSendingId] = useState<number | null>(null)
 
-  const router = useRouter();
+  const router = useRouter()
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const authRes = await fetch('/api/auth', { credentials: 'include' })
         if (!authRes.ok) throw new Error('No autorizado')
-        //const userData = await authRes.json()
-  
+        const userData = await authRes.json()
+        setCurrentUserId(userData.entity.id)
+
         const [usersRes, friendsRes] = await Promise.all([
           fetch('/api/users'),
           fetch('/api/friends/list-friends', { credentials: 'include' }),
         ])
-  
+
         const users = await usersRes.json()
         const friendsData = await friendsRes.json()
-  
+
         setProfiles(users)
         setFriends(friendsData)
-  
+
         const friendIds = new Set(friendsData.map((f: User) => f.id))
-        const filtered = users.filter((profile: User) => !friendIds.has(profile.id))
+        const filtered = users.filter(
+          (profile: User) =>
+            !friendIds.has(profile.id) && profile.id !== userData.entity.id
+        )
         setFilteredProfiles(filtered)
-  
+
         setIsAuthorized(true)
       } catch {
-        router.push('/login') // redirige si no hay token válido
+        router.push('/login')
       } finally {
         setIsVerifying(false)
         setLoading(false)
       }
     }
-  
+
     fetchData()
   }, [router])
-  
 
   const handleSendRequest = async (friendId: number) => {
+    setIsSendingId(friendId)
     try {
-      const token = localStorage.getItem('token');
       const response = await fetch('/api/friends/send-request', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
         },
+        credentials: 'include',
         body: JSON.stringify({ friendId }),
-      });
+      })
 
-      const result = await response.json();
-      alert(result.message);
+      const result = await response.json()
+
+      if (response.ok) {
+        toast.success('Solicitud enviada exitosamente')
+        setPendingIds([...pendingIds, friendId])
+      } else {
+        toast.error(result.message || 'Error al enviar solicitud')
+      }
     } catch (error) {
-      console.error('Error al enviar solicitud:', error);
+      console.error('Error al enviar solicitud:', error)
+      toast.error('Error al conectar con el servidor')
+    } finally {
+      setIsSendingId(null)
     }
-  };
+  }
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toLowerCase()
     setSearchTerm(value)
-  
+
     const friendIds = new Set(friends.map((f) => f.id))
     const filtered = profiles
-      .filter(profile => !friendIds.has(profile.id)) // excluir amigos
-      .filter(profile =>
+      .filter((profile) => !friendIds.has(profile.id) && profile.id !== currentUserId)
+      .filter((profile) =>
         `${profile.firstName} ${profile.lastName}`.toLowerCase().includes(value)
       )
-  
+
     setFilteredProfiles(filtered)
   }
-  
 
-  if (loading) return <p className="p-4">Cargando perfiles...</p>;
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+        <p className="text-lg text-gray-600">Cargando perfiles...</p>
+      </div>
+    )
+  }
 
   if (isVerifying || !isAuthorized) return null
 
@@ -105,7 +126,10 @@ export default function ExploreProfiles() {
           <Button variant="outline" onClick={() => router.push('/perfil')}>
             Volver al Perfil
           </Button>
-          <Link href="/requests" className="text-sm font-medium text-green-700 hover:underline">
+          <Link
+            href="/requests"
+            className="text-sm font-medium text-green-700 hover:underline"
+          >
             Ver Solicitudes de Amistad
           </Link>
         </div>
@@ -129,8 +153,8 @@ export default function ExploreProfiles() {
               <div className="space-y-4">
                 {filteredProfiles.map((profile) => (
                   <div
-                  key={profile.id}
-                  className="flex flex-col sm:flex-row sm:justify-between sm:items-center border p-4 rounded-lg hover:bg-green-50 transition-colors space-y-2 sm:space-y-0"
+                    key={profile.id}
+                    className="flex flex-col sm:flex-row sm:justify-between sm:items-center border p-4 rounded-lg hover:bg-green-50 transition-colors space-y-2 sm:space-y-0"
                   >
                     <div>
                       <p className="text-lg font-semibold text-gray-800">
@@ -138,9 +162,19 @@ export default function ExploreProfiles() {
                       </p>
                       <p className="text-sm text-gray-500">{profile.email}</p>
                     </div>
-                    <Button onClick={() => handleSendRequest(profile.id)} className="text-sm w-full sm:w-auto sm:ml-4">
-                      Enviar Solicitud
-                    </Button>
+                    {pendingIds.includes(profile.id) ? (
+                      <Button disabled variant="outline" className="sm:ml-4 w-full sm:w-auto">
+                        Pending
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={() => handleSendRequest(profile.id)}
+                        className="text-sm w-full sm:w-auto sm:ml-4"
+                        disabled={isSendingId === profile.id}
+                      >
+                        {isSendingId === profile.id ? 'Enviando...' : 'Enviar Solicitud'}
+                      </Button>
+                    )}
                   </div>
                 ))}
               </div>
@@ -151,5 +185,5 @@ export default function ExploreProfiles() {
         </Card>
       </div>
     </div>
-  );
+  )
 }
