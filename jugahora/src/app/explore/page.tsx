@@ -162,7 +162,7 @@ export default function ExploreProfiles() {
             href="/requests"
             className="text-sm font-medium text-green-700 hover:underline"
           >
-            Ver Solicitudes de Amistad
+            Ver Solicitudes de Amistad ({receivedRequestIds.length})
           </Link>
         </div>
 
