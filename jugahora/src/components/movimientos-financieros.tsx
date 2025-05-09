@@ -72,7 +72,6 @@ export default function MovimientosFinancieros() {
     return `${dia}/${mes}/${año}`
   }
   
-  if (isVerifying || !isAuthorized) return null
 
 
 
