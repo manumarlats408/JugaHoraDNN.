@@ -35,7 +35,7 @@ export default function MovimientosFinancieros() {
         const res = await fetch("/api/auth", { credentials: "include" })
         if (!res.ok) throw new Error("No autorizado")
         setIsAuthorized(true)
-      } catch (err) {
+      } catch {
         router.push("/login") // redirección limpia
       } finally {
         setIsVerifying(false)
