@@ -40,7 +40,7 @@ const AddPlayers = () => {
         setFilteredProfiles(filteredUsers)
   
         setIsAuthorized(true)
-      } catch (error) {
+      } catch {
         router.push('/login')  // ⬅️ Redirección si no hay token válido
       } finally {
         setIsVerifying(false)
