@@ -20,6 +20,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toast } from "react-hot-toast"
 import { TimeSelector } from "@/components/ui/time-selector"
+import { useRouter } from "next/navigation"
+
 
 type Evento = {
   id: number
@@ -82,24 +84,28 @@ export function EventosDashboard() {
       setIsLoading(false)
     }
   }, [clubData])
-  
+  const router = useRouter()
+
 
   useEffect(() => {
     const cargarClub = async () => {
       try {
         setIsLoading(true)
         const res = await fetch("/api/auth", { credentials: "include" })
+        if (!res.ok) throw new Error("No autorizado")
         const data = await res.json()
         setClubData(data.entity)
       } catch (err) {
         console.error("Error al obtener club:", err)
+        router.push("/login") // 🔁 Redirección si falla auth
       } finally {
         setIsLoading(false)
       }
     }
   
     cargarClub()
-  }, [])
+  }, [router])
+  
   
 
   useEffect(() => {
