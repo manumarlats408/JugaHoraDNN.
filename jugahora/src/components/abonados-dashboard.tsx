@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation" 
+
 import { Sidebar } from "@/components/layout/sidebar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -21,14 +21,13 @@ export function AbonadosDashboard() {
   const [allUsers, setAllUsers] = useState<User[]>([])
   const [abonados, setAbonados] = useState<User[]>([])
   const [searchTerm, setSearchTerm] = useState("")
-  const [isLoading, setIsLoading] = useState(true)
   const [loadingUserId, setLoadingUserId] = useState<number | null>(null)
-  const router = useRouter()
 
 
   useEffect(() => {
     const fetchClub = async () => {
       const res = await fetch("/api/auth", { credentials: "include" })
+      if (!res.ok) throw new Error("No autorizado")
       const data = await res.json()
       setClubId(data.entity.id)
     }
@@ -43,7 +42,16 @@ export function AbonadosDashboard() {
     }
     fetchUsers()
   }, [])
-  
+
+  useEffect(() => {
+    if (!clubId) return
+    const fetchAbonados = async () => {
+      const res = await fetch(`/api/abonados?clubId=${clubId}`)
+      const data = await res.json()
+      setAbonados(data)
+    }
+    fetchAbonados()
+  }, [clubId])
 
   const handleAgregar = async (userId: number) => {
     setLoadingUserId(userId)
@@ -77,18 +85,10 @@ export function AbonadosDashboard() {
     .filter((u) => `${u.firstName} ${u.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()))
     .sort((a, b) => (abonadosIds.includes(b.id) ? 1 : -1))
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50">
-        <p className="text-lg text-gray-600">Cargando jugadores abonados...</p>
-      </div>
-    )
-  }
-    
   return (
-    <div className="flex flex-col md:flex-row min-h-screen">
+    <div className="flex min-h-screen">
       <Sidebar />
-      <div className="flex-1 px-4 py-6 md:px-6 md:ml-16 space-y-6 overflow-x-hidden mt-10">
+      <div className="flex-1 p-4 md:p-6 md:ml-16 space-y-6 overflow-x-hidden">
         <Card>
           <CardHeader>
             <CardTitle>Gestionar Jugadores Abonados</CardTitle>
@@ -103,7 +103,7 @@ export function AbonadosDashboard() {
             {filteredUsers.map((user) => (
               <div
                 key={user.id}
-                className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 border p-4 rounded-md hover:bg-green-50 transition"
+                className="flex justify-between items-center border p-4 rounded-md hover:bg-green-50 transition"
               >
                 <div className="flex items-center gap-3">
                   <Users className="h-5 w-5 text-green-700" />
