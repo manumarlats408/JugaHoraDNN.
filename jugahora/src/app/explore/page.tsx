@@ -30,7 +30,7 @@ export default function ExploreProfiles() {
       try {
         const authRes = await fetch('/api/auth', { credentials: 'include' })
         if (!authRes.ok) throw new Error('No autorizado')
-        const userData = await authRes.json()
+        //const userData = await authRes.json()
   
         const [usersRes, friendsRes] = await Promise.all([
           fetch('/api/users'),
