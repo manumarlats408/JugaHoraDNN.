@@ -26,7 +26,6 @@ export default function MovimientosFinancieros() {
     const data = await res.json()
     setMovimientos(data)
   }, [desde, hasta])
-  const [isVerifying, setIsVerifying] = useState(true)
   const [isAuthorized, setIsAuthorized] = useState(false)
   const router = useRouter()
   useEffect(() => {
@@ -38,7 +37,7 @@ export default function MovimientosFinancieros() {
       } catch {
         router.push("/login") // redirección limpia
       } finally {
-        setIsVerifying(false)
+        //setIsVerifying(false)
       }
     }
   
