@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation" 
 import { Sidebar } from "@/components/layout/sidebar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -21,13 +22,20 @@ export function AbonadosDashboard() {
   const [abonados, setAbonados] = useState<User[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [loadingUserId, setLoadingUserId] = useState<number | null>(null)
+  const router = useRouter()
 
 
   useEffect(() => {
     const fetchClub = async () => {
+    try {
       const res = await fetch("/api/auth", { credentials: "include" })
+      if (!res.ok) throw new Error("No autorizado")
       const data = await res.json()
       setClubId(data.entity.id)
+    } catch (error) {
+      console.error("Error de autenticación:", error)
+      router.push("/login") // ✅ Redirección si falla
+    }
     }
     fetchClub()
   }, [])
