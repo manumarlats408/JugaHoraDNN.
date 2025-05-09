@@ -50,7 +50,7 @@ export default function MovimientosFinancieros() {
     if (isAuthorized) {
       fetchMovimientos()
     }
-  }, [fetchMovimientos])
+  }, [isAuthorized,fetchMovimientos])
 
   const totalEfectivo = movimientos
     .filter((m) => m.metodoPago === "Efectivo")
