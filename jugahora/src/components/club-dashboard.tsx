@@ -21,6 +21,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { TimeSelector } from "@/components/ui/time-selector"
+import { toast } from "react-hot-toast"
+
 
 type Match = {
   id: number
@@ -54,6 +56,8 @@ export function ClubDashboard() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [clubData, setClubData] = useState<Club | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [isCreatingMatch, setIsCreatingMatch] = useState(false)
+  const [isSavingEdit, setIsSavingEdit] = useState(false)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [filteredMatches, setFilteredMatches] = useState<Match[]>([])
   const [loadingMatches, setLoadingMatches] = useState<{ [key: number]: boolean }>({})
@@ -169,24 +173,36 @@ export function ClubDashboard() {
 
   const handleCreateMatch = async () => {
     if (!clubData) return
+    setIsCreatingMatch(true)
     try {
       const response = await fetch("/api/matches", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...newMatch, clubId: clubData.id.toString(), price: Number.parseFloat(newMatch.price) }),
+        body: JSON.stringify({
+          ...newMatch,
+          clubId: clubData.id.toString(),
+          price: Number.parseFloat(newMatch.price),
+        }),
       })
-
+  
       if (response.ok) {
         const createdMatch = await response.json()
         setMatches([...matches, createdMatch])
         setNewMatch({ date: "", startTime: "", endTime: "", court: "", price: "" })
+  
+        toast.success("Partido creado exitosamente!") // ✅ Éxito
       } else {
-        console.error("Error al crear el partido:", await response.text())
+        const errorMessage = await response.text()
+        toast.error(errorMessage || "Error al crear el partido") // ❌ Error del backend
       }
     } catch (error) {
       console.error("Error al conectar con la API para crear el partido:", error)
+      toast.error("Error al conectar con el servidor") // ❌ Error de red u otro
+    } finally {
+      setIsCreatingMatch(false)
     }
   }
+  
 
   const handleDeleteMatch = async (id: number) => {
     try {
@@ -210,7 +226,7 @@ export function ClubDashboard() {
 
   const handleSaveEdit = async () => {
     if (!editMatch) return
-
+    setIsSavingEdit(true)
     try {
       const response = await fetch(`/api/matches/${editMatch.id}`, {
         method: "PATCH",
@@ -234,6 +250,8 @@ export function ClubDashboard() {
       }
     } catch (error) {
       console.error("Error al conectar con la API para actualizar el partido:", error)
+    } finally {
+      setIsSavingEdit(false)
     }
   }
 
@@ -287,7 +305,7 @@ export function ClubDashboard() {
       <div className="flex-1 p-3 md:p-6 md:ml-16 space-y-6 overflow-x-hidden">
         <main className="flex-1 p-2 md:p-6 space-y-4 md:space-y-8">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-            <h1 className="text-2xl md:text-3xl font-bold mt-10 md:mt-0">Dashboard del Club {clubData.name}</h1>
+            <h1 className="text-2xl md:text-3xl font-bold mt-10 md:mt-0">Partidos del Club {clubData.name}</h1>
             <Dialog>
               <DialogTrigger asChild>
                 <Button>
@@ -365,7 +383,20 @@ export function ClubDashboard() {
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button onClick={handleCreateMatch}>Guardar Partido</Button>
+                <Button onClick={handleCreateMatch} disabled={isCreatingMatch}>
+                  {isCreatingMatch ? (
+                    <span className="flex items-center">
+                      <svg className="animate-spin mr-2 h-4 w-4 text-white" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0..." />
+                      </svg>
+                      Guardando...
+                    </span>
+                  ) : (
+                    "Guardar Partido"
+                  )}
+                </Button>
+
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -443,7 +474,20 @@ export function ClubDashboard() {
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button onClick={handleSaveEdit}>Guardar Cambios</Button>
+                <Button onClick={handleSaveEdit} disabled={isSavingEdit}>
+                  {isSavingEdit ? (
+                    <span className="flex items-center">
+                      <svg className="animate-spin mr-2 h-4 w-4 text-white" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0..." />
+                      </svg>
+                      Guardando Cambios...
+                    </span>
+                  ) : (
+                    "Guardar Cambios"
+                  )}
+                </Button>
+
                 </DialogFooter>
               </DialogContent>
             </Dialog>

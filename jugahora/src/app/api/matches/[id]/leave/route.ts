@@ -94,7 +94,10 @@ export async function POST(
         // 🔹 Enviar email al club avisando que el partido se abrió nuevamente
         await sendgrid.send({
           to: match.Club.email,
-          from: process.env.SENDGRID_FROM_EMAIL as string,
+          from: {
+            name: "JugáHora",
+            email: process.env.SENDGRID_FROM_EMAIL as string
+          },
           subject: "🎾 Partido Abierto Nuevamente",
           html: generarEmailHTML({
             titulo: "🎾 Partido Abierto Nuevamente",
@@ -115,7 +118,10 @@ export async function POST(
         for (const jugador of jugadoresRestantes) {
           await sendgrid.send({
             to: jugador.email,
-            from: process.env.SENDGRID_FROM_EMAIL as string,
+            from: {
+              name: "JugáHora",
+              email: process.env.SENDGRID_FROM_EMAIL as string
+            },
             subject: "🎾 Un jugador se ha retirado del partido",
             html: generarEmailHTML({
               titulo: "🎾 Un jugador se ha retirado del partido",
@@ -147,7 +153,10 @@ export async function POST(
         for (const user of usuariosNivel) {
           await sendgrid.send({
             to: user.email,
-            from: process.env.SENDGRID_FROM_EMAIL as string,
+            from: {
+              name: "JugáHora",
+              email: process.env.SENDGRID_FROM_EMAIL as string
+            },
             subject: "🎾 ¡Unite a este partido de tu nivel!",
             html: generarEmailHTML({
               titulo: `🎾 ¡Un partido de categoria ${match.categoria} necesita un jugador!`,

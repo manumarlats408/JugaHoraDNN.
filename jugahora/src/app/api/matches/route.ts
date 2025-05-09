@@ -60,7 +60,7 @@ export async function POST(request: Request) {
     
       if (!esAbonado) {
         return NextResponse.json(
-          { error: 'Solo los jugadores autorizados pueden crear partidos en este club.' },
+          { error: 'Solo podés crear partidos en clubes donde estés abonado. Si realmente tenes abono, hablá con el club para que te habilite.' },
           { status: 403 }
         );
       }

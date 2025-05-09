@@ -55,7 +55,10 @@ export async function POST(request: Request) {
     for (const jugador of jugadores) {
       await sendgrid.send({
         to: jugador.email,
-        from: process.env.SENDGRID_FROM_EMAIL as string,
+        from: {
+          name: "JugáHora",
+          email: process.env.SENDGRID_FROM_EMAIL as string
+        },
         subject: "🎾 ¡Nuevo evento disponible!",
         html: generarEmailHTML({
           titulo: `🎾 ¡Nuevo evento en ${nuevoEvento.Club.name}!`,

@@ -36,7 +36,10 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
     for (const jugador of jugadores) {
       await sendgrid.send({
         to: jugador.email,
-        from: process.env.SENDGRID_FROM_EMAIL as string,
+        from: {
+          name: "JugáHora",
+          email: process.env.SENDGRID_FROM_EMAIL as string
+        },
         subject: "⚠️ Partido Cancelado",
         html: generarEmailHTML({
           titulo: "⚠️ Partido Cancelado",
@@ -120,9 +123,13 @@ export async function PATCH(request: Request, { params }: { params: { id: string
 
     // 🔹 Enviar email a los jugadores con los cambios
     for (const jugador of jugadores) {
+      console.log("Enviando mail desde:", process.env.SENDGRID_FROM_EMAIL);
       await sendgrid.send({
         to: jugador.email,
-        from: process.env.SENDGRID_FROM_EMAIL as string,
+        from: {
+          name: "JugáHora",
+          email: process.env.SENDGRID_FROM_EMAIL as string
+        },
         subject: "📢 Partido Actualizado",
         html: generarEmailHTML({
           titulo: "📢 Partido Modificado",

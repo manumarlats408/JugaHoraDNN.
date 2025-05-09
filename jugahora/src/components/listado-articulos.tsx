@@ -3,12 +3,11 @@
 import type React from "react"
 
 import { Sidebar } from "@/components/layout/sidebar"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Search, Download, Upload } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { TablaArticulos } from "@/components/tabla-articulos"
-import { importarArticulos } from "@/lib/acciones-cliente"
 import { useToast } from "@/hooks/use-toast"
 import type { Articulo } from "@/lib/tipos"
 import { ModalEditarArticulo } from "@/components/ModalEditarArticulo"
@@ -23,6 +22,7 @@ export function ListadoArticulos() {
   const [articuloSeleccionado, setArticuloSeleccionado] = useState<Articulo | null>(null)
   const [modalAbierto, setModalAbierto] = useState(false)
   const [modalNuevoAbierto, setModalNuevoAbierto] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
 
   useEffect(() => {
@@ -57,9 +57,9 @@ export function ListadoArticulos() {
 
   const handleImportar = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return
-
+  
     const file = e.target.files[0]
-
+  
     if (file.type !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
       toast({
         title: "Formato incorrecto",
@@ -68,25 +68,32 @@ export function ListadoArticulos() {
       })
       return
     }
-
+  
     try {
       setCargando(true)
       const formData = new FormData()
       formData.append("archivo", file)
+  
+      const respuesta = await fetch("/api/importar-articulos", {
 
-      const resultado = await importarArticulos(formData)
-
-      if (resultado.success) {
+        method: "POST",
+        body: formData,
+        credentials: "include", // IMPORTANTE para que llegue el token
+      })
+  
+      const resultado = await respuesta.json()
+  
+      if (respuesta.ok && resultado.success) {
         toast({
           title: "Éxito",
           description: "Artículos importados correctamente",
         })
-
-        const respuesta = await fetch("/api/articulos", {
+  
+        // Recargar artículos
+        const nuevaRespuesta = await fetch("/api/articulos", {
           credentials: "include",
         })
-        if (!respuesta.ok) throw new Error("Error al recargar los artículos")
-        const datos = await respuesta.json()
+        const datos = await nuevaRespuesta.json()
         setArticulos(datos)
       } else {
         throw new Error(resultado.error || "Error desconocido al importar")
@@ -100,14 +107,17 @@ export function ListadoArticulos() {
       })
     } finally {
       setCargando(false)
-      e.target.value = ""
+      e.target.value = "" // permite volver a subir el mismo archivo si hace falta
     }
   }
+  
 
   const handleExportar = async () => {
     try {
       setCargando(true)
-      const respuesta = await fetch("/api/exportar-articulos")
+      const respuesta = await fetch("/api/exportar-articulos", {
+        credentials: "include",
+      })
       const blob = await respuesta.blob()
 
       const url = window.URL.createObjectURL(blob)
@@ -184,9 +194,7 @@ export function ListadoArticulos() {
       <div className="flex-1 p-3 md:p-6 md:ml-16 space-y-6 overflow-x-hidden">
         <div className="bg-white rounded-lg shadow-sm">
           <div className="p-4 md:p-6 border-b">
-            <h1 className="text-xl md:text-2xl font-medium text-gray-600 mt-10 md:mt-0">
-              LISTADO DE CONCEPTOS / ARTÍCULOS
-            </h1>
+            <h1 className="text-2xl md:text-3xl font-bold mt-10 md:mt-0">Listado de artículos</h1>
             <p className="text-sm md:text-base text-gray-500 mt-2">
               A continuación podrás encontrar todos los conceptos/artículos del complejo
             </p>
@@ -206,24 +214,24 @@ export function ListadoArticulos() {
               </div>
 
               <div className="flex flex-col space-y-3 md:space-y-0 md:flex-row md:gap-3">
-            <div>
-              <input
-                id="importar"
-                type="file"
-                accept=".xlsx"
-                className="hidden"
-                onChange={handleImportar}
-              />
-              <label htmlFor="importar">
+              <div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".xlsx"
+                  className="hidden"
+                  onChange={handleImportar}
+                />
                 <Button
                   variant="outline"
-                  className="flex items-center gap-2 w-full md:w-auto cursor-pointer"
+                  className="flex items-center gap-2 w-full md:w-auto"
+                  onClick={() => fileInputRef.current?.click()}
                 >
                   <Upload size={18} className="text-green-500" />
                   <span className="whitespace-nowrap">Importar (XLSX)</span>
                 </Button>
-              </label>
-            </div>
+              </div>
+
 
             <Button
                 variant="outline"
@@ -246,13 +254,15 @@ export function ListadoArticulos() {
 
             </div>
 
-            <TablaArticulos
-              articulos={articulosFiltrados}
-              cargando={cargando}
-              onActualizar={(articulosActualizados) => setArticulos(articulosActualizados)}
-              onEditar={handleEditar}
-              onEliminar={handleEliminar}
-            />
+            <div className="max-h-[360px] overflow-y-auto border rounded-lg">
+              <TablaArticulos
+                articulos={articulosFiltrados}
+                cargando={cargando}
+                onActualizar={(articulosActualizados) => setArticulos(articulosActualizados)}
+                onEditar={handleEditar}
+                onEliminar={handleEliminar}
+              />
+            </div>
           </div>
         </div>
       </div>

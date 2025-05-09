@@ -52,6 +52,8 @@ export function EventosDashboard() {
   const [loadingEventoDetails, setLoadingEventoDetails] = useState<{ [key: number]: boolean }>({})
   const [selectedEventoTipo, setSelectedEventoTipo] = useState<string | null>(null)
   const [joinedUsers, setJoinedUsers] = useState<string[]>([])
+  const [isSavingEvento, setIsSavingEvento] = useState(false)
+  const [isSavingEditEvento, setIsSavingEditEvento] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [newEvento, setNewEvento] = useState({
     nombre: "",
@@ -155,7 +157,7 @@ export function EventosDashboard() {
 
   const handleCrearEvento = async () => {
     if (!clubData) return
-
+    setIsSavingEvento(true)
     try {
       const res = await fetch("/api/eventos", {
         method: "POST",
@@ -190,6 +192,8 @@ export function EventosDashboard() {
     } catch (error) {
       console.error("Error al crear evento:", error)
       toast.error("Error al conectar con el servidor")
+    } finally {
+      setIsSavingEvento(false)
     }
   }
 
@@ -215,6 +219,7 @@ export function EventosDashboard() {
 
   const handleEdit = async () => {
     if (!editEvento) return
+    setIsSavingEditEvento(true)
     try {
       const res = await fetch(`/api/eventos/${editEvento.id}`, {
         method: "PATCH",
@@ -229,6 +234,8 @@ export function EventosDashboard() {
       }
     } catch (err) {
       console.error("Error al editar evento:", err)
+    } finally {
+      setIsSavingEditEvento(false)
     }
   }
 
@@ -278,7 +285,10 @@ export function EventosDashboard() {
                 <Plus className="mr-2 h-4 w-4" /> Crear Evento
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px] w-[95vw] max-w-[95vw] sm:w-auto">
+            <DialogContent
+                className="sm:max-w-[425px] w-[95vw] max-w-[95vw] sm:w-auto max-h-[80vh] overflow-y-auto rounded-none my-8 p-6 pb-10"
+              >
+
               <DialogHeader>
                 <DialogTitle>Crear Evento</DialogTitle>
                 <DialogDescription>Complete la información del evento</DialogDescription>
@@ -422,7 +432,21 @@ export function EventosDashboard() {
                 </div>
               </div>
               <DialogFooter>
-                <Button onClick={handleCrearEvento}>Guardar Evento</Button>
+              <Button onClick={handleCrearEvento} disabled={isSavingEvento}>
+                {isSavingEvento ? (
+                  <span className="flex items-center">
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 
+                        5.291A7.962 7.962 0 014 12H0c0 3.042 
+                        1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    Guardando...
+                  </span>
+                ) : (
+                  "Guardar Evento"
+                )}
+              </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -430,7 +454,11 @@ export function EventosDashboard() {
 
         {editEvento && (
           <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-            <DialogContent className="sm:max-w-[425px] w-[95vw] max-w-[95vw] sm:w-auto">
+            <DialogContent
+                className="sm:max-w-[425px] w-[95vw] max-w-[95vw] sm:w-auto max-h-[80vh] overflow-y-auto rounded-none my-8 p-6 pb-10"
+
+              >
+
               <DialogHeader>
                 <DialogTitle>Editar Evento</DialogTitle>
                 <DialogDescription>Modificá los datos del evento</DialogDescription>
@@ -572,7 +600,21 @@ export function EventosDashboard() {
                 </div>
               </div>
               <DialogFooter>
-                <Button onClick={handleEdit}>Guardar Cambios</Button>
+              <Button onClick={handleEdit} disabled={isSavingEditEvento}>
+                {isSavingEditEvento ? (
+                  <span className="flex items-center">
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 
+                        5.291A7.962 7.962 0 014 12H0c0 3.042 
+                        1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    Guardando...
+                  </span>
+                ) : (
+                  "Guardar Evento"
+                )}
+              </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -708,7 +750,10 @@ export function EventosDashboard() {
         </main>
       </div>
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-[425px] w-[95vw] max-w-[95vw] sm:w-auto">
+        <DialogContent
+          className="sm:max-w-[425px] w-[95vw] max-w-[95vw] sm:w-auto max-h-[80vh] overflow-y-auto rounded-none my-8 p-6 pb-10"
+        >
+
           <DialogHeader>
             <DialogTitle>{selectedEventoTipo === "torneo" ? "Parejas Inscritas" : "Personas Inscritas"}</DialogTitle>
           </DialogHeader>
