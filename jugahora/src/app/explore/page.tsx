@@ -83,9 +83,11 @@ export default function ExploreProfiles() {
         const received = pendingData
           .filter((r) => r.friendId === myId && r.status === 'pending')
           .map((r) => r.userId)
+
         setReceivedRequestIds(received)
 
-        const filtered = getVisibleProfiles(users, myId, friendsData, receivedRequestIds)
+        const filtered = getVisibleProfiles(users, myId, friendsData, received) // ✅ usar la variable ya armada
+
         setFilteredProfiles(filtered)
 
         setIsAuthorized(true)
