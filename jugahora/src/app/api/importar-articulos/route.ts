@@ -12,6 +12,7 @@ interface ExcelRow {
   "Precio Venta"?: number | string
   Tipo?: string
   "Cantidad Stock"?: number | string
+  "Cantidad en Stock"?: number | string // ✅ AÑADIR ESTA LÍNEA
   cantidadStock?: number | string // Añadimos el nombre exacto que aparece en el Excel
   Stock?: number | string
 }
@@ -54,13 +55,16 @@ export async function POST(request: NextRequest) {
     for (const row of data) {
       // Verificar qué columna de stock está presente, probando todas las variantes posibles
       const stockValue =
-        row.cantidadStock !== undefined
+      row["Cantidad en Stock"] !== undefined
+        ? row["Cantidad en Stock"]
+        : row.cantidadStock !== undefined
           ? row.cantidadStock
           : row["Cantidad Stock"] !== undefined
             ? row["Cantidad Stock"]
             : row.Stock !== undefined
               ? row.Stock
               : 0
+
 
       // Convertir a número de manera más segura
       let cantidadStock = 0
