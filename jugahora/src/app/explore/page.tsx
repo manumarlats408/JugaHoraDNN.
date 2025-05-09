@@ -48,7 +48,7 @@ export default function ExploreProfiles() {
         setFilteredProfiles(filtered)
   
         setIsAuthorized(true)
-      } catch (error) {
+      } catch {
         router.push('/login') // redirige si no hay token válido
       } finally {
         setIsVerifying(false)
