@@ -15,6 +15,13 @@ interface User {
   email: string
 }
 
+type FriendRequest = {
+  id: number
+  userId: number
+  friendId: number
+  status: 'pending' | 'accepted' | 'rejected'
+}
+
 export default function ExploreProfiles() {
   const [profiles, setProfiles] = useState<User[]>([])
   const [filteredProfiles, setFilteredProfiles] = useState<User[]>([])
@@ -32,26 +39,37 @@ export default function ExploreProfiles() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // 1. Verifica sesión
         const authRes = await fetch('/api/auth', { credentials: 'include' })
         if (!authRes.ok) throw new Error('No autorizado')
         const userData = await authRes.json()
-        setCurrentUserId(userData.entity.id)
+        const myId = userData.entity.id
+        setCurrentUserId(myId)
 
-        const [usersRes, friendsRes] = await Promise.all([
+        // 2. Busca todos los perfiles y amigos
+        const [usersRes, friendsRes, pendingRes] = await Promise.all([
           fetch('/api/users'),
           fetch('/api/friends/list-friends', { credentials: 'include' }),
+          fetch('/api/friends/requests', { credentials: 'include' }),
         ])
 
-        const users = await usersRes.json()
-        const friendsData = await friendsRes.json()
+        const users: User[] = await usersRes.json()
+        const friendsData: User[] = await friendsRes.json()
+        const pendingData: FriendRequest[] = await pendingRes.json()
 
         setProfiles(users)
         setFriends(friendsData)
 
-        const friendIds = new Set(friendsData.map((f: User) => f.id))
+        // 3. Setea los que tienen solicitud pendiente
+        const pending = pendingData
+          .filter((r) => r.userId === myId && r.status === 'pending')
+          .map((r) => r.friendId)
+        setPendingIds(pending)
+
+        // 4. Filtra perfiles visibles
+        const friendIds = new Set(friendsData.map((f) => f.id))
         const filtered = users.filter(
-          (profile: User) =>
-            !friendIds.has(profile.id) && profile.id !== userData.entity.id
+          (profile) => !friendIds.has(profile.id) && profile.id !== myId
         )
         setFilteredProfiles(filtered)
 
@@ -72,9 +90,7 @@ export default function ExploreProfiles() {
     try {
       const response = await fetch('/api/friends/send-request', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({ friendId }),
       })
@@ -83,7 +99,7 @@ export default function ExploreProfiles() {
 
       if (response.ok) {
         toast.success('Solicitud enviada exitosamente')
-        setPendingIds([...pendingIds, friendId])
+        setPendingIds((prev) => [...prev, friendId])
       } else {
         toast.error(result.message || 'Error al enviar solicitud')
       }
