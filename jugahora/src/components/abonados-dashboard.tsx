@@ -23,42 +23,39 @@ export function AbonadosDashboard() {
   const [allUsers, setAllUsers] = useState<User[]>([])
   const [abonados, setAbonados] = useState<User[]>([])
   const [searchTerm, setSearchTerm] = useState("")
+  const [isLoading, setIsLoading] = useState(true)
   const [loadingUserId, setLoadingUserId] = useState<number | null>(null)
   const router = useRouter()
 
   useEffect(() => {
-    const fetchClub = async () => {
+    const cargarTodo = async () => {
       try {
-        const res = await fetch("/api/auth", { credentials: "include" })
-        if (!res.ok) throw new Error("No autorizado")
-        const data = await res.json()
-        setClubId(data.entity.id)
+        const authRes = await fetch("/api/auth", { credentials: "include" })
+        if (!authRes.ok) throw new Error("No autorizado")
+        const authData = await authRes.json()
+        const clubId = authData.entity.id
+        setClubId(clubId)
+  
+        const [usersRes, abonadosRes] = await Promise.all([
+          fetch("/api/users"),
+          fetch(`/api/abonados?clubId=${clubId}`)
+        ])
+  
+        const users = await usersRes.json()
+        const abonados = await abonadosRes.json()
+        setAllUsers(users)
+        setAbonados(abonados)
       } catch (error) {
-        console.error("Error al obtener el club:", error)
-        router.push("/login") // 🔁 Redirección si falla auth
+        console.error("Error al cargar datos:", error)
+        router.push("/login")
+      } finally {
+        setIsLoading(false)
       }
     }
-    fetchClub()
+  
+    cargarTodo()
   }, [router])
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      const res = await fetch("/api/users")
-      const data = await res.json()
-      setAllUsers(data)
-    }
-    fetchUsers()
-  }, [])
-
-  useEffect(() => {
-    if (!clubId) return
-    const fetchAbonados = async () => {
-      const res = await fetch(`/api/abonados?clubId=${clubId}`)
-      const data = await res.json()
-      setAbonados(data)
-    }
-    fetchAbonados()
-  }, [clubId])
+  
 
   const handleAgregar = async (userId: number) => {
     setLoadingUserId(userId)
@@ -91,6 +88,15 @@ export function AbonadosDashboard() {
   const filteredUsers = allUsers
     .filter((u) => `${u.firstName} ${u.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()))
     .sort((a, b) => (abonadosIds.includes(b.id) ? 1 : -1))
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+        <p className="text-lg text-gray-600">Cargando jugadores abonados...</p>
+      </div>
+    )
+  }
+      
 
   return (
     <div className="flex min-h-screen">
