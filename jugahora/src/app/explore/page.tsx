@@ -28,6 +28,7 @@ export default function ExploreProfiles() {
   const [searchTerm, setSearchTerm] = useState('')
   const [friends, setFriends] = useState<User[]>([])
   const [pendingIds, setPendingIds] = useState<number[]>([])
+  const [receivedRequestsCount, setReceivedRequestsCount] = useState<number>(0)
   const [loading, setLoading] = useState(true)
   const [isVerifying, setIsVerifying] = useState(true)
   const [isAuthorized, setIsAuthorized] = useState(false)
@@ -39,14 +40,12 @@ export default function ExploreProfiles() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 1. Verifica sesión
         const authRes = await fetch('/api/auth', { credentials: 'include' })
         if (!authRes.ok) throw new Error('No autorizado')
         const userData = await authRes.json()
         const myId = userData.entity.id
         setCurrentUserId(myId)
 
-        // 2. Busca todos los perfiles y amigos
         const [usersRes, friendsRes, pendingRes] = await Promise.all([
           fetch('/api/users'),
           fetch('/api/friends/list-friends', { credentials: 'include' }),
@@ -60,19 +59,23 @@ export default function ExploreProfiles() {
         setProfiles(users)
         setFriends(friendsData)
 
-        // 3. Setea los que tienen solicitud pendiente
-        const pending = pendingData
-          .filter((r) => r.userId === myId && r.status === 'pending')
-          .map((r) => r.friendId)
-        setPendingIds(pending)
+        const sentRequests = pendingData.filter(r => r.userId === myId && r.status === 'pending')
+        const receivedRequests = pendingData.filter(r => r.friendId === myId && r.status === 'pending')
 
-        // 4. Filtra perfiles visibles
-        const friendIds = new Set(friendsData.map((f) => f.id))
+        setPendingIds(sentRequests.map(r => r.friendId))
+        setReceivedRequestsCount(receivedRequests.length)
+
+        const friendIds = new Set(friendsData.map(f => f.id))
+        const sentIds = new Set(sentRequests.map(r => r.friendId))
+
         const filtered = users.filter(
-          (profile) => !friendIds.has(profile.id) && profile.id !== myId
+          profile =>
+            !friendIds.has(profile.id) &&
+            !sentIds.has(profile.id) &&
+            profile.id !== myId
         )
-        setFilteredProfiles(filtered)
 
+        setFilteredProfiles(filtered)
         setIsAuthorized(true)
       } catch {
         router.push('/login')
@@ -88,18 +91,19 @@ export default function ExploreProfiles() {
   const handleSendRequest = async (friendId: number) => {
     setIsSendingId(friendId)
     try {
-      const response = await fetch('/api/friends/send-request', {
+      const res = await fetch('/api/friends/send-request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({ friendId }),
       })
 
-      const result = await response.json()
+      const result = await res.json()
 
-      if (response.ok) {
+      if (res.ok) {
         toast.success('Solicitud enviada exitosamente')
-        setPendingIds((prev) => [...prev, friendId])
+        setPendingIds(prev => [...prev, friendId])
+        setFilteredProfiles(prev => prev.filter(p => p.id !== friendId))
       } else {
         toast.error(result.message || 'Error al enviar solicitud')
       }
@@ -115,10 +119,14 @@ export default function ExploreProfiles() {
     const value = e.target.value.toLowerCase()
     setSearchTerm(value)
 
-    const friendIds = new Set(friends.map((f) => f.id))
+    const friendIds = new Set(friends.map(f => f.id))
     const filtered = profiles
-      .filter((profile) => !friendIds.has(profile.id) && profile.id !== currentUserId)
-      .filter((profile) =>
+      .filter(profile =>
+        !friendIds.has(profile.id) &&
+        !pendingIds.includes(profile.id) &&
+        profile.id !== currentUserId
+      )
+      .filter(profile =>
         `${profile.firstName} ${profile.lastName}`.toLowerCase().includes(value)
       )
 
@@ -147,6 +155,9 @@ export default function ExploreProfiles() {
             className="text-sm font-medium text-green-700 hover:underline"
           >
             Ver Solicitudes de Amistad
+            {receivedRequestsCount > 0 && (
+              <span className="ml-1 text-green-600">({receivedRequestsCount})</span>
+            )}
           </Link>
         </div>
 
@@ -167,7 +178,7 @@ export default function ExploreProfiles() {
 
             {filteredProfiles.length > 0 ? (
               <div className="space-y-4">
-                {filteredProfiles.map((profile) => (
+                {filteredProfiles.map(profile => (
                   <div
                     key={profile.id}
                     className="flex flex-col sm:flex-row sm:justify-between sm:items-center border p-4 rounded-lg hover:bg-green-50 transition-colors space-y-2 sm:space-y-0"
