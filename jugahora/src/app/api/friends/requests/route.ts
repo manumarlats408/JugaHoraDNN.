@@ -18,11 +18,14 @@ export async function GET(req: Request) {
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { id: number }
     const userId = decoded.id
 
-    // Buscar solicitudes pendientes enviadas por el usuario
+    // Devuelve TODAS las solicitudes pendientes donde el usuario esté involucrado
     const solicitudesPendientes = await prisma.friend.findMany({
       where: {
-        userId: userId,
         status: 'pending',
+        OR: [
+          { userId: userId },
+          { friendId: userId },
+        ],
       },
       select: {
         id: true,
