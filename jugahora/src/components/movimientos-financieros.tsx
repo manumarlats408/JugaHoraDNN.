@@ -14,6 +14,8 @@ export default function MovimientosFinancieros() {
   const [desde, setDesde] = useState("")
   const [hasta, setHasta] = useState("")
   const [busqueda, setBusqueda] = useState("")
+  const [isAuthorized, setIsAuthorized] = useState(false)
+
 
   const fetchMovimientos = useCallback(async () => {
     const params = new URLSearchParams()
@@ -31,6 +33,7 @@ export default function MovimientosFinancieros() {
       try {
         const res = await fetch("/api/auth", { credentials: "include" })
         if (!res.ok) throw new Error("No autorizado")
+        setIsAuthorized(true)
       } catch (error) {
         console.error("No autorizado:", error)
         router.push("/login")
@@ -68,9 +71,9 @@ export default function MovimientosFinancieros() {
     return `${dia}/${mes}/${año}`
   }
   
-  if (isVerifying) {
-    return null
-  }
+  if (isVerifying) return null
+  if (!isAuthorized) return null
+
 
   return (
     <div className="flex min-h-screen w-full">
