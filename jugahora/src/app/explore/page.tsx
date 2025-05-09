@@ -52,6 +52,7 @@ export default function ExploreProfiles() {
     )
   }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -84,7 +85,7 @@ export default function ExploreProfiles() {
           .map((r) => r.userId)
         setReceivedRequestIds(received)
 
-        const filtered = getVisibleProfiles(users, myId, friendsData, received)
+        const filtered = getVisibleProfiles(users, myId, friendsData, receivedRequestIds)
         setFilteredProfiles(filtered)
 
         setIsAuthorized(true)
