@@ -107,12 +107,12 @@ model Partidos_club {
 
 model PartidosConfirmados {
   id           Int           @id @default(autoincrement())
-  matchId      Int
-  confirmedAt  DateTime      @default(now())
+  matchId      Int           @unique
   status       String        @default("played")
-
-  partido      partidos_club @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  confirmedAt  DateTime      @default(now())
+  partido      Partidos_club @relation(fields: [matchId], references: [id])
 }
+
 
 
 model Evento_club {
