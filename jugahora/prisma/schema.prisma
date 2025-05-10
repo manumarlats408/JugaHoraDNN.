@@ -100,8 +100,20 @@ model Partidos_club {
   usuarios    Int[]     // Array of User IDs
   Club        Club      @relation(fields: [clubId], references: [id])
   User      User?     @relation(fields: [userId], references: [id])  // Relación con la tabla de usuarios
+  confirmados PartidosConfirmados[]
+
 
 }
+
+model PartidosConfirmados {
+  id           Int           @id @default(autoincrement())
+  matchId      Int
+  confirmedAt  DateTime      @default(now())
+  status       String        @default("played")
+
+  partido      partidos_club @relation(fields: [matchId], references: [id], onDelete: Cascade)
+}
+
 
 model Evento_club {
   id           Int      @id @default(autoincrement())
