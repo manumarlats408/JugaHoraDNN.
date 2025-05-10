@@ -8,26 +8,30 @@ import { Sidebar } from "@/components/layout/sidebar"
 import AgregarMovimientoDialog from "./agregar-movimiento-dialog"
 import { useRouter } from "next/navigation"
 
-
 export default function MovimientosFinancieros() {
   const [movimientos, setMovimientos] = useState<MovimientoFinanciero[]>([])
   const [desde, setDesde] = useState("")
   const [hasta, setHasta] = useState("")
   const [busqueda, setBusqueda] = useState("")
-
-
-
-  const fetchMovimientos = useCallback(async () => {
-    const params = new URLSearchParams()
-    if (desde) params.append("desde", desde)
-    if (hasta) params.append("hasta", hasta)
-
-    const res = await fetch(`/api/movimientos?${params.toString()}`)
-    const data = await res.json()
-    setMovimientos(data)
-  }, [desde, hasta])
+  const [isLoading, setIsLoading] = useState(true) // ✅ loader global
   const [isAuthorized, setIsAuthorized] = useState(false)
   const router = useRouter()
+
+  const fetchMovimientos = useCallback(async () => {
+    try {
+      setIsLoading(true)
+      const params = new URLSearchParams()
+      if (desde) params.append("desde", desde)
+      if (hasta) params.append("hasta", hasta)
+
+      const res = await fetch(`/api/movimientos?${params.toString()}`)
+      const data = await res.json()
+      setMovimientos(data)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [desde, hasta])
+
   useEffect(() => {
     const verificarAuth = async () => {
       try {
@@ -35,22 +39,18 @@ export default function MovimientosFinancieros() {
         if (!res.ok) throw new Error("No autorizado")
         setIsAuthorized(true)
       } catch {
-        router.push("/login") // redirección limpia
-      } finally {
-        //setIsVerifying(false)
+        router.push("/login")
       }
     }
-  
+
     verificarAuth()
   }, [router])
-  
- 
-  
+
   useEffect(() => {
     if (isAuthorized) {
       fetchMovimientos()
     }
-  }, [isAuthorized,fetchMovimientos])
+  }, [isAuthorized, fetchMovimientos])
 
   const totalEfectivo = movimientos
     .filter((m) => m.metodoPago === "Efectivo")
@@ -65,11 +65,17 @@ export default function MovimientosFinancieros() {
   const formatearFecha = (fechaString: string) => {
     const partes = fechaString.split("T")[0].split("-")
     if (partes.length !== 3) return fechaString
-    const año = partes[0]
-    const mes = partes[1]
-    const dia = partes[2]
-    return `${dia}/${mes}/${año}`
+    return `${partes[2]}/${partes[1]}/${partes[0]}`
   }
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+        <p className="text-lg text-gray-600">Cargando movimientos...</p>
+      </div>
+    )
+  }
+
   
 
 

@@ -204,6 +204,14 @@ export function ListadoArticulos() {
     setArticuloSeleccionado(null)
   }
 
+  if (cargando) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+        <p className="text-lg text-gray-600">Cargando artículos...</p>
+      </div>
+    )
+  }
+
   return (
     <div className="flex min-h-screen">
       <Sidebar />
