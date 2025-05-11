@@ -5,6 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Sidebar } from "@/components/layout/sidebar"
 import { Users } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { Input } from "@/components/ui/input"
 
 type PartidoConfirmado = {
   id: number
@@ -19,6 +20,7 @@ type PartidoConfirmado = {
 export default function PartidosConfirmados() {
   const [partidos, setPartidos] = useState<PartidoConfirmado[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState("")
   const router = useRouter()
 
   useEffect(() => {
@@ -46,6 +48,12 @@ export default function PartidosConfirmados() {
     return `${d}/${m}/${a}`
   }
 
+  const filteredPartidos = partidos.filter(
+    (p) =>
+      formatearFecha(p.date).includes(searchTerm.toLowerCase()) ||
+      p.court.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -63,13 +71,20 @@ export default function PartidosConfirmados() {
             <CardTitle>Partidos Confirmados</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {partidos.length > 0 ? (
-              partidos.map((p) => (
+            <Input
+              placeholder="Buscar por fecha o cancha..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="max-w-sm"
+            />
+
+            {filteredPartidos.length > 0 ? (
+              filteredPartidos.map((p) => (
                 <div
                   key={p.id}
-                  className="flex justify-between items-center border p-4 rounded-md hover:bg-green-50 transition"
+                  className="flex flex-col md:flex-row justify-between md:items-center border p-4 rounded-md hover:bg-green-50 transition"
                 >
-                  <div>
+                  <div className="mb-2 md:mb-0">
                     <p className="font-semibold text-gray-800">
                       {formatearFecha(p.date)} | {p.startTime} - {p.endTime} hs
                     </p>
