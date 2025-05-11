@@ -20,24 +20,30 @@ const AddPlayers = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedPlayers, setSelectedPlayers] = useState<number[]>([]) // Guardamos los IDs de los jugadores seleccionados
   const router = useRouter()
+  const [isVerifying, setIsVerifying] = useState(true)
+  const [isAuthorized, setIsAuthorized] = useState(false)
+
 
   // Obtener los perfiles de usuarios
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [usersRes, userRes] = await Promise.all([
-          fetch('/api/users'),
-          fetch('/api/auth', { credentials: 'include' }),
-        ])
-        const users = await usersRes.json()
-        const userData = await userRes.json()
+        const authRes = await fetch('/api/auth', { credentials: 'include' })
+        if (!authRes.ok) throw new Error("No autorizado")
+        const userData = await authRes.json()
   
-        // Excluye al usuario logueado
+        const usersRes = await fetch('/api/users')
+        const users = await usersRes.json()
+  
         const filteredUsers = users.filter((u: User) => u.id !== userData.entity.id)
         setProfiles(filteredUsers)
         setFilteredProfiles(filteredUsers)
-      } catch (error) {
-        console.error('Error al cargar datos:', error)
+  
+        setIsAuthorized(true)
+      } catch {
+        router.push('/login')  // ⬅️ Redirección si no hay token válido
+      } finally {
+        setIsVerifying(false)
       }
     }
   
@@ -47,7 +53,8 @@ const AddPlayers = () => {
     if (storedPlayers) {
       setSelectedPlayers(JSON.parse(storedPlayers))
     }
-  }, [])
+  }, [router])
+  
   
 
   // Manejar la búsqueda de jugadores
@@ -76,6 +83,9 @@ const AddPlayers = () => {
     sessionStorage.setItem('finalPlayers', JSON.stringify(selectedPlayers))
     router.push('/crear-partido') // Redirige al formulario de creación
   }
+
+  if (isVerifying || !isAuthorized) return null
+
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white p-6">

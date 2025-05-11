@@ -1,90 +1,155 @@
-'use client';
+'use client'
 
-import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useEffect, useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { toast } from 'react-hot-toast'
 
 interface User {
-  id: number;
-  firstName: string;
-  lastName: string;
-  email: string;
+  id: number
+  firstName: string
+  lastName: string
+  email: string
+}
+
+type FriendRequest = {
+  id: number
+  userId: number
+  friendId: number
+  status: 'pending' | 'accepted' | 'rejected'
 }
 
 export default function ExploreProfiles() {
-  const [profiles, setProfiles] = useState<User[]>([]);
-  const [filteredProfiles, setFilteredProfiles] = useState<User[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [profiles, setProfiles] = useState<User[]>([])
+  const [filteredProfiles, setFilteredProfiles] = useState<User[]>([])
+  const [searchTerm, setSearchTerm] = useState('')
   const [friends, setFriends] = useState<User[]>([])
-  const [loading, setLoading] = useState<boolean>(true);
-  const router = useRouter();
+  const [pendingIds, setPendingIds] = useState<number[]>([])
+  const [receivedRequestIds, setReceivedRequestIds] = useState<number[]>([])
+  const [loading, setLoading] = useState(true)
+  const [isVerifying, setIsVerifying] = useState(true)
+  const [isAuthorized, setIsAuthorized] = useState(false)
+  const [currentUserId, setCurrentUserId] = useState<number | null>(null)
+  const [isSendingId, setIsSendingId] = useState<number | null>(null)
 
+  const router = useRouter()
+
+  const getVisibleProfiles = (
+    users: User[],
+    myId: number,
+    friendsData: User[],
+    received: number[]
+  ) => {
+    const friendIds = new Set(friendsData.map((f) => f.id))
+    return users.filter(
+      (profile) =>
+        !friendIds.has(profile.id) &&
+        !received.includes(profile.id) &&
+        profile.id !== myId
+    )
+  }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [usersRes, friendsRes] = await Promise.all([
+        const authRes = await fetch('/api/auth', { credentials: 'include' })
+        if (!authRes.ok) throw new Error('No autorizado')
+        const userData = await authRes.json()
+        const myId = userData.entity.id
+        setCurrentUserId(myId)
+
+        const [usersRes, friendsRes, pendingRes] = await Promise.all([
           fetch('/api/users'),
           fetch('/api/friends/list-friends', { credentials: 'include' }),
+          fetch('/api/friends/requests', { credentials: 'include' }),
         ])
-  
-        const users = await usersRes.json()
-        const friendsData = await friendsRes.json()
-  
+
+        const users: User[] = await usersRes.json()
+        const friendsData: User[] = await friendsRes.json()
+        const pendingData: FriendRequest[] = await pendingRes.json()
+
         setProfiles(users)
         setFriends(friendsData)
-  
-        // Aplicar filtro inicial sin amigos
-        const friendIds = new Set(friendsData.map((f: User) => f.id))
-        const filtered = users.filter((profile: User) => !friendIds.has(profile.id))
+
+        const pending = pendingData
+          .filter((r) => r.userId === myId && r.status === 'pending')
+          .map((r) => r.friendId)
+        setPendingIds(pending)
+
+        const received = pendingData
+          .filter((r) => r.friendId === myId && r.status === 'pending')
+          .map((r) => r.userId)
+
+        setReceivedRequestIds(received)
+
+        const filtered = getVisibleProfiles(users, myId, friendsData, received) // ✅ usar la variable ya armada
+
         setFilteredProfiles(filtered)
-      } catch (error) {
-        console.error('Error al cargar datos:', error)
+
+        setIsAuthorized(true)
+      } catch {
+        router.push('/login')
       } finally {
+        setIsVerifying(false)
         setLoading(false)
       }
     }
-  
+
     fetchData()
-  }, [])
+  }, [router])
 
   const handleSendRequest = async (friendId: number) => {
+    setIsSendingId(friendId)
     try {
-      const token = localStorage.getItem('token');
       const response = await fetch('/api/friends/send-request', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ friendId }),
-      });
+      })
 
-      const result = await response.json();
-      alert(result.message);
+      const result = await response.json()
+
+      if (response.ok) {
+        toast.success('Solicitud enviada exitosamente')
+        setPendingIds((prev) => [...prev, friendId])
+      } else {
+        toast.error(result.message || 'Error al enviar solicitud')
+      }
     } catch (error) {
-      console.error('Error al enviar solicitud:', error);
+      console.error('Error al enviar solicitud:', error)
+      toast.error('Error al conectar con el servidor')
+    } finally {
+      setIsSendingId(null)
     }
-  };
+  }
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toLowerCase()
     setSearchTerm(value)
-  
-    const friendIds = new Set(friends.map((f) => f.id))
-    const filtered = profiles
-      .filter(profile => !friendIds.has(profile.id)) // excluir amigos
-      .filter(profile =>
-        `${profile.firstName} ${profile.lastName}`.toLowerCase().includes(value)
-      )
-  
+
+    if (!currentUserId) return
+
+    const visible = getVisibleProfiles(profiles, currentUserId, friends, receivedRequestIds)
+    const filtered = visible.filter((profile) =>
+      `${profile.firstName} ${profile.lastName}`.toLowerCase().includes(value)
+    )
     setFilteredProfiles(filtered)
   }
-  
 
-  if (loading) return <p className="p-4">Cargando perfiles...</p>;
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+        <p className="text-lg text-gray-600">Cargando perfiles...</p>
+      </div>
+    )
+  }
+
+  if (isVerifying || !isAuthorized) return null
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white p-6">
@@ -93,8 +158,11 @@ export default function ExploreProfiles() {
           <Button variant="outline" onClick={() => router.push('/perfil')}>
             Volver al Perfil
           </Button>
-          <Link href="/requests" className="text-sm font-medium text-green-700 hover:underline">
-            Ver Solicitudes de Amistad
+          <Link
+            href="/requests"
+            className="text-sm font-medium text-green-700 hover:underline"
+          >
+            Ver Solicitudes de Amistad ({receivedRequestIds.length})
           </Link>
         </div>
 
@@ -117,8 +185,8 @@ export default function ExploreProfiles() {
               <div className="space-y-4">
                 {filteredProfiles.map((profile) => (
                   <div
-                  key={profile.id}
-                  className="flex flex-col sm:flex-row sm:justify-between sm:items-center border p-4 rounded-lg hover:bg-green-50 transition-colors space-y-2 sm:space-y-0"
+                    key={profile.id}
+                    className="flex flex-col sm:flex-row sm:justify-between sm:items-center border p-4 rounded-lg hover:bg-green-50 transition-colors space-y-2 sm:space-y-0"
                   >
                     <div>
                       <p className="text-lg font-semibold text-gray-800">
@@ -126,9 +194,19 @@ export default function ExploreProfiles() {
                       </p>
                       <p className="text-sm text-gray-500">{profile.email}</p>
                     </div>
-                    <Button onClick={() => handleSendRequest(profile.id)} className="text-sm w-full sm:w-auto sm:ml-4">
-                      Enviar Solicitud
-                    </Button>
+                    {pendingIds.includes(profile.id) ? (
+                      <Button disabled variant="outline" className="sm:ml-4 w-full sm:w-auto">
+                        Pending
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={() => handleSendRequest(profile.id)}
+                        className="text-sm w-full sm:w-auto sm:ml-4"
+                        disabled={isSendingId === profile.id}
+                      >
+                        {isSendingId === profile.id ? 'Enviando...' : 'Enviar Solicitud'}
+                      </Button>
+                    )}
                   </div>
                 ))}
               </div>
@@ -139,5 +217,5 @@ export default function ExploreProfiles() {
         </Card>
       </div>
     </div>
-  );
+  )
 }

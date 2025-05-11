@@ -1,12 +1,15 @@
 "use client"
 
 import { useEffect, useState } from "react"
+
 import { Sidebar } from "@/components/layout/sidebar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Users, Trash2 } from "lucide-react"
 import { toast } from "react-hot-toast"
+import { useRouter } from "next/navigation"
+
 
 type User = {
   id: number
@@ -22,34 +25,36 @@ export function AbonadosDashboard() {
   const [searchTerm, setSearchTerm] = useState("")
   const [isLoading, setIsLoading] = useState(true)
   const [loadingUserId, setLoadingUserId] = useState<number | null>(null)
-
+  const router = useRouter()
 
   useEffect(() => {
-    const fetchData = async () => {
+    const cargarTodo = async () => {
       try {
-        // 1. Obtener club
-        const resClub = await fetch("/api/auth", { credentials: "include" })
-        const dataClub = await resClub.json()
-        setClubId(dataClub.entity.id)
+        const authRes = await fetch("/api/auth", { credentials: "include" })
+        if (!authRes.ok) throw new Error("No autorizado")
+        const authData = await authRes.json()
+        const clubId = authData.entity.id
+        setClubId(clubId)
   
-        // 2. Obtener usuarios
-        const resUsers = await fetch("/api/users")
-        const users = await resUsers.json()
+        const [usersRes, abonadosRes] = await Promise.all([
+          fetch("/api/users"),
+          fetch(`/api/abonados?clubId=${clubId}`)
+        ])
+  
+        const users = await usersRes.json()
+        const abonados = await abonadosRes.json()
         setAllUsers(users)
-  
-        // 3. Obtener abonados
-        const resAbonados = await fetch(`/api/abonados?clubId=${dataClub.entity.id}`)
-        const dataAbonados = await resAbonados.json()
-        setAbonados(dataAbonados)
+        setAbonados(abonados)
       } catch (error) {
-        console.error("Error al cargar datos de abonados:", error)
+        console.error("Error al cargar datos:", error)
+        router.push("/login")
       } finally {
         setIsLoading(false)
       }
     }
   
-    fetchData()
-  }, [])
+    cargarTodo()
+  }, [router])
   
 
   const handleAgregar = async (userId: number) => {
@@ -91,11 +96,12 @@ export function AbonadosDashboard() {
       </div>
     )
   }
-    
+      
+
   return (
-    <div className="flex flex-col md:flex-row min-h-screen">
+    <div className="flex min-h-screen">
       <Sidebar />
-      <div className="flex-1 px-4 py-6 md:px-6 md:ml-16 space-y-6 overflow-x-hidden mt-10">
+      <div className="flex-1 p-4 md:p-6 md:ml-16 space-y-6 overflow-x-hidden">
         <Card>
           <CardHeader>
             <CardTitle>Gestionar Jugadores Abonados</CardTitle>
@@ -110,7 +116,7 @@ export function AbonadosDashboard() {
             {filteredUsers.map((user) => (
               <div
                 key={user.id}
-                className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 border p-4 rounded-md hover:bg-green-50 transition"
+                className="flex justify-between items-center border p-4 rounded-md hover:bg-green-50 transition"
               >
                 <div className="flex items-center gap-3">
                   <Users className="h-5 w-5 text-green-700" />

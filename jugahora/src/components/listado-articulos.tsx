@@ -12,6 +12,8 @@ import { useToast } from "@/hooks/use-toast"
 import type { Articulo } from "@/lib/tipos"
 import { ModalEditarArticulo } from "@/components/ModalEditarArticulo"
 import { ModalAgregarArticulo } from "@/components/ModalAgregarArticulo"
+import { useRouter } from "next/navigation"
+
 
 
 export function ListadoArticulos() {
@@ -23,19 +25,32 @@ export function ListadoArticulos() {
   const [modalAbierto, setModalAbierto] = useState(false)
   const [modalNuevoAbierto, setModalNuevoAbierto] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const router = useRouter()
+
 
 
   useEffect(() => {
     async function cargarArticulos() {
       try {
+        const auth = await fetch("/api/auth", { credentials: "include" })
+        if (!auth.ok) throw new Error("No autorizado")
+  
         const respuesta = await fetch("/api/articulos", {
           credentials: "include",
         })
+  
         if (!respuesta.ok) throw new Error("Error al cargar los artículos")
+  
         const datos = await respuesta.json()
         setArticulos(datos)
       } catch (error) {
         console.error(error)
+  
+        if ((error as Error).message === "No autorizado") {
+          router.push("/login") // 🔁 Redirección si no hay token
+          return
+        }
+  
         toast({
           title: "Error",
           description: "No se pudieron cargar los artículos",
@@ -45,9 +60,10 @@ export function ListadoArticulos() {
         setCargando(false)
       }
     }
-
+  
     cargarArticulos()
-  }, [toast])
+  }, [toast, router])
+  
 
   const articulosFiltrados = articulos.filter(
     (articulo) =>
@@ -186,6 +202,14 @@ export function ListadoArticulos() {
     )
     setModalAbierto(false)
     setArticuloSeleccionado(null)
+  }
+
+  if (cargando) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+        <p className="text-lg text-gray-600">Cargando artículos...</p>
+      </div>
+    )
   }
 
   return (

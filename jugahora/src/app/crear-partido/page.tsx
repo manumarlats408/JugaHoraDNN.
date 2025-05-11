@@ -70,7 +70,23 @@ export default function CrearPartidoJugador() {
   const [isSavingEditMatch, setIsSavingEditMatch] = useState(false)
   const [menuAbierto, setMenuAbierto] = useState(false)
   const referenciaMenu = useRef<HTMLDivElement>(null)
+  const [verifying, setVerifying] = useState(true)
   const router = useRouter()
+
+  useEffect(() => {
+    const verificarAuth = async () => {
+      try {
+        const res = await fetch("/api/auth", { credentials: "include" })
+        if (!res.ok) throw new Error("No autorizado")
+      } catch {
+        router.push("/login")
+      } finally {
+        setVerifying(false)
+      }
+    }
+  
+    verificarAuth()
+  }, [router])
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -267,6 +283,8 @@ export default function CrearPartidoJugador() {
     )
   }
 
+  if (verifying) return null
+  
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       {/* TOPBAR */}

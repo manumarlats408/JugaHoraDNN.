@@ -34,10 +34,29 @@ const menuItems = [
 export default function ReservaPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
+  const [isVerifying, setIsVerifying] = useState(true)
+  const [isAuthorized, setIsAuthorized] = useState(false)
+
   const router = useRouter()
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
 
+  useEffect(() => {
+    const verificarAuth = async () => {
+      try {
+        const res = await fetch("/api/auth", { credentials: "include" })
+        if (!res.ok) throw new Error("No autorizado")
+        setIsAuthorized(true)
+      } catch {
+        router.push("/login")
+      } finally {
+        setIsVerifying(false)
+      }
+    }
+  
+    verificarAuth()
+  }, [router])
+  
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -68,6 +87,8 @@ export default function ReservaPage() {
     const formattedPhone = phone.replace(/\D/g, '') // Elimina caracteres no numéricos
     return `https://wa.me/${formattedPhone}`
   }
+
+  if (isVerifying || !isAuthorized) return null
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">

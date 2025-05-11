@@ -14,6 +14,7 @@ export default function DashboardPage() {
   const [articulos, setArticulos] = useState<Articulo[]>([])
   const [movimientos, setMovimientos] = useState<MovimientoFinanciero[]>([])
   const [partidos, setPartidos] = useState<Partido[]>([])
+  const [partidosConfirmados, setPartidosConfirmados] = useState<Partido[]>([])
   const [eventos, setEventos] = useState<Evento[]>([])
   const [cargando, setCargando] = useState(true)
   const [clubData, setClubData] = useState<Club | null>(null)
@@ -95,6 +96,16 @@ export default function DashboardPage() {
           const movimientosData = await movimientosResponse.json()
           setMovimientos(movimientosData)
         }
+
+        // Fetch partidos confirmados
+        const confirmadosResponse = await fetch(`/api/partidos-confirmados?clubId=${userData.entity.id}`, {
+          credentials: "include",
+        })
+        if (confirmadosResponse.ok) {
+          const confirmadosData = await confirmadosResponse.json()
+          setPartidosConfirmados(confirmadosData)
+        }
+
       } catch (error) {
         console.error("Error al cargar datos del dashboard:", error)
         router.push("/login") // Redirigir en caso de error
@@ -182,6 +193,23 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
           </Link>
+
+          {/* 👉 Partidos Confirmados */}
+          <Link href="/partidos-confirmados">
+            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                <CardTitle className="text-sm font-medium">Partidos Confirmados</CardTitle>
+                <CalendarIcon className="h-4 w-4 text-orange-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{partidosConfirmados.length}</div>
+                <p className="text-xs text-muted-foreground">
+                  confirmados a través de Jugahora
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+
 
           {/* 👉 Jugadores Abonados */}
           <Link href="/abonados">

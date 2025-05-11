@@ -34,11 +34,14 @@ model User {
   Partidos         Partidos[]      // Relación con la tabla Partidos
   Partidos_club    Partidos_club[]
   JugadorAbonado   JugadorAbonado[]
+  PartidosConfirmados PartidosConfirmados[] // Relación con PartidosConfirmados
 
 
   // Relaciones de Amistad
   sentRequests     Friend[]        @relation("FriendSender")
   receivedRequests Friend[]        @relation("FriendReceiver")
+  
+
 }
 
 model Friend {
@@ -67,6 +70,8 @@ model Club {
   Articulo           Articulo[]
   MovimientoFinanciero         MovimientoFinanciero[]
   JugadorAbonado  JugadorAbonado[]
+  PartidosConfirmados PartidosConfirmados[]
+
 }
 
 model Partidos {
@@ -101,6 +106,25 @@ model Partidos_club {
   Club        Club      @relation(fields: [clubId], references: [id])
   User      User?     @relation(fields: [userId], references: [id])  // Relación con la tabla de usuarios
 
+}
+
+model PartidosConfirmados {
+  id        Int      @id @default(autoincrement())
+  matchId   Int      @unique
+  date      DateTime
+  startTime String
+  endTime   String
+  court     String
+  usuarios    Int[]     // Array of User IDs
+  clubId    Int
+  price     Float
+  categoria String?
+  genero    String?
+  userId    Int?
+
+  // Relaciones opcionales si lo necesitás en queries
+  Club      Club     @relation(fields: [clubId], references: [id])
+  User      User?    @relation(fields: [userId], references: [id])
 }
 
 model Evento_club {
