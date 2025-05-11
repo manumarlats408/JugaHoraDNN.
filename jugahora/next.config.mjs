@@ -35,6 +35,11 @@ const nextConfig = {
             key: "Referrer-Policy",
             value: "no-referrer", // Controla la información enviada en el header Referer
           },
+          {
+            key: "Permissions-Policy",
+            value: "geolocation=(), microphone=(), camera=(), fullscreen=(), payment=()" // bloquea por defecto
+          }
+          
         ],
       },
     ];
