@@ -99,9 +99,10 @@ export function AbonadosDashboard() {
       
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen flex-col md:flex-row">
       <Sidebar />
-      <div className="flex-1 p-4 md:p-6 md:ml-16 space-y-6 overflow-x-hidden">
+      <div className="flex-1 p-4 pt-20 md:pt-6 md:p-6 md:ml-16 space-y-6 overflow-x-hidden">
+
         <Card>
           <CardHeader>
             <CardTitle>Gestionar Jugadores Abonados</CardTitle>
@@ -116,7 +117,7 @@ export function AbonadosDashboard() {
             {filteredUsers.map((user) => (
               <div
                 key={user.id}
-                className="flex justify-between items-center border p-4 rounded-md hover:bg-green-50 transition"
+                className="flex flex-col sm:flex-row sm:justify-between sm:items-center border p-4 rounded-md hover:bg-green-50 transition space-y-2 sm:space-y-0"
               >
                 <div className="flex items-center gap-3">
                   <Users className="h-5 w-5 text-green-700" />
@@ -125,38 +126,43 @@ export function AbonadosDashboard() {
                     <p className="text-sm text-gray-500">{user.email}</p>
                   </div>
                 </div>
-                {abonadosIds.includes(user.id) ? (
-                  <Button
-                    variant="destructive"
-                    disabled={loadingUserId === user.id}
-                    onClick={() => handleEliminar(user.id)}
-                  >
-                    {loadingUserId === user.id ? (
-                      <span className="flex items-center gap-2">
-                        <span className="loader"></span> Quitando...
-                      </span>
-                    ) : (
-                      <>
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Quitar
-                      </>
-                    )}
-                  </Button>
-                ) : (
-                  <Button
-                    disabled={loadingUserId === user.id}
-                    onClick={() => handleAgregar(user.id)}
-                  >
-                    {loadingUserId === user.id ? (
-                      <span className="flex items-center gap-2">
-                        <span className="loader"></span> Agregando...
-                      </span>
-                    ) : (
-                      "Agregar"
-                    )}
-                  </Button>
-                )}
+                <div className="flex justify-end sm:justify-start">
+                  {abonadosIds.includes(user.id) ? (
+                    <Button
+                      variant="destructive"
+                      disabled={loadingUserId === user.id}
+                      onClick={() => handleEliminar(user.id)}
+                      className="w-full sm:w-auto"
+                    >
+                      {loadingUserId === user.id ? (
+                        <span className="flex items-center gap-2">
+                          <span className="loader"></span> Quitando...
+                        </span>
+                      ) : (
+                        <>
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Quitar
+                        </>
+                      )}
+                    </Button>
+                  ) : (
+                    <Button
+                      disabled={loadingUserId === user.id}
+                      onClick={() => handleAgregar(user.id)}
+                      className="w-full sm:w-auto"
+                    >
+                      {loadingUserId === user.id ? (
+                        <span className="flex items-center gap-2">
+                          <span className="loader"></span> Agregando...
+                        </span>
+                      ) : (
+                        "Agregar"
+                      )}
+                    </Button>
+                  )}
+                </div>
               </div>
+
             ))}
           </CardContent>
         </Card>

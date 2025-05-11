@@ -103,8 +103,9 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     // 🔹 Determinar qué datos han cambiado
     const cambios: string[] = [];
     if (oldMatch.date.toISOString().split("T")[0] !== new Date(date).toISOString().split("T")[0]) {
-      cambios.push(`<strong>Fecha:</strong> ${oldMatch.date.toISOString().split("T")[0]} ➝ ${new Date(date).toISOString().split("T")[0]}`);
+      cambios.push(`<strong>Fecha:</strong> ${formatearFechaDDMMYYYY(oldMatch.date)} ➝ ${formatearFechaDDMMYYYY(new Date(date))}`);
     }
+
     if (oldMatch.startTime !== startTime || oldMatch.endTime !== endTime) {
       cambios.push(`<strong>Hora:</strong> ${oldMatch.startTime} - ${oldMatch.endTime} ➝ ${startTime} - ${endTime}`);
     }
