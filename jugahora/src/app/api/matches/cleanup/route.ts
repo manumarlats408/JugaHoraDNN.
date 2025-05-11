@@ -10,10 +10,25 @@ export async function DELETE() {
 
     logs.push(`🕒 Hora actual ARG (UTC-3): ${now.toISOString()}`)
 
-    // Obtener todos los partidos
-    const partidos = await prisma.partidos_club.findMany()
+    const partidos = await prisma.partidos_club.findMany({
+      select: {
+        id: true,
+        date: true,
+        startTime: true,
+        endTime: true,
+        court: true,
+        players: true,
+        usuarios: true,
+        clubId: true,
+        price: true,
+        categoria: true,
+        genero: true,
+        userId: true,
+      },
+    })
 
-    // Filtrar los que ya pasaron en el tiempo
+    logs.push(`📦 Total partidos encontrados: ${partidos.length}`)
+
     const partidosParaBorrar = partidos.filter((partido) => {
       const fecha = partido.date.toISOString().split("T")[0]
       const end = partido.startTime || "00:00"
@@ -22,10 +37,16 @@ export async function DELETE() {
       return endDate < now
     })
 
-    // Filtrar partidos con 4 jugadores
+    logs.push(`🧹 Partidos vencidos: ${partidosParaBorrar.length}`)
+    logs.push(`📝 IDs vencidos: ${partidosParaBorrar.map(p => p.id).join(', ')}`)
+
     const partidosCompletos = partidosParaBorrar.filter((p) => p.players === 4)
 
-    // Guardar partidos confirmados antes de eliminarlos
+    logs.push(`✅ Partidos con 4 jugadores: ${partidosCompletos.length}`)
+    partidosCompletos.forEach(p => {
+      logs.push(`➡️ Partido ${p.id} usuarios: ${JSON.stringify(p.usuarios)}`)
+    })
+
     for (const partido of partidosCompletos) {
       try {
         await prisma.partidosConfirmados.upsert({
@@ -44,7 +65,6 @@ export async function DELETE() {
             userId: partido.userId ?? null,
           },
           update: {
-            // Por si ya estaba registrado y se actualiza
             date: partido.date,
             startTime: partido.startTime,
             endTime: partido.endTime,
@@ -57,26 +77,26 @@ export async function DELETE() {
             userId: partido.userId ?? null,
           },
         })
-        logs.push(`✅ Partido confirmado: ID ${partido.id}`)
+        logs.push(`🟢 Partido confirmado guardado: ID ${partido.id}`)
       } catch (error) {
-        logs.push(`⚠️ Error al guardar partido confirmado ID ${partido.id}: ${error}`)
+        logs.push(`❌ Error al guardar partido ${partido.id}: ${JSON.stringify(error)}`)
       }
     }
 
-    // Eliminar partidos
     const idsAEliminar = partidosParaBorrar.map((p) => p.id)
     if (idsAEliminar.length > 0) {
       await prisma.partidos_club.deleteMany({
         where: { id: { in: idsAEliminar } },
       })
+      logs.push(`🗑️ Partidos eliminados: ${idsAEliminar.length}`)
+    } else {
+      logs.push(`⚠️ No había partidos para eliminar`)
     }
 
-    logs.push(`🗑️ Partidos eliminados: ${idsAEliminar.length}`)
     console.log(logs.join('\n'))
-
     return NextResponse.json({ eliminados: idsAEliminar.length, logs })
   } catch (error) {
-    console.error('❌ Error al eliminar partidos pasados:', error)
+    console.error('❌ Error general en cleanup:', error)
     return NextResponse.json({ error: 'Error al eliminar partidos pasados' }, { status: 500 })
   }
 }
