@@ -13,7 +13,7 @@ type PartidoConfirmado = {
   endTime: string
   court: string
   price: number
-  createdAt: string
+  usuarios: number[]
 }
 
 export default function PartidosConfirmados() {
@@ -74,12 +74,11 @@ export default function PartidosConfirmados() {
                       {formatearFecha(p.date)} | {p.startTime} - {p.endTime} hs
                     </p>
                     <p className="text-sm text-gray-500">Cancha: {p.court}</p>
-                    <p className="text-sm text-gray-500">Registrado el: {formatearFecha(p.createdAt)}</p>
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-semibold text-green-600">${p.price}</p>
                     <p className="flex items-center text-sm text-gray-500 justify-end">
-                      <Users className="h-4 w-4 mr-1" /> 4 jugadores
+                      <Users className="h-4 w-4 mr-1" /> {p.usuarios.length} jugadores
                     </p>
                   </div>
                 </div>

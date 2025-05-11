@@ -14,15 +14,10 @@ export async function GET(req: Request) {
 
     const partidos = await prisma.partidosConfirmados.findMany({
       where: {
-        partido: {
-          clubId: parseInt(clubId, 10),
-        },
-      },
-      include: {
-        partido: true,
+        clubId: parseInt(clubId, 10),
       },
       orderBy: {
-        confirmedAt: 'desc',
+        date: 'desc',
       },
     })
 
