@@ -41,15 +41,15 @@ export async function DELETE() {
     logs.push(`📝 IDs vencidos: ${partidosParaBorrar.map(p => p.id).join(', ')}`)
 
     const partidosCompletos = partidosParaBorrar.filter((p) => p.players === 4)
-
     logs.push(`✅ Partidos con 4 jugadores: ${partidosCompletos.length}`)
-    partidosCompletos.forEach(p => {
-      logs.push(`➡️ Partido ${p.id} usuarios: ${JSON.stringify(p.usuarios)}`)
-    })
 
     for (const partido of partidosCompletos) {
+      logs.push(`➡️ Procesando partido ${partido.id}...`)
+      logs.push(`🧍 Usuarios: ${JSON.stringify(partido.usuarios)}`)
+      logs.push(`🎯 Creando entry en PartidosConfirmados con matchId=${partido.id}`)
+
       try {
-        await prisma.partidosConfirmados.upsert({
+        const creado = await prisma.partidosConfirmados.upsert({
           where: { matchId: partido.id },
           create: {
             matchId: partido.id,
@@ -77,9 +77,10 @@ export async function DELETE() {
             userId: partido.userId ?? null,
           },
         })
-        logs.push(`🟢 Partido confirmado guardado: ID ${partido.id}`)
-      } catch (error) {
-        logs.push(`❌ Error al guardar partido ${partido.id}: ${JSON.stringify(error)}`)
+        logs.push(`✅ Partido confirmado guardado: ID ${creado.id}, matchId: ${creado.matchId}`)
+      } catch (error: unknown) {
+        const mensaje = error instanceof Error ? error.message : JSON.stringify(error)
+        logs.push(`❌ Error al guardar partido ${partido.id}: ${mensaje}`)
       }
     }
 
