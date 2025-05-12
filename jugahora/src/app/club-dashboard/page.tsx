@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatearPrecio } from "@/lib/utils"
 import Link from "next/link"
-import { CalendarIcon, Package, DollarSign, Trophy, UserCheck, CheckCircle, XCircle} from "lucide-react"
+import { CalendarIcon, Package, DollarSign, Trophy, UserCheck, CheckCircle, UserX } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import type { Articulo, MovimientoFinanciero, Partido, Club, Evento } from "@/lib/tipos"
 import { useRouter } from "next/navigation"
@@ -15,6 +15,7 @@ export default function DashboardPage() {
   const [movimientos, setMovimientos] = useState<MovimientoFinanciero[]>([])
   const [partidos, setPartidos] = useState<Partido[]>([])
   const [partidosConfirmados, setPartidosConfirmados] = useState<Partido[]>([])
+  const [jugadoresCancelados, setJugadoresCancelados] = useState<number>(0)
   const [eventos, setEventos] = useState<Evento[]>([])
   const [cargando, setCargando] = useState(true)
   const [clubData, setClubData] = useState<Club | null>(null)
@@ -104,6 +105,15 @@ export default function DashboardPage() {
         if (confirmadosResponse.ok) {
           const confirmadosData = await confirmadosResponse.json()
           setPartidosConfirmados(confirmadosData)
+        }
+
+        // Cargar jugadores cancelados
+        const canceladosRes = await fetch(`/api/jugadores-cancelados?clubId=${userData.entity.id}`, {
+          credentials: "include",
+        })
+        if (canceladosRes.ok) {
+          const canceladosData = await canceladosRes.json()
+          setJugadoresCancelados(canceladosData.length)
         }
 
       } catch (error) {
@@ -227,14 +237,15 @@ export default function DashboardPage() {
             <Card className="hover:shadow-md transition-shadow cursor-pointer">
               <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                 <CardTitle className="text-sm font-medium">Jugadores Cancelados</CardTitle>
-                <XCircle className="h-4 w-4 text-red-500" />
+                <UserX className="h-4 w-4 text-red-600" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">Ver</div>
-                <p className="text-xs text-muted-foreground">jugadores con cancelaciones fuera de tiempo</p>
+                <div className="text-2xl font-bold">{jugadoresCancelados}</div>
+                <p className="text-xs text-muted-foreground">con cancelaciones tardías</p>
               </CardContent>
             </Card>
           </Link>
+
 
           {/* 👉 Eventos */}
           <Link href="/eventos">
