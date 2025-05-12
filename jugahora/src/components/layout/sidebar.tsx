@@ -15,6 +15,7 @@ import {
   UserCheck,
   LogOut,
   CheckCircle,
+  UserX ,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -26,7 +27,8 @@ const navItems = [
   { href: "/club-dashboard", icon: LayoutGrid, label: "Dashboard" },
   { href: "/partidos", icon: CalendarIcon, label: "Partidos" },
   { href: "/partidos-confirmados", icon: CheckCircle, label: "Partidos Confirmados" },
-  { href: "/abonados", icon: UserCheck, label: "Abonados" },
+  { href: "/abonados", icon: UserCheck, label: "Jugadores Abonados" },
+  { href: "/jugadores-cancelados", icon: UserX , label: "Cancelaciones" },
   { href: "/eventos", icon: Trophy, label: "Eventos" },
   { href: "/inventario", icon: FileText, label: "Inventario" },
   { href: "/finanzas", icon: DollarSign, label: "Finanzas" },

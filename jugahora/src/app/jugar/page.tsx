@@ -664,7 +664,7 @@ export default function PaginaJuega() {
           <DialogHeader>
             <DialogTitle>Confirmar retiro del partido</DialogTitle>
             <DialogDescription>
-              Atención: Si te retiras del partido 12 horas antes de la hora de inicio del partido podrías recibir una penalización.
+              Atención: Si te retiras del partido en las 12 horas previas a la hora de inicio del partido, podrías recibir una penalización.
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-end space-x-2">
