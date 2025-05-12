@@ -35,6 +35,7 @@ model User {
   Partidos_club    Partidos_club[]
   JugadorAbonado   JugadorAbonado[]
   PartidosConfirmados PartidosConfirmados[] // Relación con PartidosConfirmados
+  JugadorCancelado JugadorCancelado[]
 
 
   // Relaciones de Amistad
@@ -71,6 +72,7 @@ model Club {
   MovimientoFinanciero         MovimientoFinanciero[]
   JugadorAbonado  JugadorAbonado[]
   PartidosConfirmados PartidosConfirmados[]
+  JugadorCancelado JugadorCancelado[]
 
 }
 
@@ -183,5 +185,18 @@ model JugadorAbonado {
   User     User @relation(fields: [userId], references: [id])
 
   @@unique([clubId, userId]) // Evita duplicados
+}
+
+model JugadorCancelado {
+  id                     Int      @id @default(autoincrement())
+  userId                 Int
+  clubId                 Int
+  cantidadCancelaciones  Int      @default(1)
+  ultimaCancelacion      DateTime
+
+  user   User  @relation(fields: [userId], references: [id])
+  club   Club  @relation(fields: [clubId], references: [id])
+
+  @@unique([userId, clubId])
 }
 

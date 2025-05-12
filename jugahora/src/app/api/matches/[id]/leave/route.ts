@@ -81,6 +81,37 @@ export async function POST(
 
       console.log('Partido actualizado:', updatedMatch);
 
+      // 👇 Verificar si la cancelación fue con menos de 12 horas
+      const fechaPartido = match.date.toISOString().split("T")[0]
+      const partidoDateTime = new Date(`${fechaPartido}T${match.startTime}:00`)
+      const ahora = new Date(new Date().getTime() - 3 * 60 * 60 * 1000) // UTC-3
+
+      const diferenciaMs = partidoDateTime.getTime() - ahora.getTime()
+      const diferenciaHoras = diferenciaMs / (1000 * 60 * 60)
+
+      if (match.players === 4 && diferenciaHoras < 12) {
+        await prisma.jugadorCancelado.upsert({
+          where: {
+            userId_clubId: {
+              userId,
+              clubId: match.Club.id
+            }
+          },
+          update: {
+            cantidadCancelaciones: { increment: 1 },
+            ultimaCancelacion: new Date()
+          },
+          create: {
+            userId,
+            clubId: match.Club.id,
+            cantidadCancelaciones: 1,
+            ultimaCancelacion: new Date()
+          }
+        })
+        console.log(`🚫 Jugador ${userId} canceló con menos de 12h`)
+      }
+
+
       // ✅ Si el partido tenía 4 jugadores y ahora tiene 3, enviar notificaciones
       if (match.players === 4 && updatedMatch.players === 3) {
         console.log('El partido ha pasado de 4 a 3 jugadores, enviando notificaciones...');

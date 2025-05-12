@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatearPrecio } from "@/lib/utils"
 import Link from "next/link"
-import { CalendarIcon, Package, DollarSign, Trophy, UserCheck, CheckCircle} from "lucide-react"
+import { CalendarIcon, Package, DollarSign, Trophy, UserCheck, CheckCircle, XCircle} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import type { Articulo, MovimientoFinanciero, Partido, Club, Evento } from "@/lib/tipos"
 import { useRouter } from "next/navigation"
@@ -219,6 +219,19 @@ export default function DashboardPage() {
               <CardContent>
                 <div className="text-2xl font-bold">{cantidadAbonados}</div>
                 <p className="text-xs text-muted-foreground">autorizados a crear partidos</p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href="/jugadores-cancelados">
+            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                <CardTitle className="text-sm font-medium">Jugadores Cancelados</CardTitle>
+                <XCircle className="h-4 w-4 text-red-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">Ver</div>
+                <p className="text-xs text-muted-foreground">jugadores con cancelaciones fuera de tiempo</p>
               </CardContent>
             </Card>
           </Link>
