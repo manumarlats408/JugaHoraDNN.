@@ -11,7 +11,7 @@ export default function Home() {
       <header className="sticky top-0 z-50 w-full border-b bg-white">
         <div className="container flex h-16 items-center justify-between">
           <Link className="flex items-center justify-center" href="/">
-            <span className="sr-only">JugáHora</span>
+            <span className="ml-2 text-xl font-bold text-[#132045]">JugáHora</span>
             <Image src="/logo.svg" alt="JugáHora Logo" width="150" height="40" className="h-10 w-auto" />
           </Link>
           <nav className="hidden md:flex gap-6">
@@ -40,8 +40,8 @@ export default function Home() {
         {/* Hero Section */}
         <section className="relative bg-brand-primary text-white overflow-hidden">
           <div className="absolute inset-0 z-0">
-            <div className="absolute right-0 top-0 h-full w-1/3 bg-white transform skew-x-12 translate-x-1/2"></div>
-            <div className="absolute left-0 bottom-0 h-1/3 w-full bg-white transform -skew-x-12 translate-y-1/2"></div>
+            <div className="hidden sm:block absolute right-0 top-0 h-full w-1/3 bg-white transform skew-x-12 translate-x-1/2"></div>
+            <div className="hidden sm:block absolute left-0 bottom-0 h-1/3 w-full bg-white transform -skew-x-12 translate-y-1/2"></div>
           </div>
           <div className="container relative z-10 py-20 md:py-32">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
@@ -60,7 +60,7 @@ export default function Home() {
                     <Button
                       variant="outline"
                       size="lg"
-                      className="border-white text-white hover:bg-brand-primary w-full"
+                      className="bg-white text-brand-primary hover:bg-gray-100 w-full"
                     >
                       Iniciar Sesión
                     </Button>
@@ -186,10 +186,14 @@ export default function Home() {
               Únete a miles de jugadores y clubes que ya están disfrutando de una gestión deportiva más eficiente.
             </p>
             <Link href="/registro">
-              <Button size="lg" className="bg-white text-brand-primary hover:bg-gray-100 text-lg px-8">
+              <Button
+                size="lg"
+                className="bg-white text-brand-primary hover:bg-gray-100 text-lg px-8 mt-6"
+              >
                 Registrarse
               </Button>
             </Link>
+
           </div>
         </section>
 
@@ -257,7 +261,7 @@ export default function Home() {
         <div className="container">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="space-y-4">
-              <Image src="/logo-white.png" alt="JugáHora Logo" width="150" height="40" className="h-10 w-auto" />
+              <Image src="/logo.svg" alt="JugáHora Logo" width="150" height="40" className="h-10 w-auto" />
               <p className="text-blue-200">La plataforma que conecta jugadores con clubes deportivos.</p>
             </div>
             <div>
@@ -308,8 +312,8 @@ export default function Home() {
             <div>
               <h3 className="font-semibold text-lg mb-4">Contacto</h3>
               <ul className="space-y-2">
-                <li className="text-blue-200">Email: info@jugahora.com</li>
-                <li className="text-blue-200">Teléfono: +123 456 7890</li>
+                <li className="text-blue-200">Email: jugahora.contacto@gmail.com</li>
+                <li className="text-blue-200">Teléfono: +54 9 11 6373 0035</li>
                 <li className="flex space-x-4 mt-4">
                   <Link href="#" className="text-blue-200 hover:text-white">
                     <span className="sr-only">Facebook</span>
