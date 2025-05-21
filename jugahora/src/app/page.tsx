@@ -15,13 +15,13 @@ export default function Home() {
             <Image src="/logo.png" alt="JugáHora Logo" width="150" height="40" className="h-10 w-auto" />
           </Link>
           <nav className="hidden md:flex gap-6">
-            <Link href="#jugadores" className="text-sm font-medium text-[#132045]" hover:text-blue-700>
+            <Link href="#jugadores" className="text-sm font-medium text-[#132045] hover:text-blue-700">
               Jugadores
             </Link>
-            <Link href="#clubes" className="text-sm font-medium text-[#132045]" hover:text-blue-700>
+            <Link href="#clubes" className="text-sm font-medium text-[#132045] hover:text-blue-700">
               Clubes
             </Link>
-            <Link href="#faq" className="text-sm font-medium text-[#132045]" hover:text-blue-700>
+            <Link href="#faq" className="text-sm font-medium text-[#132045] hover:text-blue-700">
               FAQ
             </Link>
           </nav>
