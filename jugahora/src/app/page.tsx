@@ -47,10 +47,10 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               <div className="space-y-6">
                 <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
-                  La plataforma que transforma la experiencia de jugadores y clubes de pádel
+                  La plataforma creada para los jugadores y clubes de pádel
                 </h1>
                 <p className="text-xl md:text-2xl">
-                  JugáHora es la plataforma donde los jugadores encuentran partidos fácilmente y los clubes se olvidan de llenar sus horarios.
+                  JugáHora es la plataforma donde los jugadores encuentran partidos fácilmente y los clubes se despreocupan por llenar sus horarios.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Link href="/registro" className="w-full sm:w-auto">

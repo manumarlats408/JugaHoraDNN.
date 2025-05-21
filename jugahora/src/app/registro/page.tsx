@@ -93,7 +93,7 @@ export default function PaginaRegistro() {
   )
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-green-100 p-4">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-brand-primary/20 p-4">
       <Link href="/" className="mb-8 text-2xl font-bold flex items-center">
         <Image src='/logo.svg' alt="JugáHora Logo" width={32} height={32} /> 
         JugáHora
@@ -226,12 +226,12 @@ export default function PaginaRegistro() {
         <CardFooter className="flex flex-col space-y-2">
           <p className="text-sm text-gray-500 text-center">
             Al registrarte, aceptas nuestros 
-            <Link href="/terminos" className="text-green-600 hover:underline"> términos de servicio</Link> y 
-            <Link href="/privacidad" className="text-green-600 hover:underline"> política de privacidad</Link>.
+            <Link href="/terminos" className="text-brand-primary hover:underline"> términos de servicio</Link> y 
+            <Link href="/privacidad" className="text-brand-primary hover:underline"> política de privacidad</Link>.
           </p>
           <p className="text-sm text-gray-500 text-center">
             ¿Ya tienes una cuenta? 
-            <Link href="/login" className="text-green-600 hover:underline"> Inicia sesión</Link>
+            <Link href="/login" className="text-brand-primary hover:underline"> Inicia sesión</Link>
           </p>
         </CardFooter>
       </Card>
