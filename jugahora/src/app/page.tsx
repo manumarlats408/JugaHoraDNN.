@@ -12,7 +12,7 @@ export default function Home() {
         <div className="container flex h-16 items-center justify-between">
           <Link className="flex items-center justify-center" href="/">
             <span className="sr-only">JugáHora</span>
-            <Image src="/logo.png" alt="JugáHora Logo" width="150" height="40" className="h-10 w-auto" />
+            <Image src="/logo.svg" alt="JugáHora Logo" width="150" height="40" className="h-10 w-auto" />
           </Link>
           <nav className="hidden md:flex gap-6">
             <Link href="#jugadores" className="text-sm font-medium text-[#132045] hover:text-blue-700">
