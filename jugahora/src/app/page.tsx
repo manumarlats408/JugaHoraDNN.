@@ -2,7 +2,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { Clock, Users, Calendar, Trophy, CheckCircle } from "lucide-react"
+import { Clock, Users, Calendar, Trophy, FileText, Bell, UserCircle } from "lucide-react"
 
 export default function Home() {
   return (
@@ -109,7 +109,7 @@ export default function Home() {
                   </div>
                   <div className="flex items-start gap-4">
                     <div className="bg-blue-100 p-2 rounded-full">
-                      <Calendar className="h-6 w-6 text-brand-primary" />
+                      <UserCircle className="h-6 w-6 text-brand-primary" />
                     </div>
                     <div>
                       <h3 className="text-xl font-semibold text-[#132045]">Perfil personalizado</h3>
@@ -118,7 +118,7 @@ export default function Home() {
                   </div>
                   <div className="flex items-start gap-4">
                     <div className="bg-blue-100 p-2 rounded-full">
-                      <CheckCircle className="h-6 w-6 text-brand-primary" />
+                      <Bell className="h-6 w-6 text-brand-primary" />
                     </div>
                     <div>
                       <h3 className="text-xl font-semibold text-[#132045]">Notificaciones por mail</h3>
@@ -177,7 +177,7 @@ export default function Home() {
                   </div>
                   <div className="flex items-start gap-4">
                     <div className="bg-blue-100 p-2 rounded-full">
-                      <CheckCircle className="h-6 w-6 text-brand-primary" />
+                      <FileText className="h-6 w-6 text-brand-primary" />
                     </div>
                     <div>
                       <h3 className="text-xl font-semibold text-[#132045]">Gestión inteligente</h3>
@@ -186,7 +186,7 @@ export default function Home() {
                   </div>
                   <div className="flex items-start gap-4">
                     <div className="bg-blue-100 p-2 rounded-full">
-                      <CheckCircle className="h-6 w-6 text-brand-primary" />
+                      <Bell className="h-6 w-6 text-brand-primary" />
                     </div>
                     <div>
                       <h3 className="text-xl font-semibold text-[#132045]">Notificaciones al instante</h3>
