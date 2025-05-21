@@ -64,9 +64,8 @@ export default function PaginaRegistro() {
         })
 
         if (respuesta.ok) {
-          router.push('/onboarding') // 👈 redirige al video de bienvenida
-        }
-         else {
+          router.push('/onboarding')
+        } else {
           const datos = await respuesta.json()
           setError(datos.error || 'Ocurrió un error al completar el registro')
         }
@@ -93,14 +92,14 @@ export default function PaginaRegistro() {
   )
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-brand-primary/20 p-4">
-      <Link href="/" className="mb-8 text-2xl font-bold flex items-center">
-        <Image src='/logo.svg' alt="JugáHora Logo" width={32} height={32} /> 
+    <div className="flex flex-col items-center justify-center min-h-screen bg-brand-bg p-4">
+      <Link href="/" className="mb-8 text-2xl font-bold flex items-center text-brand-primary">
+        <Image src='/logo.svg' alt="JugáHora Logo" width={32} height={32} className="mr-2" />
         JugáHora
       </Link>
-      <Card className="w-full max-w-md shadow-lg">
+      <Card className="w-full max-w-md shadow-lg border border-brand-border">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">
+          <CardTitle className="text-2xl font-bold text-center text-brand-primary">
             {currentStep === 1 ? 'Crear una cuenta' : currentStep === 2 ? 'Preferencias de juego' : 'Selecciona tu categoría'}
           </CardTitle>
           <p className="text-center text-gray-500">
@@ -133,15 +132,13 @@ export default function PaginaRegistro() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="genero" className="flex items-center">
-                  Género <RequiredFieldTooltip />
-                </Label>
+                <Label htmlFor="genero" className="flex items-center">Género <RequiredFieldTooltip /></Label>
                 <select
                   id="genero"
                   value={genero}
                   onChange={(e) => setGenero(e.target.value)}
                   required
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border border-brand-border rounded"
                 >
                   <option value="">Selecciona tu género</option>
                   <option value="Masculino">Masculino</option>
@@ -149,17 +146,8 @@ export default function PaginaRegistro() {
                 </select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="age" className="flex items-center">
-                  Edad <RequiredFieldTooltip />
-                </Label>
-                <Input
-                  id="age"
-                  type="number"
-                  placeholder="Ej: 30"
-                  value={age}
-                  onChange={(e) => setAge(Number(e.target.value))}
-                  required
-                />
+                <Label htmlFor="age" className="flex items-center">Edad <RequiredFieldTooltip /></Label>
+                <Input id="age" type="number" placeholder="Ej: 30" value={age} onChange={(e) => setAge(Number(e.target.value))} required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phoneNumber" className="flex items-center">Número de teléfono <RequiredFieldTooltip /></Label>
@@ -170,7 +158,7 @@ export default function PaginaRegistro() {
                 <Input id="address" type="text" placeholder="Opcional: Av. Siempreviva 123" value={address} onChange={(e) => setAddress(e.target.value)} />
               </div>
               {error && <p className="text-red-500 text-center">{error}</p>}
-              <Button type="submit" className="w-full" disabled={isRegistering}>
+              <Button type="submit" className="w-full bg-brand-primary text-white hover:bg-brand-hover" disabled={isRegistering}>
                 {isRegistering ? (<><Loader2 className="mr-2 h-4 w-4 animate-spin" />Registrando...</>) : (<><UserPlus className="mr-2 h-4 w-4" /> Siguiente</>)}
               </Button>
             </form>
@@ -178,7 +166,7 @@ export default function PaginaRegistro() {
             <form onSubmit={manejarEnvio} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="preferredSide">Lado preferido de la cancha</Label>
-                <select id="preferredSide" value={preferredSide} onChange={(e) => setPreferredSide(e.target.value)} className="w-full p-2 border rounded" required>
+                <select id="preferredSide" value={preferredSide} onChange={(e) => setPreferredSide(e.target.value)} className="w-full p-2 border border-brand-border rounded" required>
                   <option value="">Selecciona un lado</option>
                   <option value="Revés">Revés</option>
                   <option value="Drive">Drive</option>
@@ -193,7 +181,7 @@ export default function PaginaRegistro() {
                 <Input id="weaknesses" type="text" placeholder="Ej: Revés, Globo, Defensa" value={weaknesses} onChange={(e) => setWeaknesses(e.target.value)} />
               </div>
               {error && <p className="text-red-500 text-center">{error}</p>}
-              <Button type="submit" className="w-full" disabled={isRegistering}>
+              <Button type="submit" className="w-full bg-brand-primary text-white hover:bg-brand-hover" disabled={isRegistering}>
                 {isRegistering ? (<><Loader2 className="mr-2 h-4 w-4 animate-spin" />Procesando...</>) : (<>Siguiente</>)}
               </Button>
             </form>
@@ -217,7 +205,7 @@ export default function PaginaRegistro() {
                 <Input id="nivel" type="text" placeholder="Ejemplo: 4" value={nivel} onChange={(e) => setNivel(e.target.value)} required />
               </div>
               {error && <p className="text-red-500 text-center">{error}</p>}
-              <Button type="submit" className="w-full" disabled={isRegistering}>
+              <Button type="submit" className="w-full bg-brand-primary text-white hover:bg-brand-hover" disabled={isRegistering}>
                 {isRegistering ? (<><Loader2 className="mr-2 h-4 w-4 animate-spin" />Registrando...</>) : (<>Finalizar Registro</>)}
               </Button>
             </form>
@@ -225,13 +213,13 @@ export default function PaginaRegistro() {
         </CardContent>
         <CardFooter className="flex flex-col space-y-2">
           <p className="text-sm text-gray-500 text-center">
-            Al registrarte, aceptas nuestros 
-            <Link href="/terminos" className="text-brand-primary hover:underline"> términos de servicio</Link> y 
+            Al registrarte, aceptás nuestros
+            <Link href="/terminos" className="text-brand-primary hover:underline"> términos de servicio</Link> y
             <Link href="/privacidad" className="text-brand-primary hover:underline"> política de privacidad</Link>.
           </p>
           <p className="text-sm text-gray-500 text-center">
-            ¿Ya tienes una cuenta? 
-            <Link href="/login" className="text-brand-primary hover:underline"> Inicia sesión</Link>
+            ¿Ya tenés una cuenta?
+            <Link href="/login" className="text-brand-primary hover:underline"> Iniciá sesión</Link>
           </p>
         </CardFooter>
       </Card>

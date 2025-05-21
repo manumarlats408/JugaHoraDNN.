@@ -60,7 +60,12 @@ const config: Config = {
         // Colores personalizados para JugáHora
         brand: {
           primary: "#1e51b0",
-          secondary: "#ffffff",
+          light: "#3b82f6",
+          soft: "#dbeafe",
+          bg: "#f0f4ff",
+          hover: "#2563eb",
+          border: "#bfdbfe",
+          dark: "#1e3a8a",
         },
       },
       borderRadius: {
