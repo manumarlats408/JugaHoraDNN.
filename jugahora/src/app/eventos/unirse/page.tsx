@@ -600,6 +600,9 @@ export default function PaginaEventos() {
                       <p className="text-sm text-green-600 font-semibold flex items-center">
                         <DollarSign className="w-4 h-4 mr-1" />${evento.price}
                       </p>
+                      <p className="text-sm text-blue-700">
+                        Clickea en la tarjeta del partido para ver los jugadores que ya están unidos!
+                      </p>
                     </div>
 
                     <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>
