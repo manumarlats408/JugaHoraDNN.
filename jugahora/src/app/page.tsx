@@ -46,9 +46,11 @@ export default function Home() {
           <div className="container relative z-10 py-20 md:py-32">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               <div className="space-y-6">
-                <h1 className="text-4xl md:text-6xl font-bold tracking-tight">Reserva tu cancha en segundos</h1>
+                <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
+                  La plataforma que conecta jugadores y clubes de pádel
+                </h1>
                 <p className="text-xl md:text-2xl">
-                  La plataforma que conecta jugadores con clubes deportivos para reservas fáciles y rápidas.
+                  Organizá partidos, conocé gente nueva y llená tus canchas sin complicaciones.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Link href="/registro" className="w-full sm:w-auto">
@@ -92,8 +94,8 @@ export default function Home() {
                       <Clock className="h-6 w-6 text-brand-primary" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-semibold text-[#132045]">Reservas en segundos</h3>
-                      <p className="text-gray-600">Encuentra y reserva canchas disponibles con solo unos clics.</p>
+                      <h3 className="text-xl font-semibold text-[#132045]">Unite a partidos y eventos</h3>
+                      <p className="text-gray-600">Encontrá partidos abiertos o eventos según tu nivel y disponibilidad.</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
@@ -101,8 +103,8 @@ export default function Home() {
                       <Users className="h-6 w-6 text-brand-primary" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-semibold text-[#132045]">Encuentra compañeros</h3>
-                      <p className="text-gray-600">Conecta con otros jugadores y organiza partidos fácilmente.</p>
+                      <h3 className="text-xl font-semibold text-[#132045]">Conocé jugadores y sumate a la comunidad</h3>
+                      <p className="text-gray-600">Jugá con nuevas personas, hacé amigos y organizá partidos fácilmente.</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
@@ -110,11 +112,21 @@ export default function Home() {
                       <Calendar className="h-6 w-6 text-brand-primary" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-semibold text-[#132045]">Gestiona tu agenda</h3>
-                      <p className="text-gray-600">Organiza tus partidos y recibe recordatorios automáticos.</p>
+                      <h3 className="text-xl font-semibold text-[#132045]">Perfil personalizado</h3>
+                      <p className="text-gray-600">Configurá tu nivel, preferencias y disfruta de nuestras estadisticas avanzadas.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <div className="bg-blue-100 p-2 rounded-full">
+                      <CheckCircle className="h-6 w-6 text-brand-primary" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-semibold text-[#132045]">Notificaciones por mail</h3>
+                      <p className="text-gray-600">Recibí alertas cuando se confirmen partidos, haya cambios o cancelaciones.</p>
                     </div>
                   </div>
                 </div>
+
               </div>
               <div className="flex justify-center">
                 <Image
@@ -150,8 +162,8 @@ export default function Home() {
                       <Calendar className="h-6 w-6 text-brand-primary" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-semibold text-[#132045]">Sistema de reservas automatizado</h3>
-                      <p className="text-gray-600">Gestiona tus canchas sin esfuerzo y reduce las cancelaciones.</p>
+                      <h3 className="text-xl font-semibold text-[#132045]">Publicá tus canchas vacías</h3>
+                      <p className="text-gray-600">Publica tus canchas y JugáHora se encarga de llenarlas.</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
@@ -159,8 +171,8 @@ export default function Home() {
                       <Trophy className="h-6 w-6 text-brand-primary" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-semibold text-[#132045]">Organiza torneos</h3>
-                      <p className="text-gray-600">Crea y gestiona competiciones para atraer más jugadores.</p>
+                      <h3 className="text-xl font-semibold text-[#132045]">Creación de eventos</h3>
+                      <p className="text-gray-600">Organizá torneos y canchas abiertas rápidamente.</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
@@ -168,8 +180,17 @@ export default function Home() {
                       <CheckCircle className="h-6 w-6 text-brand-primary" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-semibold text-[#132045]">Análisis y estadísticas</h3>
-                      <p className="text-gray-600">Obtén información valiosa sobre el uso de tus instalaciones.</p>
+                      <h3 className="text-xl font-semibold text-[#132045]">Gestión inteligente</h3>
+                      <p className="text-gray-600">Accedé a datos de cancelaciones tardías, jugadores abonados, entre otras cosas.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <div className="bg-blue-100 p-2 rounded-full">
+                      <CheckCircle className="h-6 w-6 text-brand-primary" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-semibold text-[#132045]">Notificaciones al instante</h3>
+                      <p className="text-gray-600">Enterate automáticamente cuando un partido se confirma.</p>
                     </div>
                   </div>
                 </div>
@@ -181,10 +202,11 @@ export default function Home() {
         {/* CTA Section */}
         <section className="py-20 bg-brand-primary text-white">
           <div className="container text-center space-y-8">
-            <h2 className="text-3xl md:text-4xl font-bold">Comienza a usar JugáHora hoy mismo</h2>
-            <p className="text-xl max-w-2xl mx-auto">
-              Únete a miles de jugadores y clubes que ya están disfrutando de una gestión deportiva más eficiente.
-            </p>
+            <h2 className="text-3xl md:text-4xl font-bold">Sumate a la comunidad JugáHora</h2>
+              <p className="text-xl max-w-2xl mx-auto">
+                Transformá la forma en que organizás y jugás al pádel, tanto si sos jugador como si representás un club.
+              </p>
+
             <Link href="/registro">
               <Button
                 size="lg"
@@ -208,46 +230,45 @@ export default function Home() {
                     ¿Cómo funciona JugáHora?
                   </AccordionTrigger>
                   <AccordionContent className="text-gray-600">
-                    JugáHora conecta jugadores con clubes deportivos, permitiendo reservar canchas en tiempo real,
-                    encontrar compañeros de juego y gestionar tu agenda deportiva desde cualquier dispositivo.
+                    JugáHora es una plataforma que facilita la organización de partidos. Los jugadores pueden unirse fácilmente
+                    a partidos o eventos según su nivel. Los clubes pueden publicar sus canchas vacías y JugáHora se encarga de llenarlas.
                   </AccordionContent>
                 </AccordionItem>
+
                 <AccordionItem value="item-2">
                   <AccordionTrigger className="text-lg font-medium text-[#132045]">
                     ¿Cuánto cuesta usar JugáHora?
                   </AccordionTrigger>
                   <AccordionContent className="text-gray-600">
-                    Ofrecemos un plan gratuito para jugadores con funcionalidades básicas. Para clubes y funcionalidades
-                    avanzadas, contamos con planes premium a partir de $X al mes. Puedes probar todas las
-                    funcionalidades gratis durante 14 días.
+                    Para jugadores, cobramos una pequeña comisión por el servicio al momento de confirmar el partido.
+                    Para clubes, el primer mes es gratuito. Luego, se cobra por cada cancha que JugáHora organiza.
                   </AccordionContent>
                 </AccordionItem>
+
                 <AccordionItem value="item-3">
                   <AccordionTrigger className="text-lg font-medium text-[#132045]">
                     ¿Qué deportes están disponibles?
                   </AccordionTrigger>
                   <AccordionContent className="text-gray-600">
-                    Actualmente soportamos pádel, tenis, fútbol 5 y básquetbol. Estamos trabajando para incorporar más
-                    deportes próximamente.
+                    Nos enfocamos 100% en pádel para ofrecer una experiencia de calidad, actualizada y especializada.
                   </AccordionContent>
                 </AccordionItem>
+
                 <AccordionItem value="item-4">
                   <AccordionTrigger className="text-lg font-medium text-[#132045]">
                     ¿Cómo puedo registrar mi club?
                   </AccordionTrigger>
                   <AccordionContent className="text-gray-600">
-                    Regístrate como administrador, completa el formulario con los datos de tu club, configura tus
-                    canchas y horarios, y estarás listo para recibir reservas. Nuestro equipo te guiará en todo el
-                    proceso.
+                    Contactanos directamente y nos encargaremos de crear y configurar tu cuenta en poco tiempo.
                   </AccordionContent>
                 </AccordionItem>
+
                 <AccordionItem value="item-5">
                   <AccordionTrigger className="text-lg font-medium text-[#132045]">
                     ¿Puedo cancelar una reserva?
                   </AccordionTrigger>
                   <AccordionContent className="text-gray-600">
-                    Sí, puedes cancelar reservas según la política de cada club. Generalmente, las cancelaciones con más
-                    de 24 horas de anticipación no tienen penalización.
+                    Sí. Podés cancelar hasta 12 horas antes del inicio del partido sin penalización. Cancelaciones posteriores pueden generar sanciones.
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
@@ -261,7 +282,10 @@ export default function Home() {
         <div className="container">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="space-y-4">
-              <Image src="/logo.svg" alt="JugáHora Logo" width="150" height="40" className="h-10 w-auto" />
+              <div className="flex items-center space-x-2">
+                <Image src="/logo.svg" alt="JugáHora Logo" width="40" height="40" className="h-10 w-auto" />
+                <span className="text-xl font-semibold">JugáHora</span>
+              </div>
               <p className="text-blue-200">La plataforma que conecta jugadores con clubes deportivos.</p>
             </div>
             <div>
