@@ -47,10 +47,10 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               <div className="space-y-6">
                 <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
-                  La plataforma que conecta jugadores y clubes de pádel
+                  La plataforma que transforma la experiencia de jugadores y clubes de pádel
                 </h1>
                 <p className="text-xl md:text-2xl">
-                  Organizá partidos, conocé gente nueva y llená tus canchas sin complicaciones.
+                  JugáHora es la plataforma donde los jugadores encuentran partidos fácilmente y los clubes se olvidan de llenar sus horarios.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Link href="/registro" className="w-full sm:w-auto">
@@ -204,7 +204,7 @@ export default function Home() {
           <div className="container text-center space-y-8">
             <h2 className="text-3xl md:text-4xl font-bold">Sumate a la comunidad JugáHora</h2>
               <p className="text-xl max-w-2xl mx-auto">
-                Transformá la forma en que organizás y jugás al pádel, tanto si sos jugador como si representás un club.
+                Unite a una comunidad que te permite encontrar partidos con facilidad si sos jugador, y olvidarte de llenar tus horarios si sos club. Todo desde una misma plataforma.
               </p>
 
             <Link href="/registro">
