@@ -66,6 +66,8 @@ const config: Config = {
           hover: "#2563eb",
           border: "#bfdbfe",
           dark: "#1e3a8a",
+          page: "hsl(var(--page-bg))", // gris casi blanco
+
         },
       },
       borderRadius: {
