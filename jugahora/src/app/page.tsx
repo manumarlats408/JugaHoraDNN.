@@ -180,9 +180,9 @@ export default function Home() {
                 <Image
                   src="/foto_pelota.webp"
                   alt="JugáHora App"
-                  width={500}
-                  height={400}
-                  className="rounded-lg shadow-md"
+                  fill
+                  style={{ objectFit: "contain", maxHeight: "70vh" }}
+                  className="w-full h-auto rounded-lg shadow-md"
                 />
               </motion.div>
             </div>
