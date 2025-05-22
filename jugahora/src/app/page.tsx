@@ -181,7 +181,7 @@ export default function Home() {
                   src="/foto_pelota.webp"
                   alt="JugáHora App"
                   width={500}
-                  height={300} // altura reducida de 400 a 300
+                  height={150} // altura reducida de 400 a 300
                   className="rounded-lg shadow-md"
                 />
               </motion.div>
