@@ -82,7 +82,7 @@ export default function MenuPage() {
           {menuItems.map((item) => (
             <Link
               key={item.href}
-              className="flex items-center text-sm font-medium text-gray-600 hover:text-green-600 transition-colors"
+              className="flex items-center text-sm font-medium text-gray-600 hover:text-brand-primary transition-colors"
               href={item.href}
             >
               <item.icon className="w-4 h-4 mr-2" />
@@ -90,7 +90,7 @@ export default function MenuPage() {
             </Link>
           ))}
           <button
-            className="flex items-center text-sm font-medium text-gray-600 hover:text-green-600 transition-colors"
+            className="flex items-center text-sm font-medium text-gray-600 hover:text-brand-primary transition-colors"
             onClick={handleLogout}
           >
             <LogOut className="w-4 h-4 mr-2" />
@@ -101,7 +101,7 @@ export default function MenuPage() {
         <Button
           variant="ghost"
           size="icon"
-          className="lg:hidden ml-auto text-gray-600 hover:text-green-600"
+          className="lg:hidden ml-auto text-gray-600 hover:text-brand-primary"
           onClick={toggleMenu}
           aria-label={isMenuOpen ? "Cerrar menú" : "Abrir menú"}
         >
@@ -137,11 +137,11 @@ export default function MenuPage() {
         </div>
       )}
 
-      <main className="flex-1 flex flex-col items-center justify-center gap-6 p-4 bg-gradient-to-b from-green-50 to-white">
+      <main className="flex-1 flex flex-col items-center justify-center gap-6 p-4 bg-gradient-to-b from-brand-bg to-white">
         {/* Tarjeta principal */}
-        <Card className="w-full max-w-md shadow-lg border-green-100">
-          <CardHeader className="bg-green-50 border-b border-green-100">
-            <CardTitle className="text-2xl font-bold text-green-800">
+        <Card className="w-full max-w-md shadow-lg border-brand-border">
+          <CardHeader className="bg-brand-bg border-b border-brand-border">
+            <CardTitle className="text-2xl font-bold text-brand-primary">
               {userName ? `¡Hola ${userName}!` : "¡Bienvenido!"}
             </CardTitle>
           </CardHeader>
@@ -149,40 +149,40 @@ export default function MenuPage() {
             <p className="mb-6 text-gray-600">Aprovecha nuestras funcionalidades:</p>
             <div className="space-y-4">
               <Link href="/reserva" className="block">
-                <Button className="w-full bg-green-600 hover:bg-green-700 text-white transition-colors duration-300 flex items-center justify-center">
+                <Button className="w-full bg-brand-primary hover:bg-brand-hover text-white transition-colors duration-300 flex items-center justify-center">
                   <Calendar className="w-5 h-5 mr-2" />
                   Reserva tu cancha
                 </Button>
               </Link>
               <Link href="/jugar" className="block">
-                <Button className="w-full bg-green-600 hover:bg-green-700 text-white transition-colors duration-300 flex items-center justify-center">
+                <Button className="w-full bg-brand-primary hover:bg-brand-hover text-white transition-colors duration-300 flex items-center justify-center">
                   <Users className="w-5 h-5 mr-2" />
                   Unite a un partido
                 </Button>
               </Link>
               <Link href="/crear-partido" className="block">
-                <Button className="w-full bg-green-600 hover:bg-green-700 text-white transition-colors duration-300 flex items-center justify-center">
+                <Button className="w-full bg-brand-primary hover:bg-brand-hover text-white transition-colors duration-300 flex items-center justify-center">
                   <Plus className="w-5 h-5 mr-2" />
                   Crear un partido
                 </Button>
               </Link>
               <Link href="/eventos/unirse" className="block">
-                <Button className="w-full bg-green-600 hover:bg-green-700 text-white transition-colors duration-300 flex items-center justify-center">
+                <Button className="w-full bg-brand-primary hover:bg-brand-hover text-white transition-colors duration-300 flex items-center justify-center">
                   <Trophy className="w-5 h-5 mr-2" />
                   Unite a un evento
                 </Button>
               </Link>
             </div>
           </CardContent>
-          <CardFooter className="bg-green-50 border-t border-green-100">
+          <CardFooter className="bg-brand-bg border-t border-brand-border">
             <p className="text-sm text-gray-600 italic">Próximamente más funcionalidades...</p>
           </CardFooter>
         </Card>
 
         {/* Tarjeta de Feedback */}
-        <Card className="w-full max-w-md shadow border-green-100">
+        <Card className="w-full max-w-md shadow border-brand-border">
           <CardHeader>
-            <CardTitle className="text-lg text-green-700">¿Tenés alguna sugerencia?</CardTitle>
+            <CardTitle className="text-lg text-brand-primary">¿Tenés alguna sugerencia?</CardTitle>
           </CardHeader>
           <CardContent>
             <FeedbackForm />
@@ -195,10 +195,10 @@ export default function MenuPage() {
           <p className="text-xs text-gray-500 mb-4 sm:mb-0">© 2024 JugáHora. Todos los derechos reservados.</p>
           <div className="flex flex-col sm:flex-row items-center gap-4">
             <div className="flex items-center gap-4">
-              <Link className="text-xs text-gray-500 hover:text-green-600 transition-colors" href="/menu">
+              <Link className="text-xs text-gray-500 hover:text-brand-primary transition-colors" href="/menu">
                 Términos de Servicio
               </Link>
-              <Link className="text-xs text-gray-500 hover:text-green-600 transition-colors" href="/menu">
+              <Link className="text-xs text-gray-500 hover:text-brand-primary transition-colors" href="/menu">
                 Privacidad
               </Link>
             </div>

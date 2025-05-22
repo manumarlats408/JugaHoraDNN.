@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { MdArrowBack } from 'react-icons/md' // Importa el ícono de react-icons
+import { MdArrowBack } from 'react-icons/md'
 
 interface User {
   id: number
@@ -18,46 +18,41 @@ const AddPlayers = () => {
   const [profiles, setProfiles] = useState<User[]>([])
   const [filteredProfiles, setFilteredProfiles] = useState<User[]>([])
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedPlayers, setSelectedPlayers] = useState<number[]>([]) // Guardamos los IDs de los jugadores seleccionados
+  const [selectedPlayers, setSelectedPlayers] = useState<number[]>([])
   const router = useRouter()
   const [isVerifying, setIsVerifying] = useState(true)
   const [isAuthorized, setIsAuthorized] = useState(false)
 
-
-  // Obtener los perfiles de usuarios
   useEffect(() => {
     const fetchData = async () => {
       try {
         const authRes = await fetch('/api/auth', { credentials: 'include' })
         if (!authRes.ok) throw new Error("No autorizado")
         const userData = await authRes.json()
-  
+
         const usersRes = await fetch('/api/users')
         const users = await usersRes.json()
-  
+
         const filteredUsers = users.filter((u: User) => u.id !== userData.entity.id)
         setProfiles(filteredUsers)
         setFilteredProfiles(filteredUsers)
-  
+
         setIsAuthorized(true)
       } catch {
-        router.push('/login')  // ⬅️ Redirección si no hay token válido
+        router.push('/login')
       } finally {
         setIsVerifying(false)
       }
     }
-  
+
     fetchData()
-  
+
     const storedPlayers = sessionStorage.getItem('finalPlayers')
     if (storedPlayers) {
       setSelectedPlayers(JSON.parse(storedPlayers))
     }
   }, [router])
-  
-  
 
-  // Manejar la búsqueda de jugadores
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toLowerCase()
     setSearchTerm(value)
@@ -69,7 +64,6 @@ const AddPlayers = () => {
     setFilteredProfiles(filtered)
   }
 
-  // Manejar la selección de jugadores
   const handleAddPlayer = (playerId: number) => {
     if (selectedPlayers.includes(playerId)) {
       setSelectedPlayers(selectedPlayers.filter((id) => id !== playerId))
@@ -78,28 +72,25 @@ const AddPlayers = () => {
     }
   }
 
-  // Guardar jugadores seleccionados antes de volver al formulario
   const handleBack = () => {
     sessionStorage.setItem('finalPlayers', JSON.stringify(selectedPlayers))
-    router.push('/crear-partido') // Redirige al formulario de creación
+    router.push('/crear-partido')
   }
 
   if (isVerifying || !isAuthorized) return null
 
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 to-white p-6">
+    <div className="min-h-screen bg-brand-page p-6">
       <div className="max-w-3xl mx-auto space-y-6">
-        <Card className="shadow-md border-green-100">
-          <CardHeader className="bg-green-50 border-b border-green-100">
-            <CardTitle className="text-xl font-bold text-green-800">Añadir Jugadores al Partido</CardTitle>
+        <Card className="shadow-md border border-brand-border">
+          <CardHeader className="bg-white border-b border-brand-border">
+            <CardTitle className="text-xl font-bold text-black">Añadir Jugadores al Partido</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 pt-4">
-            {/* Flecha para regresar al formulario */}
             <Button
               onClick={handleBack}
               variant="outline"
-              className="flex items-center justify-start gap-2 text-green-800"
+              className="flex items-center justify-start gap-2 text-brand-primary"
             >
               <MdArrowBack className="h-5 w-5" />
               Volver
@@ -113,20 +104,32 @@ const AddPlayers = () => {
             />
             {filteredProfiles.length > 0 ? (
               <div className="space-y-4">
-                {filteredProfiles.map((profile) => (
-                  <div key={profile.id} className="flex flex-col sm:flex-row sm:justify-between sm:items-center border p-4 rounded-lg hover:bg-green-50 transition-colors space-y-2 sm:space-y-0">
-                    <div>
-                      <p className="text-lg font-semibold text-gray-800">{profile.firstName} {profile.lastName}</p>
-                      <p className="text-sm text-gray-500">{profile.email}</p>
-                    </div>
-                    <Button
-                      onClick={() => handleAddPlayer(profile.id)}
-                      className={`text-sm w-full sm:w-auto ${selectedPlayers.includes(profile.id) ? 'bg-green-600' : 'bg-gray-200'} sm:ml-4`}
+                {filteredProfiles.map((profile) => {
+                  const isSelected = selectedPlayers.includes(profile.id)
+                  return (
+                    <div
+                      key={profile.id}
+                      className="flex flex-col sm:flex-row sm:justify-between sm:items-center border p-4 rounded-lg hover:bg-brand-soft transition-colors space-y-2 sm:space-y-0"
                     >
-                      {selectedPlayers.includes(profile.id) ? 'Añadido' : 'Añadir al partido'}
-                    </Button>
-                  </div>
-                ))}
+                      <div>
+                        <p className="text-lg font-semibold text-gray-800">
+                          {profile.firstName} {profile.lastName}
+                        </p>
+                        <p className="text-sm text-gray-500">{profile.email}</p>
+                      </div>
+                      <Button
+                        onClick={() => handleAddPlayer(profile.id)}
+                        className={`text-sm w-full sm:w-auto ${
+                          isSelected
+                            ? 'bg-brand-primary text-white hover:bg-brand-hover'
+                            : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+                        } sm:ml-4`}
+                      >
+                        {isSelected ? 'Añadido' : 'Añadir al partido'}
+                      </Button>
+                    </div>
+                  )
+                })}
               </div>
             ) : (
               <p className="text-gray-500">No se encontraron perfiles.</p>
@@ -134,7 +137,10 @@ const AddPlayers = () => {
           </CardContent>
         </Card>
 
-        <Button onClick={handleBack} className="w-full mt-6">
+        <Button
+          onClick={handleBack}
+          className="w-full mt-6 bg-brand-primary text-white hover:bg-brand-hover"
+        >
           Guardar y Volver
         </Button>
       </div>

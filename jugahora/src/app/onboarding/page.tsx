@@ -10,7 +10,7 @@ export default function OnboardingPage() {
   const router = useRouter()
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-green-100 p-4">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-brand-bg p-4">
       
       {/* Logo + JugáHora como en login */}
       <Link href="/" className="mb-4 text-2xl font-bold flex items-center">
@@ -18,7 +18,7 @@ export default function OnboardingPage() {
         <span className="ml-2">JugáHora</span>
       </Link>
 
-      <Card className="w-full max-w-md shadow-lg">
+      <Card className="w-full max-w-md shadow-lg border border-brand-border">
         <CardHeader className="pb-2">
           <CardTitle className="text-2xl font-bold text-center text-black">
             Bienvenido a JugáHora
@@ -38,7 +38,7 @@ export default function OnboardingPage() {
 
           <Button
             onClick={() => router.push('/login')}
-            className="w-full bg-black hover:bg-gray-800 text-white font-semibold"
+            className="w-full bg-brand-primary hover:bg-brand-hover text-white font-semibold"
           >
             Saltar tutorial
           </Button>

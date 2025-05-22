@@ -390,7 +390,7 @@ export default function PaginaEventos() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
+    <div className="flex flex-col min-h-screen bg-brand-bg">
       <header className="px-4 lg:px-6 h-16 flex items-center relative bg-white shadow-md">
         <Link className="flex items-center justify-center" href="/menu">
           <span className="sr-only">JugáHora</span>
@@ -402,7 +402,8 @@ export default function PaginaEventos() {
           {elementosMenu.map((elemento) => (
             <Link
               key={elemento.href}
-              className="flex items-center text-sm font-medium text-gray-600 hover:text-green-600 transition-colors"
+              className="flex items-center text-sm font-medium text-gray-600 hover:text-brand-primary transition-colors"
+
               href={elemento.href}
             >
               <elemento.icono className="w-4 h-4 mr-2" />
@@ -410,7 +411,8 @@ export default function PaginaEventos() {
             </Link>
           ))}
           <button
-            className="flex items-center text-sm font-medium text-gray-600 hover:text-green-600 transition-colors"
+            className="flex items-center text-sm font-medium text-gray-600 hover:text-brand-primary transition-colors"
+
             onClick={manejarCierreSesion}
           >
             <LogOut className="w-4 h-4 mr-2" />
@@ -421,7 +423,8 @@ export default function PaginaEventos() {
         <Button
           variant="ghost"
           size="icon"
-          className="lg:hidden ml-auto text-gray-600 hover:text-green-600"
+          className="lg:hidden ml-auto text-gray-600 hover:text-brand-primary"
+
           onClick={alternarMenu}
           aria-label={menuAbierto ? "Cerrar menú" : "Abrir menú"}
         >
@@ -457,10 +460,10 @@ export default function PaginaEventos() {
         </div>
       )}
 
-      <main className="flex-1 p-4 bg-gradient-to-b from-green-50 to-white">
-        <Card className="w-full max-w-4xl mx-auto shadow-lg border-green-100">
-          <CardHeader className="bg-green-50 border-b border-green-100">
-            <CardTitle className="text-2xl font-bold text-green-800 flex items-center">
+      <main className="flex-1 p-4 bg-brand-bg">
+        <Card className="w-full max-w-4xl mx-auto shadow-lg border border-brand-border">
+          <CardHeader className="bg-white border-b border-brand-border">
+            <CardTitle className="text-2xl font-bold text-black flex items-center">
               <Calendar className="w-6 h-6 mr-2" />
               Unirse a un evento
             </CardTitle>
@@ -565,7 +568,8 @@ export default function PaginaEventos() {
                 return (
                   <div
                     key={evento.id}
-                    className="relative flex items-center justify-between p-4 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300 cursor-pointer"
+                    className="relative flex items-center justify-between p-4 border border-brand-border rounded-lg hover:bg-brand-bg transition-colors duration-300 cursor-pointer"
+
                     onClick={() => handleEventoClick(evento.id, evento.tipo)}
 
                   >
@@ -688,7 +692,8 @@ export default function PaginaEventos() {
                     {loadingEventoDetails[evento.id] && (
                       <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-70 rounded-lg">
                         <svg
-                          className="animate-spin h-5 w-5 text-green-600"
+                          className="animate-spin h-5 w-5 text-brand-primary"
+
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"
                           viewBox="0 0 24 24"
@@ -725,10 +730,11 @@ export default function PaginaEventos() {
           <Link href="/menu">
             <Button
               variant="outline"
-              className="bg-white hover:bg-gray-100 text-green-600 border-green-600 hover:border-green-700 transition-colors duration-300"
+              className="bg-white hover:bg-gray-100 text-brand-primary border-brand-primary hover:border-brand-hover transition-colors duration-300"
             >
               Volver al menú
             </Button>
+
           </Link>
         </div>
       </main>
@@ -737,10 +743,10 @@ export default function PaginaEventos() {
         <div className="container mx-auto flex flex-col sm:flex-row justify-between items-center">
           <p className="text-xs text-gray-500 mb-2 sm:mb-0">© 2024 JugáHora. Todos los derechos reservados.</p>
           <nav className="flex gap-4">
-            <Link className="text-xs text-gray-500 hover:text-green-600 transition-colors" href="/terminos">
+            <Link className="text-xs text-gray-500 hover:text-brand-primary transition-colors" href="/terminos">
               Términos de Servicio
             </Link>
-            <Link className="text-xs text-gray-500 hover:text-green-600 transition-colors" href="/privacidad">
+            <Link className="text-xs text-gray-500 hover:text-brand-primary transition-colors" href="/privacidad">
               Privacidad
             </Link>
           </nav>
