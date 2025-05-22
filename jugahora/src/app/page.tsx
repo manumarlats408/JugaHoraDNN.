@@ -146,7 +146,7 @@ export default function Home() {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="py-16 bg-white">
+        <section className="pt-8 pb-16 bg-white">
           <div className="container">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               <motion.div
