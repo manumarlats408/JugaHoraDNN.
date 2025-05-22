@@ -324,8 +324,8 @@ export default function Home() {
                   <Image
                     src="/dashboard.webp"
                     alt="Dashboard de JugáHora"
-                    width={1200}
-                    height={600}
+                    width={900}
+                    height={450}
                     className="w-full h-auto"
                   />
                 </motion.div>
