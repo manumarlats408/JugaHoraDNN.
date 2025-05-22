@@ -172,7 +172,7 @@ export default function Home() {
                 </div>
               </motion.div>
               <motion.div
-                className="flex justify-center"
+                className="flex justify-center h-[calc(100vh-64px)]"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
@@ -181,8 +181,8 @@ export default function Home() {
                   src="/foto_pelota.webp"
                   alt="JugáHora App"
                   width={500}
-                  height={150} // altura reducida de 400 a 300
-                  className="rounded-lg shadow-md"
+                  height={300}
+                  className="h-full object-contain rounded-lg shadow-md"
                 />
               </motion.div>
             </div>
