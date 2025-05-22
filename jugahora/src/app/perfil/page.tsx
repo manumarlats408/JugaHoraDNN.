@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
-import { Card, CardHeader, CardTitle } from "@/components/ui/card"
+// import { Card, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
@@ -680,14 +680,14 @@ const rachas = calcularRachas(partidos);
       )}
 
     <main className="flex-1 flex flex-col items-center p-4 bg-gradient-to-b from-brand-bg to-white">
-        <Card className="w-full max-w-lg shadow-lg border-brand-border mb-6">
+        {/* <Card className="w-full max-w-lg shadow-lg border-brand-border mb-6">
           <CardHeader className="bg-brand-bg border-b border-brand-border">
             <CardTitle className="text-2xl font-bold text-brand-primary flex items-center">
               <User className="w-6 h-6 mr-2" />
               Perfil de {userData.firstName}
             </CardTitle>
-          </CardHeader>
-            <CollapsibleSection title="Datos Personales" defaultOpen={true}>
+          </CardHeader> */}
+            <CollapsibleSection title="Datos Personales" defaultOpen={false}>
               <div className="space-y-4">
                 <div className="flex items-center">
                   <Mail className="w-5 h-5 mr-2 text-gray-500" />
@@ -1188,7 +1188,7 @@ const rachas = calcularRachas(partidos);
               </Dialog>
             </div>
         </CollapsibleSection>
-        </Card>              
+        {/* </Card>               */}
         </main>
 
         <footer className="py-6 px-4 md:px-6 bg-white border-t border-gray-200">
