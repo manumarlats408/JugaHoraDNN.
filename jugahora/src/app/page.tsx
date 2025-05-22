@@ -172,7 +172,7 @@ export default function Home() {
                 </div>
               </motion.div>
               <motion.div
-                className="flex justify-center h-[calc(100vh-64px)]"
+                className="flex justify-center h-[calc(100vh-64px)] max-w-[85%] mx-auto"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
