@@ -182,7 +182,7 @@ export default function Home() {
                   alt="JugáHora App"
                   width={500}
                   height={400}
-                  className="rounded-lg shadow-md object-contain h-[300px] md:h-[350px]"
+                  className="rounded-lg shadow-md"
                 />
               </motion.div>
             </div>
@@ -326,7 +326,7 @@ export default function Home() {
                     alt="Dashboard de JugáHora"
                     width={900}
                     height={450}
-                    className="w-full h-auto max-w-[700px] mx-auto my-4"
+                    className="w-full h-auto"
                   />
                 </motion.div>
               </div>
