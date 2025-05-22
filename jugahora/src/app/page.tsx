@@ -68,7 +68,13 @@ function CustomFaq() {
 }
 
 // Componente de tarjeta de característica
-function FeatureCard({ title, description, icon, color = "blue" }: any) {
+interface FeatureCardProps {
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  color?: "blue" | "green" | "red" | "purple";
+}
+function FeatureCard({ title, description, icon, color = "blue" }: FeatureCardProps) {
   const colorClasses = {
     blue: "bg-blue-50 text-blue-500",
     green: "bg-green-50 text-green-500",
