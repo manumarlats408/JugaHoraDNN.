@@ -178,7 +178,7 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
                 <Image
-                  src="/placeholder.svg?height=500&width=500"
+                  src="/foto_pelota.webp"
                   alt="JugáHora App"
                   width={500}
                   height={400}
@@ -370,7 +370,7 @@ export default function Home() {
                   transition={{ duration: 0.5 }}
                 >
                   <Image
-                    src="/dashboard.png"
+                    src="/dashboard.webp"
                     alt="Dashboard de JugáHora"
                     width={1200}
                     height={600}
