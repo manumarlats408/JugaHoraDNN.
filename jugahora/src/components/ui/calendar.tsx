@@ -31,8 +31,8 @@ function Calendar({
       classNames={{
         caption_label: "text-center text-sm font-medium text-gray-800",
         nav_button: "text-gray-500 hover:text-black",
-        day_selected: "bg-green-500 text-white hover:bg-green-600",
-        day_today: "border border-green-500 text-green-700 font-bold",
+        day_selected: "bg-brand-primary text-white hover:bg-brand-hover",
+        day_today: "border border-brand-primary text-brand-primary font-bold",
         day_outside: "text-gray-400",
         ...classNames, // ⚠️ Esto deja intacto el layout nativo
       }}

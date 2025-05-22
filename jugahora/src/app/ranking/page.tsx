@@ -43,7 +43,7 @@ export default function RankingPage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 to-white p-6">
+    <div className="min-h-screen bg-gradient-to-b from-brand-bg to-white p-6">
       <div className="max-w-3xl mx-auto space-y-6">
         <div className="flex justify-between items-center">
           <Button variant="outline" onClick={() => router.push('/perfil')}>
@@ -52,16 +52,16 @@ export default function RankingPage() {
           </Button>
         </div>
 
-        <Card className="shadow-md border-green-100">
-          <CardHeader className="bg-green-50 border-b border-green-100">
-            <CardTitle className="text-2xl font-bold text-green-800 flex items-center">
+        <Card className="shadow-md border-brand-border">
+          <CardHeader className="bg-brand-bg border-b border-brand-border">
+            <CardTitle className="text-2xl font-bold text-brand-primary flex items-center">
               <User className="w-6 h-6 mr-2" />
               Ranking entre Amigos
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6 space-y-4">
             {loading ? (
-              <div className="flex justify-center items-center text-green-700">
+              <div className="flex justify-center items-center text-brand-primary">
                 <Loader2 className="h-5 w-5 mr-2 animate-spin" />
                 Cargando ranking...
               </div>

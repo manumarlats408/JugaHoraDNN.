@@ -70,7 +70,7 @@ export function FeedbackForm() {
         <Button
           variant="default"
           size="sm"
-          className="bg-green-600 hover:bg-green-700 text-white font-medium rounded-md px-4 py-2 text-xs flex items-center"
+          className="bg-brand-primary hover:bg-brand-hover text-white font-medium rounded-md px-4 py-2 text-xs flex items-center"
         >
           <MessageSquare className="w-3 h-3 mr-1" />
           Feedback
@@ -78,7 +78,7 @@ export function FeedbackForm() {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="text-green-700">Enviar Feedback</DialogTitle>
+          <DialogTitle className="text-brand-primary">Enviar Feedback</DialogTitle>
           <DialogDescription>
             Comparte tus sugerencias para mejorar JugáHora. Tu opinión es importante para nosotros.
           </DialogDescription>
@@ -105,11 +105,11 @@ export function FeedbackForm() {
               onChange={handleChange}
               required
               placeholder="Escribe aquí tu sugerencia o recomendación..."
-              className="min-h-[150px] border-gray-300 focus:border-green-500 focus:ring-green-500"
+              className="min-h-[150px] border-brand-border focus:border-brand-primary focus:ring-brand-primary"
             />
           </div>
           <DialogFooter>
-            <Button type="submit" disabled={isSubmitting} className="bg-green-600 hover:bg-green-700 text-white">
+            <Button type="submit" disabled={isSubmitting} className="bg-brand-primary hover:bg-brand-hover text-white">
               {isSubmitting ? "Enviando..." : "Enviar feedback"}
             </Button>
           </DialogFooter>

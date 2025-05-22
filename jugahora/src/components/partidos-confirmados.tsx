@@ -56,8 +56,8 @@ export default function PartidosConfirmados() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <p className="text-gray-600 text-lg">Cargando partidos confirmados...</p>
+      <div className="flex justify-center items-center min-h-screen bg-brand-bg">
+        <p className="text-muted-foreground text-lg">Cargando partidos confirmados...</p>
       </div>
     )
   }
@@ -83,24 +83,24 @@ export default function PartidosConfirmados() {
               filteredPartidos.map((p) => (
                 <div
                   key={p.id}
-                  className="flex flex-col md:flex-row justify-between md:items-center border p-4 rounded-md hover:bg-green-50 transition"
+                  className="flex flex-col md:flex-row justify-between md:items-center border p-4 rounded-md hover:bg-brand-soft transition"
                 >
                   <div className="mb-2 md:mb-0">
-                    <p className="font-semibold text-gray-800">
+                    <p className="font-semibold text-foreground">
                       {formatearFecha(p.date)} | {p.startTime} - {p.endTime} hs
                     </p>
-                    <p className="text-sm text-gray-500">Cancha: {p.court}</p>
+                    <p className="text-sm text-muted-foreground">Cancha: {p.court}</p>
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-semibold text-green-600">${p.price}</p>
-                    <p className="flex items-center text-sm text-gray-500 justify-end">
+                    <p className="flex items-center text-sm text-muted-foreground justify-end">
                       <Users className="h-4 w-4 mr-1" /> {p.usuarios.length} jugadores
                     </p>
                   </div>
                 </div>
               ))
             ) : (
-              <p className="text-gray-500 text-center py-6">No hay partidos confirmados registrados</p>
+              <p className="text-muted-foreground text-center py-6">No hay partidos confirmados registrados</p>
             )}
           </CardContent>
         </Card>

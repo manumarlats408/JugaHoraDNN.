@@ -63,7 +63,7 @@ export default function AgregarMovimientoDialog({ onSuccess }: Props) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-green-500 hover:bg-green-600 text-white gap-2">
+        <Button className="bg-brand-primary hover:bg-brand-hover text-white gap-2">
           <Plus className="h-4 w-4" />
           <span>Nuevo Movimiento</span>
         </Button>
@@ -170,7 +170,7 @@ export default function AgregarMovimientoDialog({ onSuccess }: Props) {
             Cancelar
           </Button>
           <Button
-            className="bg-green-600 hover:bg-green-700"
+            className="bg-brand-primary hover:bg-brand-hover"
             onClick={handleSubmit}
             disabled={!concepto || !fechaMovimiento || !metodoPago}
           >

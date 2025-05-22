@@ -117,10 +117,10 @@ export function AbonadosDashboard() {
             {filteredUsers.map((user) => (
               <div
                 key={user.id}
-                className="flex flex-col sm:flex-row sm:justify-between sm:items-center border p-4 rounded-md hover:bg-green-50 transition space-y-2 sm:space-y-0"
+                className="flex flex-col sm:flex-row sm:justify-between sm:items-center border p-4 rounded-md hover:bg-brand-bg transition space-y-2 sm:space-y-0"
               >
                 <div className="flex items-center gap-3">
-                  <Users className="h-5 w-5 text-green-700" />
+                  <Users className="h-5 w-5 text-brand-primary" />
                   <div>
                     <p className="font-semibold">{user.firstName} {user.lastName}</p>
                     <p className="text-sm text-gray-500">{user.email}</p>
