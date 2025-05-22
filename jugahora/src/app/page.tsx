@@ -182,7 +182,7 @@ export default function Home() {
                   alt="JugáHora App"
                   width={500}
                   height={300}
-                  className="h-full object-contain rounded-lg shadow-md"
+                  className="h-full object-contain rounded-xl shadow-md"
                 />
               </motion.div>
             </div>
