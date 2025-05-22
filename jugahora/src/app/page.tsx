@@ -248,7 +248,7 @@ export default function Home() {
                     icon={item.icon}
                     title={item.title}
                     description={item.description}
-                    color={item.color}
+                    color={item.color as "blue" | "green" | "red" | "purple"}
                   />
                 ))}
               </div>
@@ -349,7 +349,7 @@ export default function Home() {
                     icon={item.icon}
                     title={item.title}
                     description={item.description}
-                    color={item.color}
+                    color={item.color as "blue" | "green" | "red" | "purple"}
                   />
                 ))}
               </div>
