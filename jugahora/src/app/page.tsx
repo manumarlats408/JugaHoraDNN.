@@ -1,36 +1,138 @@
+"use client"
+
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { Clock, Users, Calendar, Trophy, FileText, Bell, UserCircle } from "lucide-react"
+import { Clock, Users, Calendar, Trophy, FileText, Bell, UserCircle, ChevronDown, ChevronUp } from "lucide-react"
+import { useState } from "react"
+import { motion } from "framer-motion"
+
+// Componente FAQ personalizado
+function CustomFaq() {
+  const [openItem, setOpenItem] = useState<number | null>(null)
+
+  const faqItems = [
+    {
+      question: "¿Cómo funciona JugáHora?",
+      answer:
+        "JugáHora es una plataforma que facilita la organización de partidos. Los jugadores pueden unirse fácilmente a partidos o eventos según su nivel. Los clubes pueden publicar sus canchas vacías y JugáHora se encarga de llenarlas.",
+    },
+    {
+      question: "¿Cuánto cuesta usar JugáHora?",
+      answer:
+        "Para jugadores, cobramos una pequeña comisión por el servicio al momento de confirmar el partido. Para clubes, el primer mes es gratuito. Luego, se cobra por cada cancha que JugáHora organiza.",
+    },
+    {
+      question: "¿Qué deportes están disponibles?",
+      answer: "Nos enfocamos 100% en pádel para ofrecer una experiencia de calidad, actualizada y especializada.",
+    },
+    {
+      question: "¿Cómo puedo registrar mi club?",
+      answer: "Contactanos directamente y nos encargaremos de crear y configurar tu cuenta en poco tiempo.",
+    },
+    {
+      question: "¿Puedo cancelar una reserva?",
+      answer:
+        "Sí. Podés cancelar hasta 12 horas antes del inicio del partido sin penalización. Cancelaciones posteriores pueden generar sanciones.",
+    },
+  ]
+
+  const toggleItem = (index: number) => {
+    setOpenItem(openItem === index ? null : index)
+  }
+
+  return (
+    <div className="space-y-4">
+      {faqItems.map((item, index) => (
+        <div key={index} className="border-b border-gray-200 last:border-b-0">
+          <button
+            className="w-full flex justify-between items-center py-6 text-left focus:outline-none"
+            onClick={() => toggleItem(index)}
+          >
+            <h3 className="text-lg font-medium text-gray-800">{item.question}</h3>
+            {openItem === index ? (
+              <ChevronUp className="h-5 w-5 text-blue-500" />
+            ) : (
+              <ChevronDown className="h-5 w-5 text-blue-500" />
+            )}
+          </button>
+          {openItem === index && (
+            <div className="pb-6 text-gray-600 animate-accordion-down">
+              <p>{item.answer}</p>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// Componente de tarjeta de característica
+function FeatureCard({ title, description, icon, color = "blue" }: any) {
+  const colorClasses = {
+    blue: "bg-blue-50 text-blue-500",
+    green: "bg-green-50 text-green-500",
+    red: "bg-red-50 text-red-500",
+    purple: "bg-purple-50 text-purple-500",
+  }
+
+  return (
+    <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
+      <div
+        className={`${colorClasses[color as keyof typeof colorClasses]} p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4`}
+      >
+        {icon}
+      </div>
+      <h3 className="text-xl font-semibold text-gray-800 mb-2">{title}</h3>
+      <p className="text-gray-600">{description}</p>
+    </div>
+  )
+}
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-white">
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-white">
+      <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white">
         <div className="container flex h-16 items-center justify-between">
           <Link className="flex items-center justify-center" href="/">
-            <span className="ml-2 text-xl font-bold text-[#132045]">JugáHora</span>
-            <Image src="/logo.svg" alt="JugáHora Logo" width="150" height="40" className="h-10 w-auto" />
+            <span className="text-xl font-bold text-gray-800">JugáHora</span>
           </Link>
           <nav className="hidden md:flex gap-6">
-            <Link href="#jugadores" className="text-sm font-medium text-[#132045] hover:text-blue-700">
+            <Link
+              href="#jugadores"
+              className="text-sm font-medium text-gray-600 hover:text-blue-500 transition-colors duration-200"
+            >
               Jugadores
             </Link>
-            <Link href="#clubes" className="text-sm font-medium text-[#132045] hover:text-blue-700">
+            <Link
+              href="#clubes"
+              className="text-sm font-medium text-gray-600 hover:text-blue-500 transition-colors duration-200"
+            >
               Clubes
             </Link>
-            <Link href="#faq" className="text-sm font-medium text-[#132045] hover:text-blue-700">
+            <Link
+              href="#como-funciona"
+              className="text-sm font-medium text-gray-600 hover:text-blue-500 transition-colors duration-200"
+            >
+              Cómo funciona
+            </Link>
+            <Link
+              href="#faq"
+              className="text-sm font-medium text-gray-600 hover:text-blue-500 transition-colors duration-200"
+            >
               FAQ
             </Link>
           </nav>
           <div className="flex items-center gap-4">
-            <Link href="/login" className="text-sm font-medium text-[#132045]">
+            <Link
+              href="/login"
+              className="text-sm font-medium text-gray-600 hover:text-blue-500 transition-colors duration-200"
+            >
               Iniciar Sesión
             </Link>
             <Link href="/registro">
-              <Button className="bg-brand-primary hover:bg-brand-primary">Registrarse</Button>
+              <Button className="bg-blue-500 hover:bg-blue-600 transition-colors duration-200">Registrarse</Button>
             </Link>
           </div>
         </div>
@@ -38,366 +140,399 @@ export default function Home() {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative bg-brand-primary text-white overflow-hidden">
-          <div className="absolute inset-0 z-0">
-            <div className="hidden sm:block absolute right-0 top-0 h-full w-1/3 bg-white transform skew-x-12 translate-x-1/2"></div>
-            <div className="hidden sm:block absolute left-0 bottom-0 h-1/3 w-full bg-white transform -skew-x-12 translate-y-1/2"></div>
-          </div>
-          <div className="container relative z-10 py-20 md:py-32">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-              <div className="space-y-6">
-                <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
-                  La plataforma creada para los jugadores y clubes de pádel
+        <section className="py-16 bg-white">
+          <div className="container">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+              <motion.div
+                className="space-y-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+              >
+                <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-800">
+                  La plataforma para jugadores y clubes de pádel
                 </h1>
-                <p className="text-xl md:text-2xl">
-                  JugáHora es la plataforma donde los jugadores encuentran partidos fácilmente y los clubes se despreocupan por llenar sus horarios.
+                <p className="text-xl text-gray-600">
+                  JugáHora es la plataforma donde los jugadores encuentran partidos fácilmente y los clubes se
+                  despreocupan por llenar sus horarios.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Link href="/registro" className="w-full sm:w-auto">
-                    <Button size="lg" className="bg-white text-brand-primary hover:bg-gray-100 w-full">
-                      Registrarse
-                    </Button>
-                  </Link>
-                  <Link href="/login" className="w-full sm:w-auto">
-                    <Button
-                      variant="outline"
-                      size="lg"
-                      className="bg-white text-brand-primary hover:bg-gray-100 w-full"
-                    >
-                      Iniciar Sesión
-                    </Button>
-                  </Link>
+                <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                  <Button size="lg" className="bg-blue-500 hover:bg-blue-600 text-white">
+                    Registrarse
+                  </Button>
+                  <Button variant="outline" size="lg" className="border-gray-300 text-gray-700 hover:bg-gray-100">
+                    Conocer más
+                  </Button>
                 </div>
-              </div>
-              <div className="flex justify-center">
+              </motion.div>
+              <motion.div
+                className="flex justify-center"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
                 <Image
-                  src="/hero-image.png"
+                  src="/placeholder.svg?height=500&width=500"
                   alt="JugáHora App"
-                  width="500"
-                  height="400"
-                  className="rounded-lg shadow-2xl"
+                  width={500}
+                  height={400}
+                  className="rounded-lg shadow-md"
                 />
-              </div>
+              </motion.div>
             </div>
           </div>
         </section>
 
         {/* Jugadores Section */}
-        <section id="jugadores" className="py-20 bg-white">
+        <section id="jugadores" className="py-16 bg-white">
           <div className="container">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-              <div className="space-y-6">
-                <h2 className="text-3xl md:text-4xl font-bold text-[#132045]">Para Jugadores</h2>
-                <div className="space-y-4">
-                  <div className="flex items-start gap-4">
-                    <div className="bg-blue-100 p-2 rounded-full">
-                      <Clock className="h-6 w-6 text-brand-primary" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-semibold text-[#132045]">Unite a partidos y eventos</h3>
-                      <p className="text-gray-600">Encontrá partidos abiertos o eventos según tu nivel y disponibilidad.</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-4">
-                    <div className="bg-blue-100 p-2 rounded-full">
-                      <Users className="h-6 w-6 text-brand-primary" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-semibold text-[#132045]">Conocé jugadores y sumate a la comunidad</h3>
-                      <p className="text-gray-600">Jugá con nuevas personas, hacé amigos y organizá partidos fácilmente.</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-4">
-                    <div className="bg-blue-100 p-2 rounded-full">
-                      <UserCircle className="h-6 w-6 text-brand-primary" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-semibold text-[#132045]">Perfil personalizado</h3>
-                      <p className="text-gray-600">Configurá tu nivel, preferencias y disfruta de nuestras estadisticas avanzadas.</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-4">
-                    <div className="bg-blue-100 p-2 rounded-full">
-                      <Bell className="h-6 w-6 text-brand-primary" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-semibold text-[#132045]">Notificaciones por mail</h3>
-                      <p className="text-gray-600">Recibí alertas cuando se confirmen partidos, haya cambios o cancelaciones.</p>
-                    </div>
-                  </div>
-                </div>
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-800 mb-4">Para Jugadores</h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                Encontrá partidos, conocé jugadores y disfrutá del pádel sin complicaciones.
+              </p>
+            </div>
 
-              </div>
-              <div className="flex justify-center">
+            <div className="space-y-12">
+              <motion.div
+                className="flex justify-center"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+              >
                 <Image
-                  src="/jugadores-app.png"
+                  src="/placeholder.svg?height=400&width=600"
                   alt="Funcionalidades para jugadores"
-                  width="500"
-                  height="400"
-                  className="rounded-lg shadow-xl"
+                  width={600}
+                  height={400}
+                  className="rounded-lg shadow-md"
                 />
+              </motion.div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {[
+                  {
+                    icon: <Clock className="h-6 w-6" />,
+                    title: "Unite a partidos",
+                    description: "Encontrá partidos según tu nivel y disponibilidad.",
+                    color: "blue",
+                  },
+                  {
+                    icon: <Users className="h-6 w-6" />,
+                    title: "Comunidad activa",
+                    description: "Conocé jugadores y hacé amigos.",
+                    color: "green",
+                  },
+                  {
+                    icon: <UserCircle className="h-6 w-6" />,
+                    title: "Perfil personalizado",
+                    description: "Configurá tu nivel y preferencias.",
+                    color: "purple",
+                  },
+                  {
+                    icon: <Bell className="h-6 w-6" />,
+                    title: "Notificaciones",
+                    description: "Recibí alertas de partidos y cambios.",
+                    color: "red",
+                  },
+                ].map((item, index) => (
+                  <FeatureCard
+                    key={index}
+                    icon={item.icon}
+                    title={item.title}
+                    description={item.description}
+                    color={item.color}
+                  />
+                ))}
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* How it works */}
+        <section id="como-funciona" className="py-16 bg-gray-50">
+          <div className="container">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-800 mb-4">Cómo funciona</h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                JugáHora simplifica todo el proceso en unos pocos pasos.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+              {[
+                {
+                  number: "01",
+                  title: "Creá tu perfil",
+                  description: "Registrate y configurá tu nivel, disponibilidad y preferencias.",
+                },
+                {
+                  number: "02",
+                  title: "Encontrá partidos",
+                  description: "Buscá partidos disponibles o creá uno nuevo e invitá a otros jugadores.",
+                },
+                {
+                  number: "03",
+                  title: "Confirmá y pagá",
+                  description: "Confirmá tu asistencia y realizá el pago de forma segura.",
+                },
+                {
+                  number: "04",
+                  title: "¡A jugar!",
+                  description: "Presentate en la cancha y disfrutá de tu partido.",
+                },
+              ].map((item, index) => (
+                <motion.div
+                  key={index}
+                  className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                >
+                  <div className="text-blue-500 font-bold text-2xl mb-4">{item.number}</div>
+                  <h3 className="text-xl font-semibold text-gray-800 mb-2">{item.title}</h3>
+                  <p className="text-gray-600">{item.description}</p>
+                </motion.div>
+              ))}
             </div>
           </div>
         </section>
 
         {/* Clubes Section */}
-        <section id="clubes" className="py-20 bg-gray-50">
+        <section id="clubes" className="py-16 bg-gray-50">
           <div className="container">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-              <div className="order-2 md:order-1 flex justify-center">
-                <Image
-                  src="/clubes-app.png"
-                  alt="Funcionalidades para clubes"
-                  width="500"
-                  height="400"
-                  className="rounded-lg shadow-xl"
-                />
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-800 mb-4">Para Clubes</h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                Gestioná tus canchas, organizá eventos y maximizá tus ingresos.
+              </p>
+            </div>
+
+            <div className="space-y-16">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {[
+                  {
+                    icon: <Calendar className="h-6 w-6" />,
+                    title: "Gestión de canchas",
+                    description: "Publicá tus canchas y JugáHora las llena.",
+                    color: "blue",
+                  },
+                  {
+                    icon: <Trophy className="h-6 w-6" />,
+                    title: "Creación de eventos",
+                    description: "Organizá torneos y eventos especiales.",
+                    color: "green",
+                  },
+                  {
+                    icon: <FileText className="h-6 w-6" />,
+                    title: "Estadísticas",
+                    description: "Accedé a datos de uso y rendimiento.",
+                    color: "purple",
+                  },
+                  {
+                    icon: <Bell className="h-6 w-6" />,
+                    title: "Notificaciones",
+                    description: "Recibí alertas de reservas y cambios.",
+                    color: "red",
+                  },
+                ].map((item, index) => (
+                  <FeatureCard
+                    key={index}
+                    icon={item.icon}
+                    title={item.title}
+                    description={item.description}
+                    color={item.color}
+                  />
+                ))}
               </div>
-              <div className="order-1 md:order-2 space-y-6">
-                <h2 className="text-3xl md:text-4xl font-bold text-[#132045]">Para Clubes</h2>
-                <div className="space-y-4">
-                  <div className="flex items-start gap-4">
-                    <div className="bg-blue-100 p-2 rounded-full">
-                      <Calendar className="h-6 w-6 text-brand-primary" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-semibold text-[#132045]">Publicá tus canchas vacías</h3>
-                      <p className="text-gray-600">Publica tus canchas y JugáHora se encarga de llenarlas.</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-4">
-                    <div className="bg-blue-100 p-2 rounded-full">
-                      <Trophy className="h-6 w-6 text-brand-primary" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-semibold text-[#132045]">Creación de eventos</h3>
-                      <p className="text-gray-600">Organizá torneos y canchas abiertas rápidamente.</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-4">
-                    <div className="bg-blue-100 p-2 rounded-full">
-                      <FileText className="h-6 w-6 text-brand-primary" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-semibold text-[#132045]">Gestión inteligente</h3>
-                      <p className="text-gray-600">Accedé a datos de cancelaciones tardías, jugadores abonados, entre otras cosas.</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-4">
-                    <div className="bg-blue-100 p-2 rounded-full">
-                      <Bell className="h-6 w-6 text-brand-primary" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-semibold text-[#132045]">Notificaciones al instante</h3>
-                      <p className="text-gray-600">Enterate automáticamente cuando un partido se confirma.</p>
-                    </div>
-                  </div>
+
+              <div>
+                <div className="text-center mb-12">
+                  <h3 className="text-3xl font-bold text-gray-800 mb-4">Dashboard intuitivo</h3>
+                  <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Visualizá toda la información importante de tu club en un solo lugar.
+                  </p>
                 </div>
+
+                <motion.div
+                  className="bg-white rounded-lg border border-gray-200 shadow-lg overflow-hidden"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <Image
+                    src={`https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Captura%20de%20pantalla%202025-05-22%20a%20la%28s%29%201.58.35%E2%80%AFp.%C2%A0m.-hjPEn5dk106R4xmSKfMjisgzi16EIA.png`}
+                    alt="Dashboard de JugáHora"
+                    width={1200}
+                    height={600}
+                    className="w-full h-auto"
+                  />
+                </motion.div>
               </div>
             </div>
-          </div>
-        </section>
-
-        {/* CTA Section */}
-        <section className="py-20 bg-brand-primary text-white">
-          <div className="container text-center space-y-8">
-            <h2 className="text-3xl md:text-4xl font-bold">Sumate a la comunidad JugáHora</h2>
-              <p className="text-xl max-w-2xl mx-auto">
-                Unite a una comunidad que te permite encontrar partidos con facilidad si sos jugador, y olvidarte de llenar tus horarios si sos club. Todo desde una misma plataforma.
-              </p>
-
-            <Link href="/registro">
-              <Button
-                size="lg"
-                className="bg-white text-brand-primary hover:bg-gray-100 text-lg px-8 mt-6"
-              >
-                Registrarse
-              </Button>
-            </Link>
-
           </div>
         </section>
 
         {/* FAQ Section */}
-        <section id="faq" className="py-20 bg-white">
+        <section id="faq" className="py-16 bg-white">
           <div className="container">
-            <h2 className="text-3xl md:text-4xl font-bold text-[#132045] text-center mb-12">Preguntas Frecuentes</h2>
-            <div className="max-w-3xl mx-auto">
-              <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value="item-1">
-                  <AccordionTrigger className="text-lg font-medium text-[#132045]">
-                    ¿Cómo funciona JugáHora?
-                  </AccordionTrigger>
-                  <AccordionContent className="text-gray-600">
-                    JugáHora es una plataforma que facilita la organización de partidos. Los jugadores pueden unirse fácilmente
-                    a partidos o eventos según su nivel. Los clubes pueden publicar sus canchas vacías y JugáHora se encarga de llenarlas.
-                  </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="item-2">
-                  <AccordionTrigger className="text-lg font-medium text-[#132045]">
-                    ¿Cuánto cuesta usar JugáHora?
-                  </AccordionTrigger>
-                  <AccordionContent className="text-gray-600">
-                    Para jugadores, cobramos una pequeña comisión por el servicio al momento de confirmar el partido.
-                    Para clubes, el primer mes es gratuito. Luego, se cobra por cada cancha que JugáHora organiza.
-                  </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="item-3">
-                  <AccordionTrigger className="text-lg font-medium text-[#132045]">
-                    ¿Qué deportes están disponibles?
-                  </AccordionTrigger>
-                  <AccordionContent className="text-gray-600">
-                    Nos enfocamos 100% en pádel para ofrecer una experiencia de calidad, actualizada y especializada.
-                  </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="item-4">
-                  <AccordionTrigger className="text-lg font-medium text-[#132045]">
-                    ¿Cómo puedo registrar mi club?
-                  </AccordionTrigger>
-                  <AccordionContent className="text-gray-600">
-                    Contactanos directamente y nos encargaremos de crear y configurar tu cuenta en poco tiempo.
-                  </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="item-5">
-                  <AccordionTrigger className="text-lg font-medium text-[#132045]">
-                    ¿Puedo cancelar una reserva?
-                  </AccordionTrigger>
-                  <AccordionContent className="text-gray-600">
-                    Sí. Podés cancelar hasta 12 horas antes del inicio del partido sin penalización. Cancelaciones posteriores pueden generar sanciones.
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-800 mb-4">Preguntas Frecuentes</h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">Respondemos tus dudas sobre JugáHora.</p>
             </div>
+            <motion.div
+              className="max-w-3xl mx-auto bg-white rounded-lg border border-gray-200 p-8 shadow-sm"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              <CustomFaq />
+            </motion.div>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="py-16 bg-blue-500">
+          <div className="container text-center">
+            <motion.h2
+              className="text-3xl font-bold text-white mb-6"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              Sumate a la comunidad JugáHora
+            </motion.h2>
+            <motion.p
+              className="text-xl text-blue-100 max-w-2xl mx-auto mb-8"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              Unite a una comunidad que te permite encontrar partidos con facilidad si sos jugador, y olvidarte de
+              llenar tus horarios si sos club.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
+              <Button
+                size="lg"
+                className="bg-white text-blue-500 hover:bg-gray-100 text-lg px-8 transition-all duration-200"
+              >
+                Comenzar ahora
+              </Button>
+            </motion.div>
           </div>
         </section>
       </main>
 
       {/* Footer */}
-      <footer className="bg-[#132045] text-white py-12">
+      <footer className="bg-white text-gray-700 py-12 border-t border-gray-200">
         <div className="container">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <Image src="/logo.svg" alt="JugáHora Logo" width="40" height="40" className="h-10 w-auto" />
-                <span className="text-xl font-semibold">JugáHora</span>
+            <div className="md:col-span-1">
+              <div className="flex items-center space-x-2 mb-4">
+                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">J</span>
+                </div>
+                <span className="text-xl font-semibold text-gray-800">JugáHora</span>
               </div>
-              <p className="text-blue-200">La plataforma que conecta jugadores con clubes deportivos.</p>
+              <p className="text-gray-600 text-sm">La plataforma que conecta jugadores con clubes deportivos.</p>
             </div>
+
             <div>
-              <h3 className="font-semibold text-lg mb-4">Enlaces</h3>
+              <h3 className="font-semibold text-gray-800 mb-4">Enlaces</h3>
               <ul className="space-y-2">
                 <li>
-                  <Link href="#" className="text-blue-200 hover:text-white">
+                  <Link href="#" className="text-gray-600 hover:text-blue-500 transition-colors duration-200 text-sm">
                     Inicio
                   </Link>
                 </li>
                 <li>
-                  <Link href="#jugadores" className="text-blue-200 hover:text-white">
+                  <Link
+                    href="#jugadores"
+                    className="text-gray-600 hover:text-blue-500 transition-colors duration-200 text-sm"
+                  >
                     Jugadores
                   </Link>
                 </li>
                 <li>
-                  <Link href="#clubes" className="text-blue-200 hover:text-white">
+                  <Link
+                    href="#clubes"
+                    className="text-gray-600 hover:text-blue-500 transition-colors duration-200 text-sm"
+                  >
                     Clubes
                   </Link>
                 </li>
                 <li>
-                  <Link href="#faq" className="text-blue-200 hover:text-white">
+                  <Link
+                    href="#faq"
+                    className="text-gray-600 hover:text-blue-500 transition-colors duration-200 text-sm"
+                  >
                     FAQ
                   </Link>
                 </li>
               </ul>
             </div>
+
             <div>
-              <h3 className="font-semibold text-lg mb-4">Legal</h3>
+              <h3 className="font-semibold text-gray-800 mb-4">Legal</h3>
               <ul className="space-y-2">
                 <li>
-                  <Link href="#" className="text-blue-200 hover:text-white">
+                  <Link href="#" className="text-gray-600 hover:text-blue-500 transition-colors duration-200 text-sm">
                     Términos y Condiciones
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="text-blue-200 hover:text-white">
+                  <Link href="#" className="text-gray-600 hover:text-blue-500 transition-colors duration-200 text-sm">
                     Política de Privacidad
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="text-blue-200 hover:text-white">
+                  <Link href="#" className="text-gray-600 hover:text-blue-500 transition-colors duration-200 text-sm">
                     Cookies
                   </Link>
                 </li>
               </ul>
             </div>
+
             <div>
-              <h3 className="font-semibold text-lg mb-4">Contacto</h3>
-              <ul className="space-y-2">
-                <li className="text-blue-200">Email: jugahora.contacto@gmail.com</li>
-                <li className="text-blue-200">Teléfono: +54 9 11 6373 0035</li>
-                <li className="flex space-x-4 mt-4">
-                  <Link href="#" className="text-blue-200 hover:text-white">
-                    <span className="sr-only">Facebook</span>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="h-6 w-6"
-                    >
-                      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+              <h3 className="font-semibold text-gray-800 mb-4">Contacto</h3>
+              <div className="space-y-2 text-sm">
+                <p className="text-gray-600">Email: jugahora.contacto@gmail.com</p>
+                <p className="text-gray-600">Teléfono: +54 9 11 6373 0035</p>
+                <div className="flex space-x-3 mt-4">
+                  <Link href="#" className="text-gray-600 hover:text-blue-500 transition-colors duration-200">
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
                     </svg>
                   </Link>
-                  <Link href="#" className="text-blue-200 hover:text-white">
-                    <span className="sr-only">Instagram</span>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="h-6 w-6"
-                    >
-                      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
-                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+                  <Link href="#" className="text-gray-600 hover:text-blue-500 transition-colors duration-200">
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
                     </svg>
                   </Link>
-                  <Link href="#" className="text-blue-200 hover:text-white">
-                    <span className="sr-only">Twitter</span>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="h-6 w-6"
-                    >
-                      <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
+                  <Link href="#" className="text-gray-600 hover:text-blue-500 transition-colors duration-200">
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M22.675 0H1.325C.593 0 0 .593 0 1.325v21.351C0 23.407.593 24 1.325 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.73 0 1.323-.593 1.323-1.325V1.325C24 .593 23.407 0 22.675 0z" />
                     </svg>
                   </Link>
-                </li>
-              </ul>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="border-t border-[#183a8f] mt-8 pt-8 text-center text-blue-300">
-            <p>© {new Date().getFullYear()} JugáHora. Todos los derechos reservados.</p>
+
+          <div className="border-t border-gray-200 mt-8 pt-8 text-center">
+            <p className="text-gray-500 text-sm">© 2025 JugáHora. Todos los derechos reservados.</p>
           </div>
         </div>
       </footer>
