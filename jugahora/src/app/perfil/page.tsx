@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
@@ -687,7 +687,6 @@ const rachas = calcularRachas(partidos);
               Perfil de {userData.firstName}
             </CardTitle>
           </CardHeader>
-          <CardContent className="pt-6 space-y-4">
             <CollapsibleSection title="Datos Personales" defaultOpen={true}>
               <div className="space-y-4">
                 <div className="flex items-center">
@@ -754,17 +753,16 @@ const rachas = calcularRachas(partidos);
                     </div>
                   </div>
                 )}
-              </div>
-            </CollapsibleSection>
 
-            <Button
-              className="w-full mt-4 bg-brand-primary hover:bg-brand-hover text-white"
-              onClick={() => router.push('/editar-perfil')}
-            >
-              Editar perfil
-            </Button>
-          </CardContent>
-        </Card>
+              <Button
+                className="w-full mt-4 bg-brand-primary hover:bg-brand-hover text-white"
+                onClick={() => router.push('/editar-perfil')}
+              >
+                Editar perfil
+              </Button>
+          </div>
+        </CollapsibleSection>
+        
 
         <CollapsibleSection title="Amigos" defaultOpen={false}>
             <p className="text-gray-600 mb-2">
@@ -1190,7 +1188,7 @@ const rachas = calcularRachas(partidos);
               </Dialog>
             </div>
         </CollapsibleSection>
-
+        </Card>              
         </main>
 
         <footer className="py-6 px-4 md:px-6 bg-white border-t border-gray-200">
