@@ -256,55 +256,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* How it works */}
-        <section id="como-funciona" className="py-16 bg-gray-50">
-          <div className="container">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-800 mb-4">Cómo funciona</h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                JugáHora simplifica todo el proceso en unos pocos pasos.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-              {[
-                {
-                  number: "01",
-                  title: "Creá tu perfil",
-                  description: "Registrate y configurá tu nivel, disponibilidad y preferencias.",
-                },
-                {
-                  number: "02",
-                  title: "Encontrá partidos",
-                  description: "Buscá partidos disponibles o creá uno nuevo e invitá a otros jugadores.",
-                },
-                {
-                  number: "03",
-                  title: "Confirmá y pagá",
-                  description: "Confirmá tu asistencia y realizá el pago de forma segura.",
-                },
-                {
-                  number: "04",
-                  title: "¡A jugar!",
-                  description: "Presentate en la cancha y disfrutá de tu partido.",
-                },
-              ].map((item, index) => (
-                <motion.div
-                  key={index}
-                  className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                >
-                  <div className="text-blue-500 font-bold text-2xl mb-4">{item.number}</div>
-                  <h3 className="text-xl font-semibold text-gray-800 mb-2">{item.title}</h3>
-                  <p className="text-gray-600">{item.description}</p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
+        
 
         {/* Clubes Section */}
         <section id="clubes" className="py-16 bg-gray-50">
