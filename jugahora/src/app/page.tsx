@@ -370,7 +370,7 @@ export default function Home() {
                   transition={{ duration: 0.5 }}
                 >
                   <Image
-                    src={`https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Captura%20de%20pantalla%202025-05-22%20a%20la%28s%29%201.58.35%E2%80%AFp.%C2%A0m.-hjPEn5dk106R4xmSKfMjisgzi16EIA.png`}
+                    src="/dashboard.png"
                     alt="Dashboard de JugáHora"
                     width={1200}
                     height={600}
