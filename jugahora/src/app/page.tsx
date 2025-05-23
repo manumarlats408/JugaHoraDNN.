@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -67,8 +69,16 @@ function CustomFaq() {
   )
 }
 
+// Tipos para el componente FeatureCard
+interface FeatureCardProps {
+  title: string
+  description: string
+  icon: React.ReactNode
+  color?: "blue" | "green" | "red" | "purple"
+}
+
 // Componente de tarjeta de característica
-function FeatureCard({ title, description, icon, color = "blue" }: any) {
+function FeatureCard({ title, description, icon, color = "blue" }: FeatureCardProps) {
   const colorClasses = {
     blue: "bg-blue-50 text-blue-500",
     green: "bg-green-50 text-green-500",
@@ -78,9 +88,7 @@ function FeatureCard({ title, description, icon, color = "blue" }: any) {
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
-      <div
-        className={`${colorClasses[color as keyof typeof colorClasses]} p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4`}
-      >
+      <div className={`${colorClasses[color]} p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4`}>
         {icon}
       </div>
       <h3 className="text-xl font-semibold text-gray-800 mb-2">{title}</h3>
@@ -194,25 +202,25 @@ export default function Home() {
                     icon: <Clock className="h-6 w-6" />,
                     title: "Unite a partidos",
                     description: "Encontrá partidos según tu nivel y disponibilidad.",
-                    color: "blue",
+                    color: "blue" as const,
                   },
                   {
                     icon: <Users className="h-6 w-6" />,
                     title: "Comunidad activa",
                     description: "Conocé jugadores y hacé amigos.",
-                    color: "green",
+                    color: "green" as const,
                   },
                   {
                     icon: <UserCircle className="h-6 w-6" />,
                     title: "Perfil personalizado",
                     description: "Configurá tu nivel y preferencias.",
-                    color: "purple",
+                    color: "purple" as const,
                   },
                   {
                     icon: <Bell className="h-6 w-6" />,
                     title: "Notificaciones",
                     description: "Recibí alertas de partidos y cambios.",
-                    color: "red",
+                    color: "red" as const,
                   },
                 ].map((item, index) => (
                   <FeatureCard
@@ -261,25 +269,25 @@ export default function Home() {
                     icon: <Calendar className="h-6 w-6" />,
                     title: "Gestión de canchas",
                     description: "Publicá tus canchas y JugáHora las llena.",
-                    color: "blue",
+                    color: "blue" as const,
                   },
                   {
                     icon: <Trophy className="h-6 w-6" />,
                     title: "Creación de eventos",
                     description: "Organizá torneos y eventos especiales.",
-                    color: "green",
+                    color: "green" as const,
                   },
                   {
                     icon: <FileText className="h-6 w-6" />,
                     title: "Estadísticas",
                     description: "Accedé a datos de uso y rendimiento.",
-                    color: "purple",
+                    color: "purple" as const,
                   },
                   {
                     icon: <Bell className="h-6 w-6" />,
                     title: "Notificaciones",
                     description: "Recibí alertas de reservas y cambios.",
-                    color: "red",
+                    color: "red" as const,
                   },
                 ].map((item, index) => (
                   <FeatureCard
