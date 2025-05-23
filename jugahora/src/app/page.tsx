@@ -266,7 +266,7 @@ export default function Home() {
                   alt="Mockups de funcionalidades para jugadores"
                   width={600}
                   height={400}
-                  className="rounded-lg shadow-md"
+                  className="rounded-lg"
                 />
               </motion.div>
             </div>
