@@ -137,7 +137,7 @@ export default function MenuPage() {
         </div>
       )}
 
-      <main className="flex-1 flex flex-col items-center justify-center gap-6 p-4 bg-gradient-to-b from-brand-bg to-white">
+      <main className="flex-1 flex flex-col items-center justify-center gap-6 p-4 bg-brand-page">
         {/* Tarjeta principal */}
         <Card className="w-full max-w-md shadow-lg border-brand-border">
           <CardHeader className="bg-brand-bg border-b border-brand-border">
