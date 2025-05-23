@@ -89,7 +89,7 @@ export default function EditarPerfilPage() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+      <div className="flex justify-center items-center min-h-screen bg-brand-page">
         <p className="text-lg text-gray-600">Cargando perfil...</p>
       </div>
     )
@@ -97,14 +97,14 @@ export default function EditarPerfilPage() {
 
   if (!userData) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+      <div className="flex justify-center items-center min-h-screen bg-brand-page">
         <p className="text-lg text-gray-600">No se pudo cargar el perfil.</p>
       </div>
     )
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
+    <div className="flex flex-col min-h-screen bg-brand-page">
       <header className="px-4 lg:px-6 h-16 flex items-center bg-white shadow-md">
         <Link className="flex items-center justify-center" href="/menu">
           <Image src='/logo.svg' alt="JugáHora Logo" width={32} height={32} />

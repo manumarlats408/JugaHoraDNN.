@@ -373,7 +373,7 @@ export default function PaginaEventos() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+      <div className="flex justify-center items-center min-h-screen bg-brand-page">
         <p className="text-lg text-gray-600">Cargando eventos...</p>
       </div>
     )
@@ -381,7 +381,7 @@ export default function PaginaEventos() {
 
   if (!user) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+      <div className="flex justify-center items-center min-h-screen bg-brand-page">
         <p className="text-lg text-gray-600">
           No se pudo cargar la información del usuario. Por favor, inténtalo de nuevo.
         </p>

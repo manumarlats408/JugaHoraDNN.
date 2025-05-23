@@ -597,7 +597,7 @@ const rachas = calcularRachas(partidos);
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+      <div className="flex justify-center items-center min-h-screen bg-brand-page">
         <p className="text-lg text-gray-600">Cargando perfil...</p>
       </div>
     )
@@ -605,14 +605,14 @@ const rachas = calcularRachas(partidos);
 
   if (!userData) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+      <div className="flex justify-center items-center min-h-screen bg-brand-page">
         <p className="text-lg text-gray-600">No se pudo cargar el perfil. Por favor, inténtalo de nuevo.</p>
       </div>
     )
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
+    <div className="flex flex-col min-h-screen bg-brand-page">
       <header className="px-4 lg:px-6 h-16 flex items-center relative bg-white shadow-md">
         <Link className="flex items-center justify-center" href="/menu">
           <span className="sr-only">JugáHora</span>
@@ -687,7 +687,7 @@ const rachas = calcularRachas(partidos);
               Perfil de {userData.firstName}
             </CardTitle>
           </CardHeader>
-            <CollapsibleSection title="Datos Personales" defaultOpen={true}>
+            <CollapsibleSection title="Datos Personales" defaultOpen={false}>
               <div className="space-y-4">
                 <div className="flex items-center">
                   <Mail className="w-5 h-5 mr-2 text-gray-500" />
@@ -905,11 +905,11 @@ const rachas = calcularRachas(partidos);
                 A medida que anotes tus partidos, tus estadisticas comenzaran a crecer!
               </p>
             </div>
-            <div>
+            {/* <div>
               <p><strong>Total de Partidos Jugados:</strong> {partidos.length}</p>
               <p><strong>Total de Partidos Ganados:</strong> {partidos.filter((p) => p.ganado).length}</p>
               <p><strong>Total de Partidos Perdidos:</strong> {partidos.filter((p) => !p.ganado).length}</p>
-            </div>
+            </div> */}
 
             {/* Gráfico de Eficiencia Total */}
             <div className="flex flex-col mb-8">

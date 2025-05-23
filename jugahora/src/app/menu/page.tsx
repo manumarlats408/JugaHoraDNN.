@@ -70,7 +70,7 @@ export default function MenuPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
+    <div className="flex flex-col min-h-screen bg-brand-page">
       <header className="px-4 lg:px-6 h-16 flex items-center relative bg-white shadow-md">
         <Link className="flex items-center justify-center" href="/menu">
           <span className="sr-only">JugáHora</span>
@@ -137,7 +137,7 @@ export default function MenuPage() {
         </div>
       )}
 
-      <main className="flex-1 flex flex-col items-center justify-center gap-6 p-4 bg-gradient-to-b from-brand-bg to-white">
+      <main className="flex-1 flex flex-col items-center justify-center gap-6 p-4 bg-brand-page">
         {/* Tarjeta principal */}
         <Card className="w-full max-w-md shadow-lg border-brand-border">
           <CardHeader className="bg-brand-bg border-b border-brand-border">
