@@ -146,7 +146,7 @@ export default function Home() {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="py-16 bg-white">
+        <section className="pt-0 pb-16 bg-white">
           <div className="container">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               <motion.div
@@ -172,7 +172,7 @@ export default function Home() {
                 </div>
               </motion.div>
               <motion.div
-                className="flex justify-center"
+                className="flex justify-center h-[calc(100vh-64px)] max-w-[75%] mx-auto"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
@@ -181,8 +181,8 @@ export default function Home() {
                   src="/foto_pelota.webp"
                   alt="JugáHora App"
                   width={500}
-                  height={400}
-                  className="rounded-lg shadow-md object-contain h-[300px] md:h-[350px]"
+                  height={300}
+                  className="h-full object-contain rounded-xl shadow-md"
                 />
               </motion.div>
             </div>
@@ -326,7 +326,7 @@ export default function Home() {
                     alt="Dashboard de JugáHora"
                     width={900}
                     height={450}
-                    className="w-full h-auto max-w-[700px] mx-auto my-4"
+                    className="w-full h-auto"
                   />
                 </motion.div>
               </div>
