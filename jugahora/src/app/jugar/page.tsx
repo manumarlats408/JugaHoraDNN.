@@ -302,7 +302,7 @@ export default function PaginaJuega() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+      <div className="flex justify-center items-center min-h-screen bg-brand-page">
         <p className="text-lg text-gray-600">Cargando partidos...</p>
       </div>
     )
@@ -310,14 +310,14 @@ export default function PaginaJuega() {
 
   if (!user) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+      <div className="flex justify-center items-center min-h-screen bg-brand-page">
         <p className="text-lg text-gray-600">No se pudo cargar la información del usuario. Por favor, inténtalo de nuevo.</p>
       </div>
     )
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
+    <div className="flex flex-col min-h-screen bg-brand-page">
       <header className="px-4 lg:px-6 h-16 flex items-center relative bg-white shadow-md">
         <Link className="flex items-center justify-center" href="/menu">
           <span className="sr-only">JugáHora</span>
