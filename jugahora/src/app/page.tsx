@@ -262,8 +262,8 @@ export default function Home() {
                 transition={{ duration: 0.6 }}
               >
                 <Image
-                  src="/placeholder.svg?height=400&width=600"
-                  alt="Funcionalidades para jugadores"
+                  src="/foto_mockups.svg"
+                  alt="Mockups de funcionalidades para jugadores"
                   width={600}
                   height={400}
                   className="rounded-lg shadow-md"
