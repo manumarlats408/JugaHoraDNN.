@@ -347,7 +347,7 @@ export default function Home() {
                 >
                   <div className="bg-white rounded-lg border border-brand-border shadow-lg overflow-hidden max-w-4xl mx-auto">
                     <Image
-                      src="/dashboard.webp"
+                      src="/laptop.png"
                       alt="Dashboard de JugáHora"
                       width={900}
                       height={500}
