@@ -88,25 +88,6 @@
   border: none !important;
 }
 
-/* Día actual (hoy) → borde azul */
-.react-calendar__tile--now {
-  border: 2px solid hsl(var(--brand-primary)) !important;
-  color: hsl(var(--brand-primary));
-  font-weight: bold;
-}
-
-/* Día seleccionado → fondo gris claro */
-.react-calendar__tile--active {
-  background-color: #e5e7eb !important; /* gray-200 */
-  color: #111827 !important; /* gray-900 */
-  font-weight: 600;
-}
-
-/* Día seleccionado (hover) → gris un poco más oscuro */
-.react-calendar__tile--active:hover {
-  background-color: #d1d5db !important; /* gray-300 */
-}
-
 .react-calendar__navigation {
   display: flex;
   justify-content: space-between;
