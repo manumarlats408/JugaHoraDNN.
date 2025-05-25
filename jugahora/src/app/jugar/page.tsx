@@ -385,10 +385,10 @@ export default function PaginaJuega() {
         </div>
       )}
 
-      <main className="flex-1 p-4 bg-brand-bg">
+      <main className="flex-1 p-4 bg-brand-page">
         <Card className="w-full max-w-4xl mx-auto shadow-lg border-brand-border">
           <CardHeader className="bg-brand-bg border-b border-brand-border">
-            <CardTitle className="text-2xl font-bold text-black flex items-center">
+            <CardTitle className="text-2xl font-bold text-brand-primary flex items-center">
               <Users className="w-6 h-6 mr-2" />
               Unirse a un partido
             </CardTitle>

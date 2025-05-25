@@ -679,7 +679,7 @@ const rachas = calcularRachas(partidos);
         </div>
       )}
 
-    <main className="flex-1 flex flex-col items-center p-4 bg-gradient-to-b from-brand-bg to-white">
+    <main className="flex-1 flex flex-col items-center p-4 bg-brand-page">
         <Card className="w-full max-w-lg shadow-lg border-brand-border mb-6">
           <CardHeader className="bg-brand-bg border-b border-brand-border">
             <CardTitle className="text-2xl font-bold text-brand-primary flex items-center">

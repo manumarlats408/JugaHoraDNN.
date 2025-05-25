@@ -99,7 +99,7 @@ export default function PaginaRegistro() {
       </Link>
       <Card className="w-full max-w-md shadow-lg border border-brand-border">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center text-black">
+          <CardTitle className="text-2xl font-bold text-center text-brand-primary">
             {currentStep === 1 ? 'Crear una cuenta' : currentStep === 2 ? 'Preferencias de juego' : 'Selecciona tu categoría'}
           </CardTitle>
           <p className="text-center text-gray-500">

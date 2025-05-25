@@ -46,7 +46,7 @@ export default function RecuperarContrasena() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-brand-bg p-4">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-brand-page p-4">
       <Link href="/" className="mb-8 text-2xl font-bold flex items-center">
         <Image src='/logo.svg' alt="JugáHora Logo" width={32} height={32} />
         JugáHora

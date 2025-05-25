@@ -84,7 +84,7 @@ const AddPlayers = () => {
       <div className="max-w-3xl mx-auto space-y-6">
         <Card className="shadow-md border border-brand-border">
           <CardHeader className="bg-white border-b border-brand-border">
-            <CardTitle className="text-xl font-bold text-black">Añadir Jugadores al Partido</CardTitle>
+            <CardTitle className="text-xl font-bold text-brand-primary">Añadir Jugadores al Partido</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 pt-4">
             <Button

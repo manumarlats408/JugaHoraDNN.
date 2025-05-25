@@ -390,7 +390,7 @@ export default function PaginaEventos() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-brand-bg">
+    <div className="flex flex-col min-h-screen bg-brand-page">
       <header className="px-4 lg:px-6 h-16 flex items-center relative bg-white shadow-md">
         <Link className="flex items-center justify-center" href="/menu">
           <span className="sr-only">JugáHora</span>
@@ -460,11 +460,11 @@ export default function PaginaEventos() {
         </div>
       )}
 
-      <main className="flex-1 p-4 bg-brand-bg">
+      <main className="flex-1 p-4 bg-brand-page">
         <Card className="w-full max-w-4xl mx-auto shadow-lg border border-brand-border">
           <CardHeader className="bg-white border-b border-brand-border">
-            <CardTitle className="text-2xl font-bold text-black flex items-center">
-              <Calendar className="w-6 h-6 mr-2" />
+            <CardTitle className="text-2xl font-bold text-brand-primary flex items-center">
+              <Trophy className="w-6 h-6 mr-2" />
               Unirse a un evento
             </CardTitle>
           </CardHeader>

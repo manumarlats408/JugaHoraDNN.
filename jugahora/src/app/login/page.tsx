@@ -59,7 +59,7 @@ export default function PaginaInicioSesion() {
       </Link>
       <Card className="w-full max-w-md shadow-lg border border-brand-border">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center text-black">Iniciar sesión</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center text-brand-primary">Iniciar sesión</CardTitle>
           <p className="text-center text-gray-500">Ingresa tus credenciales para acceder</p>
         </CardHeader>
         <CardContent>

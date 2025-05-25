@@ -66,7 +66,7 @@ export default function MenuPage() {
   }
 
   if (isLoading) {
-    return <div className="flex justify-center items-center h-screen">Cargando...</div>
+    return <div className="flex justify-center items-center h-screen">Cargando menu...</div>
   }
 
   return (
@@ -136,7 +136,7 @@ export default function MenuPage() {
           </nav>
         </div>
       )}
-
+      
       <main className="flex-1 flex flex-col items-center justify-center gap-6 p-4 bg-brand-page">
         {/* Tarjeta principal */}
         <Card className="w-full max-w-md shadow-lg border-brand-border">

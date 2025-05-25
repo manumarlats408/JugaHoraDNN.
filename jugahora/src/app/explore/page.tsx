@@ -152,7 +152,7 @@ export default function ExploreProfiles() {
   if (isVerifying || !isAuthorized) return null
 
   return (
-    <div className="min-h-screen bg-brand-bg p-6">
+    <div className="min-h-screen bg-brand-page p-6">
       <div className="max-w-3xl mx-auto space-y-6">
         <div className="flex justify-between items-center">
           <Button variant="outline" onClick={() => router.push('/perfil')}>
@@ -168,7 +168,7 @@ export default function ExploreProfiles() {
 
         <Card className="shadow-md border border-brand-border">
           <CardHeader className="bg-brand-bg border-b border-brand-border">
-            <CardTitle className="text-xl font-bold text-black">
+            <CardTitle className="text-xl font-bold text-brand-primary">
               Explorar Perfiles
             </CardTitle>
           </CardHeader>

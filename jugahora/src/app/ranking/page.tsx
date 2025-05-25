@@ -43,7 +43,7 @@ export default function RankingPage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-brand-bg to-white p-6">
+    <div className="min-h-screen bg-brand-page">
       <div className="max-w-3xl mx-auto space-y-6">
         <div className="flex justify-between items-center">
           <Button variant="outline" onClick={() => router.push('/perfil')}>

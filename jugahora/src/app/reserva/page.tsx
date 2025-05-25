@@ -88,7 +88,13 @@ export default function ReservaPage() {
     return `https://wa.me/${formattedPhone}`
   }
 
-  if (isVerifying || !isAuthorized) return null
+  if (isVerifying || !isAuthorized) {
+  return (
+    <div className="flex justify-center items-center min-h-screen bg-brand-page">
+      <p className="text-gray-600 text-lg">Cargando reservas...</p>
+    </div>
+  )
+} 
 
   return (
     <div className="flex flex-col min-h-screen bg-brand-page">
@@ -158,7 +164,7 @@ export default function ReservaPage() {
         </div>
       )}
 
-      <main className="flex-1 p-4 bg-gradient-to-b from-brand-bg to-white">
+      <main className="flex-1 p-4 bg-brand-page">
         <Card className="w-full max-w-2xl mx-auto shadow-lg border-brand-border">
           <CardHeader className="bg-brand-bg border-b border-brand-border">
             <CardTitle className="text-2xl font-bold text-brand-primary flex items-center">

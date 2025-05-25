@@ -206,7 +206,7 @@ export function ListadoArticulos() {
 
   if (cargando) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-brand-bg">
+      <div className="flex justify-center items-center min-h-screen bg-brand-page">
         <p className="text-lg text-muted-foreground">Cargando artículos...</p>
       </div>
     )

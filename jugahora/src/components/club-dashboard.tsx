@@ -282,7 +282,7 @@ export function ClubDashboard() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-brand-bg">
+      <div className="flex justify-center items-center min-h-screen bg-brand-page">
         <p className="text-lg text-gray-600">Cargando partidos del club...</p>
       </div>
     )
@@ -290,7 +290,7 @@ export function ClubDashboard() {
 
   if (!clubData) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-brand-bg">
+      <div className="flex justify-center items-center min-h-screen bg-brand-page">
         <p className="text-lg text-gray-600">No se pudo cargar el dashboard del club. Por favor, inténtalo de nuevo.</p>
       </div>
     )

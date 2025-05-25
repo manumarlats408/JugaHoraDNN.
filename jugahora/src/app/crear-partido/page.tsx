@@ -286,7 +286,7 @@ export default function CrearPartidoJugador() {
   if (verifying) return null
   
   return (
-    <div className="flex flex-col min-h-screen bg-brand-bg">
+    <div className="flex flex-col min-h-screen bg-brand-page">
       {/* TOPBAR */}
       <header className="px-4 lg:px-6 h-16 flex items-center relative bg-white shadow-md">
         <Link className="flex items-center justify-center" href="/menu">
@@ -352,11 +352,11 @@ export default function CrearPartidoJugador() {
         </div>
       )}
 
-      <main className="flex-1 p-4 bg-brand-bg">
+      <main className="flex-1 p-4 bg-brand-page">
       {misPartidos.length > 0 && (
         <Card className="w-full max-w-xl mx-auto mb-10 shadow-md border border-brand-border">
           <CardHeader className="bg-brand-bg border-b border-brand-border">
-            <CardTitle className="text-2xl font-bold text-black">Mis partidos creados</CardTitle>
+            <CardTitle className="text-2xl font-bold text-brand-primary">Mis partidos creados</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 mt-4">
             {misPartidos.map((match) => (
@@ -403,7 +403,10 @@ export default function CrearPartidoJugador() {
 
         <Card className="w-full max-w-xl mx-auto shadow-md border border-brand-border">
           <CardHeader className="bg-brand-bg border-b border-brand-border">
-            <CardTitle className="text-2xl font-bold text-black">Crear Partido</CardTitle>
+            <CardTitle className="text-2xl font-bold text-brand-primary flex items-center">
+              <Plus className="w-6 h-6 mr-2" />
+              Crear Partido
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 mt-4">
           <p className="mb-4 text-gray-600">

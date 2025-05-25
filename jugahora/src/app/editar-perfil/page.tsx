@@ -112,11 +112,11 @@ export default function EditarPerfilPage() {
         </Link>
       </header>
 
-      <main className="flex-1 flex flex-col items-center p-4 bg-brand-bg">
+      <main className="flex-1 flex flex-col items-center p-4 bg-brand-page">
         <Card className="w-full max-w-lg shadow-lg border border-brand-border">
           <CardHeader className="bg-white border-b border-brand-border">
 
-            <CardTitle className="text-2xl font-bold text-black flex items-center">
+            <CardTitle className="text-2xl font-bold text-brand-primary flex items-center">
               <User className="w-6 h-6 mr-2" />
               Editar Perfil
             </CardTitle>

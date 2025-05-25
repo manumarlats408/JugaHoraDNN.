@@ -56,7 +56,7 @@ export default function PartidosConfirmados() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-brand-bg">
+      <div className="flex justify-center items-center min-h-screen bg-brand-page">
         <p className="text-muted-foreground text-lg">Cargando partidos confirmados...</p>
       </div>
     )

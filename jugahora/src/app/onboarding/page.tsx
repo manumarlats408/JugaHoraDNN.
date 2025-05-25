@@ -10,7 +10,7 @@ export default function OnboardingPage() {
   const router = useRouter()
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-brand-bg p-4">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-brand-page p-4">
       
       {/* Logo + JugáHora como en login */}
       <Link href="/" className="mb-4 text-2xl font-bold flex items-center">
@@ -20,7 +20,7 @@ export default function OnboardingPage() {
 
       <Card className="w-full max-w-md shadow-lg border border-brand-border">
         <CardHeader className="pb-2">
-          <CardTitle className="text-2xl font-bold text-center text-black">
+          <CardTitle className="text-2xl font-bold text-center text-brand-primary">
             Bienvenido a JugáHora
           </CardTitle>
         </CardHeader>
