@@ -345,15 +345,14 @@ export default function Home() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.5 }}
                 >
-                  <div className="bg-white rounded-lg border border-brand-border shadow-lg overflow-hidden max-w-4xl mx-auto">
+                  <div className="flex justify-center">
                     <Image
                       src="/laptop.png"
                       alt="Dashboard de JugáHora"
-                      width={900}
-                      height={500}
-                      className="w-full h-auto"
+                      className="max-w-full h-auto"
                     />
                   </div>
+
                 </motion.div>
               </div>
             </div>
