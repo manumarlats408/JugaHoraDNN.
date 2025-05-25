@@ -273,9 +273,7 @@ export default function Home() {
                 <Image
                   src="/celulares.png"
                   alt="Mockup JugáHora"
-                  width={900}
-                  height={500}
-                  className="w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-xl mx-auto"
+                  className="w-[700px] max-w-full h-auto mx-auto"
                 />
 
               </motion.div>
@@ -350,7 +348,7 @@ export default function Home() {
                     <Image
                       src="/laptop.png"
                       alt="Dashboard de JugáHora"
-                      className="max-w-full h-auto"
+                      className="w-[700px] max-w-full h-auto"
                     />
                   </div>
 
