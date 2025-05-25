@@ -271,7 +271,7 @@ export default function Home() {
                 transition={{ duration: 0.6 }}
               >
                 <Image
-                  src="/foto_mockups.svg"
+                  src="/celulares.png"
                   alt="Mockups de funcionalidades para jugadores"
                   width={600}
                   height={400}
@@ -331,12 +331,12 @@ export default function Home() {
               </div>
 
               <div>
-                <div className="text-center mb-12">
+                {/* <div className="text-center mb-12">
                   <h3 className="text-3xl font-bold text-foreground mb-4">Dashboard intuitivo</h3>
                   <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
                     Visualizá toda la información importante de tu club en un solo lugar.
                   </p>
-                </div>
+                </div> */}
 
                 <motion.div
                   className="flex justify-center"
