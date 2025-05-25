@@ -128,7 +128,7 @@ export default function Home() {
             <Image src="/logo.svg" alt="Logo" width={32} height={32} />
             <span className="text-xl font-bold text-foreground">JugáHora</span>
           </Link>
-          <nav className="hidden md:flex gap-6">
+          {/* <nav className="hidden md:flex gap-6">
             <Link
               href="#jugadores"
               className="text-sm font-medium text-muted-foreground hover:text-brand-primary transition-colors duration-200"
@@ -147,7 +147,7 @@ export default function Home() {
             >
               FAQ
             </Link>
-          </nav>
+          </nav> */}
           <div className="flex items-center gap-4">
             <Link
               href="/login"
@@ -174,19 +174,27 @@ export default function Home() {
                 transition={{ duration: 0.6 }}
               >
                 <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground">
-                  La plataforma para jugadores y clubes de pádel
+                  La plataforma creada para jugadores y clubes de pádel
                 </h1>
                 <p className="text-xl text-muted-foreground">
                   JugáHora es la plataforma donde los jugadores encuentran partidos fácilmente y los clubes se
                   despreocupan por llenar sus horarios.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 pt-4 justify-center">
-                  <Button size="lg" className="bg-brand-primary hover:bg-brand-hover text-white">
-                    Registrarse
-                  </Button>
-                  <Button variant="outline" size="lg" className="border-gray-300 text-muted-foreground hover:bg-brand-bg">
-                    Conocer más
-                  </Button>
+                  <Link href="/registro">
+                    <Button size="lg" className="bg-brand-primary hover:bg-brand-hover text-white">
+                      Registrarse
+                    </Button>
+                  </Link>
+                  <Link href="/login">
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="border-brand-border text-muted-foreground hover:bg-brand-bg"
+                    >
+                      Iniciar sesión
+                    </Button>
+                  </Link>
                 </div>
               </motion.div>
               <motion.div
@@ -417,9 +425,6 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="md:col-span-1">
               <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-brand-primary rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">J</span>
-                </div>
                 <div className="flex items-center space-x-2 mb-4">
                   <Image src="/logo.svg" alt="Logo" width={32} height={32} />
                   <span className="text-xl font-semibold text-foreground">JugáHora</span>
