@@ -271,7 +271,7 @@ export default function Home() {
                 transition={{ duration: 0.6 }}
               >
                 <Image
-                  src="/mockup.png"
+                  src="/celulares.png"
                   alt="Mockup JugáHora"
                   width={900}
                   height={500}
