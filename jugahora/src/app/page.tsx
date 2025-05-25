@@ -67,20 +67,20 @@ function CustomFaq() {
   return (
     <div className="space-y-4">
       {faqItems.map((item, index) => (
-        <div key={index} className="border-b border-gray-200 last:border-b-0">
+        <div key={index} className="border-b border-brand-border last:border-b-0">
           <button
             className="w-full flex justify-between items-center py-6 text-left focus:outline-none"
             onClick={() => toggleItem(index)}
           >
-            <h3 className="text-lg font-medium text-gray-800">{item.question}</h3>
+            <h3 className="text-lg font-medium text-foreground">{item.question}</h3>
             {openItem === index ? (
-              <ChevronUp className="h-5 w-5 text-blue-500" />
+              <ChevronUp className="h-5 w-5 text-brand-primary" />
             ) : (
-              <ChevronDown className="h-5 w-5 text-blue-500" />
+              <ChevronDown className="h-5 w-5 text-brand-primary" />
             )}
           </button>
           {openItem === index && (
-            <div className="pb-6 text-gray-600 animate-accordion-down">
+            <div className="pb-6 text-muted-foreground animate-accordion-down">
               <p>{item.answer}</p>
             </div>
           )}
@@ -101,19 +101,19 @@ interface FeatureCardProps {
 // Componente de tarjeta de característica
 function FeatureCard({ title, description, icon, color = "blue" }: FeatureCardProps) {
   const colorClasses = {
-    blue: "bg-blue-50 text-blue-500",
+    blue: "bg-blue-50 text-brand-primary",
     green: "bg-green-50 text-green-500",
     red: "bg-red-50 text-red-500",
     purple: "bg-purple-50 text-purple-500",
   }
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
+    <div className="bg-white rounded-lg border border-brand-border p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
       <div className={`${colorClasses[color]} p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4`}>
         {icon}
       </div>
-      <h3 className="text-xl font-semibold text-gray-800 mb-2">{title}</h3>
-      <p className="text-gray-600">{description}</p>
+      <h3 className="text-xl font-semibold text-foreground mb-2">{title}</h3>
+      <p className="text-muted-foreground">{description}</p>
     </div>
   )
 }
@@ -122,27 +122,28 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-white">
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white">
+      <header className="sticky top-0 z-50 w-full border-b border-brand-border bg-white">
         <div className="container flex h-16 items-center justify-between">
           <Link className="flex items-center justify-center" href="/">
-            <span className="text-xl font-bold text-gray-800">JugáHora</span>
+            <Image src="/logo.svg" alt="Logo" width={32} height={32} />
+            <span className="text-xl font-bold text-foreground">JugáHora</span>
           </Link>
           <nav className="hidden md:flex gap-6">
             <Link
               href="#jugadores"
-              className="text-sm font-medium text-gray-600 hover:text-blue-500 transition-colors duration-200"
+              className="text-sm font-medium text-muted-foreground hover:text-brand-primary transition-colors duration-200"
             >
               Jugadores
             </Link>
             <Link
               href="#clubes"
-              className="text-sm font-medium text-gray-600 hover:text-blue-500 transition-colors duration-200"
+              className="text-sm font-medium text-muted-foreground hover:text-brand-primary transition-colors duration-200"
             >
               Clubes
             </Link>
             <Link
               href="#faq"
-              className="text-sm font-medium text-gray-600 hover:text-blue-500 transition-colors duration-200"
+              className="text-sm font-medium text-muted-foreground hover:text-brand-primary transition-colors duration-200"
             >
               FAQ
             </Link>
@@ -150,12 +151,12 @@ export default function Home() {
           <div className="flex items-center gap-4">
             <Link
               href="/login"
-              className="text-sm font-medium text-gray-600 hover:text-blue-500 transition-colors duration-200"
+              className="text-sm font-medium text-muted-foreground hover:text-brand-primary transition-colors duration-200"
             >
               Iniciar Sesión
             </Link>
             <Link href="/registro">
-              <Button className="bg-blue-500 hover:bg-blue-600 transition-colors duration-200">Registrarse</Button>
+              <Button className="bg-brand-primary hover:bg-brand-hover transition-colors duration-200">Registrarse</Button>
             </Link>
           </div>
         </div>
@@ -172,18 +173,18 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
               >
-                <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-800">
+                <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground">
                   La plataforma para jugadores y clubes de pádel
                 </h1>
-                <p className="text-xl text-gray-600">
+                <p className="text-xl text-muted-foreground">
                   JugáHora es la plataforma donde los jugadores encuentran partidos fácilmente y los clubes se
                   despreocupan por llenar sus horarios.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 pt-4 justify-center">
-                  <Button size="lg" className="bg-blue-500 hover:bg-blue-600 text-white">
+                  <Button size="lg" className="bg-brand-primary hover:bg-brand-hover text-white">
                     Registrarse
                   </Button>
-                  <Button variant="outline" size="lg" className="border-gray-300 text-gray-700 hover:bg-gray-100">
+                  <Button variant="outline" size="lg" className="border-gray-300 text-muted-foreground hover:bg-brand-bg">
                     Conocer más
                   </Button>
                 </div>
@@ -210,8 +211,8 @@ export default function Home() {
         <section id="jugadores" className="py-16 bg-white">
           <div className="container">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-800 mb-4">Para Jugadores</h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <h2 className="text-3xl font-bold text-foreground mb-4">Para Jugadores</h2>
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
                 Encontrá partidos, conocé jugadores y disfrutá del pádel sin complicaciones.
               </p>
             </div>
@@ -274,11 +275,11 @@ export default function Home() {
         </section>
 
         {/* Clubes Section */}
-        <section id="clubes" className="py-16 bg-gray-50">
+        <section id="clubes" className="py-16 bg-brand-page">
           <div className="container">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-800 mb-4">Para Clubes</h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <h2 className="text-3xl font-bold text-foreground mb-4">Para Clubes</h2>
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
                 Gestioná tus canchas, organizá eventos y maximizá tus ingresos.
               </p>
             </div>
@@ -323,8 +324,8 @@ export default function Home() {
 
               <div>
                 <div className="text-center mb-12">
-                  <h3 className="text-3xl font-bold text-gray-800 mb-4">Dashboard intuitivo</h3>
-                  <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                  <h3 className="text-3xl font-bold text-foreground mb-4">Dashboard intuitivo</h3>
+                  <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
                     Visualizá toda la información importante de tu club en un solo lugar.
                   </p>
                 </div>
@@ -336,7 +337,7 @@ export default function Home() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.5 }}
                 >
-                  <div className="bg-white rounded-lg border border-gray-200 shadow-lg overflow-hidden max-w-4xl mx-auto">
+                  <div className="bg-white rounded-lg border border-brand-border shadow-lg overflow-hidden max-w-4xl mx-auto">
                     <Image
                       src="/dashboard.webp"
                       alt="Dashboard de JugáHora"
@@ -355,11 +356,11 @@ export default function Home() {
         <section id="faq" className="py-16 bg-white">
           <div className="container">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-800 mb-4">Preguntas Frecuentes</h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">Respondemos tus dudas sobre JugáHora.</p>
+              <h2 className="text-3xl font-bold text-foreground mb-4">Preguntas Frecuentes</h2>
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">Respondemos tus dudas sobre JugáHora.</p>
             </div>
             <motion.div
-              className="max-w-3xl mx-auto bg-white rounded-lg border border-gray-200 p-8 shadow-sm"
+              className="max-w-3xl mx-auto bg-white rounded-lg border border-brand-border p-8 shadow-sm"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -371,7 +372,7 @@ export default function Home() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-16 bg-blue-500">
+        <section className="py-16 bg-brand-primary">
           <div className="container text-center">
             <motion.h2
               className="text-3xl font-bold text-white mb-6"
@@ -383,7 +384,7 @@ export default function Home() {
               Sumate a la comunidad JugáHora
             </motion.h2>
             <motion.p
-              className="text-xl text-blue-100 max-w-2xl mx-auto mb-8"
+              className="text-xl text-brand-soft max-w-2xl mx-auto mb-8"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
@@ -401,7 +402,7 @@ export default function Home() {
             >
               <Button
                 size="lg"
-                className="bg-white text-blue-500 hover:bg-gray-100 text-lg px-8 transition-all duration-200"
+                className="bg-white text-brand-primary hover:bg-brand-bg text-lg px-8 transition-all duration-200"
               >
                 Comenzar ahora
               </Button>
@@ -411,31 +412,34 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white text-gray-700 py-12 border-t border-gray-200">
+      <footer className="bg-white text-muted-foreground py-12 border-t border-brand-border">
         <div className="container">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="md:col-span-1">
               <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                <div className="w-8 h-8 bg-brand-primary rounded-full flex items-center justify-center">
                   <span className="text-white font-bold text-sm">J</span>
                 </div>
-                <span className="text-xl font-semibold text-gray-800">JugáHora</span>
+                <div className="flex items-center space-x-2 mb-4">
+                  <Image src="/logo.svg" alt="Logo" width={32} height={32} />
+                  <span className="text-xl font-semibold text-foreground">JugáHora</span>
+                </div>
               </div>
-              <p className="text-gray-600 text-sm">La plataforma que conecta jugadores con clubes deportivos.</p>
+              <p className="text-muted-foreground text-sm">La plataforma que conecta jugadores con clubes deportivos.</p>
             </div>
 
             <div>
-              <h3 className="font-semibold text-gray-800 mb-4">Enlaces</h3>
+              <h3 className="font-semibold text-foreground mb-4">Enlaces</h3>
               <ul className="space-y-2">
                 <li>
-                  <Link href="#" className="text-gray-600 hover:text-blue-500 transition-colors duration-200 text-sm">
+                  <Link href="#" className="text-muted-foreground hover:text-brand-primary transition-colors duration-200 text-sm">
                     Inicio
                   </Link>
                 </li>
                 <li>
                   <Link
                     href="#jugadores"
-                    className="text-gray-600 hover:text-blue-500 transition-colors duration-200 text-sm"
+                    className="text-muted-foreground hover:text-brand-primary transition-colors duration-200 text-sm"
                   >
                     Jugadores
                   </Link>
@@ -443,7 +447,7 @@ export default function Home() {
                 <li>
                   <Link
                     href="#clubes"
-                    className="text-gray-600 hover:text-blue-500 transition-colors duration-200 text-sm"
+                    className="text-muted-foreground hover:text-brand-primary transition-colors duration-200 text-sm"
                   >
                     Clubes
                   </Link>
@@ -451,7 +455,7 @@ export default function Home() {
                 <li>
                   <Link
                     href="#faq"
-                    className="text-gray-600 hover:text-blue-500 transition-colors duration-200 text-sm"
+                    className="text-muted-foreground hover:text-brand-primary transition-colors duration-200 text-sm"
                   >
                     FAQ
                   </Link>
@@ -460,20 +464,20 @@ export default function Home() {
             </div>
 
             <div>
-              <h3 className="font-semibold text-gray-800 mb-4">Legal</h3>
+              <h3 className="font-semibold text-foreground mb-4">Legal</h3>
               <ul className="space-y-2">
                 <li>
-                  <Link href="#" className="text-gray-600 hover:text-blue-500 transition-colors duration-200 text-sm">
+                  <Link href="#" className="text-muted-foreground hover:text-brand-primary transition-colors duration-200 text-sm">
                     Términos y Condiciones
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="text-gray-600 hover:text-blue-500 transition-colors duration-200 text-sm">
+                  <Link href="#" className="text-muted-foreground hover:text-brand-primary transition-colors duration-200 text-sm">
                     Política de Privacidad
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="text-gray-600 hover:text-blue-500 transition-colors duration-200 text-sm">
+                  <Link href="#" className="text-muted-foreground hover:text-brand-primary transition-colors duration-200 text-sm">
                     Cookies
                   </Link>
                 </li>
@@ -481,18 +485,18 @@ export default function Home() {
             </div>
 
             <div>
-              <h3 className="font-semibold text-gray-800 mb-4">Contacto</h3>
+              <h3 className="font-semibold text-foreground mb-4">Contacto</h3>
               <div className="space-y-2 text-sm">
-                <p className="text-gray-600">Email: jugahora.contacto@gmail.com</p>
-                <p className="text-gray-600">Teléfono: +54 9 11 6373 0035</p>
+                <p className="text-muted-foreground">Email: jugahora.contacto@gmail.com</p>
+                <p className="text-muted-foreground">Teléfono: +54 9 11 6373 0035</p>
                 <div className="flex space-x-3 mt-4">
-                  <Link href="#" className="text-gray-600 hover:text-blue-500 transition-colors duration-200">
+                  <Link href="#" className="text-muted-foreground hover:text-brand-primary transition-colors duration-200">
                     <Twitter />
                   </Link>
-                  <Link href="#" className="text-gray-600 hover:text-blue-500 transition-colors duration-200">
+                  <Link href="#" className="text-muted-foreground hover:text-brand-primary transition-colors duration-200">
                     <Linkedin />
                   </Link>
-                  <Link href="#" className="text-gray-600 hover:text-blue-500 transition-colors duration-200">
+                  <Link href="#" className="text-muted-foreground hover:text-brand-primary transition-colors duration-200">
                     <Instagram />
                   </Link>
                 </div>
@@ -500,8 +504,8 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="border-t border-gray-200 mt-8 pt-8 text-center">
-            <p className="text-gray-500 text-sm">© 2025 JugáHora. Todos los derechos reservados.</p>
+          <div className="border-t border-brand-border mt-8 pt-8 text-center">
+            <p className="text-muted-foreground text-sm">© 2025 JugáHora. Todos los derechos reservados.</p>
           </div>
         </div>
       </footer>
