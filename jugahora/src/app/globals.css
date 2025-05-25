@@ -88,6 +88,18 @@
   border: none !important;
 }
 
+/* Día seleccionado en el calendario */
+.react-calendar__tile--active {
+  background-color: #e5e7eb !important; /* Gris claro (Tailwind gray-200) */
+  color: #111827 !important; /* Gris oscuro para el texto (Tailwind gray-900) */
+  font-weight: 600;
+}
+
+/* Hover sobre día seleccionado */
+.react-calendar__tile--active:hover {
+  background-color: #d1d5db !important; /* Un poco más oscuro al hacer hover */
+}
+
 .react-calendar__navigation {
   display: flex;
   justify-content: space-between;
