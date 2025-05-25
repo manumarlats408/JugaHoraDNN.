@@ -271,12 +271,13 @@ export default function Home() {
                 transition={{ duration: 0.6 }}
               >
                 <Image
-                  src="/celulares.png"
-                  alt="Mockups de funcionalidades para jugadores"
-                  width={600}
-                  height={400}
-                  className="rounded-lg"
+                  src="/mockup.png"
+                  alt="Mockup JugáHora"
+                  width={900}
+                  height={500}
+                  className="w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-xl mx-auto"
                 />
+
               </motion.div>
             </div>
           </div>
