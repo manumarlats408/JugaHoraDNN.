@@ -123,9 +123,9 @@ export default function Home() {
     <div className="flex flex-col min-h-screen bg-white">
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b border-brand-border bg-white">
-        <div className="container flex h-16 items-center justify-between">
+        <div className="container flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 sm:gap-4 h-auto sm:h-16 py-2 sm:py-0">
           <Link className="flex items-center justify-center" href="/">
-            <Image src="/logo.svg" alt="Logo" width={32} height={32} />
+            <Image src="/logo.svg" alt="Logo" width={32} height={32} className="max-w-[32px]" />
             <span className="text-xl font-bold text-foreground">JugáHora</span>
           </Link>
           {/* <nav className="hidden md:flex gap-6">
@@ -427,7 +427,7 @@ export default function Home() {
             <div className="md:col-span-1">
               <div className="flex items-center space-x-2 mb-4">
                 <div className="flex items-center space-x-2 mb-4">
-                  <Image src="/logo.svg" alt="Logo" width={32} height={32} />
+                  <Image src="/logo.svg" alt="Logo" width={32} height={32} className="max-w-[32px]" />
                   <span className="text-xl font-semibold text-foreground">JugáHora</span>
                 </div>
               </div>
