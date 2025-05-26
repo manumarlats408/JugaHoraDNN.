@@ -276,7 +276,7 @@ export default function Home() {
                 transition={{ duration: 0.6 }}
               >
                 <Image
-                  src="/celulares.png"
+                  src="/celulares2.png"
                   alt="Mockup JugáHora"
                   className="w-full max-w-7xl h-auto mx-auto"
                 />
