@@ -148,15 +148,23 @@ export default function Home() {
               FAQ
             </Link>
           </nav> */}
-          <div className="flex items-center gap-4">
-            <Link
-              href="/login"
-              className="text-sm font-medium text-muted-foreground hover:text-brand-primary transition-colors duration-200"
-            >
-              Iniciar Sesión
+          <div className="flex flex-col xs:flex-row items-center gap-2 xs:gap-4 w-full xs:w-auto">
+            <Link href="/login" className="w-full xs:w-auto">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full xs:w-auto text-sm px-4 py-2 border-brand-border text-muted-foreground hover:bg-brand-bg transition"
+              >
+                Iniciar sesión
+              </Button>
             </Link>
-            <Link href="/registro">
-              <Button className="bg-brand-primary hover:bg-brand-hover transition-colors duration-200">Registrarse</Button>
+            <Link href="/registro" className="w-full xs:w-auto">
+              <Button
+                size="sm"
+                className="w-full xs:w-auto text-sm px-4 py-2 bg-brand-primary text-white hover:bg-brand-hover transition"
+              >
+                Registrarse
+              </Button>
             </Link>
           </div>
         </div>
@@ -180,17 +188,20 @@ export default function Home() {
                   JugáHora es la plataforma donde los jugadores encuentran partidos fácilmente y los clubes se
                   despreocupan por llenar sus horarios.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 pt-4 justify-center">
-                  <Link href="/registro">
-                    <Button size="lg" className="bg-brand-primary hover:bg-brand-hover text-white">
+                <div className="flex flex-col sm:flex-row gap-4 pt-4 w-full max-w-md mx-auto">
+                  <Link href="/registro" className="w-full sm:w-auto">
+                    <Button
+                      size="lg"
+                      className="w-full sm:w-auto px-6 py-3 text-base bg-brand-primary text-white hover:bg-brand-hover transition-colors duration-200"
+                    >
                       Registrarse
                     </Button>
                   </Link>
-                  <Link href="/login">
+                  <Link href="/login" className="w-full sm:w-auto">
                     <Button
                       variant="outline"
                       size="lg"
-                      className="border-brand-border text-muted-foreground hover:bg-brand-bg"
+                      className="w-full sm:w-auto px-6 py-3 text-base border-brand-border text-muted-foreground hover:bg-brand-bg transition-colors duration-200"
                     >
                       Iniciar sesión
                     </Button>
@@ -403,12 +414,14 @@ export default function Home() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.4 }}
             >
-              <Button
-                size="lg"
-                className="bg-white text-brand-primary hover:bg-brand-bg text-lg px-8 transition-all duration-200"
-              >
-                Comenzar ahora
-              </Button>
+              <Link href="/registro" className="w-full sm:w-auto">
+                <Button
+                  size="lg"
+                  className="w-full sm:w-auto px-6 py-3 text-base bg-white text-brand-primary hover:bg-brand-bg transition-colors duration-200"
+                >
+                  Comenzar ahora
+                </Button>
+              </Link>
             </motion.div>
           </div>
         </section>
