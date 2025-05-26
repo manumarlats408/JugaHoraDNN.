@@ -275,11 +275,15 @@ export default function Home() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.6 }}
               >
-                <Image
-                  src="/celulares.png"
-                  alt="Mockup JugáHora"
-                  className="w-full max-w-7xl h-auto mx-auto"
-                />
+                <div className="w-full max-w-md sm:max-w-2xl md:max-w-4xl lg:max-w-6xl xl:max-w-7xl">
+                  <Image
+                    src="/celulares.png"
+                    alt="Mockup JugáHora"
+                    className="w-full h-auto"
+                    width={1200}
+                    height={700}
+                  />
+                </div>
               </motion.div>
 
             </div>
@@ -349,12 +353,17 @@ export default function Home() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.5 }}
                 >
-                  <Image
-                    src="/laptop.png"
-                    alt="Dashboard de JugáHora"
-                    className="w-full max-w-7xl h-auto"
-                  />
+                  <div className="w-full max-w-md sm:max-w-2xl md:max-w-4xl lg:max-w-6xl xl:max-w-7xl">
+                    <Image
+                      src="/laptop.png"
+                      alt="Dashboard de JugáHora"
+                      className="w-full h-auto"
+                      width={1600}
+                      height={900}
+                    />
+                  </div>
                 </motion.div>
+
               </div>
             </div>
           </div>
