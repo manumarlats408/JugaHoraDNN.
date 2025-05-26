@@ -264,7 +264,7 @@ export default function Home() {
               </div>
 
               <motion.div
-                className="flex justify-center mt-12"
+                className="flex justify-center px-4 mt-12"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -273,10 +273,10 @@ export default function Home() {
                 <Image
                   src="/celulares.png"
                   alt="Mockup JugáHora"
-                  className="w-[700px] max-w-full h-auto mx-auto"
+                  className="w-full max-w-7xl h-auto mx-auto"
                 />
-
               </motion.div>
+
             </div>
           </div>
         </section>
@@ -338,20 +338,17 @@ export default function Home() {
                 </div> */}
 
                 <motion.div
-                  className="flex justify-center"
+                  className="flex justify-center px-4"
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5 }}
                 >
-                  <div className="flex justify-center">
-                    <Image
-                      src="/laptop.png"
-                      alt="Dashboard de JugáHora"
-                      className="w-[700px] max-w-full h-auto"
-                    />
-                  </div>
-
+                  <Image
+                    src="/laptop.png"
+                    alt="Dashboard de JugáHora"
+                    className="w-full max-w-7xl h-auto"
+                  />
                 </motion.div>
               </div>
             </div>
