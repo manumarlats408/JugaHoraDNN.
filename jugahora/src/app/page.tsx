@@ -148,20 +148,20 @@ export default function Home() {
               FAQ
             </Link>
           </nav> */}
-          <div className="flex flex-col xs:flex-row items-center gap-2 xs:gap-4">
-            <Link href="/login">
-              <span className="text-sm font-medium text-muted-foreground hover:text-brand-primary transition-colors duration-200">
-                Iniciar Sesión
-              </span>
-            </Link>
-            <Link href="/registro">
-              <Button
-                className="w-full xs:w-auto text-sm bg-brand-primary hover:bg-brand-hover text-white transition-colors duration-200"
-              >
-                Registrarse
-              </Button>
-            </Link>
-          </div>
+          <div className="flex items-center gap-4">
+          <Link
+            href="/login"
+            className="text-sm font-medium text-muted-foreground hover:text-brand-primary transition-colors duration-200"
+          >
+            Iniciar Sesión
+          </Link>
+          <Link href="/registro">
+            <Button className="bg-brand-primary hover:bg-brand-hover transition-colors duration-200">
+              Registrarse
+            </Button>
+          </Link>
+        </div>
+
 
         </div>
       </header>
