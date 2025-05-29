@@ -165,15 +165,16 @@ export default function Home() {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="pt-6 pb-12 bg-white">
-          <div className="container">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-              <motion.div
-                className="space-y-4"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-              >
+        <section className="relative min-h-screen bg-white overflow-hidden">
+          <div className="grid grid-cols-1 md:grid-cols-2 min-h-screen">
+            {/* Left side - Content */}
+            <motion.div
+              className="flex items-center justify-center px-6 md:px-12 lg:px-16 py-12 md:py-0"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <div className="space-y-6 max-w-lg">
                 <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground">
                   La plataforma creada para jugadores y clubes de pádel
                 </h1>
@@ -181,7 +182,7 @@ export default function Home() {
                   JugáHora es la plataforma donde los jugadores encuentran partidos fácilmente y los clubes se
                   despreocupan por llenar sus horarios.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 pt-4 w-full max-w-md mx-auto">
+                <div className="flex flex-col sm:flex-row gap-4 pt-4">
                   <Link href="/registro" className="w-full sm:w-auto">
                     <Button
                       size="lg"
@@ -200,22 +201,24 @@ export default function Home() {
                     </Button>
                   </Link>
                 </div>
-              </motion.div>
-              <motion.div
-                className="flex justify-center"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-              >
-                <Image
-                  src="/foto_pelota.webp"
-                  alt="Cancha de pádel con pelota - JugáHora"
-                  width={450}
-                  height={350}
-                  className="rounded-lg shadow-md"
-                />
-              </motion.div>
-            </div>
+              </div>
+            </motion.div>
+
+            {/* Right side - Image covering full area */}
+            <motion.div
+              className="relative hidden md:block"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <Image
+                src="/foto_pelota.webp"
+                alt="Cancha de pádel con pelota - JugáHora"
+                fill
+                className="object-cover"
+                priority
+              />
+            </motion.div>
           </div>
         </section>
 
