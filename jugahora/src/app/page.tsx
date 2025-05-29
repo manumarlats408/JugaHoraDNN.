@@ -165,11 +165,11 @@ export default function Home() {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative min-h-screen bg-white overflow-hidden">
+        <section className="relative min-h-[60vh] md:min-h-screen bg-white overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-2 min-h-screen">
             {/* Left side - Content */}
             <motion.div
-              className="flex items-center justify-center px-6 md:px-12 lg:px-16 py-12 md:py-0"
+              className="flex items-center justify-center px-6 md:px-12 lg:px-16 py-8 md:py-0"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
@@ -307,7 +307,7 @@ export default function Home() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.6 }}
                 >
-                  <Image src="/dashboard.webp" alt="Dashboard de JugáHora" className="w-full max-w-2xl h-auto" />
+                  <Image src="/laptop.png" alt="Dashboard de JugáHora" className="w-full max-w-2xl h-auto" />
                 </motion.div>
 
                 {/* Right side - Feature cards in 2x2 grid */}
