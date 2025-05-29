@@ -5,7 +5,7 @@ import type React from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Clock, Users, Calendar, Trophy, FileText, Bell, UserCircle, ChevronDown, ChevronUp } from "lucide-react"
+import { Clock, Users, Calendar, Trophy, FileText, Bell, UserCircle, ChevronDown, ChevronUp, Mail } from "lucide-react"
 import { useState } from "react"
 import { motion } from "framer-motion"
 
@@ -348,6 +348,28 @@ export default function Home() {
                   ))}
                 </div>
               </div>
+            </div>
+          </div>
+          <div className="mt-16 bg-white rounded-lg border border-brand-border p-8 shadow-sm max-w-4xl mx-auto">
+            <div className="text-center">
+              <h3 className="text-2xl font-bold text-foreground mb-4">¿Sos un club?</h3>
+              <p className="text-lg text-muted-foreground mb-6">
+                Los botones de registro e inicio de sesión son exclusivamente para jugadores. Si sos un club y querés
+                formar parte de JugáHora, contactanos directamente y nos encargaremos de crear y configurar tu cuenta en
+                poco tiempo.
+              </p>
+              <Link
+                href="mailto:jugahora.contacto@gmail.com?subject=Registro%20de%20Club%20en%20JugáHora"
+                className="inline-flex items-center"
+              >
+                <Button
+                  size="lg"
+                  className="px-6 py-3 text-base bg-brand-primary text-white hover:bg-brand-hover transition-colors duration-200"
+                >
+                  <Mail className="mr-2 h-5 w-5" />
+                  Contactar por email
+                </Button>
+              </Link>
             </div>
           </div>
         </section>
