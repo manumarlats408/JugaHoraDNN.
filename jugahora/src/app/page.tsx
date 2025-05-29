@@ -277,7 +277,7 @@ export default function Home() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.6 }}
                 >
-                  <Image src="/celulares2.png" alt="Mockup JugáHora" className="w-full max-w-2xl h-auto" />
+                  <Image src="/celulares3.png" alt="Mockup JugáHora" className="w-full max-w-2xl h-auto" />
                 </motion.div>
               </div>
             </div>
