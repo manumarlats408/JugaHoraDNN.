@@ -307,7 +307,7 @@ export default function Home() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.6 }}
                 >
-                  <Image src="/laptop.png" alt="Dashboard de JugáHora" className="w-full max-w-2xl h-auto" />
+                  <Image src="/dashboard.webp" alt="Dashboard de JugáHora" className="w-full max-w-2xl h-auto" />
                 </motion.div>
 
                 {/* Right side - Feature cards in 2x2 grid */}
