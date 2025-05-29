@@ -165,11 +165,11 @@ export default function Home() {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative min-h-[60vh] md:min-h-screen bg-white overflow-hidden">
-          <div className="grid grid-cols-1 md:grid-cols-2 min-h-screen">
+        <section className="relative min-h-fit md:min-h-screen bg-white overflow-hidden">
+          <div className="grid grid-cols-1 md:grid-cols-2 md:min-h-screen">
             {/* Left side - Content */}
             <motion.div
-              className="flex items-center justify-center px-6 md:px-12 lg:px-16 py-8 md:py-0"
+              className="flex items-start md:items-center justify-center px-6 md:px-12 lg:px-16 py-6 md:py-0 pt-8 md:pt-0"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
