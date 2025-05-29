@@ -23,12 +23,11 @@ const Linkedin = () => (
 
 const Instagram = () => (
   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-    <path d="M12.017 0C8.396 0 7.989.016 6.756.072 5.526.127 4.718.302 4.008.57c-.738.292-1.363.682-1.988 1.307C1.395 2.502 1.005 3.127.713 3.865c-.268.71-.443 1.518-.498 2.748C.159 7.847.143 8.254.143 11.875s.016 4.028.072 5.261c.055 1.23.23 2.038.498 2.748.292.738.682 1.363 1.307 1.988.625.625 1.25 1.015 1.988 1.307.71.268 1.518.443 2.748.498 1.233.056 1.64.072 5.261.072s4.028-.016 5.261-.072c1.23-.055 2.038-.23 2.748-.498.738-.292 1.363-.682 1.988-1.307.625-.625 1.015-1.25 1.307-1.988.268-.71.443-1.518.498-2.748.056-1.233.072-1.64.072-5.261s-.016-4.028-.072-5.261c-.055-1.23-.23-2.038-.498-2.748-.292-.738-.682-1.363-1.307-1.988C19.502 1.395 18.877 1.005 18.139.713c-.71-.268-1.518-.443-2.748-.498C14.158.159 13.751.143 12.017.143zM12.017 2.2c3.556 0 3.978.016 5.38.072 1.299.059 2.006.277 2.476.461.622.242 1.066.532 1.532.998.466.466.756.91.998 1.532.184.47.402 1.177.461 2.476.056 1.402.072 1.824.072 5.38s-.016 3.978-.072 5.38c-.059 1.299-.277 2.006-.461 2.476-.242.622-.532 1.066-.998 1.532-.466.466-.91.756-1.532.998-.47.184-1.177.402-2.476.461-1.402.056-1.824.072-5.38.072s-3.978-.016-5.38-.072c-1.299-.059-2.006-.277-2.476-.461-.622-.242-1.066-.532-1.532-.998-.466-.466-.756-.91-.998-1.532-.184-.47-.402-1.177-.461-2.476-.056-1.402-.072-1.824-.072-5.38s.016-3.978.072-5.38c.059-1.299.277-2.006.461-2.476.242-.622.532-1.066.998-1.532.466-.466.91-.756 1.532-.998.47-.184 1.177-.402 2.476-.461 1.402-.056 1.824-.072 5.38-.072z" />
+    <path d="M12.017 0C8.396 0 7.989.016 6.756.072 5.526.127 4.718.302 4.008.57c-.738.292-1.363.682-1.988 1.307C1.395 2.502 1.005 3.127.713 3.865c-.268.71-.443 1.518-.498 2.748C.159 7.847.143 8.254.143 11.875s.016 4.028.072 5.261c.055 1.23.23 2.038.498 2.748.292.738.682 1.363 1.988 1.307.625.625 1.25 1.015 1.988 1.307.71.268 1.518.443 2.748.498 1.233.056 1.64.072 5.261.072s4.028-.016 5.261-.072c1.23-.055 2.038-.23 2.748-.498.738-.292 1.363-.682 1.988-1.307.625-.625 1.015-1.25 1.307-1.988.268-.71.443-1.518.498-2.748.056-1.233.072-1.64.072-5.261s-.016-4.028-.072-5.261c-.055-1.23-.23-2.038-.498-2.748-.292-.738-.682-1.363-1.307-1.988C19.502 1.395 18.877 1.005 18.139.713c-.71-.268-1.518-.443-2.748-.498C14.158.159 13.751.143 12.017.143zM12.017 2.2c3.556 0 3.978.016 5.38.072 1.299.059 2.006.277 2.476.461.622.242 1.066.532 1.532.998.466.466.756.91.998 1.532.184.47.402 1.177.461 2.476.056 1.402.072 1.824.072 5.38s-.016 3.978-.072 5.38c-.059 1.299-.277 2.006-.461 2.476-.242.622-.532 1.066-.998 1.532-.466.466-.91.756-1.532.998-.47.184-1.177.402-2.476.461-1.402.056-1.824.072-5.38.072s-3.978-.016-5.38-.072c-1.299-.059-2.006-.277-2.476-.461-.622-.242-1.066-.532-1.532-.998-.466-.466-.91-.756-1.532-.998-.47-.184-1.177.402-2.476-.461-1.402-.056-1.824-.072-5.38-.072z" />
     <path d="M12.017 5.838c-3.361 0-6.037 2.676-6.037 6.037s2.676 6.037 6.037 6.037 6.037-2.676 6.037-6.037-2.676-6.037-6.037-6.037zm0 9.963c-2.168 0-3.926-1.758-3.926-3.926s1.758-3.926 3.926-3.926 3.926 1.758 3.926 3.926-1.758 3.926-3.926 3.926z" />
     <circle cx="18.406" cy="5.594" r="1.44" />
   </svg>
 )
-
 
 // Componente FAQ personalizado
 function CustomFaq() {
@@ -231,57 +230,56 @@ export default function Home() {
             </div>
 
             <div className="space-y-12">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {[
-                  {
-                    icon: <Clock className="h-6 w-6" />,
-                    title: "Unite a partidos",
-                    description: "Encontrá partidos según tu nivel y disponibilidad.",
-                    color: "blue" as const,
-                  },
-                  {
-                    icon: <Users className="h-6 w-6" />,
-                    title: "Comunidad activa",
-                    description: "Conocé jugadores y hacé amigos.",
-                    color: "green" as const,
-                  },
-                  {
-                    icon: <UserCircle className="h-6 w-6" />,
-                    title: "Perfil personalizado",
-                    description: "Configurá tu nivel y preferencias.",
-                    color: "purple" as const,
-                  },
-                  {
-                    icon: <Bell className="h-6 w-6" />,
-                    title: "Notificaciones",
-                    description: "Recibí alertas de partidos y cambios.",
-                    color: "red" as const,
-                  },
-                ].map((item, index) => (
-                  <FeatureCard
-                    key={index}
-                    icon={item.icon}
-                    title={item.title}
-                    description={item.description}
-                    color={item.color}
-                  />
-                ))}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                {/* Left side - Feature cards in 2x2 grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  {[
+                    {
+                      icon: <Clock className="h-6 w-6" />,
+                      title: "Unite a partidos",
+                      description: "Encontrá partidos según tu nivel y disponibilidad.",
+                      color: "blue" as const,
+                    },
+                    {
+                      icon: <Users className="h-6 w-6" />,
+                      title: "Comunidad activa",
+                      description: "Conocé jugadores y hacé amigos.",
+                      color: "green" as const,
+                    },
+                    {
+                      icon: <UserCircle className="h-6 w-6" />,
+                      title: "Perfil personalizado",
+                      description: "Configurá tu nivel y preferencias.",
+                      color: "purple" as const,
+                    },
+                    {
+                      icon: <Bell className="h-6 w-6" />,
+                      title: "Notificaciones",
+                      description: "Recibí alertas de partidos y cambios.",
+                      color: "red" as const,
+                    },
+                  ].map((item, index) => (
+                    <FeatureCard
+                      key={index}
+                      icon={item.icon}
+                      title={item.title}
+                      description={item.description}
+                      color={item.color}
+                    />
+                  ))}
+                </div>
+
+                {/* Right side - Mobile mockups */}
+                <motion.div
+                  className="flex justify-center"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6 }}
+                >
+                  <Image src="/celulares2.png" alt="Mockup JugáHora" className="w-full max-w-2xl h-auto" />
+                </motion.div>
               </div>
-
-              <motion.div
-                className="flex justify-center px-4 mt-12"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
-              >
-                <Image
-                  src="/celulares2.png"
-                  alt="Mockup JugáHora"
-                  className="w-full max-w-7xl h-auto mx-auto"
-                />
-              </motion.div>
-
             </div>
           </div>
         </section>
@@ -349,11 +347,7 @@ export default function Home() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.5 }}
                 >
-                  <Image
-                    src="/laptop.png"
-                    alt="Dashboard de JugáHora"
-                    className="w-full max-w-7xl h-auto"
-                  />
+                  <Image src="/laptop.png" alt="Dashboard de JugáHora" className="w-full max-w-7xl h-auto" />
                 </motion.div>
               </div>
             </div>
@@ -432,14 +426,19 @@ export default function Home() {
                   <span className="text-xl font-semibold text-foreground">JugáHora</span>
                 </div>
               </div>
-              <p className="text-muted-foreground text-sm">La plataforma que conecta jugadores con clubes deportivos.</p>
+              <p className="text-muted-foreground text-sm">
+                La plataforma que conecta jugadores con clubes deportivos.
+              </p>
             </div>
 
             <div>
               <h3 className="font-semibold text-foreground mb-4">Enlaces</h3>
               <ul className="space-y-2">
                 <li>
-                  <Link href="#" className="text-muted-foreground hover:text-brand-primary transition-colors duration-200 text-sm">
+                  <Link
+                    href="#"
+                    className="text-muted-foreground hover:text-brand-primary transition-colors duration-200 text-sm"
+                  >
                     Inicio
                   </Link>
                 </li>
@@ -474,17 +473,26 @@ export default function Home() {
               <h3 className="font-semibold text-foreground mb-4">Legal</h3>
               <ul className="space-y-2">
                 <li>
-                  <Link href="#" className="text-muted-foreground hover:text-brand-primary transition-colors duration-200 text-sm">
+                  <Link
+                    href="#"
+                    className="text-muted-foreground hover:text-brand-primary transition-colors duration-200 text-sm"
+                  >
                     Términos y Condiciones
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="text-muted-foreground hover:text-brand-primary transition-colors duration-200 text-sm">
+                  <Link
+                    href="#"
+                    className="text-muted-foreground hover:text-brand-primary transition-colors duration-200 text-sm"
+                  >
                     Política de Privacidad
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="text-muted-foreground hover:text-brand-primary transition-colors duration-200 text-sm">
+                  <Link
+                    href="#"
+                    className="text-muted-foreground hover:text-brand-primary transition-colors duration-200 text-sm"
+                  >
                     Cookies
                   </Link>
                 </li>
@@ -497,13 +505,22 @@ export default function Home() {
                 <p className="text-muted-foreground">Email: jugahora.contacto@gmail.com</p>
                 <p className="text-muted-foreground">Teléfono: +54 9 11 6373 0035</p>
                 <div className="flex space-x-3 mt-4">
-                  <Link href="#" className="text-muted-foreground hover:text-brand-primary transition-colors duration-200">
+                  <Link
+                    href="#"
+                    className="text-muted-foreground hover:text-brand-primary transition-colors duration-200"
+                  >
                     <Twitter />
                   </Link>
-                  <Link href="#" className="text-muted-foreground hover:text-brand-primary transition-colors duration-200">
+                  <Link
+                    href="#"
+                    className="text-muted-foreground hover:text-brand-primary transition-colors duration-200"
+                  >
                     <Linkedin />
                   </Link>
-                  <Link href="#" className="text-muted-foreground hover:text-brand-primary transition-colors duration-200">
+                  <Link
+                    href="#"
+                    className="text-muted-foreground hover:text-brand-primary transition-colors duration-200"
+                  >
                     <Instagram />
                   </Link>
                 </div>
