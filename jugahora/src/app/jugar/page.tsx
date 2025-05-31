@@ -302,7 +302,7 @@ export default function PaginaJuega() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+      <div className="flex justify-center items-center min-h-screen bg-brand-page">
         <p className="text-lg text-gray-600">Cargando partidos...</p>
       </div>
     )
@@ -310,14 +310,14 @@ export default function PaginaJuega() {
 
   if (!user) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+      <div className="flex justify-center items-center min-h-screen bg-brand-page">
         <p className="text-lg text-gray-600">No se pudo cargar la información del usuario. Por favor, inténtalo de nuevo.</p>
       </div>
     )
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
+    <div className="flex flex-col min-h-screen bg-brand-page">
       <header className="px-4 lg:px-6 h-16 flex items-center relative bg-white shadow-md">
         <Link className="flex items-center justify-center" href="/menu">
           <span className="sr-only">JugáHora</span>
@@ -329,7 +329,7 @@ export default function PaginaJuega() {
           {elementosMenu.map((elemento) => (
             <Link
               key={elemento.href}
-              className="flex items-center text-sm font-medium text-gray-600 hover:text-green-600 transition-colors"
+              className="flex items-center text-sm font-medium text-gray-600 hover:text-brand-primary transition-colors"
               href={elemento.href}
             >
               <elemento.icono className="w-4 h-4 mr-2" />
@@ -337,7 +337,8 @@ export default function PaginaJuega() {
             </Link>
           ))}
           <button
-            className="flex items-center text-sm font-medium text-gray-600 hover:text-green-600 transition-colors"
+            className="flex items-center text-sm font-medium text-gray-600 hover:text-brand-primary transition-colors"
+
             onClick={manejarCierreSesion}
           >
             <LogOut className="w-4 h-4 mr-2" />
@@ -348,7 +349,7 @@ export default function PaginaJuega() {
         <Button
           variant="ghost"
           size="icon"
-          className="lg:hidden ml-auto text-gray-600 hover:text-green-600"
+          className="lg:hidden ml-auto text-gray-600 hover:text-brand-primary"
           onClick={alternarMenu}
           aria-label={menuAbierto ? "Cerrar menú" : "Abrir menú"}
         >
@@ -384,10 +385,10 @@ export default function PaginaJuega() {
         </div>
       )}
 
-      <main className="flex-1 p-4 bg-gradient-to-b from-green-50 to-white">
-        <Card className="w-full max-w-4xl mx-auto shadow-lg border-green-100">
-          <CardHeader className="bg-green-50 border-b border-green-100">
-            <CardTitle className="text-2xl font-bold text-green-800 flex items-center">
+      <main className="flex-1 p-4 bg-brand-page">
+        <Card className="w-full max-w-4xl mx-auto shadow-lg border-brand-border">
+          <CardHeader className="bg-brand-bg border-b border-brand-border">
+            <CardTitle className="text-2xl font-bold text-brand-primary flex items-center">
               <Users className="w-6 h-6 mr-2" />
               Unirse a un partido
             </CardTitle>
@@ -486,7 +487,7 @@ export default function PaginaJuega() {
                 return (
                   <div
                     key={match.id}
-                    className="relative flex items-center justify-between p-4 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300 cursor-pointer"
+                    className="relative flex items-center justify-between p-4 border border-brand-border rounded-lg hover:bg-brand-bg transition-colors duration-300 cursor-pointer"
                     onClick={() => handleMatchClick(match.id)}
                   >
                     <div>
@@ -608,7 +609,7 @@ export default function PaginaJuega() {
                     {loadingMatchDetails[match.id] && (
                       <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-70 rounded-lg">
                         <svg
-                          className="animate-spin h-5 w-5 text-green-600"
+                          className="animate-spin h-5 w-5 text-brand-primary" 
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"
                           viewBox="0 0 24 24"
@@ -636,7 +637,7 @@ export default function PaginaJuega() {
         </Card>
         <div className="mt-6 text-center">
           <Link href="/menu">
-            <Button variant="outline" className="bg-white hover:bg-gray-100 text-green-600 border-green-600 hover:border-green-700 transition-colors duration-300">
+            <Button variant="outline" className="bg-white hover:bg-gray-100 text-brand-primary border-brand-primary hover:border-brand-hover transition-colors duration-300">
               Volver al menú
             </Button>
           </Link>
@@ -649,10 +650,10 @@ export default function PaginaJuega() {
             © 2024 JugáHora. Todos los derechos reservados.
           </p>
           <nav className="flex gap-4">
-            <Link className="text-xs text-gray-500 hover:text-green-600 transition-colors" href="/terminos">
+            <Link className="text-xs text-gray-500 hover:text-brand-primary transition-colors" href="/terminos">
               Términos de Servicio
             </Link>
-            <Link className="text-xs text-gray-500 hover:text-green-600 transition-colors" href="/privacidad">
+            <Link className="text-xs text-gray-500 hover:text-brand-primary transition-colors" href="/privacidad">
               Privacidad
             </Link>
           </nav>
@@ -686,7 +687,7 @@ export default function PaginaJuega() {
               <ul className="space-y-3">
                 {joinedUsers.map((user) => (
                   <li key={user.id} className="flex items-start p-2 border border-gray-100 rounded-md hover:bg-gray-50">
-                    <Users className="h-5 w-5 text-green-600 mr-2 mt-0.5" />
+                    <Users className="h-5 w-5 text-brand-primary mr-2 mt-0.5" />
                     <div>
                       <span className="font-medium">{`${user.firstName || ''} ${user.lastName || ''}`}</span>
                       <div className="text-sm text-gray-500 mt-1">

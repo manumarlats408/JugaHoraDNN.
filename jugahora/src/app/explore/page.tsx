@@ -143,7 +143,7 @@ export default function ExploreProfiles() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+      <div className="flex justify-center items-center min-h-screen bg-brand-page">
         <p className="text-lg text-gray-600">Cargando perfiles...</p>
       </div>
     )
@@ -152,7 +152,7 @@ export default function ExploreProfiles() {
   if (isVerifying || !isAuthorized) return null
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 to-white p-6">
+    <div className="min-h-screen bg-brand-page p-6">
       <div className="max-w-3xl mx-auto space-y-6">
         <div className="flex justify-between items-center">
           <Button variant="outline" onClick={() => router.push('/perfil')}>
@@ -160,15 +160,15 @@ export default function ExploreProfiles() {
           </Button>
           <Link
             href="/requests"
-            className="text-sm font-medium text-green-700 hover:underline"
+            className="text-sm font-medium text-brand-primary hover:underline"
           >
             Ver Solicitudes de Amistad ({receivedRequestIds.length})
           </Link>
         </div>
 
-        <Card className="shadow-md border-green-100">
-          <CardHeader className="bg-green-50 border-b border-green-100">
-            <CardTitle className="text-xl font-bold text-green-800">
+        <Card className="shadow-md border border-brand-border">
+          <CardHeader className="bg-brand-bg border-b border-brand-border">
+            <CardTitle className="text-xl font-bold text-brand-primary">
               Explorar Perfiles
             </CardTitle>
           </CardHeader>
@@ -186,7 +186,7 @@ export default function ExploreProfiles() {
                 {filteredProfiles.map((profile) => (
                   <div
                     key={profile.id}
-                    className="flex flex-col sm:flex-row sm:justify-between sm:items-center border p-4 rounded-lg hover:bg-green-50 transition-colors space-y-2 sm:space-y-0"
+                    className="flex flex-col sm:flex-row sm:justify-between sm:items-center border border-brand-border p-4 rounded-lg hover:bg-brand-bg transition-colors space-y-2 sm:space-y-0"
                   >
                     <div>
                       <p className="text-lg font-semibold text-gray-800">

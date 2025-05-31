@@ -55,7 +55,7 @@ export function JugadoresCanceladosDashboard() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+      <div className="flex justify-center items-center min-h-screen bg-brand-page">
         <p className="text-lg text-gray-600">Cargando jugadores cancelados...</p>
       </div>
     )

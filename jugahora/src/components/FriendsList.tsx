@@ -22,18 +22,22 @@ export default function FriendsList({ userId }: { userId: number }) {
 
   return (
     <div>
-      <h2 className="font-bold text-green-800 mb-4">Lista de Amigos</h2>
+      <h2 className="font-bold text-brand-primary mb-4">Lista de Amigos</h2>
       {friends.length > 0 ? (
-        <ul>
+        <ul className="space-y-2">
           {friends.map((friend) => (
-            <li key={friend.id}>
+            <li
+              key={friend.id}
+              className="border border-brand-border rounded p-3 bg-white text-gray-800"
+            >
               {friend.friend.firstName} {friend.friend.lastName}
             </li>
           ))}
         </ul>
       ) : (
-        <p>No tienes amigos aún.</p>
+        <p className="text-gray-500">No tienes amigos aún.</p>
       )}
     </div>
   );
 }
+

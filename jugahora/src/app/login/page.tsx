@@ -21,9 +21,8 @@ export default function PaginaInicioSesion() {
     e.preventDefault()
     setError('')
     setIsLoading(true)
-  
+
     try {
-      console.log('Iniciando proceso de login...');
       const respuesta = await fetch('/api/auth', {
         method: 'POST',
         headers: {
@@ -32,12 +31,9 @@ export default function PaginaInicioSesion() {
         body: JSON.stringify({ email, password }),
         credentials: 'include',
       })
-  
-      console.log('Respuesta recibida:', respuesta.status);
-  
+
       if (respuesta.ok) {
-        const data = await respuesta.json();
-        console.log('Login exitoso, redirigiendo...');
+        const data = await respuesta.json()
         if (data.isClub) {
           router.replace('/club-dashboard')
         } else {
@@ -45,7 +41,6 @@ export default function PaginaInicioSesion() {
         }
       } else {
         const datos = await respuesta.json()
-        console.error('Error en la autenticación:', datos.error);
         setError(datos.error || 'Ocurrió un error durante el inicio de sesión')
       }
     } catch (error) {
@@ -57,14 +52,14 @@ export default function PaginaInicioSesion() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-green-100 p-4">
-      <Link href="/" className="mb-8 text-2xl font-bold flex items-center">
-        <Image src='/logo.svg' alt="JugáHora Logo" width={32} height={32} />
+    <div className="flex flex-col items-center justify-center min-h-screen bg-brand-page p-4">
+      <Link href="/" className="mb-8 text-2xl font-bold flex items-center text-black">
+        <Image src='/logo.svg' alt="JugáHora Logo" width={32} height={32} className="mr-2" />
         JugáHora
       </Link>
-      <Card className="w-full max-w-md shadow-lg">
+      <Card className="w-full max-w-md shadow-lg border border-brand-border">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Iniciar sesión</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center text-brand-primary">Iniciar sesión</CardTitle>
           <p className="text-center text-gray-500">Ingresa tus credenciales para acceder</p>
         </CardHeader>
         <CardContent>
@@ -94,7 +89,11 @@ export default function PaginaInicioSesion() {
               />
             </div>
             {error && <p className="text-red-500 text-center">{error}</p>}
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button
+              type="submit"
+              className="w-full bg-brand-primary text-white hover:bg-brand-hover"
+              disabled={isLoading}
+            >
               {isLoading ? (
                 <>Iniciando sesión...</>
               ) : (
@@ -106,12 +105,12 @@ export default function PaginaInicioSesion() {
           </form>
         </CardContent>
         <CardFooter className="flex flex-col space-y-2">
-          <Link href="/recuperar-contrasena" className="text-sm text-green-600 hover:underline text-center">
+          <Link href="/recuperar-contrasena" className="text-sm text-brand-primary hover:underline text-center">
             ¿Olvidaste tu contraseña?
           </Link>
           <p className="text-sm text-gray-500 text-center">
             ¿No tienes una cuenta? 
-            <Link href="/registro" className="text-green-600 hover:underline"> Regístrate</Link>
+            <Link href="/registro" className="text-brand-primary hover:underline"> Regístrate</Link>
           </p>
         </CardFooter>
       </Card>

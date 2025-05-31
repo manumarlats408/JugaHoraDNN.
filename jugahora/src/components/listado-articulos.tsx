@@ -206,8 +206,8 @@ export function ListadoArticulos() {
 
   if (cargando) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50">
-        <p className="text-lg text-gray-600">Cargando artículos...</p>
+      <div className="flex justify-center items-center min-h-screen bg-brand-page">
+        <p className="text-lg text-muted-foreground">Cargando artículos...</p>
       </div>
     )
   }
@@ -219,7 +219,7 @@ export function ListadoArticulos() {
         <div className="bg-white rounded-lg shadow-sm">
           <div className="p-4 md:p-6 border-b">
             <h1 className="text-2xl md:text-3xl font-bold mt-10 md:mt-0">Listado de artículos</h1>
-            <p className="text-sm md:text-base text-gray-500 mt-2">
+            <p className="text-sm md:text-base text-muted-foreground mt-2">
               A continuación podrás encontrar todos los conceptos/artículos del complejo
             </p>
           </div>
@@ -227,7 +227,7 @@ export function ListadoArticulos() {
           <div className="p-4 md:p-6">
             <div className="flex flex-col space-y-4 md:space-y-0 md:flex-row md:justify-between md:gap-4 mb-6">
               <div className="relative w-full md:w-96">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
                 <Input
                   type="text"
                   placeholder="Buscar por nombre o código"
@@ -248,10 +248,10 @@ export function ListadoArticulos() {
                 />
                 <Button
                   variant="outline"
-                  className="flex items-center gap-2 w-full md:w-auto"
+                  className="flex items-center gap-2 w-full md:w-auto text-brand-primary"
                   onClick={() => fileInputRef.current?.click()}
                 >
-                  <Upload size={18} className="text-green-500" />
+                  <Upload size={18} className="text-brand-primary" />
                   <span className="whitespace-nowrap">Importar (XLSX)</span>
                 </Button>
               </div>
@@ -268,7 +268,7 @@ export function ListadoArticulos() {
 
 
             <Button
-              className="bg-green-500 hover:bg-green-600 text-white flex items-center gap-2 w-full md:w-auto"
+              className="bg-brand-primary hover:bg-brand-hover text-white flex items-center gap-2 w-full md:w-auto"
               onClick={handleExportar}
             >
               <Download size={18} />

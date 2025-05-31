@@ -106,14 +106,14 @@ export default function RequestsPage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+      <div className="flex justify-center items-center min-h-screen bg-brand-page">
         <p className="text-lg text-gray-600">Cargando solicitudes...</p>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 to-white p-6">
+    <div className="min-h-screen bg-brand-page">
       <div className="max-w-3xl mx-auto space-y-6">
         <div className="flex justify-start">
           <Button variant="outline" onClick={() => router.push('/explore')}>
@@ -121,9 +121,9 @@ export default function RequestsPage() {
           </Button>
         </div>
 
-        <Card className="shadow-md border-green-100">
-          <CardHeader className="bg-green-50 border-b border-green-100">
-            <CardTitle className="text-xl font-bold text-green-800">
+        <Card className="shadow-md border-brand-border">
+          <CardHeader className="bg-brand-bg border-b border-brand-border">
+            <CardTitle className="text-xl font-bold text-brand-primary">
               Solicitudes de Amistad
             </CardTitle>
           </CardHeader>
@@ -133,7 +133,7 @@ export default function RequestsPage() {
               requests.map((request) => (
                 <div
                   key={request.id}
-                  className="flex items-center justify-between border p-4 rounded-lg hover:bg-green-50 transition-colors"
+                  className="flex items-center justify-between border p-4 rounded-lg hover:bg-brand-bg transition-colors"
                 >
                   <div>
                     <p className="font-semibold text-gray-800">
@@ -145,7 +145,7 @@ export default function RequestsPage() {
                   <Button
                     onClick={() => handleAccept(request.id)}
                     disabled={acceptingId === request.id}
-                    className="bg-green-500 hover:bg-green-600 text-white"
+                    className="bg-brand-primary hover:bg-brand-hover text-white"
                   >
                     {acceptingId === request.id ? 'Aceptando...' : 'Aceptar'}
                   </Button>

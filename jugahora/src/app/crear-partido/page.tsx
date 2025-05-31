@@ -277,7 +277,7 @@ export default function CrearPartidoJugador() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+      <div className="flex justify-center items-center min-h-screen bg-brand-page">
         <p className="text-lg text-gray-600">Cargando tus partidos...</p>
       </div>
     )
@@ -286,12 +286,12 @@ export default function CrearPartidoJugador() {
   if (verifying) return null
   
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
+    <div className="flex flex-col min-h-screen bg-brand-page">
       {/* TOPBAR */}
       <header className="px-4 lg:px-6 h-16 flex items-center relative bg-white shadow-md">
         <Link className="flex items-center justify-center" href="/menu">
           <Image src='/logo.svg' alt="Logo" width={32} height={32} />
-          <span className="ml-2 text-2xl font-bold">JugáHora</span>
+          <span className="ml-2 text-2xl font-bold text-black">JugáHora</span>
         </Link>
 
         <nav className="hidden lg:flex ml-auto gap-6">
@@ -299,14 +299,14 @@ export default function CrearPartidoJugador() {
             <Link
               key={el.href}
               href={el.href}
-              className="flex items-center text-sm font-medium text-gray-600 hover:text-green-600 transition-colors"
+              className="flex items-center text-sm font-medium text-gray-600 hover:text-brand-primary transition-colors"
             >
               <el.icono className="w-4 h-4 mr-2" />
               {el.etiqueta}
             </Link>
           ))}
           <button
-            className="flex items-center text-sm font-medium text-gray-600 hover:text-green-600 transition-colors"
+            className="flex items-center text-sm font-medium text-gray-600 hover:text-brand-primary transition-colors"
             onClick={manejarCierreSesion}
           >
             <LogOut className="w-4 h-4 mr-2" />
@@ -316,7 +316,7 @@ export default function CrearPartidoJugador() {
         <Button
           variant="ghost"
           size="icon"
-          className="lg:hidden ml-auto text-gray-600 hover:text-green-600"
+          className="lg:hidden ml-auto text-gray-600 hover:text-brand-primary"
           onClick={alternarMenu}
           aria-label={menuAbierto ? "Cerrar menú" : "Abrir menú"}
         >
@@ -352,17 +352,18 @@ export default function CrearPartidoJugador() {
         </div>
       )}
 
-      <main className="flex-1 p-4 bg-gradient-to-b from-green-50 to-white">
+      <main className="flex-1 p-4 bg-brand-page">
       {misPartidos.length > 0 && (
-        <Card className="w-full max-w-xl mx-auto mb-10 shadow-md border-green-100">
-          <CardHeader className="bg-green-50 border-b border-green-100">
-            <CardTitle className="text-2xl font-bold text-green-800">Mis partidos creados</CardTitle>
+        <Card className="w-full max-w-xl mx-auto mb-10 shadow-md border border-brand-border">
+          <CardHeader className="bg-brand-bg border-b border-brand-border">
+            <CardTitle className="text-2xl font-bold text-brand-primary">Mis partidos creados</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 mt-4">
             {misPartidos.map((match) => (
               <div
                 key={match.id}
-                className="flex flex-col sm:flex-row sm:items-center justify-between p-3 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300"
+                className="flex flex-col sm:flex-row sm:items-center justify-between p-3 border border-brand-border rounded-lg hover:bg-brand-soft transition-colors duration-300"
+
               >
                 <div>
                   <p className="font-semibold text-gray-800">{match.Club?.name || 'Club'}</p>
@@ -384,7 +385,7 @@ export default function CrearPartidoJugador() {
                       {match.players}/4
                     </p>
                   </div>
-                  <span className="text-sm font-semibold text-green-600">${match.price}</span>
+                  <span className="text-sm font-semibold text-brand-primary">${match.price}</span>
                 </div>
                 <div className="flex space-x-2 mt-2 sm:mt-0">
                   <Button variant="outline" size="icon" onClick={() => setEditMatch(match)}>
@@ -400,9 +401,12 @@ export default function CrearPartidoJugador() {
         </Card>
       )}
 
-        <Card className="w-full max-w-xl mx-auto shadow-md border-green-100">
-          <CardHeader className="bg-green-50 border-b border-green-100">
-            <CardTitle className="text-2xl font-bold text-green-800">Crear Partido</CardTitle>
+        <Card className="w-full max-w-xl mx-auto shadow-md border border-brand-border">
+          <CardHeader className="bg-brand-bg border-b border-brand-border">
+            <CardTitle className="text-2xl font-bold text-brand-primary flex items-center">
+              <Plus className="w-6 h-6 mr-2" />
+              Crear Partido
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 mt-4">
           <p className="mb-4 text-gray-600">
@@ -467,7 +471,7 @@ export default function CrearPartidoJugador() {
             </Button>
 
             <div className="pt-4">
-            <Button onClick={handleSubmit} disabled={isSavingMatch} className="w-full min-w-[140px]">
+            <Button onClick={handleSubmit} disabled={isSavingMatch} className="w-full min-w-[140px] bg-brand-primary text-white hover:bg-brand-hover">
               {isSavingMatch ? (
                 <span className="flex items-center">
                   <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -488,7 +492,7 @@ export default function CrearPartidoJugador() {
 
         <div className="mt-6 text-center">
           <Link href="/menu">
-            <Button variant="outline" className="bg-white hover:bg-gray-100 text-green-600 border-green-600 hover:border-green-700 transition-colors duration-300">
+            <Button variant="outline" className="bg-white hover:bg-gray-100 text-brand-primary border-brand-primary hover:border-brand-hover">
               Volver al menú
             </Button>
           </Link>
@@ -603,10 +607,10 @@ export default function CrearPartidoJugador() {
             © 2024 JugáHora. Todos los derechos reservados.
           </p>
           <nav className="flex gap-4">
-            <Link className="text-xs text-gray-500 hover:text-green-600 transition-colors" href="/terminos">
+            <Link className="text-xs text-gray-600 hover:text-brand-primary transition-colors" href="/terminos">
               Términos de Servicio
             </Link>
-            <Link className="text-xs text-gray-500 hover:text-green-600 transition-colors" href="/privacidad">
+            <Link className="text-xs text-gray-600 hover:text-brand-primary transition-colors" href="/privacidad">
               Privacidad
             </Link>
           </nav>

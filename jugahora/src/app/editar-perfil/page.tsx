@@ -89,7 +89,7 @@ export default function EditarPerfilPage() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+      <div className="flex justify-center items-center min-h-screen bg-brand-page">
         <p className="text-lg text-gray-600">Cargando perfil...</p>
       </div>
     )
@@ -97,14 +97,14 @@ export default function EditarPerfilPage() {
 
   if (!userData) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+      <div className="flex justify-center items-center min-h-screen bg-brand-page">
         <p className="text-lg text-gray-600">No se pudo cargar el perfil.</p>
       </div>
     )
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
+    <div className="flex flex-col min-h-screen bg-brand-page">
       <header className="px-4 lg:px-6 h-16 flex items-center bg-white shadow-md">
         <Link className="flex items-center justify-center" href="/menu">
           <Image src='/logo.svg' alt="JugáHora Logo" width={32} height={32} />
@@ -112,10 +112,11 @@ export default function EditarPerfilPage() {
         </Link>
       </header>
 
-      <main className="flex-1 flex flex-col items-center p-4 bg-gradient-to-b from-green-50 to-white">
-        <Card className="w-full max-w-lg shadow-lg border-green-100">
-          <CardHeader className="bg-green-50 border-b border-green-100">
-            <CardTitle className="text-2xl font-bold text-green-800 flex items-center">
+      <main className="flex-1 flex flex-col items-center p-4 bg-brand-page">
+        <Card className="w-full max-w-lg shadow-lg border border-brand-border">
+          <CardHeader className="bg-white border-b border-brand-border">
+
+            <CardTitle className="text-2xl font-bold text-brand-primary flex items-center">
               <User className="w-6 h-6 mr-2" />
               Editar Perfil
             </CardTitle>
@@ -198,12 +199,15 @@ export default function EditarPerfilPage() {
             {!userData.isClub && (
               <>
                 <div>
-                  <Label htmlFor="age">Edad</Label>
+                  <Label htmlFor="age">Edad
+                    <span className="text-red-500">*</span>
+                  </Label>
                   <Input
                     id="age"
                     type="number"
                     value={userData.age || ''}
                     onChange={(e) => setUserData({ ...userData, age: parseInt(e.target.value) || undefined })}
+                    required
                   />
                 </div>
 
@@ -216,7 +220,8 @@ export default function EditarPerfilPage() {
                     value={userData.preferredSide || ''}
                     onChange={(e) => setUserData({ ...userData, preferredSide: e.target.value })}
                     required
-                    className="w-full p-2 border rounded"
+                    className="w-full p-2 border border-brand-border rounded"
+
                   >
                     <option value="">Selecciona un lado</option>
                     <option value="Revés">Revés</option>
@@ -233,7 +238,8 @@ export default function EditarPerfilPage() {
                       id="nivel"
                       value={userData.nivel}
                       onChange={(e) => setUserData({ ...userData, nivel: e.target.value })}
-                      className="w-full p-2 border rounded"
+                      className="w-full p-2 border border-brand-border rounded"
+
                       required
                     >
                       {Array.from({ length: 9 }, (_, i) => (i + 1).toString())
@@ -275,7 +281,7 @@ export default function EditarPerfilPage() {
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Volver
               </Button>
-              <Button type="submit" className="bg-green-600 hover:bg-green-700 text-white">
+              <Button type="submit" className="bg-brand-primary hover:bg-brand-hover text-white">
                 Guardar cambios
               </Button>
             </div>
@@ -291,10 +297,12 @@ export default function EditarPerfilPage() {
             © 2024 JugáHora. Todos los derechos reservados.
           </p>
           <nav className="flex gap-4">
-            <Link className="text-xs text-gray-500 hover:text-green-600 transition-colors" href="/editar-perfil">
+            <Link className="text-xs text-gray-500 hover:text-brand-primary transition-colors" href="/editar-perfil">
+
               Términos de Servicio
             </Link>
-            <Link className="text-xs text-gray-500 hover:text-green-600 transition-colors" href="/editar-perfil">
+            <Link className="text-xs text-gray-500 hover:text-brand-primary transition-colors" href="/editar-perfil">
+
               Privacidad
             </Link>
           </nav>

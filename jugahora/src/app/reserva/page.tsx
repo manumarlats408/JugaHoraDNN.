@@ -88,10 +88,16 @@ export default function ReservaPage() {
     return `https://wa.me/${formattedPhone}`
   }
 
-  if (isVerifying || !isAuthorized) return null
+  if (isVerifying || !isAuthorized) {
+  return (
+    <div className="flex justify-center items-center min-h-screen bg-brand-page">
+      <p className="text-gray-600 text-lg">Cargando reservas...</p>
+    </div>
+  )
+} 
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
+    <div className="flex flex-col min-h-screen bg-brand-page">
       <header className="px-4 lg:px-6 h-16 flex items-center relative bg-white shadow-md">
         <Link className="flex items-center justify-center" href="/menu">
           <span className="sr-only">JugáHora</span>
@@ -103,7 +109,7 @@ export default function ReservaPage() {
           {menuItems.map((item) => (
             <Link
               key={item.href}
-              className="flex items-center text-sm font-medium text-gray-600 hover:text-green-600 transition-colors"
+              className="flex items-center text-sm font-medium text-gray-600 hover:text-brand-primary transition-colors"
               href={item.href}
             >
               <item.icon className="w-4 h-4 mr-2" />
@@ -111,7 +117,7 @@ export default function ReservaPage() {
             </Link>
           ))}
           <button
-            className="flex items-center text-sm font-medium text-gray-600 hover:text-green-600 transition-colors"
+            className="flex items-center text-sm font-medium text-gray-600 hover:text-brand-primary transition-colors"
             onClick={handleLogout}
           >
             <LogOut className="w-4 h-4 mr-2" />
@@ -122,7 +128,7 @@ export default function ReservaPage() {
         <Button
           variant="ghost"
           size="icon"
-          className="lg:hidden ml-auto text-gray-600 hover:text-green-600"
+          className="lg:hidden ml-auto text-gray-600 hover:text-brand-primary"
           onClick={toggleMenu}
           aria-label={isMenuOpen ? "Cerrar menú" : "Abrir menú"}
         >
@@ -158,10 +164,10 @@ export default function ReservaPage() {
         </div>
       )}
 
-      <main className="flex-1 p-4 bg-gradient-to-b from-green-50 to-white">
-        <Card className="w-full max-w-2xl mx-auto shadow-lg border-green-100">
-          <CardHeader className="bg-green-50 border-b border-green-100">
-            <CardTitle className="text-2xl font-bold text-green-800 flex items-center">
+      <main className="flex-1 p-4 bg-brand-page">
+        <Card className="w-full max-w-2xl mx-auto shadow-lg border-brand-border">
+          <CardHeader className="bg-brand-bg border-b border-brand-border">
+            <CardTitle className="text-2xl font-bold text-brand-primary flex items-center">
               <Calendar className="w-6 h-6 mr-2" />
               Reserva tu pista
             </CardTitle>
@@ -176,7 +182,7 @@ export default function ReservaPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <div className="flex items-center space-x-4 p-4 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300 cursor-pointer">
+                  <div className="flex items-center space-x-4 p-4 border border-brand-border rounded-lg hover:bg-brand-bg transition-colors duration-300 cursor-pointer">
                     <Image src="/club.svg" alt={club.name} width={50} height={50} className="rounded-full" />
                     <div>
                       <p className="font-semibold text-gray-800">{club.name}</p>
@@ -193,7 +199,7 @@ export default function ReservaPage() {
         </Card>
         <div className="mt-6 text-center">
           <Link href="/menu">
-            <Button variant="outline" className="bg-white hover:bg-gray-100 text-green-600 border-green-600 hover:border-green-700 transition-colors duration-300">
+            <Button variant="outline" className="bg-white hover:bg-gray-100 text-brand-primary border-brand-primary hover:border-brand-hover transition-colors duration-300">
               Volver al menú
             </Button>
           </Link>
@@ -206,10 +212,10 @@ export default function ReservaPage() {
             © 2024 JugáHora. Todos los derechos reservados.
           </p>
           <nav className="flex gap-4">
-            <Link className="text-xs text-gray-500 hover:text-green-600 transition-colors" href="/reserva">
+            <Link className="text-xs text-gray-500 hover:text-brand-primary transition-colors" href="/reserva">
               Términos de Servicio
             </Link>
-            <Link className="text-xs text-gray-500 hover:text-green-600 transition-colors" href="/reserva">
+            <Link className="text-xs text-gray-500 hover:text-brand-primary transition-colors" href="/reserva">
               Privacidad
             </Link>
           </nav>

@@ -52,10 +52,10 @@ export default function ExploreProfiles({ userId }: { userId: number }) {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-bold text-green-800">Explorar Perfiles</h2>
+      <h2 className="text-xl font-bold text-brand-primary">Explorar Perfiles</h2>
       {users.length > 0 ? (
         users.map((user) => (
-          <div key={user.id} className="flex justify-between items-center p-4 border rounded">
+          <div key={user.id} className="flex justify-between items-center p-4 border border-brand-border rounded bg-white hover:bg-brand-bg transition-colors duration-300">
             <div>
               <p className="font-medium">
                 {user.firstName} {user.lastName}

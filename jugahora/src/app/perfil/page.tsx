@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
@@ -597,7 +597,7 @@ const rachas = calcularRachas(partidos);
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+      <div className="flex justify-center items-center min-h-screen bg-brand-page">
         <p className="text-lg text-gray-600">Cargando perfil...</p>
       </div>
     )
@@ -605,14 +605,14 @@ const rachas = calcularRachas(partidos);
 
   if (!userData) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+      <div className="flex justify-center items-center min-h-screen bg-brand-page">
         <p className="text-lg text-gray-600">No se pudo cargar el perfil. Por favor, inténtalo de nuevo.</p>
       </div>
     )
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
+    <div className="flex flex-col min-h-screen bg-brand-page">
       <header className="px-4 lg:px-6 h-16 flex items-center relative bg-white shadow-md">
         <Link className="flex items-center justify-center" href="/menu">
           <span className="sr-only">JugáHora</span>
@@ -624,7 +624,7 @@ const rachas = calcularRachas(partidos);
           {menuItems.map((item) => (
             <Link
               key={item.href}
-              className="flex items-center text-sm font-medium text-gray-600 hover:text-green-600 transition-colors"
+              className="flex items-center text-sm font-medium text-gray-600 hover:text-brand-primary transition-colors"
               href={item.href}
             >
               <item.icon className="w-4 h-4 mr-2" />
@@ -632,7 +632,7 @@ const rachas = calcularRachas(partidos);
             </Link>
           ))}
           <button
-            className="flex items-center text-sm font-medium text-gray-600 hover:text-green-600 transition-colors"
+            className="flex items-center text-sm font-medium text-gray-600 hover:text-brand-primary transition-colors"
             onClick={handleLogout}
           >
             <LogOut className="w-4 h-4 mr-2" />
@@ -643,7 +643,7 @@ const rachas = calcularRachas(partidos);
         <Button
           variant="ghost"
           size="icon"
-          className="lg:hidden ml-auto text-gray-600 hover:text-green-600"
+          className="lg:hidden ml-auto text-gray-600 hover:text-brand-primary"
           onClick={toggleMenu}
           aria-label={isMenuOpen ? "Cerrar menú" : "Abrir menú"}
         >
@@ -679,98 +679,90 @@ const rachas = calcularRachas(partidos);
         </div>
       )}
 
-<main className="flex-1 flex flex-col items-center p-4 bg-gradient-to-b from-green-50 to-white">
-        <Card className="w-full max-w-lg shadow-lg border-green-100 mb-6">
-          <CardHeader className="bg-green-50 border-b border-green-100">
-            <CardTitle className="text-2xl font-bold text-green-800 flex items-center">
+    <main className="flex-1 flex flex-col items-center p-4 bg-brand-page">
+        <Card className="w-full max-w-lg shadow-lg border-brand-border mb-6">
+          <CardHeader className="bg-brand-bg border-b border-brand-border">
+            <CardTitle className="text-2xl font-bold text-brand-primary flex items-center">
               <User className="w-6 h-6 mr-2" />
               Perfil de {userData.firstName}
             </CardTitle>
           </CardHeader>
-          <CardContent className="pt-6 space-y-4">
-            <div className="flex items-center">
-              <Mail className="w-5 h-5 mr-2 text-gray-500" />
-              <p><strong>Email:</strong> {userData.email}</p>
-            </div>
-            <div className="flex items-center">
-              <User className="w-5 h-5 mr-2 text-gray-500" />
-              <p><strong>Nombre:</strong> {userData.firstName} {userData.lastName}</p>
-            </div>
-            {userData.phoneNumber && (
-              <div className="flex items-center">
-                <Phone className="w-5 h-5 mr-2 text-gray-500" />
-                <p><strong>Teléfono:</strong> {userData.phoneNumber}</p>
-              </div>
-            )}
-            {userData.address && (
-              <div className="flex items-center">
-                <MapPin className="w-5 h-5 mr-2 text-gray-500" />
-                <p><strong>Dirección:</strong> {userData.address}</p>
-              </div>
-            )}
-            {userData.age && (
-              <div className="flex items-center">
-                <Clock className="w-5 h-5 mr-2 text-gray-500" />
-                <p><strong>Edad:</strong> {userData.age}</p>
-              </div>
-            )}
-            {userData.nivel && (
-              <div className="flex items-center">
-                <User className="w-5 h-5 mr-2 text-gray-500" />
-                <p><strong>Categoría:</strong> {userData.nivel}</p>
-              </div>
-            )}
-            <div className="space-y-4">
-            <Label htmlFor="progress" className="block text-green-800 text-lg font-bold">Progreso en la Categoría</Label>
-            <div className="w-full bg-gray-200 rounded-full h-4">
-              <div
-                className="bg-green-600 h-4 rounded-full"
-                style={{ width: `${userData.progress || 0}%` }}
-              ></div>
-            </div>
-            <p className="text-sm text-gray-600">Progreso actual: {userData.progress || 0}%</p>
-            </div>
-            
-            {userData.preferredSide && (
-              <div className="flex items-center">
-                <User className="w-5 h-5 mr-2 text-gray-500" />
-                <p><strong>Lado preferido:</strong> {userData.preferredSide}</p>
-              </div>
-            )}
-            {userData.strengths && userData.strengths.length > 0 && (
-              <div className="flex items-start">
-                <User className="w-5 h-5 mr-2 mt-1 text-gray-500" />
-                <div>
-                  <p><strong>Fortalezas:</strong></p>
-                  <ul className="list-disc pl-5">
-                    {userData.strengths.map((strength, index) => (
-                      <li key={index}>{strength}</li>
-                    ))}
-                  </ul>
+            <CollapsibleSection title="Datos Personales" defaultOpen={false}>
+              <div className="space-y-4">
+                <div className="flex items-center">
+                  <Mail className="w-5 h-5 mr-2 text-gray-500" />
+                  <p><strong>Email:</strong> {userData.email}</p>
                 </div>
-              </div>
-            )}
-            {userData.weaknesses && userData.weaknesses.length > 0 && (
-              <div className="flex items-start">
-                <User className="w-5 h-5 mr-2 mt-1 text-gray-500" />
-                <div>
-                  <p><strong>Debilidades:</strong></p>
-                  <ul className="list-disc pl-5">
-                    {userData.weaknesses.map((weakness, index) => (
-                      <li key={index}>{weakness}</li>
-                    ))}
-                  </ul>
+                <div className="flex items-center">
+                  <User className="w-5 h-5 mr-2 text-gray-500" />
+                  <p><strong>Nombre:</strong> {userData.firstName} {userData.lastName}</p>
                 </div>
-              </div>
-            )}
-            <Button
-              className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white"
-              onClick={() => router.push('/editar-perfil')}
-            >
-              Editar perfil
-            </Button>
-          </CardContent>
-        </Card>
+                {userData.phoneNumber && (
+                  <div className="flex items-center">
+                    <Phone className="w-5 h-5 mr-2 text-gray-500" />
+                    <p><strong>Teléfono:</strong> {userData.phoneNumber}</p>
+                  </div>
+                )}
+                {userData.address && (
+                  <div className="flex items-center">
+                    <MapPin className="w-5 h-5 mr-2 text-gray-500" />
+                    <p><strong>Dirección:</strong> {userData.address}</p>
+                  </div>
+                )}
+                {userData.age && (
+                  <div className="flex items-center">
+                    <Clock className="w-5 h-5 mr-2 text-gray-500" />
+                    <p><strong>Edad:</strong> {userData.age}</p>
+                  </div>
+                )}
+                {userData.nivel && (
+                  <div className="flex items-center">
+                    <User className="w-5 h-5 mr-2 text-gray-500" />
+                    <p><strong>Categoría:</strong> {userData.nivel}</p>
+                  </div>
+                )}
+                {userData.preferredSide && (
+                  <div className="flex items-center">
+                    <User className="w-5 h-5 mr-2 text-gray-500" />
+                    <p><strong>Lado preferido:</strong> {userData.preferredSide}</p>
+                  </div>
+                )}
+                {userData.strengths && userData.strengths.length > 0 && (
+                  <div className="flex items-start">
+                    <User className="w-5 h-5 mr-2 mt-1 text-gray-500" />
+                    <div>
+                      <p><strong>Fortalezas:</strong></p>
+                      <ul className="list-disc pl-5">
+                        {userData.strengths.map((strength, index) => (
+                          <li key={index}>{strength}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )}
+                {userData.weaknesses && userData.weaknesses.length > 0 && (
+                  <div className="flex items-start">
+                    <User className="w-5 h-5 mr-2 mt-1 text-gray-500" />
+                    <div>
+                      <p><strong>Debilidades:</strong></p>
+                      <ul className="list-disc pl-5">
+                        {userData.weaknesses.map((weakness, index) => (
+                          <li key={index}>{weakness}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )}
+
+              <Button
+                className="w-full mt-4 bg-brand-primary hover:bg-brand-hover text-white"
+                onClick={() => router.push('/editar-perfil')}
+              >
+                Editar perfil
+              </Button>
+          </div>
+        </CollapsibleSection>
+        
 
         <CollapsibleSection title="Amigos" defaultOpen={false}>
             <p className="text-gray-600 mb-2">
@@ -778,7 +770,7 @@ const rachas = calcularRachas(partidos);
             </p>
             <Button
               onClick={() => router.push('/explore')}
-              className="bg-green-500 hover:bg-green-600 text-white"
+              className="bg-brand-primary hover:bg-brand-hover text-white"
             >
               Explorar Nuevos Perfiles
             </Button>
@@ -791,7 +783,7 @@ const rachas = calcularRachas(partidos);
                     <li key={friend.id} className="relative">
                       {/* Nombre + Email (clickable) */}
                       <div
-                        className="border-b py-2 flex justify-between items-center text-gray-800 cursor-pointer hover:bg-green-50 px-2 rounded"
+                        className="border-b py-2 flex justify-between items-center text-gray-800 cursor-pointer hover:bg-brand-bg px-2 rounded"
                         onClick={() =>
                           setSelectedFriend((prev) => (prev?.id === friend.id ? null : friend))
                         }
@@ -805,7 +797,7 @@ const rachas = calcularRachas(partidos);
                       {selectedFriend?.id === friend.id && (
                         <div
                           ref={detailRef}
-                          className="relative mt-2 p-4 bg-white border border-green-200 rounded shadow transition-all duration-300 ease-in-out"
+                          className="relative mt-2 p-4 bg-white border border-brand-border rounded shadow transition-all duration-300 ease-in-out"
                         >
                           <button
                             className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
@@ -888,7 +880,7 @@ const rachas = calcularRachas(partidos);
                   .map((friend, index) => (
                     <li
                       key={friend.id}
-                      className="bg-white rounded-lg shadow p-3 flex justify-between items-center border border-green-100"
+                      className="bg-white rounded-lg shadow p-3 flex justify-between items-center border border-brand-border"
                     >
                       <div>
                         <p className="font-bold text-gray-800">
@@ -913,15 +905,15 @@ const rachas = calcularRachas(partidos);
                 A medida que anotes tus partidos, tus estadisticas comenzaran a crecer!
               </p>
             </div>
-            <div>
+            {/* <div>
               <p><strong>Total de Partidos Jugados:</strong> {partidos.length}</p>
               <p><strong>Total de Partidos Ganados:</strong> {partidos.filter((p) => p.ganado).length}</p>
               <p><strong>Total de Partidos Perdidos:</strong> {partidos.filter((p) => !p.ganado).length}</p>
-            </div>
+            </div> */}
 
             {/* Gráfico de Eficiencia Total */}
             <div className="flex flex-col mb-8">
-              <p className="font-bold text-green-800 text-left w-full mb-4">Eficiencia Total:</p>
+              <p className="font-bold text-brand-primary text-left w-full mb-4">Eficiencia Total:</p>
               <p className="text-gray-600 text-sm mb-4">
                 Este gráfico de torta muestra el porcentaje de partidos ganados y perdidos en relación al total de partidos jugados.
               </p>
@@ -955,7 +947,7 @@ const rachas = calcularRachas(partidos);
 
             {/* Gráfico de Eficiencia con Compañeros */}
             <div className="flex flex-col mb-8">
-              <p className="font-bold text-green-800 text-left w-full mb-4">Eficiencia con Compañeros:</p>
+              <p className="font-bold text-brand-primary text-left w-full mb-4">Eficiencia con Compañeros:</p>
               <p className="text-gray-600 text-sm mb-4">
                 Este gráfico de barras muestra el porcentaje de victorias alcanzado con los 5 compañeros más frecuentes.
               </p>
@@ -998,7 +990,7 @@ const rachas = calcularRachas(partidos);
             </div>
 
             <div className="mb-8">
-              <p className="font-bold text-green-800 mb-4">Evolución de Nivel</p>
+              <p className="font-bold text-brand-primary mb-4">Evolución de Nivel</p>
               <p className="text-gray-600 text-sm mb-4">
                 Este gráfico muestra cómo ha evolucionado tu nivel a lo largo del tiempo. El eje vertical refleja la categoría (del 8 al 1, siendo 1 la mejor). 
                 A medida que ganás partidos, tu progreso dentro de la categoría se acumula y te acercas a la siguiente categoria.
@@ -1011,7 +1003,7 @@ const rachas = calcularRachas(partidos);
             
             {/* Gráfico de lineas */}
             <div className="mb-8">
-              <p className="font-bold text-green-800 mb-4">Historial de Victorias Acumuladas</p>
+              <p className="font-bold text-brand-primary mb-4">Historial de Victorias Acumuladas</p>
               <p className="text-gray-600 text-sm mb-4">
                 Este gráfico de líneas muestra cómo evolucionaron tus partidos jugados/ganados a lo largo del tiempo.
               </p>
@@ -1022,7 +1014,7 @@ const rachas = calcularRachas(partidos);
             
             {/* Rachas de Partidos con Fechas */}
             <div className="mb-8">
-              <p className="font-bold text-green-800 mb-4">Rachas de Partidos</p>
+              <p className="font-bold text-brand-primary mb-4">Rachas de Partidos</p>
               <p className="text-gray-600 text-sm mb-4">
                 Aquí puedes ver tus rachas más largas de partidos ganados y perdidos, con las fechas de inicio y fin de cada una.
               </p>
@@ -1196,7 +1188,7 @@ const rachas = calcularRachas(partidos);
               </Dialog>
             </div>
         </CollapsibleSection>
-
+        </Card>              
         </main>
 
         <footer className="py-6 px-4 md:px-6 bg-white border-t border-gray-200">
@@ -1205,10 +1197,10 @@ const rachas = calcularRachas(partidos);
               © 2024 JugáHora. Todos los derechos reservados.
             </p>
             <nav className="flex gap-4">
-              <Link className="text-xs text-gray-500 hover:text-green-600 transition-colors" href="/perfil">
+              <Link className="text-xs text-gray-500 hover:text-brand-primary transition-colors" href="/perfil">
                 Términos de Servicio
               </Link>
-              <Link className="text-xs text-gray-500 hover:text-green-600 transition-colors" href="/perfil">
+              <Link className="text-xs text-gray-500 hover:text-brand-primary transition-colors" href="/perfil">
                 Privacidad
               </Link>
             </nav>

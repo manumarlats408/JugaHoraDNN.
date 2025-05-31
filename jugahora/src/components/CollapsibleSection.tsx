@@ -14,13 +14,13 @@ export default function CollapsibleSection({ title, children, defaultOpen = true
   const [open, setOpen] = useState(defaultOpen)
 
   return (
-    <div className="w-full max-w-lg shadow-lg border-green-100 mb-6">
+    <div className="w-full max-w-lg shadow-lg border-brand-border mb-6">
       <div
-        className="bg-green-50 border-b border-green-100 flex justify-between items-center p-4 cursor-pointer"
+        className="bg-brand-bg border-b border-brand-border flex justify-between items-center p-4 cursor-pointer"
         onClick={() => setOpen(!open)}
       >
-        <h2 className="text-2xl font-bold text-green-800">{title}</h2>
-        {open ? <ChevronUp className="w-5 h-5 text-green-800" /> : <ChevronDown className="w-5 h-5 text-green-800" />}
+        <h2 className="text-2xl font-bold text-brand-primary">{title}</h2>
+        {open ? <ChevronUp className="w-5 h-5 text-brand-primary" /> : <ChevronDown className="w-5 h-5 text-brand-primary" />}
       </div>
 
       {open && <div className="p-4 bg-white">{children}</div>}

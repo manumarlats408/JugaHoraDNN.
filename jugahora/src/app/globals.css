@@ -13,17 +13,20 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 222 60% 50%; /* azul principal */
+    --primary-foreground: 0 0% 100%; /* blanco */
+
+    --brand-primary: 222 60% 50%; /* azul */
+    --brand-secondary: 210 40% 96%; /* gris claro */
 
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
 
-    --muted: 210 40% 96.1%;
+    --muted: 220 30% 96%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 222 100% 92%;
+    --accent-foreground: 222 60% 30%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
@@ -33,6 +36,8 @@
     --ring: 222.2 84% 4.9%;
 
     --radius: 0.5rem;
+
+    --page-bg: 0 0% 98%;
   }
 
   .dark {
@@ -128,7 +133,7 @@
 
 .loader {
   border: 2px solid #e5e7eb; /* light gray */
-  border-top: 2px solid #10b981; /* green */
+  border-top: 2px solid #1e51b0; /* azul primario */
   border-radius: 50%;
   width: 14px;
   height: 14px;

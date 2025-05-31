@@ -271,7 +271,7 @@ export function EventosDashboard() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+      <div className="flex justify-center items-center min-h-screen bg-brand-page">
         <p className="text-lg text-gray-600">Cargando eventos del club...</p>
       </div>
     )
@@ -642,7 +642,7 @@ export function EventosDashboard() {
                       const eventoDate = eventos.find(
                         (evento) => new Date(evento.date).toDateString() === date.toDateString(),
                       )
-                      return eventoDate ? "bg-green-200" : null
+                      return eventoDate ? "bg-brand-bg" : null
                     }
                   }}
                   className="w-full text-sm"
@@ -664,7 +664,7 @@ export function EventosDashboard() {
                   filteredEventos.map((evento) => (
                     <div
                       key={evento.id}
-                      className="cursor-pointer relative flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-blue-100 rounded-lg hover:bg-blue-50 transition-colors duration-300"
+                      className="cursor-pointer relative flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-brand-border rounded-lg hover:bg-brand-bg transition-colors duration-300"
                       onClick={() => handleEventoClick(evento.id, evento.tipo)}
                     >
                       <div>
@@ -723,7 +723,7 @@ export function EventosDashboard() {
                       {loadingEventoDetails[evento.id] && (
                         <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-70 rounded-lg z-10">
                           <svg
-                            className="animate-spin h-5 w-5 text-blue-600"
+                            className="animate-spin h-5 w-5 text-brand-primary"
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
                             viewBox="0 0 24 24"

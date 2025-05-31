@@ -276,13 +276,13 @@ export function ClubDashboard() {
   const tileClassName = ({ date, view }: { date: Date; view: string }) => {
     if (view === "month") {
       const matchDate = matches.find((match) => new Date(match.date).toDateString() === date.toDateString())
-      return matchDate ? "bg-green-200" : null
+      return matchDate ? "bg-brand-bg" : null
     }
   }
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+      <div className="flex justify-center items-center min-h-screen bg-brand-page">
         <p className="text-lg text-gray-600">Cargando partidos del club...</p>
       </div>
     )
@@ -290,7 +290,7 @@ export function ClubDashboard() {
 
   if (!clubData) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+      <div className="flex justify-center items-center min-h-screen bg-brand-page">
         <p className="text-lg text-gray-600">No se pudo cargar el dashboard del club. Por favor, inténtalo de nuevo.</p>
       </div>
     )
@@ -523,7 +523,7 @@ export function ClubDashboard() {
                   {filteredMatches.map((match) => (
                     <div
                       key={match.id}
-                      className="flex flex-col sm:flex-row sm:items-center justify-between p-3 md:p-4 border border-green-100 rounded-lg hover:bg-green-50 transition-colors duration-300 cursor-pointer relative"
+                      className="flex flex-col sm:flex-row sm:items-center justify-between p-3 md:p-4 border border-brand-border rounded-lg hover:bg-brand-bg transition-colors duration-300 cursor-pointer relative"
                       onClick={() => handleMatchClick(match)}
                     >
                       <div>
@@ -559,7 +559,7 @@ export function ClubDashboard() {
                       {loadingMatches[match.id] && (
                         <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-70 rounded-lg">
                           <svg
-                            className="animate-spin h-5 w-5 text-green-600"
+                            className="animate-spin h-5 w-5 text-brand-primary"
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
                             viewBox="0 0 24 24"
