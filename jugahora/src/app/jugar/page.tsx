@@ -494,7 +494,7 @@ export default function PaginaJuega() {
                       <p className="font-semibold text-gray-800">{match.nombreClub}</p>
                       {match.players === 0 && (
                         <p className="text-sm text-blue-600 font-medium mb-1">
-                          🎯 Si sos el primer jugador, el partido se ajustará a tu categoria.
+                          🎯 Si sos el primer jugador, el partido se ajustará a tu categoría y género.
                         </p>
                       )}
                       <p className="text-sm text-gray-500 flex items-center">

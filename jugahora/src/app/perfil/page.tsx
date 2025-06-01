@@ -681,7 +681,7 @@ const rachas = calcularRachas(partidos);
 
     <main className="flex-1 flex flex-col items-center p-4 bg-brand-page">
         <Card className="w-full max-w-lg shadow-lg border-brand-border mb-6">
-          <CardHeader className="bg-brand-bg border-b border-brand-border">
+          <CardHeader className="bg-white border-b border-brand-border mb-4">
             <CardTitle className="text-2xl font-bold text-brand-primary flex items-center">
               <User className="w-6 h-6 mr-2" />
               Perfil de {userData.firstName}
