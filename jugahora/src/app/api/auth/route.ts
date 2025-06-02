@@ -62,6 +62,7 @@ export async function POST(request: Request) {
         weaknesses: true,
         progress: true,
         profilePicture: true,
+        partidosAgregar: true,
       },
     }).catch(error => {
       console.error('Error al buscar usuario en la base de datos:', error);
