@@ -1081,9 +1081,9 @@ const rachas = calcularRachas(partidos);
                   <p className="text-sm text-gray-700 font-medium mb-4">
                     {userData.partidosAgregar > 0 ? (
                       <>🎾 Tenés <span className="text-brand-primary">{userData.partidosAgregar}</span> partidos disponibles para registrar.</>
-                    ) : (
+                    ) : userData.partidosAgregar === 0 ? (
                       <span className="text-red-600">⚠️ No tenés partidos disponibles para registrar. Jugá desde la app para desbloquear uno.</span>
-                    )}
+                    ) : null}
                   </p>
                 )}
               </div>
