@@ -23,6 +23,7 @@ model User {
   resetToken       String?         @map("resettoken")
   resetTokenExpiry DateTime?       @map("resettokenexpiry")
   nivel            String?         // Campo existente para nivel del usuario
+  partidosAgregar Int @default(0)
 
   profilePicture   String?         // Nueva columna para foto de perfil
   preferredSide    String?         // Nueva columna para el lado preferido ("Izquierdo", "Derecho")
