@@ -20,6 +20,7 @@ type UserWithPassword = {
   weaknesses: string[] | null;
   progress: number | null;
   profilePicture: string | null;
+  partidosAgregar: number;
 };
 
 type ClubWithPassword = {
@@ -185,6 +186,7 @@ export async function GET(request: Request) {
           weaknesses: true,
           progress: true,
           profilePicture: true,
+          partidosAgregar: true,
         },
       });
     }
