@@ -4,7 +4,6 @@ import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
-import { Card, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
@@ -679,14 +678,22 @@ const rachas = calcularRachas(partidos);
         </div>
       )}
 
-    <main className="flex-1 flex flex-col items-center p-4 bg-brand-page">
-        <Card className="w-full max-w-lg shadow-lg border-brand-border mb-6">
-          <CardHeader className="bg-white border-b border-brand-border mb-4">
-            <CardTitle className="text-2xl font-bold text-brand-primary flex items-center">
-              <User className="w-6 h-6 mr-2" />
-              Perfil de {userData.firstName}
-            </CardTitle>
-          </CardHeader>
+    <main className="flex-1 container mx-auto px-4 py-8 bg-brand-page max-w-6xl">
+        <div className="space-y-6">
+          <div className="bg-white rounded-lg shadow-sm border border-brand-border p-6 mb-6">
+            <div className="flex items-center gap-4">
+              <div className="bg-brand-primary text-white rounded-full w-16 h-16 flex items-center justify-center text-2xl font-bold">
+                {userData.firstName?.charAt(0)}
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">
+                  {userData.firstName} {userData.lastName}
+                </h1>
+                <p className="text-gray-600">Nivel: {userData.nivel} | Progreso: {userData.progress}%</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow-sm border border-brand-border">
             <CollapsibleSection title="Datos Personales" defaultOpen={false}>
               <div className="space-y-4">
                 <div className="flex items-center">
@@ -762,8 +769,9 @@ const rachas = calcularRachas(partidos);
               </Button>
           </div>
         </CollapsibleSection>
+        </div>
         
-
+        <div className="bg-white rounded-lg shadow-sm border border-brand-border">
         <CollapsibleSection title="Amigos" defaultOpen={false}>
             <p className="text-gray-600 mb-2">
               Aquí puedes ver tu lista de amigos y también explorar nuevos perfiles.
@@ -859,8 +867,9 @@ const rachas = calcularRachas(partidos);
               )}
             </div>
         </CollapsibleSection>
+        </div>
 
-
+        <div className="bg-white rounded-lg shadow-sm border border-brand-border">
         <CollapsibleSection title="Ranking de Amigos"  defaultOpen={false}>
             {friends.length > 0 ? (
               <ul className="space-y-3">
@@ -897,8 +906,9 @@ const rachas = calcularRachas(partidos);
               <p className="text-gray-500">Agrega amigos para ver el ranking.</p>
             )}
         </CollapsibleSection>
+        </div> 
 
-        
+        <div className="bg-white rounded-lg shadow-sm border border-brand-border">
         <CollapsibleSection title="Estadísticas de Partidos" defaultOpen={false}>
             <div>
               <p className="text-gray-600 mb-2">
@@ -1041,7 +1051,9 @@ const rachas = calcularRachas(partidos);
             </div>
 
           </CollapsibleSection>
+          </div>
 
+          <div className="bg-white rounded-lg shadow-sm border border-brand-border">
           <CollapsibleSection title="Historial de Partidos" defaultOpen={false}>
             <div>
                 <p className="text-gray-600 mb-2">
@@ -1188,7 +1200,8 @@ const rachas = calcularRachas(partidos);
               </Dialog>
             </div>
         </CollapsibleSection>
-        </Card>              
+        </div>
+        </div>              
         </main>
 
         <footer className="py-6 px-4 md:px-6 bg-white border-t border-gray-200">
