@@ -79,22 +79,30 @@ export async function DELETE() {
     logs.push(`✅ Partido confirmado guardado: ID ${creado.id}, matchId: ${creado.matchId}`)
 
     // 🔼 Actualización de partidosAgregar
-    if (Array.isArray(partido.usuarios)) {
-      for (const userId of partido.usuarios) {
+    if (Array.isArray(partido.usuarios) && partido.usuarios.length > 0) {
+      for (const userIdRaw of partido.usuarios) {
+        const userId = Number(userIdRaw)
+        if (isNaN(userId)) {
+          logs.push(`⚠️ userId inválido: ${userIdRaw}`)
+          continue
+        }
+
         try {
           await prisma.user.update({
             where: { id: userId },
             data: {
               partidosAgregar: {
-                increment: 1
-              }
-            }
+                increment: 1,
+              },
+            },
           })
           logs.push(`🔼 partidosAgregar +1 para userId=${userId}`)
         } catch (err) {
           logs.push(`❌ Error al incrementar partidosAgregar para userId=${userId}: ${err}`)
         }
       }
+    } else {
+      logs.push(`⚠️ usuarios vacío o no es un array válido: ${JSON.stringify(partido.usuarios)}`)
     }
 
   } catch (error: unknown) {
