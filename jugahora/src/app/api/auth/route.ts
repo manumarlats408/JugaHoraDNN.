@@ -20,6 +20,7 @@ type UserWithPassword = {
   weaknesses: string[] | null;
   progress: number | null;
   profilePicture: string | null;
+  partidosAgregar: number;
 };
 
 type ClubWithPassword = {
@@ -62,6 +63,7 @@ export async function POST(request: Request) {
         weaknesses: true,
         progress: true,
         profilePicture: true,
+        partidosAgregar: true,
       },
     }).catch(error => {
       console.error('Error al buscar usuario en la base de datos:', error);
@@ -184,6 +186,7 @@ export async function GET(request: Request) {
           weaknesses: true,
           progress: true,
           profilePicture: true,
+          partidosAgregar: true,
         },
       });
     }

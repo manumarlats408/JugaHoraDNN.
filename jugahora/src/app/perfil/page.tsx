@@ -4,7 +4,6 @@ import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
-import { Card, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
@@ -33,6 +32,7 @@ interface User {
   strengths?: string[]
   weaknesses?: string[]
   progress: number
+  partidosAgregar: number
 }
 
 interface Partido {
@@ -557,43 +557,59 @@ const rachas = calcularRachas(partidos);
   }, []);
 
   const handleAddPartido = async () => {
-    setIsAddingPartido(true)
-    const resultado = scores
-      .slice(0, parseInt(numSets))
-      .map(set => set.join('-'))
-      .join(' - ')
-    const partidoData = {
-      userId: userData?.id,
-      fecha,
-      jugadores: jugadores.join(', '),
-      resultado,
-      ganado
-    }
-
-    try {
-      const response = await fetch('/api/partidos', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(partidoData),
-      })
-
-      if (response.ok) {
-        const newPartido = await response.json()
-        setPartidos([newPartido, ...partidos])
-        setFecha('')
-        setScores([[0, 0], [0, 0], [0, 0]])
-        setIsDialogOpen(false)
-      } else {
-        console.error('Error al añadir el partido')
-      }
-    } catch (error) {
-      console.error('Error al añadir el partido:', error)
-    } finally {
-      setIsAddingPartido(false)
-    }
+  // Validación: el usuario no tiene partidos disponibles para registrar
+  if ((userData?.partidosAgregar ?? 0) <= 0) {
+    alert("No tenés partidos disponibles para registrar. Jugá desde la app para poder registrar tus partidos.");
+    return;
   }
+
+  setIsAddingPartido(true);
+
+  const resultado = scores
+    .slice(0, parseInt(numSets))
+    .map(set => set.join('-'))
+    .join(' - ');
+
+  const partidoData = {
+    userId: userData?.id,
+    fecha,
+    jugadores: jugadores.join(', '),
+    resultado,
+    ganado
+  };
+
+  try {
+    const response = await fetch('/api/partidos', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(partidoData),
+    });
+
+    if (response.ok) {
+      const newPartido = await response.json();
+      setPartidos([newPartido, ...partidos]);
+      setFecha('');
+      setScores([[0, 0], [0, 0], [0, 0]]);
+      setIsDialogOpen(false);
+
+      // 🔽 Reducir también localmente el contador para feedback inmediato
+      setUserData((prev) =>
+        prev ? { ...prev, partidosAgregar: prev.partidosAgregar - 1 } : prev
+      );
+    } else if (response.status === 403) {
+      alert("No tenés partidos disponibles para registrar.");
+    } else {
+      console.error('Error al añadir el partido');
+    }
+  } catch (error) {
+    console.error('Error al añadir el partido:', error);
+  } finally {
+    setIsAddingPartido(false);
+  }
+};
+
 
   if (isLoading) {
     return (
@@ -679,14 +695,22 @@ const rachas = calcularRachas(partidos);
         </div>
       )}
 
-    <main className="flex-1 flex flex-col items-center p-4 bg-brand-page">
-        <Card className="w-full max-w-lg shadow-lg border-brand-border mb-6">
-          <CardHeader className="bg-brand-bg border-b border-brand-border">
-            <CardTitle className="text-2xl font-bold text-brand-primary flex items-center">
-              <User className="w-6 h-6 mr-2" />
-              Perfil de {userData.firstName}
-            </CardTitle>
-          </CardHeader>
+    <main className="flex-1 container mx-auto px-4 py-8 bg-brand-page max-w-6xl">
+        <div className="space-y-6">
+          <div className="bg-white rounded-lg shadow-sm border border-brand-border p-6 mb-6">
+            <div className="flex items-center gap-4">
+              <div className="bg-brand-primary text-white rounded-full w-16 h-16 flex items-center justify-center text-2xl font-bold">
+                {userData.firstName?.charAt(0)}
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">
+                  {userData.firstName} {userData.lastName}
+                </h1>
+                <p className="text-gray-600">Nivel: {userData.nivel} | Progreso: {userData.progress}%</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow-sm border border-brand-border">
             <CollapsibleSection title="Datos Personales" defaultOpen={false}>
               <div className="space-y-4">
                 <div className="flex items-center">
@@ -762,8 +786,9 @@ const rachas = calcularRachas(partidos);
               </Button>
           </div>
         </CollapsibleSection>
+        </div>
         
-
+        <div className="bg-white rounded-lg shadow-sm border border-brand-border">
         <CollapsibleSection title="Amigos" defaultOpen={false}>
             <p className="text-gray-600 mb-2">
               Aquí puedes ver tu lista de amigos y también explorar nuevos perfiles.
@@ -859,8 +884,9 @@ const rachas = calcularRachas(partidos);
               )}
             </div>
         </CollapsibleSection>
+        </div>
 
-
+        <div className="bg-white rounded-lg shadow-sm border border-brand-border">
         <CollapsibleSection title="Ranking de Amigos"  defaultOpen={false}>
             {friends.length > 0 ? (
               <ul className="space-y-3">
@@ -897,8 +923,9 @@ const rachas = calcularRachas(partidos);
               <p className="text-gray-500">Agrega amigos para ver el ranking.</p>
             )}
         </CollapsibleSection>
+        </div> 
 
-        
+        <div className="bg-white rounded-lg shadow-sm border border-brand-border">
         <CollapsibleSection title="Estadísticas de Partidos" defaultOpen={false}>
             <div>
               <p className="text-gray-600 mb-2">
@@ -1041,154 +1068,162 @@ const rachas = calcularRachas(partidos);
             </div>
 
           </CollapsibleSection>
+          </div>
 
-          <CollapsibleSection title="Historial de Partidos" defaultOpen={false}>
-            <div>
+          <div className="bg-white rounded-lg shadow-sm border border-brand-border">
+            <CollapsibleSection title="Historial de Partidos" defaultOpen={false}>
+              <div>
                 <p className="text-gray-600 mb-2">
                   Registrá tus partidos con honestidad. Así, tus estadísticas van a reflejar tu perfil con precisión.
                 </p>
-            </div>
 
-            {partidos.length > 0 ? (
-              partidos.map((partido) => (
-                <div key={partido.id} className="border-b border-gray-200 pb-2">
-                  <p><strong>Fecha:</strong> {formatearFechaDDMMYYYY(partido.fecha)}</p>
-                  <p><strong>Jugadores:</strong> {partido.jugadores}</p>
-                  <p><strong>Resultado:</strong> {partido.resultado}</p>
-                  <p><strong>Estado:</strong> {partido.ganado ? 'Ganado' : 'Perdido'}</p>
-                </div>
-              ))
-            ) : (
-              <p className="text-gray-500">No hay partidos registrados aún.</p>
-            )}
+                {typeof userData?.partidosAgregar === 'number' && (
+                  <p className="text-sm text-gray-700 font-medium mb-4">
+                    {userData.partidosAgregar > 0 ? (
+                      <>🎾 Tenés <span className="text-brand-primary">{userData.partidosAgregar}</span> partidos disponibles para registrar.</>
+                    ) : userData.partidosAgregar === 0 ? (
+                      <span className="text-red-600">⚠️ No tenés partidos disponibles para registrar. Jugá desde la app para desbloquear uno.</span>
+                    ) : null}
+                  </p>
+                )}
+              </div>
 
-            {/* Botón para abrir el diálogo, ahora ubicado al final */}
-            <div className="mt-4 flex justify-end">
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="outline" size="icon" title="Agregar Partido">
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </DialogTrigger>
+              {partidos.length > 0 ? (
+                partidos.map((partido) => (
+                  <div key={partido.id} className="border-b border-gray-200 pb-2">
+                    <p><strong>Fecha:</strong> {formatearFechaDDMMYYYY(partido.fecha)}</p>
+                    <p><strong>Jugadores:</strong> {partido.jugadores}</p>
+                    <p><strong>Resultado:</strong> {partido.resultado}</p>
+                    <p><strong>Estado:</strong> {partido.ganado ? 'Ganado' : 'Perdido'}</p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-500">No hay partidos registrados aún.</p>
+              )}
 
-                <DialogContent className="sm:max-w-[425px]">
-                  <DialogHeader>
-                    <DialogTitle>Añadir Nuevo Partido</DialogTitle>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="fecha" className="text-right">
-                        Fecha
-                      </Label>
-                      <Input
-                        id="fecha"
-                        type="date"
-                        value={fecha}
-                        onChange={(e) => setFecha(e.target.value)}
-                        className="col-span-3"
-                      />
-                    </div>
-                    {jugadores.map((jugador, index) => (
-                      <div key={index} className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor={`jugador${index + 1}`} className="text-right">
-                          Jugador {index + 1}
-                        </Label>
+              <div className="mt-4 flex justify-end">
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      title="Agregar Partido"
+                      disabled={(userData?.partidosAgregar ?? 0) <= 0}
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </DialogTrigger>
+
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>Añadir Nuevo Partido</DialogTitle>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="fecha" className="text-right">Fecha</Label>
                         <Input
-                          id={`jugador${index + 1}`}
-                          value={jugador}
-                          onChange={(e) => {
-                            const newJugadores = [...jugadores]
-                            newJugadores[index] = e.target.value
-                            setJugadores(newJugadores)
-                          }}
-                          placeholder={index === 0 ? userData.firstName : `Jugador ${index + 1}`}
+                          id="fecha"
+                          type="date"
+                          value={fecha}
+                          onChange={(e) => setFecha(e.target.value)}
                           className="col-span-3"
                         />
                       </div>
-                    ))}
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="numSets" className="text-right">
-                        Número de Sets
-                      </Label>
-                      <Select value={numSets} onValueChange={setNumSets}>
-                        <SelectTrigger className="col-span-3">
-                          <SelectValue placeholder="Seleccionar número de sets" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="2">2 Sets</SelectItem>
-                          <SelectItem value="3">3 Sets</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="ganado" className="text-right">
-                        Resultado
-                      </Label>
-                      <Select value={ganado.toString()} onValueChange={(value) => setGanado(value === 'true')}>
-                        <SelectTrigger className="col-span-3">
-                          <SelectValue placeholder="Seleccionar resultado" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="true">Ganado</SelectItem>
-                          <SelectItem value="false">Perdido</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="grid gap-2">
-                      <Label className="text-center">Puntuación</Label>
-                      {scores.slice(0, parseInt(numSets)).map((set, setIndex) => (
-                        <div key={setIndex} className="flex flex-col gap-2">
-                          <span className="text-sm font-medium">Set {setIndex + 1}</span>
-                          <div className="flex justify-between items-center">
-                            <span className="text-xs">{jugadores[0]} / {jugadores[1]}</span>
-                            <div className="flex items-center gap-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleScoreClick(setIndex, 0)}
-                
-                              >
-                                {set[0]}
-                              </Button>
-                              <span className="text-sm font-medium">-</span>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleScoreClick(setIndex, 1)}
-                              >
-                                {set[1]}
-                              </Button>
-                            </div>
-                            <span className="text-xs">{jugadores[2]} / {jugadores[3]}</span>
-                          </div>
+                      {jugadores.map((jugador, index) => (
+                        <div key={index} className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor={`jugador${index + 1}`} className="text-right">Jugador {index + 1}</Label>
+                          <Input
+                            id={`jugador${index + 1}`}
+                            value={jugador}
+                            onChange={(e) => {
+                              const newJugadores = [...jugadores];
+                              newJugadores[index] = e.target.value;
+                              setJugadores(newJugadores);
+                            }}
+                            placeholder={index === 0 ? userData.firstName : `Jugador ${index + 1}`}
+                            className="col-span-3"
+                          />
                         </div>
                       ))}
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="numSets" className="text-right">Número de Sets</Label>
+                        <Select value={numSets} onValueChange={setNumSets}>
+                          <SelectTrigger className="col-span-3">
+                            <SelectValue placeholder="Seleccionar número de sets" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="2">2 Sets</SelectItem>
+                            <SelectItem value="3">3 Sets</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="ganado" className="text-right">Resultado</Label>
+                        <Select value={ganado.toString()} onValueChange={(value) => setGanado(value === 'true')}>
+                          <SelectTrigger className="col-span-3">
+                            <SelectValue placeholder="Seleccionar resultado" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="true">Ganado</SelectItem>
+                            <SelectItem value="false">Perdido</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="grid gap-2">
+                        <Label className="text-center">Puntuación</Label>
+                        {scores.slice(0, parseInt(numSets)).map((set, setIndex) => (
+                          <div key={setIndex} className="flex flex-col gap-2">
+                            <span className="text-sm font-medium">Set {setIndex + 1}</span>
+                            <div className="flex justify-between items-center">
+                              <span className="text-xs">{jugadores[0]} / {jugadores[1]}</span>
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleScoreClick(setIndex, 0)}
+                                >
+                                  {set[0]}
+                                </Button>
+                                <span className="text-sm font-medium">-</span>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleScoreClick(setIndex, 1)}
+                                >
+                                  {set[1]}
+                                </Button>
+                              </div>
+                              <span className="text-xs">{jugadores[2]} / {jugadores[3]}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                  <Button 
-                    onClick={handleAddPartido} 
-                    className="w-full" 
-                    disabled={isAddingPartido}
-                  >
-                    {isAddingPartido ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Añadiendo...
-                      </>
-                    ) : (
-                      'Añadir Partido'
-                    )}
-                  </Button>
-                  <DialogClose asChild>
-                    <button className="absolute top-2 right-2 inline-flex items-center justify-center rounded-full p-2 focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75">
-                      <X className="h-4 w-4 text-gray-500 hover:text-gray-700" />
-                    </button>
-                  </DialogClose>
-                </DialogContent>
-              </Dialog>
-            </div>
-        </CollapsibleSection>
-        </Card>              
+                    <Button
+                      onClick={handleAddPartido}
+                      className="w-full"
+                      disabled={isAddingPartido}
+                    >
+                      {isAddingPartido ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Añadiendo...
+                        </>
+                      ) : (
+                        'Añadir Partido'
+                      )}
+                    </Button>
+                    <DialogClose asChild>
+                      <button className="absolute top-2 right-2 inline-flex items-center justify-center rounded-full p-2 focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75">
+                        <X className="h-4 w-4 text-gray-500 hover:text-gray-700" />
+                      </button>
+                    </DialogClose>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </CollapsibleSection>
+          </div>
+        </div>              
         </main>
 
         <footer className="py-6 px-4 md:px-6 bg-white border-t border-gray-200">

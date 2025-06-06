@@ -59,6 +59,7 @@ export async function GET() {
                 { label: "⏰ Hora", valor: `${partido.startTime} - ${partido.endTime}` },
                 { label: "🏟️ Cancha", valor: partido.court },
               ],
+              footer: "⚠️ Recuerda que si quieres cancelar tu inscripción debe ser como máximo en las proximas 12 horas.",
             }),
           });
           
