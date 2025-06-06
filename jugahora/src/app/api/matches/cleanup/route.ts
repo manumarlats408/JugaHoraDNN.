@@ -82,6 +82,7 @@ export async function DELETE() {
         // Incrementar partidosAgregar a cada jugador
         for (const userId of partido.usuarios) {
           try {
+            logs.push(`🔁 A punto de incrementar partidosAgregar para usuarios: ${partido.usuarios.join(', ')}`);
             await prisma.user.update({
               where: { id: userId },
               data: { partidosAgregar: { increment: 1 } },
