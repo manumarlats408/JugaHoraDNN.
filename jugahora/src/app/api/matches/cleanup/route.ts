@@ -80,27 +80,30 @@ export async function DELETE() {
 
     // 🔼 Actualización de partidosAgregar
     if (Array.isArray(partido.usuarios) && partido.usuarios.length > 0) {
-      for (const userIdRaw of partido.usuarios) {
-        const userId = Number(userIdRaw)
-        if (isNaN(userId)) {
-          logs.push(`⚠️ userId inválido: ${userIdRaw}`)
-          continue
-        }
+      // ✅ Usamos prisma.user.findMany como en reminder
+      const jugadores = await prisma.user.findMany({
+        where: {
+          id: { in: partido.usuarios.map((id) => Number(id)) }
+        },
+        select: { id: true, firstName: true }
+      })
 
+      logs.push(`👥 Jugadores encontrados: ${jugadores.map(j => j.id).join(', ')}`)
+
+      for (const jugador of jugadores) {
         try {
           await prisma.user.update({
-            where: { id: userId },
+            where: { id: jugador.id },
             data: {
-              partidosAgregar: {
-                increment: 1,
-              },
-            },
+              partidosAgregar: { increment: 1 }
+            }
           })
-          logs.push(`🔼 partidosAgregar +1 para userId=${userId}`)
+          logs.push(`🔼 partidosAgregar +1 para userId=${jugador.id} (${jugador.firstName})`)
         } catch (err) {
-          logs.push(`❌ Error al incrementar partidosAgregar para userId=${userId}: ${err}`)
+          logs.push(`❌ Error al incrementar partidosAgregar para userId=${jugador.id}: ${err}`)
         }
       }
+
     } else {
       logs.push(`⚠️ usuarios vacío o no es un array válido: ${JSON.stringify(partido.usuarios)}`)
     }
