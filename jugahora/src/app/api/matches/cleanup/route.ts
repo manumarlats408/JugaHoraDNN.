@@ -80,33 +80,42 @@ export async function DELETE() {
 
     // 🔼 Actualización de partidosAgregar
     if (Array.isArray(partido.usuarios) && partido.usuarios.length > 0) {
-      // ✅ Usamos prisma.user.findMany como en reminder
-      const jugadores = await prisma.user.findMany({
-        where: {
-          id: { in: partido.usuarios.map((id) => Number(id)) }
-        },
-        select: { id: true, firstName: true }
-      })
+      const userIds = partido.usuarios.filter((id) => typeof id === 'number' && !isNaN(id));
 
-      logs.push(`👥 Jugadores encontrados: ${jugadores.map(j => j.id).join(', ')}`)
+      logs.push(`🧮 IDs filtrados: ${userIds.join(', ')}`);
+
+      const jugadores = await prisma.user.findMany({
+        where: { id: { in: userIds } },
+        select: { id: true, firstName: true },
+      });
+
+      logs.push(`👥 Jugadores encontrados en DB: ${jugadores.length} / Esperados: ${userIds.length}`);
+
+      if (jugadores.length < userIds.length) {
+        const encontrados = new Set(jugadores.map(j => j.id));
+        const faltantes = userIds.filter(id => !encontrados.has(id));
+        logs.push(`⚠️ Usuarios no encontrados en la DB: ${faltantes.join(', ')}`);
+      }
 
       for (const jugador of jugadores) {
         try {
+          logs.push(`➡️ Incrementando partidosAgregar para userId=${jugador.id}`);
           await prisma.user.update({
             where: { id: jugador.id },
             data: {
-              partidosAgregar: { increment: 1 }
-            }
-          })
-          logs.push(`🔼 partidosAgregar +1 para userId=${jugador.id} (${jugador.firstName})`)
+              partidosAgregar: { increment: 1 },
+            },
+          });
+          logs.push(`✅ Incremento exitoso para ${jugador.firstName} (ID ${jugador.id})`);
         } catch (err) {
-          logs.push(`❌ Error al incrementar partidosAgregar para userId=${jugador.id}: ${err}`)
+          logs.push(`❌ Error al actualizar userId=${jugador.id}: ${err}`);
         }
       }
 
     } else {
-      logs.push(`⚠️ usuarios vacío o no es un array válido: ${JSON.stringify(partido.usuarios)}`)
+      logs.push(`⚠️ usuarios vacío o no válido: ${JSON.stringify(partido.usuarios)}`);
     }
+
 
   } catch (error: unknown) {
     const mensaje = error instanceof Error ? error.message : JSON.stringify(error)
